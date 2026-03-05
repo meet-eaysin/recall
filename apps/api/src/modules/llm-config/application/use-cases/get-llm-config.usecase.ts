@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { LLMConfigModel } from '@repo/db';
 import { LLMConfigPublicView } from '@repo/types';
 import { LLMConfigEntity } from '../../domain/entities/llm-config.entity';
@@ -9,19 +9,7 @@ export class GetLLMConfigUseCase {
     const config = await LLMConfigModel.findOne({ userId });
 
     if (!config) {
-      // Default Ollama config
-      return {
-        userId,
-        provider: 'ollama',
-        chatModel: 'llama3',
-        embeddingModel: 'nomic-embed-text',
-        baseUrl: 'http://localhost:11434',
-        capabilities: {
-          chat: true,
-          embeddings: true,
-        },
-        validatedAt: null,
-      };
+      throw new NotFoundException('LLM configuration not found');
     }
 
     const entity = new LLMConfigEntity({

@@ -6,7 +6,11 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "transformIgnorePatterns": [
+    "/node_modules/(?!(p-limit|yocto-queue|@extractus/article-extractor)/)"
+  ],
   "moduleNameMapper": {
     "^src/(.*)$": "<rootDir>/src/$1"
-  }
+  },
+  "setupFilesAfterEnv": ["<rootDir>/test/global-mocks.ts"]
 }

@@ -1,4 +1,5 @@
 import { expect } from '@jest/globals';
+import mongoose from 'mongoose';
 
 export const TEST_USER_ID = '65f1a2b3c4d5e6f7a8b9c0d1';
 
@@ -32,9 +33,6 @@ export function isErrorResponse(body: unknown): body is ErrorResponse {
   );
 }
 
-/**
- * Helper to assert success health response without type assertions
- */
 export function assertHealthSuccess(body: unknown): void {
   if (isHealthResponse(body)) {
     expect(body.status).toBe('ok');
@@ -44,9 +42,6 @@ export function assertHealthSuccess(body: unknown): void {
   }
 }
 
-/**
- * Helper to assert error response without type assertions
- */
 export function assertErrorShape(body: unknown, statusCode: number, error: string): void {
   if (isErrorResponse(body)) {
     expect(body.statusCode).toBe(statusCode);
@@ -54,4 +49,8 @@ export function assertErrorShape(body: unknown, statusCode: number, error: strin
   } else {
     throw new Error('Response body does not match ErrorResponse shape');
   }
+}
+
+export function generateId(): string {
+  return new mongoose.Types.ObjectId().toHexString();
 }
