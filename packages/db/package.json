@@ -19,7 +19,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@repo/types": "workspace:*",
+    "@repo/types": "*",
     "mongoose": "^8.0.0"
   },
   "devDependencies": {

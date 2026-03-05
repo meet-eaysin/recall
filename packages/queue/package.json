@@ -19,7 +19,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@repo/types": "workspace:*",
+    "@repo/types": "*",
     "bullmq": "^4.17.0",
     "ioredis": "^5.4.1"
   },
