@@ -51,12 +51,15 @@ export async function setupApp(): Promise<INestApplication> {
   app.useGlobalFilters(new AllExceptionsFilter());
   app.setGlobalPrefix('api/v1');
 
+  // app.init() triggers AppModule.onModuleInit() which calls connectMongoDB
   await app.init();
   return app;
 }
 
 export async function teardownApp(app: INestApplication): Promise<void> {
-  await app.close();
+  if (app) {
+    await app.close();
+  }
   await disconnectMongoDB();
 }
 

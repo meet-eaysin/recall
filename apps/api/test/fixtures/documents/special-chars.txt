@@ -1,0 +1,31 @@
+# Special Characters and Symbols Test
+
+## Scientific Symbols
+The operating temperature is -50 to 120 °C.
+Value: ±0.001 µm
+Formula: E=mc²
+
+## Currencies
+Budget: $1.2M, €1.1M, £0.9M, ¥180M, ₹100M
+
+## Symbols
+© 2026 Antigravity Corp.
+All rights reserved ®.
+Trade Mark ™.
+
+## Unicode Emojis
+🚀 Rocket to the moon!
+🌌 Exploring the galaxy.
+🧪 Chemical formulas.
+⚡ High voltage.
+🛡️ Security shield.
+
+## Edge Cases
+Empty line follows:
+
+Line with leading spaces:    Indented line.
+Line with trailing spaces: Line with spaces    
+Multiple newlines:
+
+
+End of document.

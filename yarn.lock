@@ -7432,6 +7432,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mind-stack@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "mind-stack@workspace:."
+  dependencies:
+    "@notionhq/client": "npm:^5.11.1"
+    "@repo/eslint-config": "npm:*"
+    "@repo/typescript-config": "npm:*"
+    prettier: "npm:^3.2.5"
+    turbo: "npm:^2.8.13"
+  languageName: unknown
+  linkType: soft
+
 "minimatch@npm:^10.1.1, minimatch@npm:^10.2.2":
   version: 10.2.4
   resolution: "minimatch@npm:10.2.4"
@@ -7720,18 +7732,6 @@ __metadata:
   checksum: 10c0/2cf48a2087175c60c8dcdbc619908b49c07f7adcfc37d29236b0c5c612d6204f789104c98cc44d38acab7b3c96f4a3ec2cfdc4934d0738d876dbefa2a12c69f4
   languageName: node
   linkType: hard
-
-"my-turborepo@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "my-turborepo@workspace:."
-  dependencies:
-    "@notionhq/client": "npm:^5.11.1"
-    "@repo/eslint-config": "npm:*"
-    "@repo/typescript-config": "npm:*"
-    prettier: "npm:^3.2.5"
-    turbo: "npm:^2.8.13"
-  languageName: unknown
-  linkType: soft
 
 "nan@npm:^2.17.0":
   version: 2.25.0

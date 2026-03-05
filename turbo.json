@@ -8,7 +8,8 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "globalEnv": ["MONGODB_URI", "JWT_SECRET", "QDRANT_API_KEY", "JEST_WORKER_ID"]
     },
     "lint": {},
     "test": {},

@@ -1,0 +1,18 @@
+# Multilingual Test
+
+English: The project codename is 'Antigravity'.
+Español: El nombre en clave del proyecto es 'Antigravity'.
+Français: Le nom de code du projet est 'Antigravity'.
+Deutsch: Der Projekt-Codename lautet 'Antigravity'.
+日本語: プロジェクトのコードネームは「Antigravity」です。
+中文: 项目代号为 'Antigravity'。
+Русский: Кодовое название проекта — «Antigravity».
+العربية: الاسم الرمزي للمشروع هو 'Antigravity'.
+हिन्दी: प्रोजेक्ट का कोडनेम 'Antigravity' है।
+Português: O codinome do projeto é 'Antigravity'.
+Italiano: Il nome in codice del progetto è 'Antigravity'.
+Nederlands: De projectcodenaam is 'Antigravity'.
+Türkçe: Projenin kod adı 'Antigravity'.
+한국어: 프로젝트 코드명은 'Antigravity'입니다.
+Tiếng Việt: Mật danh dự án là 'Antigravity'.
+Polski: Nazwa kodowa projektu to 'Antigravity'.

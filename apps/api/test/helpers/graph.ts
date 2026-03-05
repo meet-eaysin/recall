@@ -58,12 +58,12 @@ export function isFullGraphResponse(body: unknown): body is FullGraphResponse {
   if (typeof body !== 'object' || body === null) return false;
   if (!('success' in body) || body.success !== true) return false;
   if (!('data' in body) || typeof body.data !== 'object' || body.data === null) return false;
-  
+
   const { data } = body;
   if (!('nodes' in data) || !Array.isArray(data.nodes) || !data.nodes.every(isGraphNode)) return false;
   if (!('edges' in data) || !Array.isArray(data.edges) || !data.edges.every(isGraphEdge)) return false;
   if (!('rootNodeId' in data) || typeof data.rootNodeId !== 'string') return false;
-  
+
   return true;
 }
 
@@ -71,12 +71,12 @@ export function isDocumentSubgraphResponse(body: unknown): body is DocumentSubgr
   if (typeof body !== 'object' || body === null) return false;
   if (!('success' in body) || body.success !== true) return false;
   if (!('data' in body) || typeof body.data !== 'object' || body.data === null) return false;
-  
+
   const { data } = body;
   if (!('node' in data) || !isGraphNode(data.node)) return false;
   if (!('directEdges' in data) || !Array.isArray(data.directEdges) || !data.directEdges.every(isGraphEdge)) return false;
   if (!('neighborNodes' in data) || !Array.isArray(data.neighborNodes) || !data.neighborNodes.every(isGraphNode)) return false;
-  
+
   return true;
 }
 
@@ -84,7 +84,7 @@ export function isRebuildGraphResponse(body: unknown): body is RebuildGraphRespo
   if (typeof body !== 'object' || body === null) return false;
   if (!('success' in body) || body.success !== true) return false;
   if (!('data' in body) || typeof body.data !== 'string') return false;
-  
+
   return true;
 }
 
