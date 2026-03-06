@@ -1,12 +1,19 @@
-import { describe, it, beforeAll, afterAll, expect, afterEach } from '@jest/globals';
+import {
+  describe,
+  it,
+  beforeAll,
+  afterAll,
+  expect,
+  afterEach,
+} from '@jest/globals';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { setupApp, teardownApp, cleanupDatabase } from './setup';
-import { 
-  TEST_USER_ID, 
+import {
+  TEST_USER_ID,
   seedDocument,
   seedFolder,
-  isListDocumentsResponse
+  isListDocumentsResponse,
 } from './helpers';
 import { DocumentType } from '@repo/types';
 import { Server } from 'http';
@@ -36,7 +43,7 @@ describe('Performance and Edge Cases (e2e)', () => {
         content: `Content for doc ${i}`,
       }));
 
-      await Promise.all(docsToSeed.map(d => seedDocument(d)));
+      await Promise.all(docsToSeed.map((d) => seedDocument(d)));
 
       const page1Res = await request(app.getHttpServer())
         .get('/api/v1/documents?page=1&limit=50')
@@ -44,9 +51,9 @@ describe('Performance and Edge Cases (e2e)', () => {
         .expect(200);
 
       if (isListDocumentsResponse(page1Res.body)) {
-        expect(page1Res.body.items.length).toBe(50);
-        expect(page1Res.body.total).toBe(105);
-        expect(page1Res.body.page).toBe(1);
+        expect(page1Res.body.data.items.length).toBe(50);
+        expect(page1Res.body.data.total).toBe(105);
+        expect(page1Res.body.data.page).toBe(1);
       } else {
         throw new Error('List response mismatch on page 1');
       }
@@ -57,8 +64,8 @@ describe('Performance and Edge Cases (e2e)', () => {
         .expect(200);
 
       if (isListDocumentsResponse(page3Res.body)) {
-        expect(page3Res.body.items.length).toBe(5);
-        expect(page3Res.body.page).toBe(3);
+        expect(page3Res.body.data.items.length).toBe(5);
+        expect(page3Res.body.data.page).toBe(3);
       } else {
         throw new Error('List response mismatch on page 3');
       }
@@ -67,7 +74,7 @@ describe('Performance and Edge Cases (e2e)', () => {
     it('should handle large nested folder structures', async () => {
       // Seed 50 folders in a flat list just to check limits
       const folders = Array.from({ length: 50 }).map((_, i) => `Folder ${i}`);
-      await Promise.all(folders.map(f => seedFolder(f)));
+      await Promise.all(folders.map((f) => seedFolder(f)));
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/knowledge/folders')
@@ -88,8 +95,8 @@ describe('Performance and Edge Cases (e2e)', () => {
         .expect(200);
 
       if (isListDocumentsResponse(response.body)) {
-        expect(response.body.items).toEqual([]);
-        expect(response.body.total).toBe(0);
+        expect(response.body.data.items).toEqual([]);
+        expect(response.body.data.total).toBe(0);
       } else {
         throw new Error('Empty list response mismatch');
       }
@@ -125,7 +132,7 @@ describe('Performance and Edge Cases (e2e)', () => {
       const response = await request(app.getHttpServer())
         .get('/api/v1/knowledge/folders/invalid-id')
         .set('x-user-id', TEST_USER_ID);
-        
+
       expect(response.body).toHaveProperty('success', false);
       expect(response.body).toHaveProperty('statusCode');
       expect([400, 404]).toContain(response.body.statusCode);

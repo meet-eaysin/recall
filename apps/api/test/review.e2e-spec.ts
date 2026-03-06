@@ -1,13 +1,20 @@
-import { describe, it, beforeAll, afterAll, expect, afterEach } from '@jest/globals';
+import {
+  describe,
+  it,
+  beforeAll,
+  afterAll,
+  expect,
+  afterEach,
+} from '@jest/globals';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { setupApp, teardownApp, cleanupDatabase } from './setup';
-import { 
-  TEST_USER_ID, 
+import {
+  TEST_USER_ID,
   seedDocument,
   seedReviewDismissal,
   isDailyReviewResponse,
-  isRecommendationResponse
+  isRecommendationResponse,
 } from './helpers';
 import { Server } from 'http';
 import { DocumentStatus } from '@repo/types';
@@ -41,7 +48,7 @@ describe('Review (e2e)', () => {
 
       if (isDailyReviewResponse(response.body)) {
         expect(response.body.success).toBe(true);
-        expect(Array.isArray(response.body.items)).toBe(true);
+        expect(Array.isArray(response.body.data)).toBe(true);
       } else {
         throw new Error('Daily review response mismatch');
       }
@@ -57,7 +64,7 @@ describe('Review (e2e)', () => {
         .expect(200);
 
       if (isDailyReviewResponse(response.body)) {
-        const itemIds = response.body.items.map(item => item.documentId);
+        const itemIds = response.body.data.map((item) => item.documentId);
         expect(itemIds).not.toContain(docId);
       } else {
         throw new Error('Daily review response mismatch');
@@ -81,7 +88,7 @@ describe('Review (e2e)', () => {
         .expect(200);
 
       if (isDailyReviewResponse(response.body)) {
-        const itemIds = response.body.items.map(item => item.documentId);
+        const itemIds = response.body.data.map((item) => item.documentId);
         expect(itemIds).not.toContain(docId);
       }
     });
@@ -90,20 +97,20 @@ describe('Review (e2e)', () => {
   describe('GET /recommendations', () => {
     it('should return recommendations based on tags', async () => {
       // Seed some documents with tags
-      await seedDocument({ 
-        title: 'AI Doc', 
-        status: DocumentStatus.TO_READ 
+      await seedDocument({
+        title: 'AI Doc',
+        status: DocumentStatus.TO_READ,
       });
-      
+
       const response = await request(app.getHttpServer())
-        .get('/api/v1/recommendations')
+        .get('/api/v1/review/recommendations')
         .set('x-user-id', TEST_USER_ID)
         .expect(200);
 
       if (isRecommendationResponse(response.body)) {
         expect(response.body.success).toBe(true);
-        expect(Array.isArray(response.body.ownedDocuments)).toBe(true);
-        expect(Array.isArray(response.body.suggestedTopics)).toBe(true);
+        expect(response.body.data.ownedDocuments).toBeDefined();
+        expect(response.body.data.suggestedTopics).toBeDefined();
       } else {
         throw new Error('Recommendations response mismatch');
       }

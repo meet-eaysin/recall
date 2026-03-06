@@ -7,6 +7,9 @@ import { ReviewController } from './interface/review.controller';
 import { DocumentsModule } from '../documents/documents.module';
 import { GraphModule } from '../graph/graph.module';
 
+import { IReviewRepository } from './domain/repositories/review.repository';
+import { MongooseReviewRepository } from './infrastructure/persistence/mongoose-review.repository';
+
 @Module({
   imports: [DocumentsModule, GraphModule],
   controllers: [ReviewController],
@@ -15,6 +18,10 @@ import { GraphModule } from '../graph/graph.module';
     GetDailyReviewUseCase,
     DismissReviewUseCase,
     GetRecommendationsUseCase,
+    {
+      provide: IReviewRepository,
+      useClass: MongooseReviewRepository,
+    },
   ],
 })
 export class ReviewModule {}

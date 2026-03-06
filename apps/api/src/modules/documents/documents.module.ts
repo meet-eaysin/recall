@@ -16,6 +16,9 @@ import { UpdateDocumentUseCase } from './application/use-cases/update-document.u
 import { DocumentsController } from './interface/documents.controller';
 import { LocalStorage } from '../../shared/infrastructure/storage/local-storage';
 
+import { ITranscriptRepository } from './domain/repositories/transcript.repository';
+import { MongooseTranscriptRepository } from './infrastructure/persistence/mongoose-transcript.repository';
+
 const useCases = [
   CreateDocumentUseCase,
   CreateUploadDocumentUseCase,
@@ -43,10 +46,15 @@ const useCases = [
       provide: IDocumentUnlinkRepository,
       useClass: MongooseDocumentUnlinkRepository,
     },
+    {
+      provide: ITranscriptRepository,
+      useClass: MongooseTranscriptRepository,
+    },
   ],
   exports: [
     IDocumentRepository,
     IDocumentUnlinkRepository,
+    ITranscriptRepository,
     LocalStorage,
     ...useCases,
   ],

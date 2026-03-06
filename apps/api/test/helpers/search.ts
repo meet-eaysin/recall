@@ -1,3 +1,5 @@
+import { isObject } from './common';
+
 export interface SearchResult {
   documentId: string;
   title: string;
@@ -5,9 +7,14 @@ export interface SearchResult {
 }
 
 export interface SearchResponse {
-  results: SearchResult[];
-  total: number;
-  mode: 'normal' | 'ai';
+  success: boolean;
+  data: {
+    items: SearchResult[];
+    total: number;
+    page: number;
+    limit: number;
+    mode: 'normal' | 'ai';
+  };
 }
 
 export interface AskSource {
@@ -17,25 +24,32 @@ export interface AskSource {
 }
 
 export interface AskResponse {
-  answer: string;
-  sources: AskSource[];
+  success: boolean;
+  data: {
+    answer: string;
+    sources: AskSource[];
+    tokensUsed: number;
+  };
 }
 
 export function isSearchResponse(body: unknown): body is SearchResponse {
-  if (typeof body !== 'object' || body === null) return false;
-  if (!('total' in body) || typeof body.total !== 'number') return false;
-  if (!('mode' in body) || typeof body.mode !== 'string') return false;
+  if (!isObject(body)) return false;
+  if (body.success !== true) return false;
+  if (!isObject(body.data)) return false;
 
-  // Normal search returns 'documents', AI search returns 'results'
-  const hasResults = 'results' in body && Array.isArray(body.results);
-  const hasDocuments = 'documents' in body && Array.isArray(body.documents);
-  return hasResults || hasDocuments;
+  const data = body.data;
+  return (
+    typeof data.total === 'number' &&
+    typeof data.mode === 'string' &&
+    Array.isArray(data.items)
+  );
 }
 
 export function isAskResponse(body: unknown): body is AskResponse {
-  if (typeof body !== 'object' || body === null) return false;
-  return (
-    'answer' in body && typeof body.answer === 'string' &&
-    'sources' in body && Array.isArray(body.sources)
-  );
+  if (!isObject(body)) return false;
+  if (body.success !== true) return false;
+  if (!isObject(body.data)) return false;
+
+  const data = body.data;
+  return typeof data.answer === 'string' && Array.isArray(data.sources);
 }

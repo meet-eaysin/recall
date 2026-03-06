@@ -1,50 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { UserActivityModel } from '@repo/db';
-import { AnalyticsHeatmapItem, AnalyticsStatsAggregationResult, AnalyticsBreakdown } from '@repo/types';
+import {
+  AnalyticsHeatmapItem,
+  AnalyticsStatsAggregationResult,
+  AnalyticsBreakdown,
+} from '@repo/types';
+import { IUserActivityRepository } from '../../domain/repositories/user-activity.repository';
 
 @Injectable()
 export class GetHeatmapUseCase {
+  constructor(
+    private readonly userActivityRepository: IUserActivityRepository,
+  ) {}
+
   async execute(
     userId: string,
     days: number = 365,
   ): Promise<{ heatmap: AnalyticsHeatmapItem[] }> {
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
-    startDate.setHours(0, 0, 0, 0);
+    startDate.setUTCHours(0, 0, 0, 0);
+    startDate.setUTCDate(startDate.getUTCDate() - days);
 
-    const aggregation: AnalyticsStatsAggregationResult[] = await UserActivityModel.aggregate<AnalyticsStatsAggregationResult>([
-      {
-        $match: {
-          userId,
-          createdAt: { $gte: startDate },
-        },
-      },
-      {
-        $project: {
-          date: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-          action: 1,
-        },
-      },
-      {
-        $group: {
-          _id: '$date',
-          count: { $sum: 1 },
-          doc_added: {
-            $sum: { $cond: [{ $eq: ['$action', 'doc_added'] }, 1, 0] },
-          },
-          doc_opened: {
-            $sum: { $cond: [{ $eq: ['$action', 'doc_opened'] }, 1, 0] },
-          },
-          note_created: {
-            $sum: { $cond: [{ $eq: ['$action', 'note_created'] }, 1, 0] },
-          },
-          summary_generated: {
-            $sum: { $cond: [{ $eq: ['$action', 'summary_generated'] }, 1, 0] },
-          },
-        },
-      },
-      { $sort: { _id: 1 } },
-    ]).exec();
+    const aggregation = await this.userActivityRepository.getHeatmap(
+      userId,
+      startDate,
+    );
 
     const statsMap = new Map<
       string,
@@ -68,7 +47,7 @@ export class GetHeatmapUseCase {
 
     for (let i = 0; i <= days; i++) {
       const date = new Date(startDate);
-      date.setDate(date.getDate() + i);
+      date.setUTCDate(date.getUTCDate() + i);
       const dateStr = date.toISOString().split('T')[0] ?? '';
 
       const existing = statsMap.get(dateStr);

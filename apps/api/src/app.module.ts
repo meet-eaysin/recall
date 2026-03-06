@@ -1,7 +1,15 @@
-import { Module, OnModuleInit, OnApplicationShutdown, Logger } from '@nestjs/common';
+import {
+  Module,
+  OnModuleInit,
+  OnApplicationShutdown,
+  Logger,
+} from '@nestjs/common';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { connectMongoDB, disconnectMongoDB } from '@repo/db';
 import { createRedisConnection, initQueues } from '@repo/queue';
 import { env } from './shared/utils/env';
+import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { AllExceptionsFilter } from './shared/filters/http-exception.filter';
 
 // Modules
 import { AnalyticsModule } from './modules/analytics/analytics.module';
@@ -32,7 +40,16 @@ import { HealthController } from './modules/health/health.controller';
     SummaryModule,
   ],
   controllers: [HealthController],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+  ],
 })
 export class AppModule implements OnModuleInit, OnApplicationShutdown {
   private readonly logger = new Logger(AppModule.name);
@@ -43,7 +60,9 @@ export class AppModule implements OnModuleInit, OnApplicationShutdown {
       if (env.REDIS_URL && !env.REDIS_URL.includes('localhost')) {
         initQueues(createRedisConnection(env.REDIS_URL));
       } else {
-        this.logger.warn('Skipping Redis initialization: REDIS_URL is localhost or missing.');
+        this.logger.warn(
+          'Skipping Redis initialization: REDIS_URL is localhost or missing.',
+        );
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

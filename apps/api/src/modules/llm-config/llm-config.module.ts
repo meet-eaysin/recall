@@ -5,6 +5,9 @@ import { SaveLLMConfigUseCase } from './application/use-cases/save-llm-config.us
 import { ValidateLLMConfigUseCase } from './application/use-cases/validate-llm-config.usecase';
 import { LLMConfigController } from './interface/llm-config.controller';
 
+import { MongooseLLMConfigRepository } from './infrastructure/persistence/mongoose-llm-config.repository';
+import { ILLMConfigRepository } from './domain/repositories/llm-config.repository';
+
 @Module({
   controllers: [LLMConfigController],
   providers: [
@@ -12,7 +15,16 @@ import { LLMConfigController } from './interface/llm-config.controller';
     GetLLMConfigUseCase,
     SaveLLMConfigUseCase,
     ValidateLLMConfigUseCase,
+    {
+      provide: ILLMConfigRepository,
+      useClass: MongooseLLMConfigRepository,
+    },
   ],
-  exports: [GetLLMConfigUseCase, SaveLLMConfigUseCase, LLMValidatorService],
+  exports: [
+    GetLLMConfigUseCase,
+    SaveLLMConfigUseCase,
+    LLMValidatorService,
+    ILLMConfigRepository,
+  ],
 })
 export class LLMConfigModule {}

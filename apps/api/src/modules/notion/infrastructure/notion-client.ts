@@ -1,9 +1,17 @@
 import { Client } from '@notionhq/client';
-import {
-  DatabaseObjectResponse,
-  PageObjectResponse,
-} from '@notionhq/client/build/src/api-endpoints';
+import { DatabaseObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+
+import { isObject } from '../../../shared/utils/type-guards.util';
+
+function isDatabaseObject(result: unknown): result is DatabaseObjectResponse {
+  if (!isObject(result)) return false;
+  return (
+    result.object === 'database' &&
+    'title' in result &&
+    Array.isArray(result.title)
+  );
+}
 
 @Injectable()
 export class NotionClient {
@@ -16,13 +24,17 @@ export class NotionClient {
     try {
       const response = await notion.search({});
 
-      const results = response.results as unknown[] as DatabaseObjectResponse[];
-      return results
-        .filter((result) => result.object === 'database')
-        .map((db) => ({
-          id: db.id,
-          title: db.title?.[0]?.plain_text || 'Untitled',
-        }));
+      const databases: DatabaseObjectResponse[] = [];
+      for (const result of response.results) {
+        if (isDatabaseObject(result)) {
+          databases.push(result);
+        }
+      }
+
+      return databases.map((db) => ({
+        id: db.id,
+        title: db.title?.[0]?.plain_text || 'Untitled',
+      }));
     } catch {
       throw new InternalServerErrorException('Failed to list Notion databases');
     }
@@ -40,7 +52,7 @@ export class NotionClient {
     const notion = new Client({ auth: token });
     await this.delay(350); // Rate limit
     try {
-      const response = (await notion.pages.create({
+      const response = await notion.pages.create({
         parent: { database_id: databaseId },
         properties: {
           title: {
@@ -64,8 +76,16 @@ export class NotionClient {
               },
             ]
           : [],
-      })) as PageObjectResponse;
-      return response.id;
+      });
+
+      if (
+        isObject(response) &&
+        'id' in response &&
+        typeof response.id === 'string'
+      ) {
+        return response.id;
+      }
+      throw new InternalServerErrorException('Partial response from Notion');
     } catch {
       throw new InternalServerErrorException('Failed to create Notion page');
     }

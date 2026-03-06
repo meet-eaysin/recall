@@ -1,44 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { DocumentModel, NoteModel, UserActivityModel } from '@repo/db';
-import { AnalyticsDocumentStatsAggregationResult, AnalyticsStreakDetails } from '@repo/types';
+import {
+  AnalyticsDocumentStatsAggregationResult,
+} from '@repo/types';
+import { IUserActivityRepository } from '../../domain/repositories/user-activity.repository';
 
 @Injectable()
 export class GetStatsUseCase {
+  constructor(
+    private readonly userActivityRepository: IUserActivityRepository,
+  ) {}
+
   async execute(userId: string) {
-    const [
+    const stats = await this.userActivityRepository.getStats(userId);
+
+    const {
       totalDocuments,
       docsByType,
       docsByStatus,
       totalNotes,
       activityHistory,
-    ]: [
-      number,
-      AnalyticsDocumentStatsAggregationResult[],
-      AnalyticsDocumentStatsAggregationResult[],
-      number,
-      { _id: string }[],
-    ] = await Promise.all([
-      DocumentModel.countDocuments({ userId }),
-      DocumentModel.aggregate<AnalyticsDocumentStatsAggregationResult>([
-        { $match: { userId } },
-        { $group: { _id: '$type', count: { $sum: 1 } } },
-      ]).exec(),
-      DocumentModel.aggregate<AnalyticsDocumentStatsAggregationResult>([
-        { $match: { userId } },
-        { $group: { _id: '$status', count: { $sum: 1 } } },
-      ]).exec(),
-      NoteModel.countDocuments({ userId }),
-      UserActivityModel.aggregate<{ _id: string }>([
-        { $match: { userId } },
-        {
-          $project: {
-            date: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-          },
-        },
-        { $group: { _id: '$date' } },
-        { $sort: { _id: -1 } },
-      ]).exec(),
-    ]);
+      mostActiveDay,
+    } = stats;
 
     // Format distributions
     const byType: Record<string, number> = {};
@@ -52,9 +34,12 @@ export class GetStatsUseCase {
     });
 
     // Streak calculation
-    const activeDates: string[] = activityHistory.map((item: { _id: string }) => item._id);
-    const { currentStreak, longestStreak, mostActiveDay } =
-      await this.calculateStreakDetails(userId, activeDates);
+    const activeDates: string[] = activityHistory.map(
+      (item: { _id: string }) => item._id,
+    );
+    const { currentStreak, longestStreak } = this.calculateStreakDetails(
+      activeDates,
+    );
 
     return {
       totalDocuments,
@@ -67,27 +52,13 @@ export class GetStatsUseCase {
     };
   }
 
-  private async calculateStreakDetails(
-    userId: string,
-    activeDates: string[],
-  ): Promise<AnalyticsStreakDetails> {
+  private calculateStreakDetails(activeDates: string[]): {
+    currentStreak: number;
+    longestStreak: number;
+  } {
     if (activeDates.length === 0) {
-      return { currentStreak: 0, longestStreak: 0, mostActiveDay: null };
+      return { currentStreak: 0, longestStreak: 0 };
     }
-
-    // Longest and Most Active
-    const mostActiveAggregation = await UserActivityModel.aggregate<{ _id: string; count: number }>([
-      { $match: { userId } },
-      {
-        $project: {
-          date: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-        },
-      },
-      { $group: { _id: '$date', count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
-      { $limit: 1 },
-    ]);
-    const mostActiveDay = mostActiveAggregation[0]?._id ?? null;
 
     // Current Streak
     const today = new Date().toISOString().split('T')[0] ?? '';
@@ -135,6 +106,6 @@ export class GetStatsUseCase {
       prevDate = currentDate;
     }
 
-    return { currentStreak, longestStreak, mostActiveDay };
+    return { currentStreak, longestStreak };
   }
 }

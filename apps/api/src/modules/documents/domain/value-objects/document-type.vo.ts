@@ -13,10 +13,11 @@ export class DocumentType {
   private constructor(private readonly value: RepoDocumentType) {}
 
   static validate(v: string): DocumentType {
-    if (!Object.values(RepoDocumentType).includes(v as RepoDocumentType)) {
+    const enumValue = Object.values(RepoDocumentType).find((val) => val === v);
+    if (!enumValue) {
       throw new BadRequestException(`Invalid document type: ${v}`);
     }
-    return new DocumentType(v as RepoDocumentType);
+    return new DocumentType(enumValue);
   }
 
   static defaultStatus(type: DocumentType): RepoDocumentStatus {

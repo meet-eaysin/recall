@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { NotionClient } from './infrastructure/notion-client';
-import { NotionWorker } from './infrastructure/workers/notion.worker';
 import { ConnectNotionUseCase } from './application/use-cases/connect-notion.usecase';
 import { ListNotionDatabasesUseCase } from './application/use-cases/list-notion-databases.usecase';
 import { UpdateNotionConfigUseCase } from './application/use-cases/update-notion-config.usecase';
 import { SyncAllToNotionUseCase } from './application/use-cases/sync-all-to-notion.usecase';
 import { DisconnectNotionUseCase } from './application/use-cases/disconnect-notion.usecase';
 import { NotionController } from './interface/notion.controller';
+import { INotionConfigRepository } from './domain/repositories/notion-config.repository';
+import { MongooseNotionConfigRepository } from './infrastructure/persistence/mongoose-notion-config.repository';
 import { DocumentsModule } from '../documents/documents.module';
 
 @Module({
@@ -14,12 +15,16 @@ import { DocumentsModule } from '../documents/documents.module';
   controllers: [NotionController],
   providers: [
     NotionClient,
-    NotionWorker,
     ConnectNotionUseCase,
-    ListNotionDatabasesUseCase,
-    UpdateNotionConfigUseCase,
-    SyncAllToNotionUseCase,
     DisconnectNotionUseCase,
+    ListNotionDatabasesUseCase,
+    SyncAllToNotionUseCase,
+    UpdateNotionConfigUseCase,
+    {
+      provide: INotionConfigRepository,
+      useClass: MongooseNotionConfigRepository,
+    },
   ],
+  exports: [INotionConfigRepository],
 })
 export class NotionModule {}

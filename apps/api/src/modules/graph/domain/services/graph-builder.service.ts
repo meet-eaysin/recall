@@ -11,6 +11,17 @@ interface QdrantPayload {
   [key: string]: unknown;
 }
 
+import { isObject } from '../../../../shared/utils/type-guards.util';
+
+function isQdrantPayload(payload: unknown): payload is QdrantPayload {
+  if (!isObject(payload)) return false;
+  return (
+    'documentId' in payload &&
+    'userId' in payload &&
+    typeof payload.documentId === 'string'
+  );
+}
+
 @Injectable()
 export class GraphBuilderService {
   private qdrant: QdrantWrapper;
@@ -89,8 +100,12 @@ export class GraphBuilderService {
           );
 
           for (const result of results) {
-            const payload = result.payload as QdrantPayload;
-            if (result.score && result.score > 0.65 && payload?.documentId) {
+            const payload = result.payload;
+            if (
+              isQdrantPayload(payload) &&
+              result.score !== undefined &&
+              result.score > 0.65
+            ) {
               const targetDocId = payload.documentId;
               const targetNode =
                 await this.graphRepository.findNodeByDocumentId(

@@ -13,6 +13,13 @@ interface QdrantPayload {
   [key: string]: unknown;
 }
 
+import { isObject } from '../../../../shared/utils/type-guards.util';
+
+function isQdrantPayload(payload: unknown): payload is QdrantPayload {
+  if (!isObject(payload)) return false;
+  return 'documentId' in payload && 'userId' in payload;
+}
+
 @Injectable()
 export class SemanticSearchService {
   private qdrant: QdrantWrapper;
@@ -43,14 +50,13 @@ export class SemanticSearchService {
       {
         must: [{ key: 'userId', match: { value: internalUserId } }],
       },
-      10, // Fetch top 10 chunks
+      10,
     );
 
-    // Deduplicate by documentId, keeping the highest score
     const bestScores = new Map<string, number>();
     for (const result of qdrantResults) {
-      const payload = result.payload as QdrantPayload;
-      if (payload && payload.documentId) {
+      const payload = result.payload;
+      if (isQdrantPayload(payload)) {
         const docId = payload.documentId;
         const score = result.score ?? 0;
         const existingScore = bestScores.get(docId) ?? 0;
@@ -65,7 +71,6 @@ export class SemanticSearchService {
       return [];
     }
 
-    // Fetch full documents from MongoDB
     const docsPromises = documentIds.map((id) =>
       this.documentRepository.findById(id, internalUserId),
     );
@@ -78,7 +83,6 @@ export class SemanticSearchService {
 
       const publicView = doc.toPublicView();
 
-      // Apply filters if provided
       if (query.status && publicView.status !== query.status) continue;
       if (query.type && publicView.type !== query.type) continue;
       if (query.folderIds && query.folderIds.length > 0) {
@@ -93,7 +97,6 @@ export class SemanticSearchService {
         if (!hasTag) continue;
       }
 
-      // Generate preview
       let preview = '';
       if (publicView.type === 'text') {
         const content = doc.props.content;
@@ -116,7 +119,6 @@ export class SemanticSearchService {
       });
     }
 
-    // Sort descending by score
     semanticResults.sort((a, b) => b.score - a.score);
 
     return semanticResults;

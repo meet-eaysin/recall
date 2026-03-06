@@ -1,15 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { LLMConfigModel } from '@repo/db';
 import { LLMConfigPublicView, SaveLLMConfigRequest } from '@repo/types';
 import { LLMConfigEntity } from '../../domain/entities/llm-config.entity';
 import { encrypt } from '@repo/crypto';
 import { env } from '../../../../shared/utils/env';
 import { LLMValidatorService } from '../../domain/services/llm-validator.service';
-import { Types } from 'mongoose';
+import { ILLMConfigRepository } from '../../domain/repositories/llm-config.repository';
 
 @Injectable()
 export class SaveLLMConfigUseCase {
-  constructor(private readonly validatorService: LLMValidatorService) {}
+  constructor(
+    private readonly validatorService: LLMValidatorService,
+    private readonly llmConfigRepository: ILLMConfigRepository,
+  ) {}
 
   async execute(
     userId: string,
@@ -25,39 +27,25 @@ export class SaveLLMConfigUseCase {
     );
 
     // 2. Encrypt API key
-    let encryptedApiKey: string | undefined;
+    let encryptedApiKey: string | null = null;
     if (data.apiKey) {
       encryptedApiKey = encrypt(data.apiKey, env.ENCRYPTION_KEY);
     }
 
-    // 3. Upsert
-    const updated = await LLMConfigModel.findOneAndUpdate(
-      { userId: new Types.ObjectId(userId) },
-      {
-        $set: {
-          provider: data.provider,
-          chatModel: data.chatModel,
-          embeddingModel: data.embeddingModel,
-          apiKey: encryptedApiKey,
-          baseUrl: data.baseUrl,
-          capabilities,
-          validatedAt: new Date(),
-        },
-      },
-      { upsert: true, new: true },
-    );
-
+    // 3. Create Entity
     const entity = new LLMConfigEntity({
-      id: updated._id.toString(),
-      userId: updated.userId.toString(),
-      provider: updated.provider,
-      chatModel: updated.chatModel,
-      embeddingModel: updated.embeddingModel,
-      apiKey: null, // Strip for entity to ensure toPublicView is safe
-      baseUrl: updated.baseUrl || null,
-      capabilities: updated.capabilities,
-      validatedAt: updated.validatedAt,
+      userId,
+      provider: data.provider,
+      chatModel: data.chatModel,
+      embeddingModel: data.embeddingModel,
+      apiKey: encryptedApiKey,
+      baseUrl: data.baseUrl || null,
+      capabilities,
+      validatedAt: new Date(),
     });
+
+    // 4. Save via repository
+    await this.llmConfigRepository.save(entity);
 
     return entity.toPublicView();
   }

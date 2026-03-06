@@ -5,11 +5,14 @@ import {
 } from '@nestjs/common';
 import { transcriptQueue } from '@repo/queue';
 import { IDocumentRepository } from '../../domain/repositories/document.repository';
-import { DocumentTranscriptModel } from '@repo/db';
+import { ITranscriptRepository } from '../../domain/repositories/transcript.repository';
 
 @Injectable()
 export class TranscriptUseCase {
-  constructor(private readonly documentRepository: IDocumentRepository) {}
+  constructor(
+    private readonly documentRepository: IDocumentRepository,
+    private readonly transcriptRepository: ITranscriptRepository,
+  ) {}
 
   async getTranscript(documentId: string, userId: string) {
     const doc = await this.documentRepository.findById(documentId, userId);
@@ -21,10 +24,8 @@ export class TranscriptUseCase {
       );
     }
 
-    const transcript = await DocumentTranscriptModel.findOne()
-      .where('documentId')
-      .equals(documentId)
-      .exec();
+    const transcript =
+      await this.transcriptRepository.findByDocumentId(documentId);
 
     if (!transcript) {
       return { available: false, segments: [], fullText: '' };
@@ -47,10 +48,8 @@ export class TranscriptUseCase {
       );
     }
 
-    const transcript = await DocumentTranscriptModel.findOne()
-      .where('documentId')
-      .equals(documentId)
-      .exec();
+    const transcript =
+      await this.transcriptRepository.findByDocumentId(documentId);
 
     if (transcript) {
       return {

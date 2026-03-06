@@ -2,14 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { ReviewSelectorService } from '../../domain/services/review-selector.service';
 import { IDocumentRepository } from '../../../documents/domain/repositories/document.repository';
 import { IGraphRepository } from '../../../graph/domain/repositories/graph.repository';
-import {
-  ReviewDismissalModel,
-  NoteModel,
-  IReviewDismissalDocument,
-} from '@repo/db';
+import { IReviewRepository } from '../../domain/repositories/review.repository';
 import { ReviewItem } from '@repo/types';
 import { DocumentEntity } from '../../../documents/domain/entities/document.entity';
-import { Types } from 'mongoose';
 
 @Injectable()
 export class GetDailyReviewUseCase {
@@ -17,19 +12,17 @@ export class GetDailyReviewUseCase {
     private readonly reviewSelector: ReviewSelectorService,
     private readonly documentRepository: IDocumentRepository,
     private readonly graphRepository: IGraphRepository,
+    private readonly reviewRepository: IReviewRepository,
   ) {}
 
   async execute(userId: string): Promise<ReviewItem[]> {
     const today = new Date().toISOString().split('T')[0] ?? '';
 
-    // 1. Fetch dismissed doc IDs
-    const dismissed = await ReviewDismissalModel.find({
-      userId: new Types.ObjectId(userId),
-      date: today,
-      targetType: 'document',
-    }).select('targetId');
-    const dismissedDocIds = dismissed.map((d: IReviewDismissalDocument) =>
-      d.targetId.toString(),
+    // 1. Fetch dismissed doc IDs via repository
+    const dismissedDocIds = await this.reviewRepository.findDismissedTargetIds(
+      userId,
+      today,
+      'document',
     );
 
     // 2. Fetch all user documents
@@ -53,9 +46,8 @@ export class GetDailyReviewUseCase {
       .slice(0, 3)
       .map((d: DocumentEntity) => d.id);
 
-    // 5. Fetch docs with notes
-    const noteDocIds = await NoteModel.distinct('documentId', { userId });
-    const recentNoteDocIds = noteDocIds.map((id) => id.toString());
+    // 5. Fetch docs with notes via repository
+    const recentNoteDocIds = await this.reviewRepository.findDocumentIdsWithNotes(userId);
 
     return this.reviewSelector.selectDailyReview({
       documents: allDocs,

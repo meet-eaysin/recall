@@ -5,10 +5,13 @@ export class DocumentStatus {
   private constructor(private readonly value: RepoDocumentStatus) {}
 
   static validate(v: string): DocumentStatus {
-    if (!Object.values(RepoDocumentStatus).includes(v as RepoDocumentStatus)) {
+    const enumValue = Object.values(RepoDocumentStatus).find(
+      (val) => val === v,
+    );
+    if (!enumValue) {
       throw new BadRequestException(`Invalid document status: ${v}`);
     }
-    return new DocumentStatus(v as RepoDocumentStatus);
+    return new DocumentStatus(enumValue);
   }
 
   getValue(): RepoDocumentStatus {

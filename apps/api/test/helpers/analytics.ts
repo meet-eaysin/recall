@@ -1,18 +1,10 @@
-import { TEST_USER_ID, generateId } from './common';
+import { isObject, TEST_USER_ID } from './common';
+import { AnalyticsHeatmapItem } from '@repo/types';
 
 export interface HeatmapResponse {
   success: boolean;
   data: {
-    heatmap: Array<{
-      date: string;
-      count: number;
-      breakdown: {
-        doc_added: number;
-        doc_opened: number;
-        note_created: number;
-        summary_generated: number;
-      };
-    }>;
+    heatmap: AnalyticsHeatmapItem[];
   };
 }
 
@@ -30,37 +22,33 @@ export interface StatsResponse {
 }
 
 export function isHeatmapResponse(body: unknown): body is HeatmapResponse {
-  if (typeof body !== 'object' || body === null) return false;
-  if (!('success' in body) || body.success !== true) return false;
-  if (!('data' in body) || typeof body.data !== 'object' || body.data === null) return false;
-  const data = body.data;
-  return 'heatmap' in data && Array.isArray(data.heatmap);
+  if (!isObject(body)) return false;
+  if (body.success !== true) return false;
+  if (!isObject(body.data)) return false;
+  return Array.isArray(body.data.heatmap);
 }
 
 export function isStatsResponse(body: unknown): body is StatsResponse {
-  if (typeof body !== 'object' || body === null) return false;
-  if (!('success' in body) || body.success !== true) return false;
-  if (!('data' in body) || typeof body.data !== 'object' || body.data === null) return false;
-  const data = body.data;
-  return 'totalDocuments' in data && typeof data.totalDocuments === 'number';
+  if (!isObject(body)) return false;
+  if (body.success !== true) return false;
+  if (!isObject(body.data)) return false;
+  return typeof body.data.totalDocuments === 'number';
 }
 
 export async function seedActivity(
   action: string,
   userId: string = TEST_USER_ID,
-  date: Date = new Date(),
-  targetType: string = 'document',
-  targetId: string = generateId(),
+  createdAt: Date = new Date(),
 ): Promise<void> {
   const { UserActivityModel } = await import('@repo/db');
-  const activity = new UserActivityModel({
+  const { Types } = await import('mongoose');
+
+  await new UserActivityModel({
     userId,
     action,
-    targetType,
-    targetId,
+    targetType: 'document',
+    targetId: new Types.ObjectId(),
+    createdAt,
     metadata: {},
-    createdAt: date,
-    updatedAt: date,
-  });
-  await activity.save();
+  }).save();
 }

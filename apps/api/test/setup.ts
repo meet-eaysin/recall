@@ -1,12 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe, BadRequestException, ValidationError } from '@nestjs/common';
+import {
+  INestApplication,
+  ValidationPipe,
+  BadRequestException,
+  ValidationError,
+} from '@nestjs/common';
 import { AppModule } from '../src/app.module';
-import { AllExceptionsFilter } from '../src/shared/filters/http-exception.filter';
 import { connectMongoDB, disconnectMongoDB } from '@repo/db';
 import { env } from '../src/shared/utils/env';
 import mongoose from 'mongoose';
 
-function formatValidationErrors(errs: ValidationError[]): Record<string, string[]> {
+function formatValidationErrors(
+  errs: ValidationError[],
+): Record<string, string[]> {
   const result: Record<string, string[]> = {};
   for (const error of errs) {
     if (error.constraints) {
@@ -48,7 +54,7 @@ export async function setupApp(): Promise<INestApplication> {
       },
     }),
   );
-  app.useGlobalFilters(new AllExceptionsFilter());
+  // Global filters and interceptors are handled via AppModule
   app.setGlobalPrefix('api/v1');
 
   // app.init() triggers AppModule.onModuleInit() which calls connectMongoDB
@@ -70,7 +76,7 @@ export async function teardownApp(app: INestApplication): Promise<void> {
 export async function cleanupDatabase(): Promise<void> {
   // Ensure all models are registered
   await import('@repo/db');
-  
+
   const collections = mongoose.connection.collections;
   await Promise.all(
     Object.values(collections).map((collection) => collection.deleteMany({})),

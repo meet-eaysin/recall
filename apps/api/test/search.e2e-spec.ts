@@ -1,12 +1,19 @@
-import { describe, it, beforeAll, afterAll, expect, afterEach } from '@jest/globals';
+import {
+  describe,
+  it,
+  beforeAll,
+  afterAll,
+  expect,
+  afterEach,
+} from '@jest/globals';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { setupApp, teardownApp, cleanupDatabase } from './setup';
-import { 
-  TEST_USER_ID, 
+import {
+  TEST_USER_ID,
   seedDocument,
   isSearchResponse,
-  isAskResponse
+  isAskResponse,
 } from './helpers';
 import { Server } from 'http';
 import { Types } from 'mongoose';
@@ -38,8 +45,9 @@ describe('Search (e2e)', () => {
         .expect(200);
 
       if (isSearchResponse(response.body)) {
-        expect(response.body.mode).toBe('normal');
-        expect(response.body.total).toBeGreaterThanOrEqual(1);
+        expect(response.body.data.mode).toBe('normal');
+        expect(response.body.data.total).toBeGreaterThanOrEqual(1);
+        expect(Array.isArray(response.body.data.items)).toBe(true);
       } else {
         throw new Error('Search response mismatch');
       }
@@ -55,7 +63,7 @@ describe('Search (e2e)', () => {
         .expect(200);
 
       if (isSearchResponse(response.body)) {
-        expect(response.body.mode).toBe('ai');
+        expect(response.body.data.mode).toBe('ai');
       } else {
         throw new Error('AI search response mismatch');
       }
@@ -72,8 +80,11 @@ describe('Search (e2e)', () => {
     });
 
     it('should answer a question from indexed documents', async () => {
-      const docId = await seedDocument({ title: 'Knowledge Base', embeddingsReady: true });
-      
+      const docId = await seedDocument({
+        title: 'Knowledge Base',
+        embeddingsReady: true,
+      });
+
       const { DocumentChunkModel } = await import('@repo/db');
       await new DocumentChunkModel({
         documentId: new Types.ObjectId(docId),
@@ -82,20 +93,20 @@ describe('Search (e2e)', () => {
         content: 'This is the knowledge base content.',
         tokenCount: 10,
         metadata: {
-          chunkIndex: 0
+          chunkIndex: 0,
         },
-        embedding: new Array(384).fill(0)
+        embedding: new Array(384).fill(0),
       }).save();
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/search/ask')
         .set('x-user-id', TEST_USER_ID)
         .send({ question: 'What is in the knowledge base?' })
-        .expect(201); 
+        .expect(201);
 
       if (isAskResponse(response.body)) {
-        expect(response.body.answer).toBeDefined();
-        expect(Array.isArray(response.body.sources)).toBe(true);
+        expect(response.body.data.answer).toBeDefined();
+        expect(Array.isArray(response.body.data.sources)).toBe(true);
       } else {
         throw new Error('Ask response mismatch');
       }

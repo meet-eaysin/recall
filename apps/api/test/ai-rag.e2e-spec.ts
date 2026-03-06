@@ -1,4 +1,11 @@
-import { describe, it, beforeAll, afterAll, expect, afterEach } from '@jest/globals';
+import {
+  describe,
+  it,
+  beforeAll,
+  afterAll,
+  expect,
+  afterEach,
+} from '@jest/globals';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { setupApp, teardownApp, cleanupDatabase } from './setup';
@@ -28,7 +35,10 @@ describe('AI RAG & Search (e2e)', () => {
   });
 
   async function seedDocumentWithChunks(content: string): Promise<string> {
-    const docId = await seedDocument({ title: 'RAG Knowledge Doc', embeddingsReady: true });
+    const docId = await seedDocument({
+      title: 'RAG Knowledge Doc',
+      embeddingsReady: true,
+    });
 
     const { DocumentChunkModel } = await import('@repo/db');
     await new DocumentChunkModel({
@@ -46,7 +56,7 @@ describe('AI RAG & Search (e2e)', () => {
 
   it('should answer a question grounded in ingested content (RAG)', async () => {
     await seedDocumentWithChunks(
-      'The project codename is Antigravity and it focuses on advanced propulsion systems using Carbon Nanotubes.'
+      'The project codename is Antigravity and it focuses on advanced propulsion systems using Carbon Nanotubes.',
     );
 
     const response = await request(app.getHttpServer())
@@ -56,15 +66,17 @@ describe('AI RAG & Search (e2e)', () => {
       .expect(201);
 
     if (isAskResponse(response.body)) {
-      expect(response.body.answer).toBeDefined();
-      expect(Array.isArray(response.body.sources)).toBe(true);
+      expect(response.body.data.answer).toBeDefined();
+      expect(Array.isArray(response.body.data.sources)).toBe(true);
     } else {
       throw new Error('Ask response does not match AskResponse shape');
     }
   }, 60000);
 
   it('should perform semantic search with AI mode', async () => {
-    await seedDocumentWithChunks('Carbon Nanotubes provide structural integrity for the propulsion module.');
+    await seedDocumentWithChunks(
+      'Carbon Nanotubes provide structural integrity for the propulsion module.',
+    );
 
     const response = await request(app.getHttpServer())
       .get('/api/v1/search')
@@ -73,7 +85,7 @@ describe('AI RAG & Search (e2e)', () => {
       .expect(200);
 
     if (isSearchResponse(response.body)) {
-      expect(response.body.mode).toBe('ai');
+      expect(response.body.data.mode).toBe('ai');
     } else {
       throw new Error('Search response does not match SearchResponse shape');
     }

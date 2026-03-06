@@ -4,7 +4,10 @@ import {
   ServiceUnavailableException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { AskResultDto, SourceRefDto } from '../../interface/schemas/search.schema';
+import {
+  AskResultDto,
+  SourceRefDto,
+} from '../../interface/schemas/search.schema';
 import { QdrantWrapper, embeddingAdapter, ResolvedLLMConfig } from '@repo/ai';
 import { env } from '../../../../shared/utils/env';
 import { DocumentChunkModel, DocumentModel, IDocument } from '@repo/db';
@@ -16,6 +19,15 @@ interface QdrantPayload {
   userId: string;
   chunkIndex: number;
   [key: string]: unknown;
+}
+
+import { isObject } from '../../../../shared/utils/type-guards.util';
+
+function isQdrantPayload(payload: unknown): payload is QdrantPayload {
+  if (!isObject(payload)) return false;
+  return (
+    'documentId' in payload && 'userId' in payload && 'chunkIndex' in payload
+  );
 }
 
 @Injectable()
@@ -43,7 +55,6 @@ export class RagService {
   ): Promise<AskResultDto> {
     const internalUserId = this.transformUserId(userId);
 
-    // 1. Count embedded docs
     const embeddedDocsCount = await DocumentModel.countDocuments({
       userId: new Types.ObjectId(internalUserId),
       embeddingsReady: true,
@@ -60,7 +71,6 @@ export class RagService {
 
     const queryVector = await embeddingAdapter.embedText(question, llmConfig);
 
-    // 3. Search Qdrant
     const filterMust: Record<string, unknown>[] = [
       { key: 'userId', match: { value: internalUserId } },
     ];
@@ -79,7 +89,6 @@ export class RagService {
       8,
     );
 
-    // 4. Low score check
     const highestScore =
       qdrantResults.length > 0 ? (qdrantResults[0]?.score ?? 0) : 0;
     if (highestScore < 0.35) {
@@ -91,7 +100,6 @@ export class RagService {
       };
     }
 
-    // 5. Deduplicate (max 2 chunks per doc)
     const docChunkCounts = new Map<string, number>();
     const selectedChunks: {
       documentId: string;
@@ -100,8 +108,13 @@ export class RagService {
     }[] = [];
 
     for (const result of qdrantResults) {
-      const payload = result.payload as QdrantPayload;
-      if (!payload || !payload.documentId || result.score! < 0.35) continue;
+      const payload = result.payload;
+      if (
+        !isQdrantPayload(payload) ||
+        result.score === undefined ||
+        result.score < 0.35
+      )
+        continue;
 
       const docId = payload.documentId;
       const count = docChunkCounts.get(docId) ?? 0;
@@ -111,7 +124,7 @@ export class RagService {
         selectedChunks.push({
           documentId: docId,
           chunkIndex: payload.chunkIndex,
-          score: result.score!,
+          score: result.score,
         });
       }
     }
@@ -124,7 +137,6 @@ export class RagService {
       };
     }
 
-    // 6. Fetch metadata & content
     const uniqueDocIds = Array.from(
       new Set(selectedChunks.map((c) => c.documentId)),
     );
@@ -153,12 +165,10 @@ export class RagService {
       }),
     );
 
-    // Filter missing chunks and sort by score
     const validChunks = chunkDataArray
       .filter((c) => c.content.length > 0)
       .sort((a, b) => b.score - a.score);
 
-    // 7. & 8. Build context and limit tokens
     let contextStr = '';
     let estimatedTokens = 0;
     const sourcesMap = new Map<string, SourceRefDto>();
@@ -168,21 +178,25 @@ export class RagService {
       if (!doc) continue;
 
       const title = doc.title || 'Untitled Document';
-      const author = (doc.metadata?.author as string) || null;
-      const date = (
-        doc.createdAt
-          ? new Date(doc.createdAt).toISOString().split('T')[0]
-          : null
-      ) as string | null;
-      const originalSource = (doc.sourceUrl as string | null) || null;
+
+      const authorRaw = doc.metadata?.author;
+      const author = typeof authorRaw === 'string' ? authorRaw : null;
+
+      const date =
+        doc.createdAt instanceof Date
+          ? doc.createdAt.toISOString().split('T')[0]
+          : null;
+
+      const originalSource =
+        typeof doc.sourceUrl === 'string' ? doc.sourceUrl : null;
 
       if (!sourcesMap.has(chunk.documentId)) {
         sourcesMap.set(chunk.documentId, {
           documentId: chunk.documentId,
           title,
-          author,
-          publishedAt: date,
-          originalSource: originalSource,
+          author: author ?? null,
+          publishedAt: date ?? null,
+          originalSource: originalSource ?? null,
         });
       }
 
@@ -190,14 +204,13 @@ export class RagService {
       const chunkTokens = Math.ceil(chunkText.length / 4);
 
       if (estimatedTokens + chunkTokens > 6000) {
-        break; // Stop adding chunks if we exceed token limit
+        break;
       }
 
       contextStr += chunkText;
       estimatedTokens += chunkTokens;
     }
 
-    // 9. LLM call
     const systemPrompt = `You are a helpful AI assistant. Answer the user's question ONLY using the provided context. If the context does not contain the answer, say "I cannot answer this based on the provided documents." clearly. Always cite which document your answer comes from using the [Source: Title] format.`;
 
     let answer = '';

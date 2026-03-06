@@ -1,13 +1,20 @@
-import { describe, it, beforeAll, afterAll, expect, afterEach } from '@jest/globals';
+import {
+  describe,
+  it,
+  beforeAll,
+  afterAll,
+  expect,
+  afterEach,
+} from '@jest/globals';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { setupApp, teardownApp, cleanupDatabase } from './setup';
-import { 
-  TEST_USER_ID, 
-  seedActivity, 
-  isHeatmapResponse, 
+import {
+  TEST_USER_ID,
+  seedActivity,
+  isHeatmapResponse,
   isStatsResponse,
-  seedDocument
+  seedDocument,
 } from './helpers';
 import { Server } from 'http';
 
@@ -42,9 +49,9 @@ describe('Analytics (e2e)', () => {
       if (isHeatmapResponse(body)) {
         expect(body.success).toBe(true);
         expect(body.data.heatmap.length).toBeGreaterThan(0);
-        
+
         const todayStr = new Date().toISOString().split('T')[0];
-        const todayData = body.data.heatmap.find(h => h.date === todayStr);
+        const todayData = body.data.heatmap.find((h) => h.date === todayStr);
         expect(todayData).toBeDefined();
         if (todayData) {
           expect(todayData.count).toBeGreaterThanOrEqual(2);
@@ -65,7 +72,7 @@ describe('Analytics (e2e)', () => {
       // Seed activity for streak calculation (today and yesterday)
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
-      
+
       await seedActivity('doc_added', TEST_USER_ID, yesterday);
       await seedActivity('doc_added', TEST_USER_ID, new Date());
 

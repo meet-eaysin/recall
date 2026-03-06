@@ -4,8 +4,11 @@ import mongoose from 'mongoose';
 export const TEST_USER_ID = '65f1a2b3c4d5e6f7a8b9c0d1';
 
 export interface HealthResponse {
-  status: string;
-  timestamp: string;
+  success: boolean;
+  data: {
+    status: string;
+    timestamp: string;
+  };
 }
 
 export interface ErrorResponse {
@@ -18,13 +21,17 @@ export interface ErrorResponse {
   path: string;
 }
 
+export function isObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null;
+}
+
 export function isHealthResponse(body: unknown): body is HealthResponse {
-  return (
-    typeof body === 'object' &&
-    body !== null &&
-    'status' in body &&
-    'timestamp' in body
-  );
+  if (!isObject(body)) return false;
+  if (body.success !== true) return false;
+  if (!isObject(body.data)) return false;
+
+  const data = body.data;
+  return typeof data.status === 'string' && typeof data.timestamp === 'string';
 }
 
 export function isErrorResponse(body: unknown): body is ErrorResponse {
@@ -43,14 +50,18 @@ export function isErrorResponse(body: unknown): body is ErrorResponse {
 
 export function assertHealthSuccess(body: unknown): void {
   if (isHealthResponse(body)) {
-    expect(body.status).toBe('ok');
-    expect(body.timestamp).toEqual(expect.any(String));
+    expect(body.data.status).toBe('ok');
+    expect(body.data.timestamp).toEqual(expect.any(String));
   } else {
     throw new Error('Response body does not match HealthResponse shape');
   }
 }
 
-export function assertErrorShape(body: unknown, statusCode: number, error: string): void {
+export function assertErrorShape(
+  body: unknown,
+  statusCode: number,
+  error: string,
+): void {
   if (isErrorResponse(body)) {
     expect(body.success).toBe(false);
     expect(body.statusCode).toBe(statusCode);

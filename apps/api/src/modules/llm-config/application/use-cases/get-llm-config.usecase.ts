@@ -1,28 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LLMConfigModel } from '@repo/db';
 import { LLMConfigPublicView } from '@repo/types';
-import { LLMConfigEntity } from '../../domain/entities/llm-config.entity';
+import { ILLMConfigRepository } from '../../domain/repositories/llm-config.repository';
 
 @Injectable()
 export class GetLLMConfigUseCase {
-  async execute(userId: string): Promise<LLMConfigPublicView> {
-    const config = await LLMConfigModel.findOne({ userId });
+  constructor(private readonly llmConfigRepository: ILLMConfigRepository) {}
 
-    if (!config) {
+  async execute(userId: string): Promise<LLMConfigPublicView> {
+    const entity = await this.llmConfigRepository.findByUserId(userId);
+
+    if (!entity) {
       throw new NotFoundException('LLM configuration not found');
     }
-
-    const entity = new LLMConfigEntity({
-      id: config._id.toString(),
-      userId: config.userId.toString(),
-      provider: config.provider,
-      chatModel: config.chatModel,
-      embeddingModel: config.embeddingModel,
-      apiKey: null, // apiKey is not loaded here as it's not needed for PublicView
-      baseUrl: config.baseUrl || null,
-      capabilities: config.capabilities,
-      validatedAt: config.validatedAt,
-    });
 
     return entity.toPublicView();
   }

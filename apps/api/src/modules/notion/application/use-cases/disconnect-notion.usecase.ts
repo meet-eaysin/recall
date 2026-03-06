@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { NotionConfigModel } from '@repo/db';
+import { INotionConfigRepository } from '../../domain/repositories/notion-config.repository';
 
 @Injectable()
 export class DisconnectNotionUseCase {
+  constructor(private readonly notionConfigRepository: INotionConfigRepository) {}
+
   async execute(userId: string): Promise<void> {
-    await NotionConfigModel.deleteOne({ userId });
-    // Optionally clear notionPageIds from documents, but usually we keep them as historical record
-    // await DocumentModel.updateMany({ userId }, { $unset: { notionPageId: "" } });
+    await this.notionConfigRepository.deleteByUserId(userId);
   }
 }

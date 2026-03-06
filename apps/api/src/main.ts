@@ -9,9 +9,7 @@ import {
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { env } from './shared/utils/env';
-import { AllExceptionsFilter } from './shared/filters/http-exception.filter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
 const logger = new Logger('Bootstrap');
 
@@ -43,7 +41,9 @@ export async function bootstrap(): Promise<INestApplication> {
       transform: true,
       forbidNonWhitelisted: true,
       exceptionFactory: (errors: ValidationError[]) => {
-        const formatErrors = (errs: ValidationError[]): Record<string, string[]> => {
+        const formatErrors = (
+          errs: ValidationError[],
+        ): Record<string, string[]> => {
           const result: Record<string, string[]> = {};
           for (const error of errs) {
             if (error.constraints) {
@@ -61,7 +61,7 @@ export async function bootstrap(): Promise<INestApplication> {
         };
 
         const messages = formatErrors(errors);
-        
+
         return new BadRequestException({
           message: 'Validation failed',
           error: 'VALIDATION_ERROR',
@@ -74,11 +74,7 @@ export async function bootstrap(): Promise<INestApplication> {
     }),
   );
 
-  // Global Error Handling
-  app.useGlobalFilters(new AllExceptionsFilter());
-
-  // Global Response Transformation
-  app.useGlobalInterceptors(new TransformInterceptor());
+  // Global Error Handling & Transformation are handled via AppModule providers
 
   // Versioned API prefix
   app.setGlobalPrefix('api/v1');
@@ -87,17 +83,22 @@ export async function bootstrap(): Promise<INestApplication> {
   if (env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
       .setTitle('Mind Stack API')
-      .setDescription('Production-grade API documentation for the Mind Stack backend.')
+      .setDescription(
+        'Production-grade API documentation for the Mind Stack backend.',
+      )
       .setVersion('1.0')
-      .addBearerAuth({
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        description: 'Enter JWT token',
-        in: 'header',
-      }, 'bearerAuth')
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Enter JWT token',
+          in: 'header',
+        },
+        'bearerAuth',
+      )
       .build();
-      
+
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('docs', app, document, {
       swaggerOptions: {
@@ -121,8 +122,10 @@ if (require.main === module) {
       const PORT = env.PORT;
       const HOST = env.HOST ?? '0.0.0.0';
       await app.listen(PORT, HOST);
-      
-      logger.log(`🚀 Application is running on: http://localhost:${PORT}/api/v1`);
+
+      logger.log(
+        `🚀 Application is running on: http://localhost:${PORT}/api/v1`,
+      );
     })
     .catch((err) => {
       logger.error('💥 Failed to start application:', err);

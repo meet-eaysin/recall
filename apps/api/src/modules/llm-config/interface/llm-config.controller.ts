@@ -3,12 +3,18 @@ import {
   Get,
   Post,
   Delete,
+  Put,
   Body,
   UseGuards,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiNoContentResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiNoContentResponse,
+} from '@nestjs/swagger';
 import { DevUserGuard } from '../../../shared/guards/dev-user.guard';
 import { User } from '../../../shared/decorators/user.decorator';
 import { GetLLMConfigUseCase } from '../application/use-cases/get-llm-config.usecase';
@@ -16,10 +22,7 @@ import { SaveLLMConfigUseCase } from '../application/use-cases/save-llm-config.u
 import { ValidateLLMConfigUseCase } from '../application/use-cases/validate-llm-config.usecase';
 import { LLMConfigModel } from '@repo/db';
 import { Types } from 'mongoose';
-import {
-  SaveLLMConfigDto,
-  ValidateLLMConfigDto,
-} from './dtos/llm-config.dto';
+import { SaveLLMConfigDto, ValidateLLMConfigDto } from './dtos/llm-config.dto';
 import { LLMConfigPublicViewDto } from './dtos/llm-config.response.dto';
 import { ApiSuccessResponse } from '../../../common/decorators/api-success-response.decorator';
 
@@ -42,7 +45,7 @@ export class LLMConfigController {
     return result;
   }
 
-  @Post()
+  @Put()
   @ApiOperation({ summary: 'Save new LLM provider configuration' })
   @ApiSuccessResponse(LLMConfigPublicViewDto)
   async saveConfig(
@@ -67,7 +70,9 @@ export class LLMConfigController {
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete LLM configuration' })
-  @ApiNoContentResponse({ description: 'LLM configuration deleted successfully' })
+  @ApiNoContentResponse({
+    description: 'LLM configuration deleted successfully',
+  })
   async deleteConfig(@User('userId') userId: string) {
     await LLMConfigModel.deleteOne({
       userId: new Types.ObjectId(userId),

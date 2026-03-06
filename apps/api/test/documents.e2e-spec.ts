@@ -1,14 +1,21 @@
-import { describe, it, beforeAll, afterAll, expect, afterEach } from '@jest/globals';
+import {
+  describe,
+  it,
+  beforeAll,
+  afterAll,
+  expect,
+  afterEach,
+} from '@jest/globals';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { setupApp, teardownApp, cleanupDatabase } from './setup';
-import { 
-  TEST_USER_ID, 
-  seedDocument, 
-  isDocumentResponse, 
+import {
+  TEST_USER_ID,
+  seedDocument,
+  isDocumentResponse,
   isListDocumentsResponse,
   assertErrorShape,
-  generateId
+  generateId,
 } from './helpers';
 import { DocumentType, DocumentStatus } from '@repo/types';
 import { Server } from 'http';
@@ -80,9 +87,11 @@ describe('Documents (e2e)', () => {
 
       const { body } = response;
       if (isListDocumentsResponse(body)) {
-        expect(body.items.length).toBeGreaterThanOrEqual(1);
+        expect(body.data.items.length).toBeGreaterThanOrEqual(1);
       } else {
-        throw new Error('Response body does not match ListDocumentsResponse shape');
+        throw new Error(
+          'Response body does not match ListDocumentsResponse shape',
+        );
       }
     });
   });
