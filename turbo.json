@@ -1,6 +1,14 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "globalDependencies": ["**/.env.*local"],
+  "globalEnv": [
+    "MONGODB_URI",
+    "JWT_SECRET",
+    "QDRANT_API_KEY",
+    "ENABLE_EXPERIMENTAL_COREPACK",
+    "NODE_ENV",
+    "NODE_TLS_REJECT_UNAUTHORIZED"
+  ],
   "tasks": {
     "dev": {
       "cache": false,
@@ -8,19 +16,12 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
-      "globalEnv": [
-        "MONGODB_URI",
-        "JWT_SECRET",
-        "QDRANT_API_KEY",
-        "JEST_WORKER_ID",
-        "ENABLE_EXPERIMENTAL_COREPACK",
-        "NODE_ENV",
-        "NODE_TLS_REJECT_UNAUTHORIZED"
-      ]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "lint": {},
-    "test": {},
+    "test": {
+      "env": ["JEST_WORKER_ID"]
+    },
     "test:e2e": {}
   }
 }
