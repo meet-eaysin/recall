@@ -8,7 +8,7 @@ import {
   AnalyticsStatsResponseDto,
   AnalyticsHeatmapItemDto,
 } from '../dtos/analytics.response.dto';
-import { ApiSuccessResponse } from '../../../../common/decorators/api-success-response.decorator';
+import { ApiSuccessResponse } from 'src/shared/decorators/api-success-response.decorator';
 
 @ApiTags('Analytics')
 @ApiBearerAuth()
@@ -22,7 +22,11 @@ export class AnalyticsController {
 
   @Get('heatmap')
   @ApiOperation({ summary: 'Get activity heatmap data for the user' })
-  @ApiSuccessResponse(AnalyticsHeatmapItemDto, 'Heatmap data retrieved successfully', true)
+  @ApiSuccessResponse(
+    AnalyticsHeatmapItemDto,
+    'Heatmap data retrieved successfully',
+    true,
+  )
   async getHeatmap(
     @User('userId') userId: string,
     @Query('days') days?: string,

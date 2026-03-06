@@ -19,7 +19,7 @@ import { GetDocumentSubgraphUseCase } from '../application/use-cases/get-documen
 import { RebuildDocumentGraphUseCase } from '../application/use-cases/rebuild-document-graph.usecase';
 import { User } from '../../../shared/decorators/user.decorator';
 import { FullGraphResponseDto } from './dtos/graph.response.dto';
-import { ApiSuccessResponse } from '../../../common/decorators/api-success-response.decorator';
+import { ApiSuccessResponse } from 'src/shared/decorators/api-success-response.decorator';
 
 @ApiTags('Knowledge Graph')
 @ApiBearerAuth('bearerAuth')
@@ -33,7 +33,9 @@ export class GraphController {
   ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get the full knowledge graph for the authenticated user' })
+  @ApiOperation({
+    summary: 'Get the full knowledge graph for the authenticated user',
+  })
   @ApiSuccessResponse(FullGraphResponseDto)
   async getFullGraph(@User('userId') userId: string) {
     const result = await this.getFullGraphUseCase.execute(userId);
@@ -41,7 +43,9 @@ export class GraphController {
   }
 
   @Get('document/:docId')
-  @ApiOperation({ summary: 'Get a subgraph centered around a specific document' })
+  @ApiOperation({
+    summary: 'Get a subgraph centered around a specific document',
+  })
   @ApiParam({ name: 'docId', description: 'The ID of the document' })
   @ApiSuccessResponse(FullGraphResponseDto)
   async getDocumentSubgraph(

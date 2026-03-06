@@ -8,7 +8,6 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { connectMongoDB, disconnectMongoDB } from '@repo/db';
 import { createRedisConnection, initQueues } from '@repo/queue';
 import { env } from './shared/utils/env';
-import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { AllExceptionsFilter } from './shared/filters/http-exception.filter';
 
 // Modules
@@ -24,6 +23,7 @@ import { ReviewModule } from './modules/review/review.module';
 import { SearchModule } from './modules/search/search.module';
 import { SummaryModule } from './modules/summary/summary.module';
 import { HealthController } from './modules/health/health.controller';
+import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
 
 @Module({
   imports: [

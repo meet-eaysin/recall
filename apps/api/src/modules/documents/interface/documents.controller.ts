@@ -48,8 +48,8 @@ import {
 } from './dtos/documents.response.dto';
 import { DevUserGuard } from '../../../shared/guards/dev-user.guard';
 import { User } from '../../../shared/decorators/user.decorator';
-import { ApiSuccessResponse } from '../../../common/decorators/api-success-response.decorator';
-import { ApiPaginatedResponse } from '../../../common/decorators/api-paginated-response.decorator';
+import { ApiPaginatedResponse } from '../../../shared/decorators/api-paginated-response.decorator';
+import { ApiSuccessResponse } from 'src/shared/decorators/api-success-response.decorator';
 
 @ApiTags('Documents')
 @ApiBearerAuth('bearerAuth')
@@ -101,7 +101,11 @@ export class DocumentsController {
     schema: {
       type: 'object',
       properties: {
-        file: { type: 'string', format: 'binary', description: 'The file to upload' },
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'The file to upload',
+        },
         title: { type: 'string' },
         folderIds: { type: 'array', items: { type: 'string' } },
         tagIds: { type: 'array', items: { type: 'string' } },

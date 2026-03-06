@@ -1,9 +1,9 @@
 import { applyDecorators, Type } from '@nestjs/common';
 import { ApiOkResponse, getSchemaPath, ApiExtraModels } from '@nestjs/swagger';
-import { ApiResponseDto } from '../dto/api-response.dto';
+import { ApiResponseDto } from '../../shared/dtos/api-response.dto';
 
 /**
- * Custom decorator to automatically construct a Swagger schema 
+ * Custom decorator to automatically construct a Swagger schema
  * that wraps a given DTO model inside the standard ApiResponseDto.
  */
 export const ApiSuccessResponse = <TModel extends Type<any>>(

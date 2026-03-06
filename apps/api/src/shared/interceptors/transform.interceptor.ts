@@ -6,12 +6,13 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ApiResponseDto } from '../dto/api-response.dto';
+import { ApiResponseDto } from '../dtos/api-response.dto';
 
 @Injectable()
-export class TransformInterceptor<T>
-  implements NestInterceptor<T, ApiResponseDto<T>>
-{
+export class TransformInterceptor<T> implements NestInterceptor<
+  T,
+  ApiResponseDto<T>
+> {
   intercept(
     context: ExecutionContext,
     next: CallHandler,
@@ -22,9 +23,16 @@ export class TransformInterceptor<T>
     return next.handle().pipe(
       map((res) => {
         // Handle cases where the controller already formatted the response
-        const data = res && typeof res === 'object' && 'data' in res ? res.data : res;
-        const message = res && typeof res === 'object' && 'message' in res ? res.message : 'Operation successful';
-        const success = res && typeof res === 'object' && 'success' in res ? res.success : true;
+        const data =
+          res && typeof res === 'object' && 'data' in res ? res.data : res;
+        const message =
+          res && typeof res === 'object' && 'message' in res
+            ? res.message
+            : 'Operation successful';
+        const success =
+          res && typeof res === 'object' && 'success' in res
+            ? res.success
+            : true;
 
         return {
           success,

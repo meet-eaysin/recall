@@ -25,7 +25,7 @@ import {
   NotionDatabaseDto,
   NotionSyncResultDto,
 } from './dtos/notion.response.dto';
-import { ApiSuccessResponse } from '../../../common/decorators/api-success-response.decorator';
+import { ApiSuccessResponse } from 'src/shared/decorators/api-success-response.decorator';
 
 @ApiTags('Integrations: Notion')
 @ApiBearerAuth('bearerAuth')
@@ -64,16 +64,15 @@ export class NotionController {
   @ApiOperation({ summary: 'Connect a Notion account using an access token' })
   @ApiSuccessResponse(NotionConfigPublicViewDto, 'Account connected')
   @HttpCode(HttpStatus.CREATED)
-  async connect(
-    @User('userId') userId: string,
-    @Body() dto: ConnectNotionDto,
-  ) {
+  async connect(@User('userId') userId: string, @Body() dto: ConnectNotionDto) {
     const result = await this.connectUseCase.execute(userId, dto.accessToken);
     return result;
   }
 
   @Get('databases')
-  @ApiOperation({ summary: 'List available Notion databases for the connected account' })
+  @ApiOperation({
+    summary: 'List available Notion databases for the connected account',
+  })
   @ApiSuccessResponse(NotionDatabaseDto, 'Databases retrieved', true)
   async listDatabases(@User('userId') userId: string) {
     const result = await this.listDatabasesUseCase.execute(userId);

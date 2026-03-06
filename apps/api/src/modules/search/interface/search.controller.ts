@@ -10,8 +10,8 @@ import {
   AskResultDto,
 } from './schemas/search.schema';
 import { User } from '../../../shared/decorators/user.decorator';
-import { ApiSuccessResponse } from '../../../common/decorators/api-success-response.decorator';
-import { ApiPaginatedResponse } from '../../../common/decorators/api-paginated-response.decorator';
+import { ApiPaginatedResponse } from '../../../shared/decorators/api-paginated-response.decorator';
+import { ApiSuccessResponse } from 'src/shared/decorators/api-success-response.decorator';
 
 @ApiTags('Search & AI')
 @ApiBearerAuth('bearerAuth')
@@ -31,7 +31,9 @@ export class SearchController {
   }
 
   @Post('ask')
-  @ApiOperation({ summary: 'Ask a natural language question based on your documents (RAG)' })
+  @ApiOperation({
+    summary: 'Ask a natural language question based on your documents (RAG)',
+  })
   @ApiSuccessResponse(AskResultDto)
   async ask(@User('userId') userId: string, @Body() query: AskQueryDto) {
     const result = await this.askUseCase.execute(userId, query);

@@ -1,11 +1,11 @@
 import { applyDecorators, Type } from '@nestjs/common';
 import { ApiOkResponse, getSchemaPath, ApiExtraModels } from '@nestjs/swagger';
-import { ApiResponseDto } from '../dto/api-response.dto';
-import { PaginatedResponseDto } from '../dto/paginated-response.dto';
+import { ApiResponseDto } from '../dtos/api-response.dto';
+import { PaginatedResponseDto } from '../dtos/paginated-response.dto';
 
 /**
  * PRODUCTION-GRADE PAGINATION DECORATOR
- * 
+ *
  * Generates an explicit Swagger schema for a paginated result.
  * This ensures full response consistency and standard-compliant OpenAPI documentation.
  */

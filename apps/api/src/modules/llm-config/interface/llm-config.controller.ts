@@ -24,7 +24,7 @@ import { LLMConfigModel } from '@repo/db';
 import { Types } from 'mongoose';
 import { SaveLLMConfigDto, ValidateLLMConfigDto } from './dtos/llm-config.dto';
 import { LLMConfigPublicViewDto } from './dtos/llm-config.response.dto';
-import { ApiSuccessResponse } from '../../../common/decorators/api-success-response.decorator';
+import { ApiSuccessResponse } from 'src/shared/decorators/api-success-response.decorator';
 
 @ApiTags('Integrations: LLM Configuration')
 @ApiBearerAuth('bearerAuth')

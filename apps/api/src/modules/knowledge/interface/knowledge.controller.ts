@@ -57,8 +57,8 @@ import {
 import { DocumentPublicViewDto } from '../../documents/interface/dtos/documents.response.dto';
 import { DevUserGuard } from '../../../shared/guards/dev-user.guard';
 import { User } from '../../../shared/decorators/user.decorator';
-import { ApiSuccessResponse } from '../../../common/decorators/api-success-response.decorator';
-import { ApiPaginatedResponse } from '../../../common/decorators/api-paginated-response.decorator';
+import { ApiPaginatedResponse } from '../../../shared/decorators/api-paginated-response.decorator';
+import { ApiSuccessResponse } from 'src/shared/decorators/api-success-response.decorator';
 
 @ApiTags('Knowledge Base')
 @ApiBearerAuth('bearerAuth')
