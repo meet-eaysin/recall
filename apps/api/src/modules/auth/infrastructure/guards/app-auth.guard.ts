@@ -26,6 +26,7 @@ export class AppAuthGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
+
     const request = context
       .switchToHttp()
       .getRequest<Request & { user?: AuthenticatedUser }>();
@@ -36,9 +37,7 @@ export class AppAuthGuard implements CanActivate {
       return true;
     }
 
-    if (isPublic) {
-      return true;
-    }
+    if (isPublic) return true;
 
     throw new UnauthorizedException('Authentication required');
   }

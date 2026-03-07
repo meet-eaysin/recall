@@ -117,9 +117,7 @@ export class DocumentsController {
     @UploadedFile() file: Express.Multer.File,
     @Body() body: UploadDocumentDto,
   ) {
-    if (!file) {
-      throw new BadRequestException('No file uploaded');
-    }
+    if (!file) throw new BadRequestException('No file uploaded');
 
     const doc = await this.createUploadDocumentUseCase.execute({
       userId,
