@@ -11,8 +11,8 @@ export const MORE_SEPARATOR_NAME = 'more';
 
 const getNavigationItems = (): NavigationItemType[] => [
   {
-    name: 'dashboard',
-    label: 'Dashboard',
+    name: 'home',
+    label: 'Home',
     href: '/',
     icon: 'layout-dashboard',
     isCurrent: ({ pathname }) => pathname === '/',
