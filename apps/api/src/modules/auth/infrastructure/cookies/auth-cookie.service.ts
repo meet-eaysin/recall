@@ -31,14 +31,16 @@ export class AuthCookieService {
     response.clearCookie(REFRESH_COOKIE_NAME, { path: '/api/v1/auth' });
   }
 
-  getAccessToken(request: { cookies?: Record<string, unknown> }): string | null {
+  getAccessToken(request: {
+    cookies?: Record<string, unknown>;
+  }): string | null {
     const token = request.cookies?.[ACCESS_COOKIE_NAME];
     return typeof token === 'string' ? token : null;
   }
 
-  getRefreshToken(
-    request: { cookies?: Record<string, unknown> },
-  ): string | null {
+  getRefreshToken(request: {
+    cookies?: Record<string, unknown>;
+  }): string | null {
     const token = request.cookies?.[REFRESH_COOKIE_NAME];
     return typeof token === 'string' ? token : null;
   }

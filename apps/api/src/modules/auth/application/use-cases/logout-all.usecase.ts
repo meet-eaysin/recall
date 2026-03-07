@@ -3,9 +3,7 @@ import { RefreshSessionService } from '../../domain/services/refresh-session.ser
 
 @Injectable()
 export class LogoutAllUseCase {
-  constructor(
-    private readonly refreshSessionService: RefreshSessionService,
-  ) {}
+  constructor(private readonly refreshSessionService: RefreshSessionService) {}
 
   async execute(userId: string): Promise<{ success: true }> {
     await this.refreshSessionService.revokeAllSessions(userId);

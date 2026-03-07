@@ -40,7 +40,12 @@ describe('AI Knowledge Graph (e2e)', () => {
       authId: 'dev:ai-graph-full',
       email: 'ai-graph-full@test.local',
     });
-    await seedGraphNode('Artificial Intelligence', 'Concept', undefined, auth.userId);
+    await seedGraphNode(
+      'Artificial Intelligence',
+      'Concept',
+      undefined,
+      auth.userId,
+    );
 
     const response = await request(app.getHttpServer())
       .get('/api/v1/graph')

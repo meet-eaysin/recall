@@ -15,8 +15,12 @@ export class ListUserSessionsUseCase {
     private readonly refreshSessionRepository: IRefreshSessionRepository,
   ) {}
 
-  async execute(userId: string, currentSessionId?: string): Promise<UserSessionView[]> {
-    const sessions = await this.refreshSessionRepository.findActiveByUserId(userId);
+  async execute(
+    userId: string,
+    currentSessionId?: string,
+  ): Promise<UserSessionView[]> {
+    const sessions =
+      await this.refreshSessionRepository.findActiveByUserId(userId);
 
     return sessions.map((session) => ({
       sessionId: session.sessionId,

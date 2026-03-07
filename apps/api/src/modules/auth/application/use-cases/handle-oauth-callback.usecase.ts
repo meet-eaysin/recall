@@ -26,11 +26,10 @@ export class HandleOAuthCallbackUseCase {
   }) {
     const profile = await this.oAuthProviderService.handleCallback(input);
 
-    let user =
-      await this.externalIdentityRepository.findByProviderIdentity(
-        profile.provider,
-        profile.providerUserId,
-      );
+    let user = await this.externalIdentityRepository.findByProviderIdentity(
+      profile.provider,
+      profile.providerUserId,
+    );
 
     let internalUser =
       user && (await this.userRepository.findById(user.userId));

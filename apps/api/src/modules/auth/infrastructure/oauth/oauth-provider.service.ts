@@ -164,9 +164,7 @@ export class OAuthProviderService {
         throw new BadRequestException('Failed to fetch GitHub emails');
       }
 
-      const emails = (await emailResponse.json()) as Array<
-        Record<string, unknown>
-      >;
+      const emails = (await emailResponse.json()) as Record<string, unknown>[];
       const primary = emails.find(
         (entry) => entry.primary === true && typeof entry.email === 'string',
       );

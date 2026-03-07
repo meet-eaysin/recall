@@ -617,21 +617,21 @@ Rules:
 - Edges are directional from 'more central' to 'less central'
 - Root always has all documents connected to it
 
-10.2 Graph Pipeline — Relationship Discovery
-Relation Type Logic
-semantic_similarity Qdrant similarity search: if avg embedding cosine > 0.65 between two documents, create edge. Weight = similarity score.
-topical Two documents share 2+ AI-generated topic tags. Weight = shared_topics / total_topics.
-shared_tags Two documents share 1+ user-created tags. Weight = 0.5 (fixed, user-defined relation).
-root_connection Fallback: every document always has an edge to root. Weight = 0.1.
+  10.2 Graph Pipeline — Relationship Discovery
+  Relation Type Logic
+  semantic_similarity Qdrant similarity search: if avg embedding cosine > 0.65 between two documents, create edge. Weight = similarity score.
+  topical Two documents share 2+ AI-generated topic tags. Weight = shared_topics / total_topics.
+  shared_tags Two documents share 1+ user-created tags. Weight = 0.5 (fixed, user-defined relation).
+  root_connection Fallback: every document always has an edge to root. Weight = 0.1.
 
-10.3 Graph Visualization
-User sees an interactive graph using React Flow (@xyflow/react). Root node is center. Documents radiate outward. Edge thickness = weight. Edge color = relation type. User can:
-• Pan and zoom the graph
-• Click a node to see document title + quick link to document
-• Hover an edge to see relation type and weight
-• Toggle edge types (show/hide semantic, topical, shared_tags)
-• Focus mode: click a document → shows only that document and its direct connections
-Graph is read-only in this version.
+  10.3 Graph Visualization
+  User sees an interactive graph using React Flow (@xyflow/react). Root node is center. Documents radiate outward. Edge thickness = weight. Edge color = relation type. User can:
+  • Pan and zoom the graph
+  • Click a node to see document title + quick link to document
+  • Hover an edge to see relation type and weight
+  • Toggle edge types (show/hide semantic, topical, shared_tags)
+  • Focus mode: click a document → shows only that document and its direct connections
+  Graph is read-only in this version.
 
 11. Search & Retrieval
     11.1 Normal Search

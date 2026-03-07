@@ -29,6 +29,8 @@ export class RefreshSessionEntity {
   }
 
   isActive(now = new Date()): boolean {
-    return !this.props.revokedAt && this.props.expiresAt.getTime() > now.getTime();
+    return (
+      !this.props.revokedAt && this.props.expiresAt.getTime() > now.getTime()
+    );
   }
 }

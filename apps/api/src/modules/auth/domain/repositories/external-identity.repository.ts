@@ -1,4 +1,7 @@
-import { ExternalIdentityEntity, AuthProvider } from '../entities/external-identity.entity';
+import {
+  ExternalIdentityEntity,
+  AuthProvider,
+} from '../entities/external-identity.entity';
 
 export interface LinkExternalIdentityInput {
   userId: string;
@@ -17,5 +20,7 @@ export abstract class IExternalIdentityRepository {
 
   abstract findByUserId(userId: string): Promise<ExternalIdentityEntity[]>;
 
-  abstract link(input: LinkExternalIdentityInput): Promise<ExternalIdentityEntity>;
+  abstract link(
+    input: LinkExternalIdentityInput,
+  ): Promise<ExternalIdentityEntity>;
 }

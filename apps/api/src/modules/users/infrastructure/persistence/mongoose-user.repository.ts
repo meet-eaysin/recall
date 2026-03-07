@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { UserModel } from '@repo/db';
 import { IUserDocument } from '@repo/db';
-import { IUserRepository, UpsertIdentityUserInput } from '../../domain/repositories/user.repository';
+import {
+  IUserRepository,
+  UpsertIdentityUserInput,
+} from '../../domain/repositories/user.repository';
 import { UserEntity } from '../../domain/entities/user.entity';
 
 @Injectable()

@@ -3,9 +3,7 @@ import { RefreshSessionService } from '../../domain/services/refresh-session.ser
 
 @Injectable()
 export class RefreshSessionUseCase {
-  constructor(
-    private readonly refreshSessionService: RefreshSessionService,
-  ) {}
+  constructor(private readonly refreshSessionService: RefreshSessionService) {}
 
   async execute(refreshToken: string) {
     return this.refreshSessionService.rotateSession(refreshToken);
