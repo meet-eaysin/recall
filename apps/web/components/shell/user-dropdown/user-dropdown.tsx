@@ -22,8 +22,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useState } from 'react';
 
-import { Avatar } from '@/components/ui/avatar';
 import { ThemeToggle } from '../theme-toggle';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface UserDropdownProps {
   small?: boolean;
@@ -62,12 +62,14 @@ export function UserDropdown({ small }: UserDropdownProps) {
             'relative shrink-0 rounded-full',
           )}
         >
-          <Avatar
-            size={small ? 'xs' : 'xsm'}
-            imageSrc={user?.avatarUrl}
-            alt="Nameless User Avatar"
-            className="overflow-hidden"
-          />
+          <Avatar>
+            <AvatarImage
+              className={'size-5'}
+              src={user.avatarUrl}
+              alt="User avatar"
+            />
+            <AvatarFallback>{user.name}</AvatarFallback>
+          </Avatar>
           <span
             className={cn(
               'border-muted absolute -bottom-1 -right-1 rounded-full border bg-green-500',

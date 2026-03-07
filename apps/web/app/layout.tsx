@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import '../styles/index.css';
 import { ThemeProvider } from '@/components/theme-provider';
+import { AnchoredToastProvider, ToastProvider } from '@/components/ui/toast';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -25,7 +26,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ToastProvider>
+          <AnchoredToastProvider>
+            <ThemeProvider>{children}</ThemeProvider>
+          </AnchoredToastProvider>
+        </ToastProvider>
       </body>
     </html>
   );

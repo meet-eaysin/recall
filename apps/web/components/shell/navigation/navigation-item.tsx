@@ -4,8 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Icon } from '@/components/icon';
 import type { IconName } from '@/components/icon';
-import { Tooltip } from '@/components/ui/tooltip/index';
 import { useShouldDisplayNavigationItem } from './use-should-display-navigation-item';
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipPopup,
+} from '@/components/ui/tooltip';
 
 const useMediaQuery = () => false;
 
@@ -103,153 +108,162 @@ export const NavigationItem: React.FC<{
   return (
     <React.Fragment>
       {isParentNavigationItem ? (
-        <Tooltip
-          side="right"
-          open={isTooltipOpen}
-          content={
-            hasChildren ? (
-              <div className="stack-y-1 pointer-events-auto flex flex-col p-1">
-                <span className="text-subtle px-2 text-xs font-semibold uppercase tracking-wide">
-                  {item.name}
-                </span>
-                <div className="flex flex-col gap-1">
-                  {item.child?.map((childItem) => {
-                    const childIsCurrent =
-                      typeof childItem.isCurrent === 'function'
-                        ? childItem.isCurrent({
-                            isChild: true,
-                            item: childItem,
-                            pathname,
-                          })
-                        : defaultIsCurrent({
-                            isChild: true,
-                            item: childItem,
-                            pathname,
-                          });
-                    return (
-                      <Link
-                        key={childItem.name}
-                        href={childItem.href}
-                        aria-current={childIsCurrent ? 'page' : undefined}
-                        onClick={() => {
-                          setIsTooltipOpen(false);
-                        }}
-                        className={cn(
-                          'group relative block rounded-md px-3 py-1 text-sm font-medium',
-                          childIsCurrent
-                            ? 'bg-emphasis text-white'
-                            : 'hover:bg-emphasis text-mute hover:text-emphasis',
-                        )}
-                      >
-                        {childItem.name}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : (
-              item.name
-            )
-          }
-          className="lg:hidden"
-        >
-          <button
-            data-test-id={item.name}
-            aria-label={item.name}
-            aria-expanded={isExpanded}
-            aria-current={current ? 'page' : undefined}
-            onClick={() => {
-              if (isTablet && hasChildren) {
-                setIsTooltipOpen(!isTooltipOpen);
-              } else {
-                setIsExpanded(!isExpanded);
+        <TooltipProvider>
+          <Tooltip open={isTooltipOpen} onOpenChange={setIsTooltipOpen}>
+            <TooltipTrigger
+              render={
+                <button
+                  data-test-id={item.name}
+                  aria-label={item.name}
+                  aria-expanded={isExpanded}
+                  aria-current={current ? 'page' : undefined}
+                  onClick={() => {
+                    if (isTablet && hasChildren) {
+                      setIsTooltipOpen(!isTooltipOpen);
+                    } else {
+                      setIsExpanded(!isExpanded);
+                    }
+                  }}
+                  className={cn(
+                    'todesktop:py-[7px] text-default group relative flex w-full items-center rounded-md px-2 py-1.5 text-sm font-medium transition',
+                    "aria-[aria-current='page']:bg-transparent!",
+                    "aria-[aria-current='page']:text-emphasis mt-0.5 text-sm",
+                    'md:justify-center lg:justify-start',
+                    "hover:bg-subtle todesktop:aria-[aria-current='page']:bg-emphasis todesktop:hover:bg-transparent hover:text-emphasis",
+                  )}
+                />
               }
-            }}
-            className={cn(
-              'todesktop:py-[7px] text-default group relative flex w-full items-center rounded-md px-2 py-1.5 text-sm font-medium transition',
-              "aria-[aria-current='page']:bg-transparent!",
-              "aria-[aria-current='page']:text-emphasis mt-0.5 text-sm",
-              'md:justify-center lg:justify-start',
-              "hover:bg-subtle todesktop:aria-[aria-current='page']:bg-emphasis todesktop:hover:bg-transparent hover:text-emphasis",
-            )}
-          >
-            {item.icon && (
-              <div className="relative">
+            >
+              {item.icon && (
+                <div className="relative">
+                  <Icon
+                    name={item.isLoading ? 'rotate-cw' : item.icon}
+                    className={cn(
+                      'todesktop:text-blue-500! h-4 w-4 shrink-0 lg:ltr:mr-2 lg:rtl:ml-2',
+                      item.isLoading && 'animate-spin',
+                    )}
+                    aria-hidden="true"
+                  />
+                  {shouldShowChevron && (
+                    <Icon
+                      name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                      className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-subtle p-0.5 lg:hidden"
+                    />
+                  )}
+                </div>
+              )}
+              <span
+                className="hidden w-full justify-between truncate text-ellipsis lg:flex"
+                data-testid={`${item.name}-test`}
+              >
+                {item.name}
+                {item.badge && item.badge}
+              </span>
+              {shouldShowChevron && (
+                <Icon
+                  name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                  className="ml-auto hidden h-4 w-4 lg:block"
+                />
+              )}
+            </TooltipTrigger>
+            <TooltipPopup side="right" className="lg:hidden">
+              {hasChildren ? (
+                <div className="stack-y-1 pointer-events-auto flex flex-col p-1">
+                  <span className="text-subtle px-2 text-xs font-semibold uppercase tracking-wide">
+                    {item.name}
+                  </span>
+                  <div className="flex flex-col gap-1">
+                    {item.child?.map((childItem) => {
+                      const childIsCurrent =
+                        typeof childItem.isCurrent === 'function'
+                          ? childItem.isCurrent({
+                              isChild: true,
+                              item: childItem,
+                              pathname,
+                            })
+                          : defaultIsCurrent({
+                              isChild: true,
+                              item: childItem,
+                              pathname,
+                            });
+                      return (
+                        <Link
+                          key={childItem.name}
+                          href={childItem.href}
+                          aria-current={childIsCurrent ? 'page' : undefined}
+                          onClick={() => setIsTooltipOpen(false)}
+                          className={cn(
+                            'group relative block rounded-md px-3 py-1 text-sm font-medium',
+                            childIsCurrent
+                              ? 'bg-emphasis text-white'
+                              : 'hover:bg-emphasis text-mute hover:text-emphasis',
+                          )}
+                        >
+                          {childItem.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                item.name
+              )}
+            </TooltipPopup>
+          </Tooltip>
+        </TooltipProvider>
+      ) : (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Link
+                  data-test-id={item.name}
+                  onClick={() => {}}
+                  href={item.href}
+                  aria-label={item.name}
+                  target={item.target}
+                  aria-current={current ? 'page' : undefined}
+                  className={cn(
+                    'todesktop:py-[7px] text-default group flex items-center rounded-md px-2 py-1.5 text-sm font-medium transition',
+                    item.child
+                      ? `aria-[aria-current='page']:bg-transparent!`
+                      : `aria-[aria-current='page']:bg-emphasis`,
+                    isChild
+                      ? `aria-[aria-current='page']:text-emphasis aria-[aria-current='page']:bg-emphasis hidden h-8 pl-16 lg:flex lg:pl-11 ${
+                          props.index === 0
+                            ? 'mt-0'
+                            : "mt-1  hover:mt-1 aria-[aria-current='page']:mt-1"
+                        }`
+                      : "aria-[aria-current='page']:text-emphasis mt-0.5 text-sm md:justify-center lg:justify-start",
+                    "hover:bg-subtle todesktop:aria-[aria-current='page']:bg-emphasis todesktop:hover:bg-transparent hover:text-emphasis",
+                  )}
+                />
+              }
+            >
+              {item.icon && (
                 <Icon
                   name={item.isLoading ? 'rotate-cw' : item.icon}
                   className={cn(
-                    'todesktop:text-blue-500! h-4 w-4 shrink-0 lg:ltr:mr-2 lg:rtl:ml-2',
+                    "todesktop:text-blue-500! h-4 w-4 shrink-0 aria-[aria-current='page']:text-inherit lg:ltr:mr-2 lg:rtl:ml-2",
                     item.isLoading && 'animate-spin',
                   )}
                   aria-hidden="true"
+                  aria-current={current ? 'page' : undefined}
                 />
-                {shouldShowChevron && (
-                  <Icon
-                    name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                    className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-subtle p-0.5 lg:hidden"
-                  />
-                )}
-              </div>
-            )}
-            <span
-              className="hidden w-full justify-between truncate text-ellipsis lg:flex"
-              data-testid={`${item.name}-test`}
-            >
+              )}
+              <span
+                className="hidden w-full justify-between truncate text-ellipsis lg:flex"
+                data-testid={`${item.name}-test`}
+              >
+                {item.name}
+                {item.badge && item.badge}
+              </span>
+            </TooltipTrigger>
+            <TooltipPopup side="right" className="lg:hidden">
               {item.name}
-              {item.badge && item.badge}
-            </span>
-            {shouldShowChevron && (
-              <Icon
-                name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                className="ml-auto hidden h-4 w-4 lg:block"
-              />
-            )}
-          </button>
-        </Tooltip>
-      ) : (
-        <Tooltip side="right" content={item.name} className="lg:hidden">
-          <Link
-            data-test-id={item.name}
-            onClick={() => {}}
-            href={item.href}
-            aria-label={item.name}
-            target={item.target}
-            className={cn(
-              'todesktop:py-[7px] text-default group flex items-center rounded-md px-2 py-1.5 text-sm font-medium transition',
-              item.child
-                ? `aria-[aria-current='page']:bg-transparent!`
-                : `aria-[aria-current='page']:bg-emphasis`,
-              isChild
-                ? `aria-[aria-current='page']:text-emphasis aria-[aria-current='page']:bg-emphasis hidden h-8 pl-16 lg:flex lg:pl-11 ${
-                    props.index === 0
-                      ? 'mt-0'
-                      : "mt-1  hover:mt-1 aria-[aria-current='page']:mt-1"
-                  }`
-                : "aria-[aria-current='page']:text-emphasis mt-0.5 text-sm md:justify-center lg:justify-start",
-              "hover:bg-subtle todesktop:aria-[aria-current='page']:bg-emphasis todesktop:hover:bg-transparent hover:text-emphasis",
-            )}
-            aria-current={current ? 'page' : undefined}
-          >
-            {item.icon && (
-              <Icon
-                name={item.isLoading ? 'rotate-cw' : item.icon}
-                className={cn(
-                  "todesktop:text-blue-500! h-4 w-4 shrink-0 aria-[aria-current='page']:text-inherit lg:ltr:mr-2 lg:rtl:ml-2",
-                  item.isLoading && 'animate-spin',
-                )}
-                aria-hidden="true"
-                aria-current={current ? 'page' : undefined}
-              />
-            )}
-            <span
-              className="hidden w-full justify-between truncate text-ellipsis lg:flex"
-              data-testid={`${item.name}-test`}
-            >
-              {item.name}
-              {item.badge && item.badge}
-            </span>
-          </Link>
-        </Tooltip>
+            </TooltipPopup>
+          </Tooltip>
+        </TooltipProvider>
       )}
       {hasChildren && (
         <div
