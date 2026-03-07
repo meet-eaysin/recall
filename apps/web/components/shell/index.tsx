@@ -27,7 +27,7 @@ const Layout = (props: LayoutProps) => {
           ) : (
             <SideBarContainer bannersHeight={0} />
           )}
-          <div className="flex w-0 flex-1 flex-col">
+          <div className="flex w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden">
             <MainContainer {...props} />
           </div>
         </div>
@@ -56,17 +56,14 @@ export type LayoutProps = {
   TopNavContainer?: ReactNode;
   drawerState?: DrawerState;
   HeadingLeftIcon?: ReactNode;
-  backPath?: string | boolean; // renders back button to specified path
-  // use when content needs to expand with flex
+  backPath?: string | boolean;
   flexChildrenContainer?: boolean;
   isPublic?: boolean;
   withoutMain?: boolean;
-  // Gives the ability to include actions to the right of the heading
   actions?: JSX.Element;
   beforeCTAactions?: JSX.Element;
   afterHeading?: ReactNode;
   smallHeading?: boolean;
-  isPlatformUser?: boolean;
   disableSticky?: boolean;
 };
 
@@ -91,7 +88,6 @@ export function ShellMain(props: LayoutProps) {
             <Button
               variant="icon"
               size="sm"
-              color="minimal"
               onClick={() =>
                 typeof props.backPath === 'string'
                   ? router.push(props.backPath as string)
@@ -122,8 +118,8 @@ export function ShellMain(props: LayoutProps) {
                 {props.heading && (
                   <h3
                     className={cn(
-                      'font-cal text-emphasis max-w-28 sm:max-w-72 md:max-w-80 hidden truncate text-lg font-semibold tracking-wide sm:text-xl md:block xl:max-w-full',
-                      props.smallHeading ? 'text-base' : 'text-xl',
+                      'text-emphasis max-w-28 sm:max-w-72 md:max-w-80 hidden truncate text-lg font-semibold tracking-wide sm:text-xl md:block xl:max-w-full',
+                      props.smallHeading ? 'text-sm' : 'text-xl',
                     )}
                   >
                     {props.heading}
@@ -131,7 +127,7 @@ export function ShellMain(props: LayoutProps) {
                 )}
                 {props.subtitle && (
                   <p
-                    className="text-default hidden text-sm md:block"
+                    className="text-subtle hidden text-sm md:block"
                     data-testid="subtitle"
                   >
                     {props.subtitle}
@@ -144,8 +140,8 @@ export function ShellMain(props: LayoutProps) {
                   className={cn(
                     props.backPath
                       ? 'relative'
-                      : 'pwa:bottom-[max(7rem,calc(5rem+env(safe-area-inset-bottom)))] fixed bottom-20 z-40 ltr:right-4 rtl:left-4 md:z-auto md:ltr:right-0 md:rtl:left-0',
-                    'shrink-0 [-webkit-app-region:no-drag] md:relative md:bottom-auto md:right-auto',
+                      : 'fixed bottom-20 z-40 ltr:right-4 rtl:left-4 md:z-auto md:ltr:right-0 md:rtl:left-0',
+                    'shrink-0 md:relative md:bottom-auto md:right-auto',
                   )}
                 >
                   {props.CTA}
@@ -175,7 +171,6 @@ function MainContainer({
 }: LayoutProps) {
   return (
     <main className="bg-default relative z-0 flex-1 focus:outline-none">
-      {/* show top navigation for md and smaller (tablet and phones) */}
       {TopNavContainerProp}
       <div className="max-w-full p-2 sm:p-4 lg:p-6">
         {!props.withoutMain ? (
@@ -183,7 +178,6 @@ function MainContainer({
         ) : (
           props.children
         )}
-        {/* show bottom navigation for md and smaller (tablet and phones) on pages where back button doesn't exist */}
         {!props.backPath ? MobileNavigationContainerProp : null}
       </div>
     </main>

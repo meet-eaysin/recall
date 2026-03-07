@@ -1,4 +1,4 @@
-import Shell from '@/components/shall';
+import Shell from '@/components/shell';
 
 export default function Page() {
   return (

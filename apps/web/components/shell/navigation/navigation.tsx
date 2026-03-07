@@ -17,14 +17,39 @@ export const MORE_SEPARATOR_NAME = 'more';
 
 const getNavigationItems = (): NavigationItemType[] => [
   {
-    name: 'Inbox',
-    href: '/event-types',
-    icon: 'link',
+    name: 'Dashboard',
+    href: '/',
+    icon: 'layout-dashboard',
   },
   {
     name: 'Documents',
-    href: 'docuemnts',
-    icon: 'arrow-down',
+    href: '/documents',
+    icon: 'file-text',
+  },
+  {
+    name: 'Knowledge Graph',
+    href: '/graph',
+    icon: 'blocks',
+  },
+  {
+    name: 'Search & Ask',
+    href: '/search',
+    icon: 'search',
+  },
+  {
+    name: 'Daily Review',
+    href: '/review',
+    icon: 'book-open',
+  },
+  {
+    name: 'Analytics',
+    href: '/analytics',
+    icon: 'chart-line',
+  },
+  {
+    name: 'Settings',
+    href: '/settings',
+    icon: 'settings',
   },
 ];
 
