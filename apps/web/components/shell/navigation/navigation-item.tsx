@@ -1,29 +1,16 @@
+import type { IconName } from '@/components/icon';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { Icon } from '@/components/icon';
-import type { IconName } from '@/components/icon';
+import React, { Fragment, useState, useEffect } from 'react';
 import { useShouldDisplayNavigationItem } from './use-should-display-navigation-item';
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipPopup,
-} from '@/components/ui/tooltip';
-
-const useMediaQuery = () => false;
-
-const sessionStorage = {
-  getItem: () => null,
-  setItem: () => {},
-};
+import { cn } from '@/lib/utils';
+import { NavIcon } from './nav-icon';
 
 const usePersistedExpansionState = (itemName: string) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem();
+    const stored = sessionStorage.getItem(`nav-expansion-${itemName}`);
     if (stored !== null) {
       setIsExpanded(JSON.parse(stored));
     }
@@ -31,7 +18,10 @@ const usePersistedExpansionState = (itemName: string) => {
 
   const setPersistedExpansion = (expanded: boolean) => {
     setIsExpanded(expanded);
-    sessionStorage.setItem();
+    sessionStorage.setItem(
+      `nav-expansion-${itemName}`,
+      JSON.stringify(expanded),
+    );
   };
 
   return [isExpanded, setPersistedExpansion] as const;
@@ -39,6 +29,7 @@ const usePersistedExpansionState = (itemName: string) => {
 
 export type NavigationItemType = {
   name: string;
+  label?: string;
   href: string;
   isLoading?: boolean;
   onClick?: React.MouseEventHandler<HTMLAnchorElement | HTMLButtonElement>;
@@ -61,6 +52,16 @@ export type NavigationItemType = {
   }) => boolean;
 };
 
+const formatFallbackLabel = (value: string) =>
+  value
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
+const getItemLabel = (item: Pick<NavigationItemType, 'name' | 'label'>) =>
+  item.label ?? formatFallbackLabel(item.name);
+
 const defaultIsCurrent: NavigationItemType['isCurrent'] = ({
   isChild,
   item,
@@ -79,7 +80,6 @@ export const NavigationItem: React.FC<{
   isChild?: boolean;
 }> = (props) => {
   const { item, isChild } = props;
-
   const pathname = usePathname();
   const isCurrent: NavigationItemType['isCurrent'] =
     item.isCurrent || defaultIsCurrent;
@@ -88,9 +88,7 @@ export const NavigationItem: React.FC<{
     props.item,
   );
   const [isExpanded, setIsExpanded] = usePersistedExpansionState(item.name);
-
-  const isTablet = useMediaQuery();
-  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+  const itemLabel = getItemLabel(item);
 
   if (!shouldDisplayNavigationItem) return null;
 
@@ -104,166 +102,80 @@ export const NavigationItem: React.FC<{
     isExpanded || hasActiveChild || isCurrent({ pathname, isChild, item });
   const shouldShowChevron = hasChildren && !hasActiveChild;
   const isParentNavigationItem = hasChildren && !isChild;
+  const baseItemClass =
+    'group mt-0.5 flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm leading-5 font-semibold transition-colors';
+  const topLevelStateClass = current
+    ? 'bg-subtle text-emphasis'
+    : 'text-default hover:bg-subtle/80 hover:text-emphasis';
+  const topLevelLayoutClass = 'md:justify-center lg:justify-start';
+  const childClass = current
+    ? 'bg-subtle text-emphasis'
+    : 'text-muted hover:bg-subtle/70 hover:text-default';
+  const itemLabelClass = isChild
+    ? 'truncate'
+    : 'hidden w-full items-center justify-between truncate lg:flex';
 
   return (
-    <React.Fragment>
+    <Fragment>
       {isParentNavigationItem ? (
-        <TooltipProvider>
-          <Tooltip open={isTooltipOpen} onOpenChange={setIsTooltipOpen}>
-            <TooltipTrigger
-              render={
-                <button
-                  data-test-id={item.name}
-                  aria-label={item.name}
-                  aria-expanded={isExpanded}
-                  aria-current={current ? 'page' : undefined}
-                  onClick={() => {
-                    if (isTablet && hasChildren) {
-                      setIsTooltipOpen(!isTooltipOpen);
-                    } else {
-                      setIsExpanded(!isExpanded);
-                    }
-                  }}
-                  className={cn(
-                    'todesktop:py-[7px] text-default group relative flex w-full items-center rounded-md px-2 py-1.5 text-sm font-medium transition',
-                    "aria-[aria-current='page']:bg-transparent!",
-                    "aria-[aria-current='page']:text-emphasis mt-0.5 text-sm",
-                    'md:justify-center lg:justify-start',
-                    "hover:bg-subtle todesktop:aria-[aria-current='page']:bg-emphasis todesktop:hover:bg-transparent hover:text-emphasis",
-                  )}
-                />
-              }
-            >
-              {item.icon && (
-                <div className="relative">
-                  <Icon
-                    name={item.isLoading ? 'rotate-cw' : item.icon}
-                    className={cn(
-                      'todesktop:text-blue-500! h-4 w-4 shrink-0 lg:ltr:mr-2 lg:rtl:ml-2',
-                      item.isLoading && 'animate-spin',
-                    )}
-                    aria-hidden="true"
-                  />
-                  {shouldShowChevron && (
-                    <Icon
-                      name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                      className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-subtle p-0.5 lg:hidden"
-                    />
-                  )}
-                </div>
-              )}
-              <span
-                className="hidden w-full justify-between truncate text-ellipsis lg:flex"
-                data-testid={`${item.name}-test`}
-              >
-                {item.name}
-                {item.badge && item.badge}
-              </span>
-              {shouldShowChevron && (
-                <Icon
-                  name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                  className="ml-auto hidden h-4 w-4 lg:block"
-                />
-              )}
-            </TooltipTrigger>
-            <TooltipPopup side="right" className="lg:hidden">
-              {hasChildren ? (
-                <div className="stack-y-1 pointer-events-auto flex flex-col p-1">
-                  <span className="text-subtle px-2 text-xs font-semibold uppercase tracking-wide">
-                    {item.name}
-                  </span>
-                  <div className="flex flex-col gap-1">
-                    {item.child?.map((childItem) => {
-                      const childIsCurrent =
-                        typeof childItem.isCurrent === 'function'
-                          ? childItem.isCurrent({
-                              isChild: true,
-                              item: childItem,
-                              pathname,
-                            })
-                          : defaultIsCurrent({
-                              isChild: true,
-                              item: childItem,
-                              pathname,
-                            });
-                      return (
-                        <Link
-                          key={childItem.name}
-                          href={childItem.href}
-                          aria-current={childIsCurrent ? 'page' : undefined}
-                          onClick={() => setIsTooltipOpen(false)}
-                          className={cn(
-                            'group relative block rounded-md px-3 py-1 text-sm font-medium',
-                            childIsCurrent
-                              ? 'bg-emphasis text-white'
-                              : 'hover:bg-emphasis text-mute hover:text-emphasis',
-                          )}
-                        >
-                          {childItem.name}
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : (
-                item.name
-              )}
-            </TooltipPopup>
-          </Tooltip>
-        </TooltipProvider>
+        <button
+          data-test-id={item.name}
+          aria-label={itemLabel}
+          aria-expanded={isExpanded}
+          aria-current={current ? 'page' : undefined}
+          onClick={() => {
+            if (hasChildren) {
+              setIsExpanded(!isExpanded);
+            }
+          }}
+          className={cn(baseItemClass, topLevelStateClass, topLevelLayoutClass)}
+        >
+          {item.icon && (
+            <NavIcon
+              name={item.isLoading ? 'rotate-cw' : item.icon}
+              className={cn('h-4 w-4 shrink-0', item.isLoading && 'animate-spin')}
+            />
+          )}
+          <span className={itemLabelClass} data-testid={`${item.name}-test`}>
+            {itemLabel}
+            {item.badge && item.badge}
+          </span>
+          {shouldShowChevron && (
+            <NavIcon
+              name={isExpanded ? 'chevron-up' : 'chevron-down'}
+              className="ml-auto hidden h-4 w-4 lg:block"
+            />
+          )}
+        </button>
       ) : (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Link
-                  data-test-id={item.name}
-                  onClick={() => {}}
-                  href={item.href}
-                  aria-label={item.name}
-                  target={item.target}
-                  aria-current={current ? 'page' : undefined}
-                  className={cn(
-                    'todesktop:py-[7px] text-default group flex items-center rounded-md px-2 py-1.5 text-sm font-medium transition',
-                    item.child
-                      ? `aria-[aria-current='page']:bg-transparent!`
-                      : `aria-[aria-current='page']:bg-emphasis`,
-                    isChild
-                      ? `aria-[aria-current='page']:text-emphasis aria-[aria-current='page']:bg-emphasis hidden h-8 pl-16 lg:flex lg:pl-11 ${
-                          props.index === 0
-                            ? 'mt-0'
-                            : "mt-1  hover:mt-1 aria-[aria-current='page']:mt-1"
-                        }`
-                      : "aria-[aria-current='page']:text-emphasis mt-0.5 text-sm md:justify-center lg:justify-start",
-                    "hover:bg-subtle todesktop:aria-[aria-current='page']:bg-emphasis todesktop:hover:bg-transparent hover:text-emphasis",
-                  )}
-                />
-              }
-            >
-              {item.icon && (
-                <Icon
-                  name={item.isLoading ? 'rotate-cw' : item.icon}
-                  className={cn(
-                    "todesktop:text-blue-500! h-4 w-4 shrink-0 aria-[aria-current='page']:text-inherit lg:ltr:mr-2 lg:rtl:ml-2",
-                    item.isLoading && 'animate-spin',
-                  )}
-                  aria-hidden="true"
-                  aria-current={current ? 'page' : undefined}
-                />
-              )}
-              <span
-                className="hidden w-full justify-between truncate text-ellipsis lg:flex"
-                data-testid={`${item.name}-test`}
-              >
-                {item.name}
-                {item.badge && item.badge}
-              </span>
-            </TooltipTrigger>
-            <TooltipPopup side="right" className="lg:hidden">
-              {item.name}
-            </TooltipPopup>
-          </Tooltip>
-        </TooltipProvider>
+        <Link
+          data-test-id={item.name}
+          href={item.href}
+          aria-label={itemLabel}
+          target={item.target}
+          className={cn(
+            baseItemClass,
+            isChild ? childClass : topLevelStateClass,
+            isChild
+              ? cn(
+                  'hidden py-1.5 text-[13px] leading-5 lg:flex lg:pl-9',
+                  props.index === 0 ? 'mt-1' : '',
+                )
+              : topLevelLayoutClass,
+          )}
+          aria-current={current ? 'page' : undefined}
+        >
+          {item.icon && !isChild && (
+            <NavIcon
+              name={item.isLoading ? 'rotate-cw' : item.icon}
+              className={cn('h-4 w-4 shrink-0', item.isLoading && 'animate-spin')}
+            />
+          )}
+          <span className={itemLabelClass} data-testid={`${item.name}-test`}>
+            {itemLabel}
+            {item.badge && item.badge}
+          </span>
+        </Link>
       )}
       {hasChildren && (
         <div
@@ -287,7 +199,7 @@ export const NavigationItem: React.FC<{
           </div>
         </div>
       )}
-    </React.Fragment>
+    </Fragment>
   );
 };
 
@@ -296,8 +208,8 @@ export const MobileNavigationItem: React.FC<{
   isChild?: boolean;
 }> = (props) => {
   const { item, isChild } = props;
+  const itemLabel = getItemLabel(item);
   const pathname = usePathname();
-
   const isCurrent: NavigationItemType['isCurrent'] =
     item.isCurrent || defaultIsCurrent;
   const current = isCurrent({ isChild: !!isChild, item, pathname });
@@ -311,19 +223,20 @@ export const MobileNavigationItem: React.FC<{
       key={item.name}
       href={item.href}
       target={item.target}
-      className="aria-[aria-current='page']:text-emphasis hover:text-default text-muted bg-transparent! relative my-2 min-w-0 flex-1 overflow-hidden rounded-md p-1 text-center text-xs font-medium focus:z-10 sm:text-sm"
+      className="aria-[aria-current='page']:text-emphasis hover:text-default text-muted bg-transparent! relative my-2 min-w-0 flex-1 overflow-hidden rounded-md p-1 text-center text-xs font-semibold focus:z-10 sm:text-sm"
       aria-current={current ? 'page' : undefined}
     >
       {item.badge && <div className="absolute right-1 top-1">{item.badge}</div>}
       {item.icon && (
-        <Icon
+        <NavIcon
           name={item.icon}
-          className="aria-[aria-current='page']:text-emphasis mx-auto mb-1 block h-5 w-5 shrink-0 text-center text-inherit"
-          aria-hidden="true"
-          aria-current={current ? 'page' : undefined}
+          className="aria-[aria-current='page']:text-emphasis  mx-auto mb-1 block h-5 w-5 shrink-0 text-center text-inherit"
         />
       )}
-      <span className="block truncate">{item.name}</span>
+
+      <span className="block truncate text-[11px] leading-4 font-semibold sm:text-xs">
+        {itemLabel}
+      </span>
     </Link>
   );
 };
@@ -333,7 +246,7 @@ export const MobileNavigationMoreItem: React.FC<{
   isChild?: boolean;
 }> = (props) => {
   const { item } = props;
-
+  const itemLabel = getItemLabel(item);
   const shouldDisplayNavigationItem = useShouldDisplayNavigationItem(
     props.item,
   );
@@ -348,16 +261,15 @@ export const MobileNavigationMoreItem: React.FC<{
     <>
       <span className="text-default flex items-center font-semibold ">
         {item.icon && (
-          <Icon
+          <NavIcon
             name={item.icon}
             className="h-5 w-5 shrink-0 ltr:mr-3 rtl:ml-3"
-            aria-hidden="true"
           />
         )}
-        {item.name}
+        {itemLabel}
       </span>
       {!isActionItem && (
-        <Icon name="arrow-right" className="text-subtle h-5 w-5" />
+        <NavIcon name="arrow-right" className="text-subtle h-5 w-5" />
       )}
     </>
   );
@@ -368,19 +280,18 @@ export const MobileNavigationMoreItem: React.FC<{
         <>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="hover:bg-subtle flex w-full items-center justify-between p-5 text-left transition"
+            className="hover:bg-subtle flex w-full items-center justify-between p-5 text-left font-semibold transition"
           >
             <span className="text-default flex items-center font-semibold">
               {item.icon && (
-                <Icon
+                <NavIcon
                   name={item.icon}
                   className="h-5 w-5 shrink-0 ltr:mr-3 rtl:ml-3"
-                  aria-hidden="true"
                 />
               )}
-              {item.name}
+              {itemLabel}
             </span>
-            <Icon
+            <NavIcon
               name={isExpanded ? 'chevron-up' : 'chevron-down'}
               className="text-subtle h-5 w-5"
             />
@@ -400,10 +311,10 @@ export const MobileNavigationMoreItem: React.FC<{
                     <li key={childItem.name} className="border-subtle border-t">
                       <Link
                         href={childItem.href}
-                        className="hover:bg-cal-muted flex items-center p-4 pl-12 transition"
+                        className="hover:bg-cal-muted flex items-center p-4 pl-12 font-semibold transition"
                       >
                         <span className="text-default font-medium">
-                          {childItem.name}
+                          {getItemLabel(childItem)}
                         </span>
                       </Link>
                     </li>
@@ -416,7 +327,7 @@ export const MobileNavigationMoreItem: React.FC<{
       ) : isActionItem ? (
         <button
           onClick={item.onClick}
-          className="hover:bg-subtle flex w-full items-center justify-between p-5 text-left transition"
+          className="hover:bg-subtle flex w-full items-center justify-between p-5 text-left font-semibold transition"
         >
           {itemContent}
         </button>
@@ -424,7 +335,7 @@ export const MobileNavigationMoreItem: React.FC<{
         <Link
           href={item.href}
           target={item.target}
-          className="hover:bg-subtle flex items-center justify-between p-5 transition"
+          className="hover:bg-subtle flex items-center justify-between p-5 font-semibold transition"
         >
           {itemContent}
         </Link>

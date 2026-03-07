@@ -11,11 +11,11 @@ import type {
 import React, { cloneElement } from 'react';
 
 import { MobileNavigationContainer } from './navigation/navigation';
-import { Provider as TooltipProvider } from '@radix-ui/react-tooltip';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { SideBarContainer } from './side-bar';
 import { TopNavContainer } from './top-nav';
-import { Button } from '../ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 const Layout = (props: LayoutProps) => {
   return (
@@ -85,19 +85,19 @@ export function ShellMain(props: LayoutProps) {
           )}
         >
           {!!props.backPath && (
-            <Button
-              variant="icon"
-              size="sm"
+            <button
+              type="button"
               onClick={() =>
                 typeof props.backPath === 'string'
                   ? router.push(props.backPath as string)
                   : router.back()
               }
-              StartIcon="arrow-left"
               aria-label="Go Back"
-              className="rounded-md ltr:mr-2 rtl:ml-2"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-default transition hover:bg-subtle ltr:mr-2 rtl:ml-2"
               data-testid="go-back-button"
-            />
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
           )}
           {props.heading && (
             <header

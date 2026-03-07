@@ -1,3 +1,5 @@
+'use client';
+
 import { cn } from '@/lib/utils';
 import {
   User as UserIcon,
@@ -20,7 +22,7 @@ import {
 } from '@/components/ui/menu';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { ThemeToggle } from '../theme-toggle';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -37,10 +39,16 @@ export function UserDropdown({ small }: UserDropdownProps) {
 
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Prevent rendering dropdown if user isn't available.
   if (!user && !isPending) {
     return null;
   }
+
+  const initials = user.name
+    .split(' ')
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <Menu open={menuOpen} onOpenChange={setMenuOpen}>
@@ -50,50 +58,43 @@ export function UserDropdown({ small }: UserDropdownProps) {
           <button
             data-testid="user-dropdown-trigger-button"
             className={cn(
-              'hover:bg-emphasis group mx-0 flex w-full cursor-pointer appearance-none items-center rounded-full text-left outline-none transition focus:outline-none focus:ring-0 md:rounded-none lg:rounded',
-              small ? 'p-2' : 'px-2 py-1.5',
+              'hover:bg-subtle group flex w-full cursor-pointer items-center gap-2 rounded-md text-left outline-none transition focus:outline-none focus:ring-0',
+              small ? 'justify-center p-1.5' : 'px-2 py-1.5',
             )}
           />
         }
       >
-        <span
-          className={cn(
-            small ? 'h-4 w-4' : 'h-5 w-5 ltr:mr-2 rtl:ml-2',
-            'relative shrink-0 rounded-full',
-          )}
-        >
-          <Avatar>
-            <AvatarImage
-              className={'size-5'}
-              src={user.avatarUrl}
-              alt="User avatar"
-            />
-            <AvatarFallback>{user.name}</AvatarFallback>
+        <span className="relative shrink-0">
+          <Avatar className="size-7">
+            <AvatarImage src={user.avatarUrl} alt="User avatar" />
+            <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
+              {initials}
+            </AvatarFallback>
           </Avatar>
           <span
-            className={cn(
-              'border-muted absolute -bottom-1 -right-1 rounded-full border bg-green-500',
-              small
-                ? '-bottom-0.5 -right-0.5 h-2.5 w-2.5'
-                : '-bottom-0.5 right-0 h-2 w-2',
-            )}
+            className="border-background absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-[1.5px] bg-green-500"
+            aria-label="Online"
           />
         </span>
+
         {!small && (
-          <span className="flex grow items-center gap-2">
-            <span className="w-24 shrink-0 text-sm leading-none">
-              <span className="text-emphasis block truncate py-0.5 font-medium leading-normal">
-                {isPending ? 'Loading...' : (user?.name ?? 'Nameless User')}
+          <span className="flex min-w-0 flex-1 items-center justify-between gap-1">
+            <span className="min-w-0">
+              <span className="text-emphasis block truncate text-sm font-medium leading-tight">
+                {isPending ? 'Loading…' : (user?.name ?? 'Nameless User')}
+              </span>
+              <span className="text-subtle block truncate text-xs leading-tight">
+                @{user.username}
               </span>
             </span>
             {menuOpen ? (
               <ChevronUpIcon
-                className="group-hover:text-subtle text-muted h-4 w-4 shrink-0 transition rtl:mr-4"
+                className="text-muted h-3.5 w-3.5 shrink-0 transition"
                 aria-hidden="true"
               />
             ) : (
               <ChevronDownIcon
-                className="group-hover:text-subtle text-muted h-4 w-4 shrink-0 transition rtl:mr-4"
+                className="text-muted h-3.5 w-3.5 shrink-0 transition"
                 aria-hidden="true"
               />
             )}
@@ -101,7 +102,15 @@ export function UserDropdown({ small }: UserDropdownProps) {
         )}
       </MenuTrigger>
 
-      <MenuPopup align="start">
+      <MenuPopup align="start" sideOffset={6}>
+        <div className="px-2 py-2">
+          <p className="text-emphasis text-sm font-medium leading-tight">
+            {user.name}
+          </p>
+          <p className="text-subtle text-xs">@{user.username}</p>
+        </div>
+        <MenuSeparator />
+
         {!isPlatformPages && (
           <>
             <MenuItem render={<Link href="/settings/my-account/profile" />}>

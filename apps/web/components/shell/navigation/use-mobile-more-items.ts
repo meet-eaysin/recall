@@ -16,16 +16,19 @@ const getBookerBaseUrlSync = (_slug: string | null) => 'https://cal.com';
 const useBottomNavItems = (_props: unknown) => [
   {
     name: 'event_types',
+    label: 'Event Types',
     href: '/event-types',
     icon: 'link' as const,
   },
   {
     name: 'bookings',
+    label: 'Bookings',
     href: '/bookings',
     icon: 'calendar' as const,
   },
   {
     name: 'settings',
+    label: 'Settings',
     href: '/settings',
     icon: 'settings' as const,
   },
