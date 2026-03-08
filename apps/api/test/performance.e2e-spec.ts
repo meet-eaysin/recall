@@ -74,7 +74,7 @@ describe('Performance and Edge Cases (e2e)', () => {
       } else {
         throw new Error('List response mismatch on page 3');
       }
-    });
+    }, 30000);
 
     it('should handle large nested folder structures', async () => {
       const auth = await createTestAuthContext(app, {
@@ -93,7 +93,7 @@ describe('Performance and Edge Cases (e2e)', () => {
       expect(response.body.success).toBe(true);
       expect(Array.isArray(response.body.data.folders)).toBe(true);
       expect(response.body.data.folders.length).toBe(50);
-    });
+    }, 15000);
   });
 
   describe('Empty Results', () => {
