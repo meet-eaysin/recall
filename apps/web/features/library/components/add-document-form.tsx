@@ -6,7 +6,6 @@ import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiPost } from '@/lib/api';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form } from '@/components/ui/form';
 import { MentionTextarea } from '@/features/library/components/mention-textarea';
@@ -21,7 +20,7 @@ import {
   Select,
   SelectTrigger,
   SelectValue,
-  SelectContent,
+  SelectPopup,
   SelectItem,
 } from '@/components/ui/select';
 import { DocumentType } from '@repo/types';
@@ -53,13 +52,22 @@ const customZodResolver: Resolver<AddDocumentFormValues> = async (values) => {
   return { values: {}, errors };
 };
 
+interface AddDocumentFormProps {
+  onSuccess?: () => void;
+  onCancel?: () => void;
+  formRef?: React.RefObject<HTMLFormElement | null>;
+}
+
+const documentTypeItems = Object.values(DocumentType).map((type) => ({
+  label: type.toUpperCase(),
+  value: type,
+}));
+
 export function AddDocumentForm({
   onSuccess,
   onCancel,
-}: {
-  onSuccess?: () => void;
-  onCancel?: () => void;
-}) {
+  formRef,
+}: AddDocumentFormProps) {
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -86,36 +94,50 @@ export function AddDocumentForm({
     mutation.mutate(values);
   };
 
-  const handleTypeChange = (val: DocumentType) => {
+  const handleTypeChange = (
+    val: string | null,
+    onChange: (val: string | null) => void,
+  ) => {
     if (val === DocumentType.TEXT) {
       if (onCancel) onCancel();
       router.push('/documents/new?type=text');
     } else {
-      form.setValue('type', val);
+      onChange(val);
     }
   };
 
   return (
-    <Form className="max-w-2xl mt-4" onSubmit={form.handleSubmit(onSubmit)}>
+    <Form
+      className="space-y-6 mt-4"
+      onSubmit={form.handleSubmit(onSubmit)}
+      ref={formRef}
+    >
       <div className="space-y-6">
         <Field className="space-y-2">
           <FieldLabel>Document Type</FieldLabel>
           <FieldControl render={<div className="w-full" />}>
-            <Select
-              value={form.watch('type')}
-              onValueChange={(val) => handleTypeChange(val as DocumentType)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.values(DocumentType).map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type.toUpperCase()}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Controller
+              name="type"
+              control={form.control}
+              render={({ field }) => (
+                <Select
+                  value={field.value ?? null}
+                  onValueChange={(val) => handleTypeChange(val, field.onChange)}
+                >
+                  <SelectTrigger>
+                    <SelectValue>Select type</SelectValue>
+                  </SelectTrigger>
+                  <SelectPopup>
+                    <SelectItem value={null}>Select type</SelectItem>
+                    {documentTypeItems.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+              )}
+            />
           </FieldControl>
           {form.formState.errors.type && (
             <FieldError>{form.formState.errors.type.message}</FieldError>
@@ -165,19 +187,6 @@ export function AddDocumentForm({
             <FieldError>{form.formState.errors.notes.message}</FieldError>
           )}
         </Field>
-
-        <div className="flex gap-4 pt-4">
-          <Button type="submit" disabled={mutation.isPending}>
-            {mutation.isPending ? 'Saving...' : 'Add to Library'}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onCancel && onCancel()}
-          >
-            Cancel
-          </Button>
-        </div>
       </div>
     </Form>
   );

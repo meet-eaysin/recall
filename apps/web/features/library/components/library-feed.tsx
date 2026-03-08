@@ -15,6 +15,16 @@ import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
+import { AddDocumentDialog } from './add-document-dialog';
+
 export function LibraryFeed() {
   const { data, isLoading, error } = useDocuments(1, 40);
 
@@ -41,16 +51,21 @@ export function LibraryFeed() {
 
   if (items.length === 0) {
     return (
-      <div className="py-24 text-center">
-        <BookOpen className="mx-auto h-12 w-12 text-muted.foreground/50 mb-3" />
-        <h3 className="text-lg font-medium text-foreground">
-          Your Library is empty
-        </h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          Save articles, videos, and documents to build your personal knowledge
-          base.
-        </p>
-      </div>
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <BookOpen />
+          </EmptyMedia>
+          <EmptyTitle>Your Library is empty</EmptyTitle>
+          <EmptyDescription>
+            Save articles, videos, and documents to build your personal
+            knowledge base.
+          </EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <AddDocumentDialog />
+        </EmptyContent>
+      </Empty>
     );
   }
 
