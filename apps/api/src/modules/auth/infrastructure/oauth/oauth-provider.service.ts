@@ -8,6 +8,7 @@ import { Request } from 'express';
 import { env } from '../../../../shared/utils/env';
 import { OAuthProfile } from '../../domain/entities/oauth-profile.entity';
 
+// Disable for esm import issue
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 type OpenIdClientModule = typeof import('openid-client');
 
