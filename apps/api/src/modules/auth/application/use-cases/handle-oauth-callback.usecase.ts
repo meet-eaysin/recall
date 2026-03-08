@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { AuthProvider } from '@repo/types';
 import { Request } from 'express';
 import { IUserRepository } from '../../../users/domain/repositories/user.repository';
 import { TokenService } from '../../domain/services/token.service';
 import { IExternalIdentityRepository } from '../../domain/repositories/external-identity.repository';
 import { OAuthProviderService } from '../../infrastructure/oauth/oauth-provider.service';
-import { AuthProvider } from '../../domain/entities/external-identity.entity';
 import { RefreshSessionService } from '../../domain/services/refresh-session.service';
 
 @Injectable()

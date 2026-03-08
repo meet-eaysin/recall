@@ -1,4 +1,4 @@
-import { AuthProvider } from './external-identity.entity';
+import { AuthProvider } from '@repo/types';
 
 export interface OAuthProfile {
   provider: AuthProvider;

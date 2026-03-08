@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import type { UserPublicView } from '@repo/types';
 
-export class UserPublicViewDto {
+export class UserPublicViewDto implements UserPublicView {
   @ApiProperty()
   id!: string;
 

@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
+import type {
+  AuthSessionUser,
+  AuthSessionView,
+  IdentityProvider,
+} from '@repo/types';
 
-class SessionUserDto {
+type AuthSessionDto = AuthSessionView['session'];
+
+class SessionUserDto implements AuthSessionUser {
   @ApiProperty()
   id!: string;
 
@@ -14,15 +21,15 @@ class SessionUserDto {
   avatarUrl!: string | null;
 
   @ApiProperty({ nullable: true, example: 'dev' })
-  provider!: string | null;
+  provider!: IdentityProvider | null;
 }
 
-class SessionDto {
+class SessionDto implements AuthSessionDto {
   @ApiProperty({ nullable: true })
   id!: string | null;
 }
 
-export class AuthSessionResponseDto {
+export class AuthSessionResponseDto implements AuthSessionView {
   @ApiProperty({ example: true })
   authenticated!: true;
 

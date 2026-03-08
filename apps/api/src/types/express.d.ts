@@ -1,5 +1,5 @@
 import 'express';
-import { AuthenticatedUser } from 'src/shared/types/authenticated-user.type';
+import { AuthenticatedUser } from '@repo/types';
 
 declare module 'express' {
   interface Request {

@@ -10,10 +10,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthenticatedUser, AuthProvider } from '@repo/types';
 import { GetSessionUseCase } from '../application/use-cases/get-session.usecase';
 import { ApiSuccessResponse } from '../../../shared/decorators/api-success-response.decorator';
 import { User } from '../../../shared/decorators/user.decorator';
-import { AuthenticatedUser } from '../../../shared/types/authenticated-user.type';
 import { AuthSessionResponseDto } from './dtos/auth.response.dto';
 import { Public } from '../../../shared/decorators/public.decorator';
 import { DevLoginDto } from './dtos/dev-login.dto';
@@ -184,7 +184,7 @@ export class AuthController {
   }
 
   private async handleProviderCallback(
-    provider: 'google' | 'github',
+    provider: AuthProvider,
     request: Request,
     response: Response,
   ) {

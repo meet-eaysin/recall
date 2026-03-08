@@ -1,3 +1,5 @@
+import { UserPublicView } from '@repo/types';
+
 export interface UserEntityProps {
   id: string;
   email: string;
@@ -6,13 +8,6 @@ export interface UserEntityProps {
   authId: string;
   createdAt?: Date;
   updatedAt?: Date;
-}
-
-export interface UserPublicView {
-  id: string;
-  email: string;
-  name: string;
-  avatarUrl: string | null;
 }
 
 export class UserEntity {

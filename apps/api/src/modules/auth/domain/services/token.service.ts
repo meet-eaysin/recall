@@ -1,9 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { AuthenticatedUser, AuthTokenClaims } from '@repo/types';
 import { JWTPayload, SignJWT, jwtVerify } from 'jose';
 import { randomUUID } from 'crypto';
 import { env } from '../../../../shared/utils/env';
-import { AuthenticatedUser } from '../../../../shared/types/authenticated-user.type';
-import { AuthTokenClaims } from '../entities/auth-token.entity';
 
 interface IssueSessionInput {
   user: AuthenticatedUser;

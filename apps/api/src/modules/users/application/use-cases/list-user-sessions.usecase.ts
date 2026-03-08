@@ -1,13 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { UserSessionView } from '@repo/types';
 import { IRefreshSessionRepository } from '../../../auth/domain/repositories/refresh-session.repository';
-
-export interface UserSessionView {
-  sessionId: string;
-  userAgent: string | null;
-  ipAddress: string | null;
-  expiresAt: string;
-  current: boolean;
-}
 
 @Injectable()
 export class ListUserSessionsUseCase {

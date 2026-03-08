@@ -3,9 +3,9 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { AuthProvider } from '@repo/types';
 import { Request } from 'express';
 import { env } from '../../../../shared/utils/env';
-import { AuthProvider } from '../../domain/entities/external-identity.entity';
 import { OAuthProfile } from '../../domain/entities/oauth-profile.entity';
 
 type OpenIdClientModule = typeof import('openid-client');

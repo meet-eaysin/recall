@@ -4,10 +4,10 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { AuthenticatedUser } from '@repo/types';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from '../../../../shared/decorators/public.decorator';
-import { AuthenticatedUser } from '../../../../shared/types/authenticated-user.type';
 import { AuthCookieService } from '../cookies/auth-cookie.service';
 import { TokenService } from '../../domain/services/token.service';
 import { IRefreshSessionRepository } from '../../domain/repositories/refresh-session.repository';

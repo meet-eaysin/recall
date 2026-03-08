@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { AuthProvider } from '@repo/types';
 import { Response } from 'express';
 import { JWTPayload, SignJWT, jwtVerify } from 'jose';
 import { env } from '../../../../shared/utils/env';
-import { AuthProvider } from '../../domain/entities/external-identity.entity';
 
 const OAUTH_TRANSACTION_COOKIE = 'ms_oauth_txn';
 

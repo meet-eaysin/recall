@@ -1,19 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AuthenticatedUser } from '../../../../shared/types/authenticated-user.type';
-
-export interface AuthSessionView {
-  authenticated: true;
-  user: {
-    id: string;
-    email: string | null;
-    name: string | null;
-    avatarUrl: string | null;
-    provider: string | null;
-  };
-  session: {
-    id: string | null;
-  };
-}
+import { AuthenticatedUser, AuthSessionView } from '@repo/types';
 
 @Injectable()
 export class GetSessionUseCase {

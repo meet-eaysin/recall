@@ -1,17 +1,6 @@
-export type ApiEnvelope<T> = {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  data: T;
-  timestamp: string;
-};
+import type { ApiResponse, PaginatedResponse } from '@repo/types';
 
-export type PaginatedResponse<T> = {
-  items: T[];
-  total: number;
-  page: number;
-  limit: number;
-};
+export type { ApiResponse as ApiEnvelope, PaginatedResponse };
 
 export class ApiError extends Error {
   status: number;
@@ -49,7 +38,7 @@ async function parseEnvelope<T>(response: Response): Promise<T> {
     throw new ApiError(message, response.status);
   }
 
-  const payload = (await response.json()) as ApiEnvelope<T>;
+  const payload = (await response.json()) as ApiResponse<T>;
   return payload.data;
 }
 

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import type { UserSessionView } from '@repo/types';
 
-export class UserSessionViewDto {
+export class UserSessionViewDto implements UserSessionView {
   @ApiProperty()
   sessionId!: string;
 

@@ -1,5 +1,6 @@
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthenticatedUser } from '@repo/types';
 import { GetMeUseCase } from '../application/use-cases/get-me.usecase';
 import { ApiSuccessResponse } from '../../../shared/decorators/api-success-response.decorator';
 import { User } from '../../../shared/decorators/user.decorator';
@@ -7,7 +8,6 @@ import { UserPublicViewDto } from './dtos/user.response.dto';
 import { ListUserSessionsUseCase } from '../application/use-cases/list-user-sessions.usecase';
 import { RevokeUserSessionUseCase } from '../application/use-cases/revoke-user-session.usecase';
 import { UserSessionViewDto } from './dtos/user-session.response.dto';
-import { AuthenticatedUser } from '../../../shared/types/authenticated-user.type';
 
 @ApiTags('Users')
 @ApiBearerAuth('bearerAuth')

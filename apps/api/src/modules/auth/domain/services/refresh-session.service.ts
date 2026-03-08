@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { createHash } from 'crypto';
-import { AuthenticatedUser } from '../../../../shared/types/authenticated-user.type';
+import { AuthenticatedUser } from '@repo/types';
 import { IRefreshSessionRepository } from '../repositories/refresh-session.repository';
 import { TokenService } from './token.service';
 
