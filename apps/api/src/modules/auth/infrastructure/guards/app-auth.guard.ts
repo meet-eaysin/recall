@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import type { AuthenticatedUser } from '@repo/types';
 import { Reflector } from '@nestjs/core';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { IS_PUBLIC_KEY } from '../../../../shared/decorators/public.decorator';
 import { AuthCookieService } from '../cookies/auth-cookie.service';
 import { TokenService } from '../../domain/services/token.service';

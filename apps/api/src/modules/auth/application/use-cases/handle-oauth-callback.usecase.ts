@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { AuthProvider } from '@repo/types';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { IUserRepository } from '../../../users/domain/repositories/user.repository';
 import { TokenService } from '../../domain/services/token.service';
 import { IExternalIdentityRepository } from '../../domain/repositories/external-identity.repository';

@@ -1,12 +1,7 @@
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
-import type {
-  INestApplication,
-  ValidationError} from '@nestjs/common';
-import {
-  ValidationPipe,
-  BadRequestException
-} from '@nestjs/common';
+import type { INestApplication, ValidationError } from '@nestjs/common';
+import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
 import { connectMongoDB, disconnectMongoDB } from '@repo/db';
 import { env } from '../src/shared/utils/env';

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { NotionConfigPublicView, UpdateNotionConfigRequest } from '@repo/types';
+import type { NotionConfigPublicView, UpdateNotionConfigRequest } from '@repo/types';
 import { INotionConfigRepository } from '../../domain/repositories/notion-config.repository';
 import { NotionConfigEntity } from '../../domain/entities/notion-config.entity';
 

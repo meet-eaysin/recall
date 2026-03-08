@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserActivityModel, DocumentModel, NoteModel } from '@repo/db';
 import { Types } from 'mongoose';
-import {
+import type {
   AnalyticsDocumentStatsAggregationResult,
   AnalyticsStatsAggregationResult,
 } from '@repo/types';

@@ -3,7 +3,7 @@ import { ReviewSelectorService } from '../../domain/services/review-selector.ser
 import { IDocumentRepository } from '../../../documents/domain/repositories/document.repository';
 import { IGraphRepository } from '../../../graph/domain/repositories/graph.repository';
 import { IReviewRepository } from '../../domain/repositories/review.repository';
-import { ReviewItem } from '@repo/types';
+import type { ReviewItem } from '@repo/types';
 import { DocumentEntity } from '../../../documents/domain/entities/document.entity';
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { NotionConfigModel, DocumentModel } from '@repo/db';
-import { NotionSyncResult } from '@repo/types';
+import type { NotionSyncResult } from '@repo/types';
 import { NotionClient } from '../../infrastructure/notion-client';
 import { decrypt } from '@repo/crypto';
 import { env } from '../../../../shared/utils/env';

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ApiResponse } from '@repo/types';
+import type { ApiResponse } from '@repo/types';
 
 export class ApiResponseDto<T> implements ApiResponse<T> {
   @ApiProperty({

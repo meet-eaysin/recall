@@ -1,4 +1,7 @@
-import type { NotionSyncDirectionType, NotionConfigPublicView } from '@repo/types';
+import type {
+  NotionSyncDirectionType,
+  NotionConfigPublicView,
+} from '@repo/types';
 
 export interface NotionConfigProps {
   id?: string;

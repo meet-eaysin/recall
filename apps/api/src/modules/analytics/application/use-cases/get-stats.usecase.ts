@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AnalyticsDocumentStatsAggregationResult } from '@repo/types';
+import type { AnalyticsDocumentStatsAggregationResult } from '@repo/types';
 import { IUserActivityRepository } from '../../domain/repositories/user-activity.repository';
 
 @Injectable()

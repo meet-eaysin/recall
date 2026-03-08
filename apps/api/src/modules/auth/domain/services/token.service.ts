@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import type { AuthenticatedUser, AuthTokenClaims } from '@repo/types';
-import { JWTPayload, SignJWT, jwtVerify } from 'jose';
+import type { JWTPayload } from 'jose';
 import { randomUUID } from 'crypto';
 import { env } from '../../../../shared/utils/env';
 
@@ -61,11 +61,12 @@ export class TokenService {
     return new Date(now.getTime() + duration);
   }
 
-  private signToken(
+  private async signToken(
     claims: AuthTokenClaims,
     secret: Uint8Array,
     expiresIn: string,
   ): Promise<string> {
+    const { SignJWT } = await import('jose');
     return new SignJWT(claims as unknown as JWTPayload)
       .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
       .setSubject(claims.sub)
@@ -80,6 +81,7 @@ export class TokenService {
     expectedType: AuthTokenClaims['typ'],
   ): Promise<AuthenticatedUser> {
     try {
+      const { jwtVerify } = await import('jose');
       const { payload } = await jwtVerify(token, secret);
       const claims = payload as JWTPayload & Partial<AuthTokenClaims>;
 

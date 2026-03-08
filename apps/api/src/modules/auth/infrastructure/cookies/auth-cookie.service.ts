@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { env } from '../../../../shared/utils/env';
 
 export const ACCESS_COOKIE_NAME = 'ms_access_token';

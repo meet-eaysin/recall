@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LLMConfigPublicView } from '@repo/types';
+import type { LLMConfigPublicView } from '@repo/types';
 import { ILLMConfigRepository } from '../../domain/repositories/llm-config.repository';
 
 @Injectable()

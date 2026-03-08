@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LLMConfigPublicView, SaveLLMConfigRequest } from '@repo/types';
+import type { LLMConfigPublicView, SaveLLMConfigRequest } from '@repo/types';
 import { LLMConfigEntity } from '../../domain/entities/llm-config.entity';
 import { encrypt } from '@repo/crypto';
 import { env } from '../../../../shared/utils/env';

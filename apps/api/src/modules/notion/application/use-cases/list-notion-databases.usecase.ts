@@ -5,7 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { NotionConfigModel } from '@repo/db';
-import { NotionDatabase } from '@repo/types';
+import type { NotionDatabase } from '@repo/types';
 import { NotionClient } from '../../infrastructure/notion-client';
 import { decrypt } from '@repo/crypto';
 import { env } from '../../../../shared/utils/env';

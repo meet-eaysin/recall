@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import type { AuthProvider } from '@repo/types';
-import { Response } from 'express';
-import { JWTPayload, SignJWT, jwtVerify } from 'jose';
+import type { Response } from 'express';
+import type { JWTPayload } from 'jose';
 import { env } from '../../../../shared/utils/env';
 
 const OAUTH_TRANSACTION_COOKIE = 'ms_oauth_txn';
@@ -21,6 +21,7 @@ export class OAuthTransactionCookieService {
     response: Response,
     payload: OAuthTransactionPayload,
   ): Promise<void> {
+    const { SignJWT } = await import('jose');
     const token = await new SignJWT(payload as unknown as JWTPayload)
       .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
       .setIssuedAt()
@@ -48,6 +49,7 @@ export class OAuthTransactionCookieService {
     }
 
     try {
+      const { jwtVerify } = await import('jose');
       const { payload } = await jwtVerify(token, this.secret);
 
       if (

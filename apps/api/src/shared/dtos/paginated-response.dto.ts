@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginatedResponse } from '@repo/types';
+import type { PaginatedResponse } from '@repo/types';
 
 export class PaginatedResponseDto<T> implements PaginatedResponse<T> {
   items: T[];

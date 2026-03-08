@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { UserPublicView } from '@repo/types';
+import type { UserPublicView } from '@repo/types';
 import { IUserRepository } from '../../domain/repositories/user.repository';
 
 @Injectable()

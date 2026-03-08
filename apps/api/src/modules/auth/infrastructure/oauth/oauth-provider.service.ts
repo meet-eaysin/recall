@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import type { AuthProvider } from '@repo/types';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { env } from '../../../../shared/utils/env';
 import { OAuthProfile } from '../../domain/entities/oauth-profile.entity';
 

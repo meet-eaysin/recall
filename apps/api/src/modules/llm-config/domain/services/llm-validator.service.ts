@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
-import { LLMCapabilities } from '@repo/types';
+import type { LLMCapabilities } from '@repo/types';
 
 @Injectable()
 export class LLMValidatorService {

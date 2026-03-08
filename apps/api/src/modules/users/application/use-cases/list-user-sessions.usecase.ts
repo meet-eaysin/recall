@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserSessionView } from '@repo/types';
+import type { UserSessionView } from '@repo/types';
 import { IRefreshSessionRepository } from '../../../auth/domain/repositories/refresh-session.repository';
 
 @Injectable()
