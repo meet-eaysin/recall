@@ -4,5 +4,6 @@
     "baseUrl": "./",
     "outDir": "./dist",
     "strictNullChecks": true
-  }
+  },
+  "include": ["src/**/*"]
 }

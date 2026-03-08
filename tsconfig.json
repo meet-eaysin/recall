@@ -1,6 +1,9 @@
 {
   "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
-    "strictNullChecks": true
-  }
+    "strictNullChecks": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
+  },
+  "include": ["apps/*/src/**/*", "packages/*/src/**/*"]
 }

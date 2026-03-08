@@ -19,7 +19,7 @@ import { Public } from '../../../shared/decorators/public.decorator';
 import { DevLoginDto } from './dtos/dev-login.dto';
 import { DevLoginUseCase } from '../application/use-cases/dev-login.usecase';
 import { AuthCookieService } from '../infrastructure/cookies/auth-cookie.service';
-import { Response, Request } from 'express';
+import type { Response, Request } from 'express';
 import { RefreshSessionUseCase } from '../application/use-cases/refresh-session.usecase';
 import { LogoutUseCase } from '../application/use-cases/logout.usecase';
 import { LogoutAllUseCase } from '../application/use-cases/logout-all.usecase';
