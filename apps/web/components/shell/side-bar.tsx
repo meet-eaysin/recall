@@ -15,7 +15,6 @@ const utilityLinks = [
     href: '/integrations/notion',
     icon: 'webhook' as const,
   },
-  { name: 'Daily Review', href: '/review', icon: 'calendar-check-2' as const },
 ];
 
 export function SideBarContainer(props: SideBarProps) {

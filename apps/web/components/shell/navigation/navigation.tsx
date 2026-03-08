@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
+import type { NavigationItemType } from './navigation-item';
 import {
   MobileNavigationItem,
   MobileNavigationMoreItem,
   NavigationItem,
-  NavigationItemType,
 } from './navigation-item';
 import { useMobileMoreItems } from './use-mobile-more-items';
 
@@ -18,75 +18,25 @@ const getNavigationItems = (): NavigationItemType[] => [
     isCurrent: ({ pathname }) => pathname === '/',
   },
   {
-    name: 'documents',
-    label: 'Documents',
+    name: 'library',
+    label: 'Library',
     href: '/documents',
-    icon: 'file-text',
+    icon: 'library',
     isCurrent: ({ pathname }) => pathname?.startsWith('/documents') ?? false,
   },
   {
-    name: 'folders',
-    label: 'Folders',
-    href: '/folders',
-    icon: 'folder',
-    isCurrent: ({ pathname }) => pathname?.startsWith('/folders') ?? false,
-  },
-  {
-    name: 'tags',
-    label: 'Tags',
-    href: '/tags',
-    icon: 'tags',
-    isCurrent: ({ pathname }) => pathname?.startsWith('/tags') ?? false,
-  },
-  {
-    name: 'notes',
-    label: 'Notes',
-    href: '/notes',
-    icon: 'book-open',
-    isCurrent: ({ pathname }) => pathname?.startsWith('/notes') ?? false,
-  },
-  {
     name: 'search',
-    label: 'Search',
+    label: 'Search & Ask AI',
     href: '/search',
     icon: 'search',
-    isCurrent: ({ pathname: path, item }) => {
-      return path?.startsWith(item.href) ?? false;
-    },
-    child: [
-      {
-        name: 'semantic_search',
-        label: 'Semantic Search',
-        href: '/search',
-        isCurrent: ({ pathname }) => pathname === '/search',
-      },
-      {
-        name: 'ask_ai',
-        label: 'Ask AI',
-        href: '/search/ask',
-        isCurrent: ({ pathname }) =>
-          pathname?.startsWith('/search/ask') ?? false,
-      },
-    ],
-  },
-  {
-    name: MORE_SEPARATOR_NAME,
-    href: '/more',
-    icon: 'ellipsis',
+    isCurrent: ({ pathname }) => pathname?.startsWith('/search') ?? false,
   },
   {
     name: 'knowledge_graph',
-    label: 'Graph',
+    label: 'Knowledge Graph',
     href: '/graph',
     icon: 'waypoints',
     isCurrent: ({ pathname }) => pathname?.startsWith('/graph') ?? false,
-  },
-  {
-    name: 'daily_review',
-    label: 'Review',
-    href: '/review',
-    icon: 'calendar-check-2',
-    isCurrent: ({ pathname }) => pathname?.startsWith('/review') ?? false,
   },
   {
     name: 'analytics',
@@ -94,22 +44,32 @@ const getNavigationItems = (): NavigationItemType[] => [
     href: '/analytics',
     icon: 'chart-line',
     isCurrent: ({ pathname }) => pathname?.startsWith('/analytics') ?? false,
-    moreOnMobile: true,
   },
   {
-    name: 'integrations',
-    label: 'Integrations',
-    href: '/integrations',
-    icon: 'webhook',
-    isCurrent: ({ pathname }) => pathname?.startsWith('/integrations') ?? false,
+    name: MORE_SEPARATOR_NAME,
+    href: '/more',
+    icon: 'ellipsis',
+  },
+  {
+    name: 'settings',
+    label: 'Settings',
+    href: '/settings',
+    icon: 'settings',
+    isCurrent: ({ pathname }) => pathname?.startsWith('/settings') ?? false,
     moreOnMobile: true,
     child: [
       {
-        name: 'notion',
-        label: 'Notion',
-        href: '/integrations/notion',
+        name: 'general',
+        label: 'Profile & Security',
+        href: '/settings',
+        isCurrent: ({ pathname }) => pathname === '/settings',
+      },
+      {
+        name: 'integrations',
+        label: 'Integrations',
+        href: '/integrations',
         isCurrent: ({ pathname }) =>
-          pathname?.startsWith('/integrations/notion') ?? false,
+          pathname?.startsWith('/integrations') ?? false,
       },
       {
         name: 'llm_config',
@@ -119,14 +79,6 @@ const getNavigationItems = (): NavigationItemType[] => [
           pathname?.startsWith('/settings/llm') ?? false,
       },
     ],
-  },
-  {
-    name: 'settings',
-    label: 'Settings',
-    href: '/settings',
-    icon: 'settings',
-    isCurrent: ({ pathname }) => pathname?.startsWith('/settings') ?? false,
-    moreOnMobile: true,
   },
 ];
 
