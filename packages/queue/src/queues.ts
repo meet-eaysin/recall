@@ -1,7 +1,8 @@
-import { Queue, QueueOptions, JobsOptions, Job } from 'bullmq';
-import { Redis } from 'ioredis';
-import { NotionAction } from '@repo/types';
-import {
+import type { QueueOptions, JobsOptions, Job } from 'bullmq';
+import { Queue } from 'bullmq';
+import type { Redis } from 'ioredis';
+import type { NotionAction } from '@repo/types';
+import type {
   IngestionJobData,
   SummaryJobData,
   GraphJobData,
@@ -108,6 +109,22 @@ export let notionQueue: NotionSyncQueue;
 export let transcriptQueue: TranscriptQueue;
 
 export function initQueues(connection: Redis) {
+  if (
+    ingestionQueue &&
+    summaryQueue &&
+    graphQueue &&
+    notionQueue &&
+    transcriptQueue
+  ) {
+    return {
+      ingestionQueue,
+      summaryQueue,
+      graphQueue,
+      notionQueue,
+      transcriptQueue,
+    };
+  }
+
   ingestionQueue = new IngestionQueue(connection);
   summaryQueue = new SummaryQueue(connection);
   graphQueue = new GraphQueue(connection);

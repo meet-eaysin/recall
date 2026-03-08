@@ -20,7 +20,7 @@ export class TranscriptWorker {
 
   constructor(private readonly documentRepository: IDocumentRepository) {
     const redis = createRedisConnection(env.REDIS_URL);
-    this.qdrant = new QdrantWrapper(env.QDRANT_URL);
+    this.qdrant = new QdrantWrapper(env.QDRANT_URL, env.QDRANT_API_KEY);
 
     this._worker = new Worker<TranscriptJobData>(
       'transcript',

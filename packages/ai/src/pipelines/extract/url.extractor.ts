@@ -1,10 +1,6 @@
 import axios from 'axios';
 import https from 'https';
 
-// In development, handle self-signed or missing local issuer certificates
-if (process.env.NODE_ENV !== 'production')
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 export interface UrlExtractResult {
   title: string;
   author: string | undefined;

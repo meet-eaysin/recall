@@ -43,7 +43,7 @@ export class IngestionWorker {
     private readonly localStorage: LocalStorage,
   ) {
     const redis = createRedisConnection(env.REDIS_URL);
-    this.qdrant = new QdrantWrapper(env.QDRANT_URL);
+    this.qdrant = new QdrantWrapper(env.QDRANT_URL, env.QDRANT_API_KEY);
 
     initQueues(redis);
 
