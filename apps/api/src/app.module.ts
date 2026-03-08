@@ -13,6 +13,7 @@ import { AllExceptionsFilter } from './shared/filters/http-exception.filter';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AppAuthGuard } from './modules/auth/infrastructure/guards/app-auth.guard';
+import { DevUserGuard } from './shared/guards/dev-user.guard';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { GraphModule } from './modules/graph/graph.module';
 import { IngestionModule } from './modules/ingestion/ingestion.module';
@@ -51,7 +52,7 @@ import { TransformInterceptor } from './shared/interceptors/transform.intercepto
     },
     {
       provide: APP_GUARD,
-      useClass: AppAuthGuard,
+      useClass: env.NODE_ENV === 'development' ? DevUserGuard : AppAuthGuard,
     },
     {
       provide: APP_FILTER,

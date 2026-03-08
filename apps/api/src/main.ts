@@ -26,8 +26,9 @@ export async function bootstrap(): Promise<INestApplication> {
   app.use(cookieParser());
 
   // CORS Configuration
+  const origins = env.CORS_ORIGIN.split(',').map((origin) => origin.trim());
   app.enableCors({
-    origin: env.CORS_ORIGIN,
+    origin: origins,
     credentials: true,
   });
 

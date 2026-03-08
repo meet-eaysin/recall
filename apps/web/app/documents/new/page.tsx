@@ -1,12 +1,15 @@
 import { FeatureShellPage } from '@/components/app/feature-shell-page';
+import { AddDocumentForm } from '@/features/library/components/add-document-form';
 
 export default function NewDocumentPage() {
   return (
     <FeatureShellPage
-      title="Add Document"
-      subtitle="Create a new ingestion task"
-      description="Next step is implementing the ingestion form with type-specific inputs for URL, YouTube, PDF, image, and text content."
-      endpoints={['POST /documents', 'POST /documents/upload']}
-    />
+      title="Add to Library"
+      subtitle="Save a new link or document"
+      description="Input a URL to save for later, or manually create a knowledge note. Type @ in the notes field to mention other documents."
+      endpoints={['POST /documents']}
+    >
+      <AddDocumentForm />
+    </FeatureShellPage>
   );
 }

@@ -4055,6 +4055,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:5.90.20":
+  version: 5.90.20
+  resolution: "@tanstack/query-core@npm:5.90.20"
+  checksum: 10c0/70637dfcecd5ed9d810629aa27f1632af8a4bcd083e75cf29408d058c32f8234704a3231ec280e2c4016ea0485b16124fdf70ab97793b5a7b670f43f7659e9fe
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.90.21":
+  version: 5.90.21
+  resolution: "@tanstack/react-query@npm:5.90.21"
+  dependencies:
+    "@tanstack/query-core": "npm:5.90.20"
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: 10c0/e8994c57f6ceb2c886a4d6486a8c6a3f89bc6b1220de3e732448d7fcbeb386e9358f03c73804de72004c6ac2668d0bf1b44cedbb273d3e4b33afcbaee7b7d24d
+  languageName: node
+  linkType: hard
+
 "@tokenizer/inflate@npm:^0.4.1":
   version: 0.4.1
   resolution: "@tokenizer/inflate@npm:0.4.1"
@@ -5151,7 +5169,7 @@ __metadata:
     "@types/multer": "npm:^2.0.0"
     "@types/node": "npm:^22.19.3"
     "@types/supertest": "npm:^6.0.3"
-    bullmq: "npm:^5.41.6"
+    bullmq: "npm:^5.70.4"
     class-transformer: "npm:^0.5.1"
     class-validator: "npm:^0.15.1"
     cookie-parser: "npm:^1.4.7"
@@ -5609,7 +5627,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bullmq@npm:^5.41.6":
+"bullmq@npm:^5.70.4":
   version: 5.70.4
   resolution: "bullmq@npm:5.70.4"
   dependencies:
@@ -12656,6 +12674,7 @@ __metadata:
     "@repo/typescript-config": "npm:*"
     "@tailwindcss/postcss": "npm:^4.2.1"
     "@tailwindcss/typography": "npm:^0.5.19"
+    "@tanstack/react-query": "npm:^5.90.21"
     "@types/node": "npm:^22.15.3"
     "@types/react": "npm:19.1.0"
     "@types/react-dom": "npm:19.1.1"

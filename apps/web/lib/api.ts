@@ -19,8 +19,11 @@ type ApiGetOptions = RequestInit & {
   };
 };
 
-const API_BASE_URL =
+const rawBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
+const API_BASE_URL = rawBaseUrl.endsWith('/api/v1')
+  ? rawBaseUrl
+  : `${rawBaseUrl}/api/v1`;
 const DEV_USER_ID =
   process.env.NEXT_PUBLIC_DEV_USER_ID ?? '65f1a2b3c4d5e6f7a8b9c0d3';
 
@@ -51,6 +54,72 @@ export async function apiGet<T>(
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
+    headers,
+  });
+
+  return parseEnvelope<T>(response);
+}
+
+type ApiMutationOptions = Omit<RequestInit, 'body'> & {
+  body?: unknown;
+};
+
+export async function apiPost<T>(
+  path: string,
+  options?: ApiMutationOptions,
+): Promise<T> {
+  const headers = new Headers(options?.headers);
+  headers.set('x-user-id', DEV_USER_ID);
+  if (options?.body instanceof FormData === false) {
+    headers.set('Content-Type', 'application/json');
+  }
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    method: 'POST',
+    body:
+      options?.body instanceof FormData
+        ? options.body
+        : JSON.stringify(options?.body),
+    headers,
+  });
+
+  return parseEnvelope<T>(response);
+}
+
+export async function apiPatch<T>(
+  path: string,
+  options?: ApiMutationOptions,
+): Promise<T> {
+  const headers = new Headers(options?.headers);
+  headers.set('x-user-id', DEV_USER_ID);
+  if (options?.body instanceof FormData === false) {
+    headers.set('Content-Type', 'application/json');
+  }
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    method: 'PATCH',
+    body:
+      options?.body instanceof FormData
+        ? options.body
+        : JSON.stringify(options?.body),
+    headers,
+  });
+
+  return parseEnvelope<T>(response);
+}
+
+export async function apiDelete<T>(
+  path: string,
+  options?: RequestInit,
+): Promise<T> {
+  const headers = new Headers(options?.headers);
+  headers.set('x-user-id', DEV_USER_ID);
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    method: 'DELETE',
     headers,
   });
 
