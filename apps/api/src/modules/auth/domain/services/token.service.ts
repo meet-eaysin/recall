@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import type { AuthenticatedUser, AuthTokenClaims } from '@repo/types';
-import type { JWTPayload } from '../types/jose.types';
+import type { JWTPayload } from '../types/esm-bridge.types';
 import { randomUUID } from 'crypto';
 import { env } from '../../../../shared/utils/env';
 

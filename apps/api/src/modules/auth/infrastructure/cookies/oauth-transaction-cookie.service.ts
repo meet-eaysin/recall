@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import type { AuthProvider } from '@repo/types';
 import type { Response } from 'express';
-import type { JWTPayload } from '../../domain/types/jose.types';
+import type { JWTPayload } from '../../domain/types/esm-bridge.types';
 import { env } from '../../../../shared/utils/env';
 
 const OAUTH_TRANSACTION_COOKIE = 'ms_oauth_txn';
