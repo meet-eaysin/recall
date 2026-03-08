@@ -1,6 +1,6 @@
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import type { AuthenticatedUser } from '@repo/types';
+import { AuthenticatedUser } from '@repo/types';
 import { GetMeUseCase } from '../application/use-cases/get-me.usecase';
 import { ApiSuccessResponse } from '../../../shared/decorators/api-success-response.decorator';
 import { User } from '../../../shared/decorators/user.decorator';

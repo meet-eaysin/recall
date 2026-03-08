@@ -4,6 +4,5 @@
     "strictNullChecks": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
-  },
-  "include": ["apps/*/src/**/*", "packages/*/src/**/*"]
+  }
 }
