@@ -1,9 +1,9 @@
 import { describe, it, beforeAll, afterAll } from '@jest/globals';
-import { INestApplication } from '@nestjs/common';
+import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { setupApp, teardownApp } from './setup';
 import { assertHealthSuccess, assertErrorShape } from './helpers';
-import { Server } from 'http';
+import type { Server } from 'http';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<Server>;

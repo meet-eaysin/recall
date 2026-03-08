@@ -1,8 +1,8 @@
 import { expect } from '@jest/globals';
-import { INestApplication } from '@nestjs/common';
+import type { INestApplication } from '@nestjs/common';
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { Server } from 'http';
+import type { Server } from 'http';
 
 export const TEST_USER_ID = '65f1a2b3c4d5e6f7a8b9c0d1';
 

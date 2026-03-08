@@ -1,4 +1,4 @@
-import { DocumentStatus } from '@repo/types';
+import type { DocumentStatus } from '@repo/types';
 
 export interface UpdateDocumentCommand {
   id: string;

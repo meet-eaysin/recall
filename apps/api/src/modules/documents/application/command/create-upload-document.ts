@@ -1,4 +1,4 @@
-import { CreateDocumentCommand } from './create-document';
+import type { CreateDocumentCommand } from './create-document';
 
 export interface CreateUploadDocumentCommand extends Omit<
   CreateDocumentCommand,

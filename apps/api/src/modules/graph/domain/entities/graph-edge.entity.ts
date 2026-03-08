@@ -1,4 +1,4 @@
-import { GraphRelationType, GraphGenerationMethod } from '@repo/types';
+import type { GraphRelationType, GraphGenerationMethod } from '@repo/types';
 
 export interface GraphEdgeView {
   id: string;

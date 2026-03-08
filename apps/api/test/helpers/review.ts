@@ -1,5 +1,5 @@
 import { TEST_USER_ID } from './common';
-import { ReviewItem, RecommendationResult } from '@repo/types';
+import type { ReviewItem, RecommendationResult } from '@repo/types';
 
 import { isObject } from './common';
 

@@ -1,5 +1,5 @@
-import { DocumentEntity } from '../entities/document.entity';
-import { DocFilters, IngestionStatusView } from '../types/document.types';
+import type { DocumentEntity } from '../entities/document.entity';
+import type { DocFilters, IngestionStatusView } from '../types/document.types';
 
 export type { DocFilters, IngestionStatusView };
 

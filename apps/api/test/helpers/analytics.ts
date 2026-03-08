@@ -1,5 +1,5 @@
 import { isObject, TEST_USER_ID } from './common';
-import { AnalyticsHeatmapItem } from '@repo/types';
+import type { AnalyticsHeatmapItem } from '@repo/types';
 
 export interface HeatmapResponse {
   success: boolean;

@@ -1,4 +1,4 @@
-import { AuthProvider } from '@repo/types';
+import type { AuthProvider } from '@repo/types';
 
 export interface OAuthProfile {
   provider: AuthProvider;

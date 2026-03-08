@@ -1,4 +1,4 @@
-import { UserEntity } from '../entities/user.entity';
+import type { UserEntity } from '../entities/user.entity';
 
 export interface UpsertIdentityUserInput {
   authId: string;

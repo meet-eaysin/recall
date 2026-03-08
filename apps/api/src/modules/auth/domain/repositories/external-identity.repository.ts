@@ -1,5 +1,5 @@
-import { AuthProvider } from '@repo/types';
-import { ExternalIdentityEntity } from '../entities/external-identity.entity';
+import type { AuthProvider } from '@repo/types';
+import type { ExternalIdentityEntity } from '../entities/external-identity.entity';
 
 export interface LinkExternalIdentityInput {
   userId: string;

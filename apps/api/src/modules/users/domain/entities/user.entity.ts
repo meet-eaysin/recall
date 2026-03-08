@@ -1,4 +1,4 @@
-import { UserPublicView } from '@repo/types';
+import type { UserPublicView } from '@repo/types';
 
 export interface UserEntityProps {
   id: string;

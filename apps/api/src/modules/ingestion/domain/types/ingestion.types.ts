@@ -1,4 +1,4 @@
-import { IngestionStatus } from '@repo/types';
+import type { IngestionStatus } from '@repo/types';
 
 export interface IngestionJobView {
   documentId: string;

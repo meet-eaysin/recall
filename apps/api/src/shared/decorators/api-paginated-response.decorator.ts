@@ -1,4 +1,5 @@
-import { applyDecorators, Type } from '@nestjs/common';
+import type { Type } from '@nestjs/common';
+import { applyDecorators } from '@nestjs/common';
 import { ApiOkResponse, getSchemaPath, ApiExtraModels } from '@nestjs/swagger';
 import { ApiResponseDto } from '../dtos/api-response.dto';
 import { PaginatedResponseDto } from '../dtos/paginated-response.dto';

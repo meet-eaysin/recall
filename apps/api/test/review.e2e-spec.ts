@@ -6,7 +6,7 @@ import {
   expect,
   afterEach,
 } from '@jest/globals';
-import { INestApplication } from '@nestjs/common';
+import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { setupApp, teardownApp, cleanupDatabase } from './setup';
 import {
@@ -16,7 +16,7 @@ import {
   isDailyReviewResponse,
   isRecommendationResponse,
 } from './helpers';
-import { Server } from 'http';
+import type { Server } from 'http';
 import { DocumentStatus } from '@repo/types';
 
 describe('Review (e2e)', () => {
