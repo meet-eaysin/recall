@@ -10,7 +10,7 @@ import {
   MenuSeparator,
 } from '@/components/ui/menu';
 import { Button } from '@/components/ui/button';
-import type { DocumentRow } from '@/features/library/api';
+import type { DocumentRow } from '../../types';
 
 interface CardActionsProps {
   document: DocumentRow;

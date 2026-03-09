@@ -1,4 +1,4 @@
-import type { DocumentRow } from '@/features/library/api';
+import type { DocumentRow } from '@/features/library/types';
 import { BaseDocumentCard } from '../base-document-card';
 
 interface YoutubeCardProps {
