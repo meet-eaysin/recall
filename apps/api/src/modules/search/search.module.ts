@@ -8,6 +8,7 @@ import { DocumentsModule } from '../documents/documents.module';
 import { LLMConfigModule } from '../llm-config/llm-config.module';
 import { SearchController } from './interface/search.controller';
 import { AnalyticsModule } from '../analytics/analytics.module';
+import { SearchChatService } from './domain/services/search-chat.service';
 
 @Module({
   imports: [DocumentsModule, LLMConfigModule, AnalyticsModule],
@@ -16,6 +17,7 @@ import { AnalyticsModule } from '../analytics/analytics.module';
     NormalSearchService,
     SemanticSearchService,
     RagService,
+    SearchChatService,
     SearchUseCase,
     AskUseCase,
   ],

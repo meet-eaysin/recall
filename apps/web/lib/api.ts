@@ -32,10 +32,10 @@ type ApiGetOptions = RequestInit & {
 
 const rawBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
-const API_BASE_URL = rawBaseUrl.endsWith('/api/v1')
+export const API_BASE_URL = rawBaseUrl.endsWith('/api/v1')
   ? rawBaseUrl
   : `${rawBaseUrl}/api/v1`;
-const DEV_USER_ID =
+export const DEV_USER_ID =
   process.env.NEXT_PUBLIC_DEV_USER_ID ?? '65f1a2b3c4d5e6f7a8b9c0d3';
 
 async function parseEnvelope<T>(response: Response): Promise<T> {

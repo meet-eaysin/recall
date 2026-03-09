@@ -19,4 +19,11 @@ export const QUERY_KEYS = {
     notes: (documentId: string) =>
       ['library', 'document', documentId, 'notes'] as const,
   },
+  SEARCH: {
+    ROOT: ['search'] as const,
+    results: (params: Record<string, unknown>) =>
+      ['search', 'results', params] as const,
+    chats: () => ['search', 'chats'] as const,
+    chat: (id: string) => ['search', 'chats', id] as const,
+  },
 } as const;

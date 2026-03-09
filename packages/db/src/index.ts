@@ -15,6 +15,7 @@ export * from './models/user-activity.model';
 export * from './models/review-dismissal.model';
 export * from './models/external-identity.model';
 export * from './models/refresh-session.model';
+export * from './models/chat-conversation.model';
 
 export * from './types/user.type';
 export * from './types/document.type';
@@ -32,6 +33,7 @@ export * from './types/user-activity.type';
 export * from './types/review-dismissal.type';
 export * from './types/external-identity.type';
 export * from './types/refresh-session.type';
+export * from './types/chat-conversation.type';
 
 export {
   GraphNodeType,

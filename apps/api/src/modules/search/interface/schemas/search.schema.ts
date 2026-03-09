@@ -121,6 +121,16 @@ export class AskQueryDto {
     message: 'Invalid document ID format',
   })
   documentIds?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Continue an existing conversation',
+  })
+  @IsOptional()
+  @IsString()
+  @Matches(/^[0-9a-fA-F]{24}$/, {
+    message: 'Invalid conversation ID format',
+  })
+  conversationId?: string;
 }
 
 export class SemanticSearchResultDto {
@@ -167,6 +177,9 @@ export class SourceRefDto {
 }
 
 export class AskResultDto {
+  @ApiProperty()
+  conversationId!: string;
+
   @ApiProperty({ description: 'The generated AI answer' })
   answer!: string;
 
@@ -178,4 +191,60 @@ export class AskResultDto {
 
   @ApiProperty()
   tokensUsed!: number;
+}
+
+export class ChatMessageDto {
+  @ApiProperty()
+  id!: string;
+
+  @ApiProperty({ enum: ['user', 'assistant'] })
+  role!: 'user' | 'assistant';
+
+  @ApiProperty()
+  content!: string;
+
+  @ApiProperty({ enum: ['completed', 'error'] })
+  status!: 'completed' | 'error';
+
+  @ApiProperty({ type: [SourceRefDto] })
+  sources!: SourceRefDto[];
+
+  @ApiProperty()
+  tokensUsed!: number;
+
+  @ApiProperty()
+  createdAt!: string;
+}
+
+export class ChatConversationSummaryDto {
+  @ApiProperty()
+  id!: string;
+
+  @ApiProperty()
+  title!: string;
+
+  @ApiProperty({ type: [String] })
+  documentIds!: string[];
+
+  @ApiProperty()
+  messageCount!: number;
+
+  @ApiPropertyOptional({ nullable: true })
+  lastMessagePreview!: string | null;
+
+  @ApiProperty()
+  createdAt!: string;
+
+  @ApiProperty()
+  updatedAt!: string;
+}
+
+export class ChatConversationDto extends ChatConversationSummaryDto {
+  @ApiProperty({ type: [ChatMessageDto] })
+  messages!: ChatMessageDto[];
+}
+
+export class ChatConversationListDto {
+  @ApiProperty({ type: [ChatConversationSummaryDto] })
+  conversations!: ChatConversationSummaryDto[];
 }

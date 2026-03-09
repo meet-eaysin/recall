@@ -28,4 +28,11 @@ export const API_ENDPOINTS = {
       detail: (id: string) => `/knowledge/notes/${id}`,
     },
   },
+  SEARCH: {
+    LIST: '/search',
+    ASK: '/search/ask',
+    ASK_STREAM: '/search/ask/stream',
+    CHATS: '/search/chats',
+    chat: (id: string) => `/search/chats/${id}`,
+  },
 } as const;
