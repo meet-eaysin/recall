@@ -1,18 +1,25 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiGet } from '@/lib/api';
-import type { PaginatedResponse } from '@repo/types';
+import type {
+  DocumentType,
+  DocumentStatus,
+  SourceType,
+  PaginatedResponse,
+} from '@repo/types';
 
-export type DocumentRow = {
+export interface DocumentRow {
   id: string;
   title: string;
-  source: string;
-  type: string;
-  status: string;
-  updatedAt: string;
-  tags?: string[];
+  type: DocumentType;
+  status: DocumentStatus;
+  sourceType: SourceType;
+  sourceUrl?: string;
+  tags: string[];
   folderId?: string;
-  sourceUrl?: string; // URL for daily.dev style clickthrough
-};
+  lastOpenedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 type DocumentsListData = PaginatedResponse<DocumentRow>;
 
