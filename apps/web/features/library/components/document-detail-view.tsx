@@ -107,6 +107,8 @@ export function DocumentDetailView({ id }: { id: string }) {
   const updateNote = useUpdateNote(id);
 
   const folder = folders.find((item) => item.id === document?.folderId);
+  const canRetryIngestion =
+    ingestion?.ingestionStatus === IngestionStatus.FAILED && !ingestion.embeddingsReady;
 
   async function handleDeleteDocument() {
     if (!document) return;
@@ -618,6 +620,7 @@ export function DocumentDetailView({ id }: { id: string }) {
                 size="sm"
                 variant="outline"
                 className="h-7 gap-1.5 text-xs"
+                disabled={!canRetryIngestion || retryIngestion.isPending}
               >
                 {retryIngestion.isPending ? (
                   <LoaderCircle className="size-3 animate-spin" />

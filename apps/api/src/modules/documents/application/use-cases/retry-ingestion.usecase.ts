@@ -30,9 +30,12 @@ export class RetryIngestionUseCase {
       throw new NotFoundException('Document not found');
     }
 
-    if (doc.ingestionStatus !== IngestionStatus.FAILED) {
+    const canRetry =
+      doc.ingestionStatus === IngestionStatus.FAILED && !doc.embeddingsReady;
+
+    if (!canRetry) {
       throw new UnprocessableEntityException(
-        'Document ingestion has not failed',
+        'Retry is only available for failed document ingestions',
       );
     }
 

@@ -14,9 +14,11 @@ import {
   isDocumentResponse,
   isIngestionStatusResponse,
   assertErrorShape,
+  seedDocument,
 } from './helpers';
 import type { Server } from 'http';
 import * as path from 'path';
+import { IngestionStatus } from '@repo/types';
 
 describe('AI Ingestion (e2e)', () => {
   let app: INestApplication<Server>;
@@ -115,5 +117,26 @@ describe('AI Ingestion (e2e)', () => {
       .expect(400);
 
     assertErrorShape(response.body, 400, 'BAD_REQUEST');
+  });
+
+  it('should reject retry when ingestion is already completed and embeddings are ready', async () => {
+    const auth = await createTestAuthContext(app, {
+      authId: 'dev:ai-ingestion-retry-completed',
+      email: 'ai-ingestion-retry-completed@test.local',
+    });
+
+    const docId = await seedDocument({
+      userId: auth.userId,
+      title: 'Completed Ingestion Doc',
+      embeddingsReady: true,
+      ingestionStatus: IngestionStatus.COMPLETED,
+    });
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/documents/${docId}/retry-ingestion`)
+      .set('Cookie', auth.cookies)
+      .expect(422);
+
+    assertErrorShape(response.body, 422, 'UNPROCESSABLE_ENTITY');
   });
 });

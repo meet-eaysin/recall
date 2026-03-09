@@ -1,4 +1,9 @@
-import { DocumentType, DocumentStatus, SourceType } from '@repo/types';
+import {
+  DocumentType,
+  DocumentStatus,
+  IngestionStatus,
+  SourceType,
+} from '@repo/types';
 import { TEST_USER_ID, generateId, isObject } from './common';
 
 export interface DocumentResponse {
@@ -65,6 +70,8 @@ export async function seedDocument(
     sourceUrl?: string;
     sourceType?: SourceType;
     embeddingsReady?: boolean;
+    ingestionStatus?: IngestionStatus;
+    ingestionError?: string | null;
   } = {},
 ): Promise<string> {
   const { DocumentModel } = await import('@repo/db');
@@ -77,6 +84,8 @@ export async function seedDocument(
       overrides.sourceUrl ?? `https://example.com/test-${generateId()}.pdf`,
     sourceType: overrides.sourceType ?? SourceType.URL,
     embeddingsReady: overrides.embeddingsReady ?? false,
+    ingestionStatus: overrides.ingestionStatus ?? IngestionStatus.PENDING,
+    ingestionError: overrides.ingestionError ?? null,
     metadata: {},
     folderIds: [],
     tagIds: [],
