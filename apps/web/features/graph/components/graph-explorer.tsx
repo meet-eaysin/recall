@@ -139,11 +139,38 @@ function positionGraphNodes(graph: FullGraphData | null): PositionedNode[] {
     positioned.push({ ...rootNode, x: 0, y: 0 });
   }
 
+  if (otherNodes.length > 0 && otherNodes.length <= 4) {
+    const presets = {
+      1: [-90],
+      2: [-135, -45],
+      3: [-150, -90, -30],
+      4: [-160, -115, -65, -20],
+    } as const;
+    const angles = presets[otherNodes.length as keyof typeof presets];
+    const radius = 5.4;
+
+    for (let index = 0; index < otherNodes.length; index += 1) {
+      const node = otherNodes[index];
+      if (!node) continue;
+      const angle = ((angles[index] ?? -90) * Math.PI) / 180;
+      positioned.push({
+        documentId: node.documentId,
+        id: node.id,
+        label: node.label,
+        type: node.type,
+        x: Math.cos(angle) * radius,
+        y: Math.sin(angle) * radius,
+      });
+    }
+
+    return positioned;
+  }
+
   let cursor = 0;
   let ring = 0;
   while (cursor < otherNodes.length) {
     const capacity = Math.min(otherNodes.length - cursor, 8 + ring * 6);
-    const radius = 8 + ring * 5.5;
+    const radius = 5.5 + ring * 3.75;
 
     for (let index = 0; index < capacity; index += 1) {
       const node = otherNodes[cursor + index];
@@ -210,7 +237,7 @@ export function GraphExplorer() {
   const [focusedDocumentId, setFocusedDocumentId] = React.useState<string | null>(
     null,
   );
-  const [labelThreshold, setLabelThreshold] = React.useState(7);
+  const [labelThreshold, setLabelThreshold] = React.useState(12);
 
   const { data: fullGraph, error, isLoading } = useFullGraph();
   const {
@@ -224,12 +251,6 @@ export function GraphExplorer() {
     () => toDisplayGraph(fullGraph, subgraph),
     [fullGraph, subgraph],
   );
-
-  React.useEffect(() => {
-    if (!selectedNodeId && graph?.rootNodeId) {
-      setSelectedNodeId(graph.rootNodeId);
-    }
-  }, [graph?.rootNodeId, selectedNodeId]);
 
   React.useEffect(() => {
     selectedNodeIdRef.current = selectedNodeId;
@@ -266,6 +287,21 @@ export function GraphExplorer() {
       )
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [fullGraph?.nodes, search]);
+
+  const applyDefaultCameraState = React.useCallback((animated = true) => {
+    const camera = rendererRef.current?.getCamera();
+    if (!camera) return;
+
+    if (animated) {
+      void camera.animate(
+        { angle: 0, ratio: 2.15, x: 0.5, y: 0.5 },
+        { duration: 260 },
+      );
+      return;
+    }
+
+    camera.setState({ angle: 0, ratio: 2.15, x: 0.5, y: 0.5 });
+  }, []);
 
   React.useEffect(() => {
     const container = containerRef.current;
@@ -304,7 +340,7 @@ export function GraphExplorer() {
         isRoot,
         label: isRoot ? 'Knowledge Graph' : truncateLabel(node.label, 24),
         originalLabel: node.label,
-        size: isRoot ? 20 : node.documentId === focusedDocumentId ? 14 : 11,
+        size: isRoot ? 16 : node.documentId === focusedDocumentId ? 10 : 8,
         x: node.x,
         y: node.y,
       });
@@ -324,13 +360,13 @@ export function GraphExplorer() {
     const renderer = new Sigma(sigmaGraph, container, {
       allowInvalidContainer: true,
       enableEdgeEvents: true,
-      labelDensity: 0.9,
-      labelGridCellSize: 90,
+      labelDensity: 0.56,
+      labelGridCellSize: 140,
       labelRenderedSizeThreshold: labelThreshold,
-      labelSize: 13,
-      labelWeight: '500',
+      labelSize: 9,
+      labelWeight: '400',
       minCameraRatio: 0.35,
-      maxCameraRatio: 2.2,
+      maxCameraRatio: 3.4,
       renderEdgeLabels: false,
       zIndex: true,
     });
@@ -356,14 +392,14 @@ export function GraphExplorer() {
             : isRelated
               ? '#60a5fa'
               : data.color,
-        forceLabel: isSelected || isHovered || data.isRoot,
+        forceLabel: isSelected || isHovered,
         highlighted: isSelected || isHovered,
         label:
           isDimmed && !data.isRoot
             ? ''
             : data.label,
         size: isSelected
-          ? data.size + 2
+          ? data.size + 1.5
           : isHovered
             ? data.size + 1
             : data.size,
@@ -405,11 +441,11 @@ export function GraphExplorer() {
     });
 
     renderer.on('clickStage', () => {
-      setSelectedNodeId(graph.rootNodeId ?? null);
+      setSelectedNodeId(null);
     });
 
     container.style.cursor = 'grab';
-    renderer.getCamera().animatedReset({ duration: 250 });
+    applyDefaultCameraState(false);
     renderer.refresh();
     rendererRef.current = renderer;
 
@@ -418,7 +454,14 @@ export function GraphExplorer() {
       rendererRef.current = null;
       graphRef.current = null;
     };
-  }, [connectedByNode, focusedDocumentId, graph, labelThreshold, positionedNodes]);
+  }, [
+    applyDefaultCameraState,
+    connectedByNode,
+    focusedDocumentId,
+    graph,
+    labelThreshold,
+    positionedNodes,
+  ]);
 
   React.useEffect(() => {
     const renderer = rendererRef.current;
@@ -440,8 +483,8 @@ export function GraphExplorer() {
   }, []);
 
   const resetZoom = React.useCallback(() => {
-    rendererRef.current?.getCamera().animatedReset({ duration: 250 });
-  }, []);
+    applyDefaultCameraState(true);
+  }, [applyDefaultCameraState]);
 
   if (error) {
     return (
@@ -516,30 +559,61 @@ export function GraphExplorer() {
             </div>
 
             <div className="relative overflow-hidden rounded-xl border border-border/60 bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.08),transparent_28%),linear-gradient(180deg,rgba(248,250,252,0.98),rgba(241,245,249,0.98))]">
-              <div className="absolute right-3 top-3 z-10 flex items-center gap-2 rounded-xl border border-border/70 bg-background/92 px-2 py-2 shadow-sm backdrop-blur">
-                <Button size="icon" variant="ghost" className="size-8" onClick={zoomIn}>
-                  <Plus className="size-4" />
-                </Button>
-                <Button size="icon" variant="ghost" className="size-8" onClick={zoomOut}>
-                  <Minus className="size-4" />
-                </Button>
-                <Button size="icon" variant="ghost" className="size-8" onClick={resetZoom}>
-                  <RefreshCcw className="size-4" />
-                </Button>
-                <div className="hidden items-center gap-2 pl-1 md:flex">
-                  <span className="text-xs font-medium text-muted-foreground">
-                    Labels
-                  </span>
-                  <input
-                    aria-label="Labels threshold"
-                    className="w-24 accent-foreground"
-                    max={15}
-                    min={0}
-                    step={0.5}
-                    type="range"
-                    value={labelThreshold}
-                    onChange={(event) => setLabelThreshold(Number(event.target.value))}
-                  />
+              <div className="absolute right-3 top-3 z-10">
+                <div className="flex items-center gap-2 rounded-xl border border-border/70 bg-background/86 px-2 py-2 shadow-sm backdrop-blur-md">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="size-8 rounded-lg text-muted-foreground hover:bg-accent/35 hover:text-foreground"
+                    onClick={zoomOut}
+                  >
+                    <Minus className="size-4" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="size-8 rounded-lg text-muted-foreground hover:bg-accent/35 hover:text-foreground"
+                    onClick={zoomIn}
+                  >
+                    <Plus className="size-4" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="size-8 rounded-lg text-muted-foreground hover:bg-accent/35 hover:text-foreground"
+                    onClick={resetZoom}
+                  >
+                    <RefreshCcw className="size-4" />
+                  </Button>
+                  <div className="ml-1 hidden items-center gap-2 border-l border-border/60 pl-2 md:flex">
+                    <span className="text-[10px] font-medium text-muted-foreground">
+                      Labels
+                    </span>
+                    <input
+                      aria-label="Labels threshold"
+                      className="w-16 accent-foreground"
+                      max={20}
+                      min={6}
+                      step={0.5}
+                      type="range"
+                      value={labelThreshold}
+                      onChange={(event) => setLabelThreshold(Number(event.target.value))}
+                    />
+                  </div>
+                </div>
+                <div className="mt-2 flex justify-end md:hidden">
+                  <div className="rounded-lg border border-border/70 bg-background/86 px-3 py-2 shadow-sm backdrop-blur-md">
+                    <input
+                      aria-label="Labels threshold"
+                      className="w-24 accent-foreground"
+                      max={20}
+                      min={6}
+                      step={0.5}
+                      type="range"
+                      value={labelThreshold}
+                      onChange={(event) => setLabelThreshold(Number(event.target.value))}
+                    />
+                  </div>
                 </div>
               </div>
 
