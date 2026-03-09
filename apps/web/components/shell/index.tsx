@@ -47,6 +47,7 @@ export type LayoutProps = {
   description?: string;
   heading?: ReactNode;
   subtitle?: ReactNode;
+  breadcrumbs?: ReactNode;
   headerClassName?: string;
   children: ReactNode;
   CTA?: ReactNode;
@@ -152,6 +153,7 @@ export function ShellMain(props: LayoutProps) {
           )}
         </div>
       )}
+      {props.breadcrumbs && <div className="mb-4">{props.breadcrumbs}</div>}
       {props.afterHeading && <>{props.afterHeading}</>}
       <div
         className={cn(props.flexChildrenContainer && 'flex flex-1 flex-col')}

@@ -12,7 +12,6 @@ import {
   ChevronLeft,
   Clock,
   FileText,
-  FolderOpen,
   LoaderCircle,
   Maximize2,
   Minimize2,
@@ -25,6 +24,7 @@ import {
   X,
   Zap,
 } from 'lucide-react';
+import { PageBreadcrumbs } from '@/components/shell/page-breadcrumbs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -72,15 +72,13 @@ import {
   DocumentPreviewSurface,
   DocumentPreviewUnavailable,
 } from './document-preview-surface';
-import { getStatusLabel, getTypeLabel } from '../utils/document-helpers';
+import {
+  getStatusBadgeVariant,
+  getStatusLabel,
+  getTypeLabel,
+} from '../utils/document-helpers';
 
 const STATUS_OPTIONS = Object.values(DocumentStatus);
-
-const statusVariantMap: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-  draft: 'outline',
-  published: 'default',
-  archived: 'secondary',
-};
 
 export function DocumentDetailView({ id }: { id: string }) {
   const router = useRouter();
@@ -181,32 +179,17 @@ export function DocumentDetailView({ id }: { id: string }) {
   // ── Main ─────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-5">
+      <PageBreadcrumbs
+        current={document.title}
+        items={[
+          { href: '/library', label: 'Library' },
+          ...(folder ? [{ label: folder.name }] : []),
+        ]}
+      />
 
       {/* ── Page header ── */}
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 space-y-2">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Button
-              render={<Link href="/library" />}
-              variant="ghost"
-              size="sm"
-              className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
-            >
-              <ChevronLeft className="size-3" />
-              Library
-            </Button>
-            {folder && (
-              <>
-                <span className="opacity-40">/</span>
-                <span className="flex items-center gap-1">
-                  <FolderOpen className="size-3" />
-                  {folder.name}
-                </span>
-              </>
-            )}
-          </div>
-
           {/* Title */}
           <h1 className="text-xl font-semibold tracking-tight leading-snug">
             {document.title}
@@ -215,7 +198,7 @@ export function DocumentDetailView({ id }: { id: string }) {
           {/* Meta pills */}
           <div className="flex flex-wrap items-center gap-2">
             <Badge
-              variant={statusVariantMap[document.status] ?? 'secondary'}
+              variant={getStatusBadgeVariant(document.status)}
               className="rounded-full px-2.5 py-0.5 text-xs"
             >
               {getStatusLabel(document.status)}
@@ -240,7 +223,7 @@ export function DocumentDetailView({ id }: { id: string }) {
             value={document.status}
           >
             <SelectTrigger className="h-8 w-36 text-xs">
-              <SelectValue />
+              <SelectValue>{getStatusLabel(document.status)}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {STATUS_OPTIONS.map((status) => (

@@ -9,7 +9,7 @@ export default async function LibraryDocumentPage({
   const { id } = await params;
 
   return (
-    <Shell backPath="/library">
+    <Shell>
       <DocumentDetailView id={id} />
     </Shell>
   );
