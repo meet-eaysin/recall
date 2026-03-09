@@ -35,4 +35,9 @@ export const API_ENDPOINTS = {
     CHATS: '/search/chats',
     chat: (id: string) => `/search/chats/${id}`,
   },
+  GRAPH: {
+    FULL: '/graph',
+    document: (id: string) => `/graph/document/${id}`,
+    rebuild: (id: string) => `/graph/rebuild/${id}`,
+  },
 } as const;

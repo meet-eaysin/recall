@@ -26,4 +26,9 @@ export const QUERY_KEYS = {
     chats: () => ['search', 'chats'] as const,
     chat: (id: string) => ['search', 'chats', id] as const,
   },
+  GRAPH: {
+    ROOT: ['graph'] as const,
+    full: () => ['graph', 'full'] as const,
+    document: (id: string) => ['graph', 'document', id] as const,
+  },
 } as const;
