@@ -5,10 +5,8 @@ import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import {
   Card,
-  CardHeader,
+  CardDescription,
   CardPanel,
-  CardFooter,
-  CardAction,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -39,85 +37,99 @@ export function BaseDocumentCard({
   const statusVariant = getStatusBadgeVariant(document.status);
   const statusLabel = getStatusLabel(document.status);
   const typeLabel = getTypeLabel(document.type);
+  const hasTags = document.tags.length > 0;
 
   return (
     <Link
       href={`/library/${document.id}`}
-      className="block group outline-none"
+      className="group block rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
-      <Card className="h-full flex flex-col transition-shadow duration-200 hover:shadow-md overflow-hidden">
-        <CardHeader className="flex flex-row items-center gap-3 p-4 pb-3">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors group-hover:text-primary">
-            <Icon className="size-4" />
-          </div>
-          <span className="flex-1 truncate text-xs font-medium capitalize tracking-wider text-muted-foreground">
-            {typeLabel}
-          </span>
-          <Badge variant={statusVariant} size="sm">
-            {statusLabel}
-          </Badge>
-          <CardAction>
-            <CardActions document={document} />
-          </CardAction>
-        </CardHeader>
-
-        <CardPanel className="flex-1 px-4 pb-2 pt-0">{children}</CardPanel>
-
-        <div className="px-4 pb-3">
-          <div className="h-40 overflow-hidden rounded-xl border bg-muted/30">
+      <Card className="flex h-full flex-col overflow-hidden border-border/70 bg-card shadow-xs/5 transition-colors duration-150 group-hover:border-border group-hover:shadow-sm">
+        <div className="border-b border-border/50 bg-muted/10 p-2">
+          <div className="aspect-[16/8.6] overflow-hidden rounded-lg bg-muted/20">
             <DocumentPreviewSurface compact document={document} />
           </div>
         </div>
 
-        <CardFooter className="flex items-center justify-between gap-2 px-4 pb-4 pt-2">
-          <div className="flex gap-1.5 overflow-hidden">
-            {document.tags.slice(0, 2).map((tag) => (
-              <Badge variant="secondary" size="sm" key={tag}>
-                {tag}
-              </Badge>
-            ))}
-            {document.tags.length > 2 && (
-              <Popover>
-                <PopoverTrigger
-                  render={
-                    <Badge
-                      render={<button type="button" />}
-                      size="sm"
-                      variant="outline"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                      }}
-                    >
-                      +{document.tags.length - 2} More
-                    </Badge>
-                  }
-                />
-                <PopoverPopup
-                  align="start"
-                  className="max-w-64 p-3"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                  }}
-                >
-                  <div className="flex flex-wrap gap-1.5">
-                    {document.tags.map((tag) => (
-                      <Badge key={tag} size="sm" variant="secondary">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </PopoverPopup>
-              </Popover>
-            )}
+        <CardPanel className="flex flex-1 flex-col gap-2.5 p-3">
+          <div className="flex items-start gap-2">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted/40 text-muted-foreground">
+              <Icon className="size-4" />
+            </div>
+
+            <div className="min-w-0 flex-1 space-y-0.5">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="truncate text-[11px] font-medium tracking-[0.12em] text-muted-foreground">
+                  {typeLabel}
+                </span>
+                <Badge variant={statusVariant} size="sm">
+                  {statusLabel}
+                </Badge>
+              </div>
+              <CardDescription className="text-xs">
+                Updated{' '}
+                {formatDistanceToNow(new Date(document.updatedAt), {
+                  addSuffix: true,
+                })}
+              </CardDescription>
+            </div>
+
+            <div className="shrink-0">
+              <CardActions document={document} />
+            </div>
           </div>
-          <span className="shrink-0 text-xs text-muted-foreground">
-            {formatDistanceToNow(new Date(document.updatedAt), {
-              addSuffix: true,
-            })}
-          </span>
-        </CardFooter>
+
+          <div className="min-w-0 space-y-0.5">
+            {children}
+          </div>
+
+          <div className="flex items-center justify-between gap-2 pt-0.5">
+            <div className="flex min-w-0 items-center gap-1.5 overflow-hidden">
+              {document.tags.slice(0, 1).map((tag) => (
+                <Badge variant="secondary" size="sm" key={tag}>
+                  {tag}
+                </Badge>
+              ))}
+              {document.tags.length > 1 && (
+                <Popover>
+                  <PopoverTrigger
+                    render={
+                      <button
+                        type="button"
+                        className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                        }}
+                      >
+                        +{document.tags.length - 1}
+                      </button>
+                    }
+                  />
+                  <PopoverPopup
+                    align="start"
+                    className="max-w-64 p-3"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                    }}
+                  >
+                    <div className="flex flex-wrap gap-1.5">
+                      {document.tags.map((tag) => (
+                        <Badge key={tag} size="sm" variant="secondary">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </PopoverPopup>
+                </Popover>
+              )}
+            </div>
+            <span className="shrink-0 text-xs text-muted-foreground">
+              {hasTags ? `${document.tags.length} tags` : statusLabel}
+            </span>
+          </div>
+        </CardPanel>
       </Card>
     </Link>
   );

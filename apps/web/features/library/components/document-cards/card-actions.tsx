@@ -51,11 +51,12 @@ export function CardActions({ document }: CardActionsProps) {
           <Button
             variant="ghost"
             size="icon-xs"
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
+            className="text-muted-foreground hover:text-foreground"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
             }}
+            aria-label="Open document actions"
           >
             <MoreHorizontal className="size-4" />
           </Button>

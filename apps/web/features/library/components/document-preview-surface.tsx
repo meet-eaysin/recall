@@ -113,7 +113,7 @@ function TextPreview({
     <div className="flex h-full flex-col justify-between p-4">
       <div className="flex items-center gap-2 text-muted-foreground">
         <FileText className="size-4" />
-        <span className="text-xs font-medium uppercase tracking-wide">Note</span>
+        <span className="text-xs font-medium tracking-wide">Note</span>
       </div>
       <div className="space-y-2">
         <p className={compact ? 'line-clamp-3 text-sm font-medium' : 'text-lg font-medium'}>
@@ -140,7 +140,7 @@ function UrlPreviewCard({
     <div className="flex h-full flex-col justify-between p-4">
       <div className="flex items-center gap-2 text-muted-foreground">
         <Globe className="size-4" />
-        <span className="truncate text-xs font-medium uppercase tracking-wide">
+        <span className="truncate text-xs font-medium tracking-wide">
           {hostname}
         </span>
       </div>

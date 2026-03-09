@@ -1,4 +1,5 @@
 import type { DocumentRow } from '@/features/library/types';
+import { CardDescription, CardTitle } from '@/components/ui/card';
 import { BaseDocumentCard } from '../base-document-card';
 
 interface UrlCardProps {
@@ -6,16 +7,28 @@ interface UrlCardProps {
 }
 
 export function UrlCard({ document }: UrlCardProps) {
+  const sourceLabel = getSourceLabel(document.sourceUrl);
+
   return (
     <BaseDocumentCard document={document}>
-      <h3 className="text-base font-semibold leading-snug line-clamp-2 group-hover:underline underline-offset-4 decoration-primary/50">
+      <CardTitle className="line-clamp-3 text-[14px] leading-5.5 tracking-tight">
         {document.title}
-      </h3>
-      {document.sourceUrl && (
-        <p className="mt-1.5 truncate text-xs text-muted-foreground">
-          {document.sourceUrl}
-        </p>
+      </CardTitle>
+      {sourceLabel && (
+        <CardDescription className="truncate text-[13px]">
+          {sourceLabel}
+        </CardDescription>
       )}
     </BaseDocumentCard>
   );
+}
+
+function getSourceLabel(sourceUrl?: string) {
+  if (!sourceUrl) return null;
+
+  try {
+    return new URL(sourceUrl).hostname.replace(/^www\./, '');
+  } catch {
+    return sourceUrl;
+  }
 }

@@ -6,6 +6,7 @@ export default function DocumentsPage() {
   return (
     <Shell
       heading="Library"
+      subtitle="Manage your documents"
       CTA={<AddDocumentDialog />}
     >
       <div className="mt-4">

@@ -1,4 +1,5 @@
 import type { DocumentRow } from '@/features/library/types';
+import { CardTitle } from '@/components/ui/card';
 import { BaseDocumentCard } from '../base-document-card';
 
 interface TextCardProps {
@@ -8,9 +9,9 @@ interface TextCardProps {
 export function TextCard({ document }: TextCardProps) {
   return (
     <BaseDocumentCard document={document}>
-      <h3 className="text-lg font-semibold leading-snug line-clamp-3 group-hover:underline underline-offset-4 decoration-primary/50">
+      <CardTitle className="line-clamp-3 text-[14px] leading-5.5 tracking-tight">
         {document.title}
-      </h3>
+      </CardTitle>
     </BaseDocumentCard>
   );
 }
