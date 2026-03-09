@@ -24,7 +24,11 @@ const FOLDER_COLORS = [
   { label: 'Slate', value: '#475569' },
 ] as const;
 
-export function FolderCreateDialog() {
+interface FolderCreateDialogProps {
+  trigger?: React.ReactElement;
+}
+
+export function FolderCreateDialog({ trigger }: FolderCreateDialogProps) {
   const [color, setColor] = React.useState<string>(FOLDER_COLORS[0].value);
   const [name, setName] = React.useState('');
   const [open, setOpen] = React.useState(false);
@@ -48,7 +52,9 @@ export function FolderCreateDialog() {
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
-      <DialogTrigger render={<Button variant="outline">New Folder</Button>} />
+      <DialogTrigger
+        render={trigger ?? <Button variant="outline">New Folder</Button>}
+      />
       <DialogPopup className="max-w-md">
         <DialogHeader>
           <DialogTitle>Create Folder</DialogTitle>

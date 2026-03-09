@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { DocumentStatus, DocumentType } from '@repo/types';
-import { BookOpen, Filter, X } from 'lucide-react';
+import { BookOpen, Filter, FolderPlus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -36,6 +36,7 @@ import {
 } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DocumentCard } from './document-cards/document-card';
+import { FolderCreateDialog } from './folder-create-dialog';
 import { useDocuments, useFolders } from '../hooks';
 import { getStatusLabel, getTypeLabel } from '../utils/document-helpers';
 
@@ -193,6 +194,15 @@ export function LibraryFeed() {
           </MenuPopup>
         </Menu>
 
+        <FolderCreateDialog
+          trigger={
+            <Button variant="outline">
+              <FolderPlus className="size-4" />
+              New Folder
+            </Button>
+          }
+        />
+
         {foldersLoading &&
           Array.from({ length: 3 }).map((_, index) => (
             <Skeleton className="h-8 w-24" key={index} />
@@ -208,6 +218,11 @@ export function LibraryFeed() {
             }}
             variant={activeFolderId === folder.id ? 'default' : 'outline'}
           >
+            <span
+              aria-hidden="true"
+              className="size-2.5 rounded-full"
+              style={{ backgroundColor: folder.color ?? '#64748b' }}
+            />
             {folder.name}
           </Button>
         ))}
