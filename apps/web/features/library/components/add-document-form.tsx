@@ -65,6 +65,8 @@ const customZodResolver: Resolver<AddDocumentFormValues> = async (values) => {
 };
 
 interface AddDocumentFormProps {
+  formId?: string;
+  hideActions?: boolean;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
@@ -102,7 +104,12 @@ const documentTypeItems = [
   },
 ] as const;
 
-export function AddDocumentForm({ onSuccess, onCancel }: AddDocumentFormProps) {
+export function AddDocumentForm({
+  formId,
+  hideActions = false,
+  onSuccess,
+  onCancel,
+}: AddDocumentFormProps) {
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -216,7 +223,11 @@ export function AddDocumentForm({ onSuccess, onCancel }: AddDocumentFormProps) {
   };
 
   return (
-    <Form className="mt-4 space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+    <Form
+      className="mt-4 space-y-6"
+      id={formId}
+      onSubmit={form.handleSubmit(onSubmit)}
+    >
       <div className="space-y-5">
         <div className="space-y-2">
           <label className="inline-flex items-center gap-2 font-medium text-base/4.5 text-foreground sm:text-sm/4">
@@ -399,14 +410,16 @@ export function AddDocumentForm({ onSuccess, onCancel }: AddDocumentFormProps) {
           )}
       </div>
 
-      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={!canSubmit}>
-          {mutation.isPending ? 'Adding...' : 'Add to Library'}
-        </Button>
-      </div>
+      {!hideActions && (
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={!canSubmit}>
+            {mutation.isPending ? 'Adding...' : 'Add to Library'}
+          </Button>
+        </div>
+      )}
     </Form>
   );
 }
