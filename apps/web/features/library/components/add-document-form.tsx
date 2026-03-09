@@ -6,28 +6,22 @@ import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiPost } from '@/lib/api';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import { MentionTextarea } from '@/features/library/components/mention-textarea';
 import { Controller } from 'react-hook-form';
-import {
-  Field,
-  FieldControl,
-  FieldLabel,
-  FieldError,
-} from '@/components/ui/field';
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectPopup,
-  SelectItem,
-} from '@/components/ui/select';
 import { DocumentType } from '@repo/types';
+import { cn } from '@/lib/utils';
 
 const addDocumentSchema = z.object({
-  source: z.string().url('Must be a valid URL'),
-  title: z.string().min(1, 'Title is required'),
+  source: z
+    .string()
+    .trim()
+    .min(1, 'Source URL is required')
+    .url('Enter a valid URL'),
+  title: z.string().trim().min(1, 'Title is required'),
   type: z.nativeEnum(DocumentType),
   notes: z.string().optional(),
 });
@@ -55,24 +49,44 @@ const customZodResolver: Resolver<AddDocumentFormValues> = async (values) => {
 interface AddDocumentFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
-  formRef?: React.RefObject<HTMLFormElement | null>;
 }
 
-const documentTypeItems = Object.values(DocumentType).map((type) => ({
-  label: type.toUpperCase(),
-  value: type,
-}));
+const documentTypeItems = [
+  {
+    label: 'Article',
+    value: DocumentType.URL,
+    description: 'Web page or blog post',
+  },
+  {
+    label: 'YouTube',
+    value: DocumentType.YOUTUBE,
+    description: 'Video link',
+  },
+  {
+    label: 'PDF',
+    value: DocumentType.PDF,
+    description: 'Hosted PDF URL',
+  },
+  {
+    label: 'Image',
+    value: DocumentType.IMAGE,
+    description: 'Image link',
+  },
+  {
+    label: 'Note',
+    value: DocumentType.TEXT,
+    description: 'Open the text editor',
+  },
+] as const;
 
-export function AddDocumentForm({
-  onSuccess,
-  onCancel,
-  formRef,
-}: AddDocumentFormProps) {
+export function AddDocumentForm({ onSuccess, onCancel }: AddDocumentFormProps) {
   const queryClient = useQueryClient();
   const router = useRouter();
 
   const form = useForm<AddDocumentFormValues>({
     resolver: customZodResolver,
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       source: '',
       title: '',
@@ -95,98 +109,192 @@ export function AddDocumentForm({
   };
 
   const handleTypeChange = (
-    val: string | null,
-    onChange: (val: string | null) => void,
+    nextType: DocumentType,
+    onChange: (val: DocumentType) => void,
   ) => {
-    if (val === DocumentType.TEXT) {
+    if (nextType === DocumentType.TEXT) {
       if (onCancel) onCancel();
       router.push('/documents/new?type=text');
     } else {
-      onChange(val);
+      onChange(nextType);
     }
   };
 
+  const shouldShowError = (name: keyof AddDocumentFormValues) =>
+    form.formState.submitCount > 0 || form.getFieldState(name).isTouched;
+
+  const selectedType = form.watch('type');
+  const sourceError = shouldShowError('source')
+    ? form.formState.errors.source
+    : undefined;
+  const titleError = shouldShowError('title')
+    ? form.formState.errors.title
+    : undefined;
+  const notesError = shouldShowError('notes')
+    ? form.formState.errors.notes
+    : undefined;
+  const canSubmit = form.formState.isValid && !mutation.isPending;
+  const sourcePlaceholderByType: Record<DocumentType, string> = {
+    [DocumentType.URL]: 'https://example.com/article',
+    [DocumentType.YOUTUBE]: 'https://youtube.com/watch?v=...',
+    [DocumentType.PDF]: 'https://example.com/file.pdf',
+    [DocumentType.IMAGE]: 'https://example.com/image.jpg',
+    [DocumentType.TEXT]: '',
+  };
+  const sourceHintByType: Record<DocumentType, string> = {
+    [DocumentType.URL]: 'Paste the article or page URL you want to save.',
+    [DocumentType.YOUTUBE]: 'Paste the YouTube video link.',
+    [DocumentType.PDF]: 'Paste a direct or hosted PDF URL.',
+    [DocumentType.IMAGE]: 'Paste the image URL.',
+    [DocumentType.TEXT]:
+      'Use Note above if you want to write directly in the app.',
+  };
+
   return (
-    <Form
-      className="space-y-6 mt-4"
-      onSubmit={form.handleSubmit(onSubmit)}
-      ref={formRef}
-    >
-      <div className="space-y-6">
-        <Field className="space-y-2">
-          <FieldLabel>Document Type</FieldLabel>
-          <FieldControl render={<div className="w-full" />}>
+    <Form className="mt-4 space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+      <div className="space-y-5">
+        <div className="space-y-2">
+          <label className="inline-flex items-center gap-2 font-medium text-base/4.5 text-foreground sm:text-sm/4">
+            Document Type
+          </label>
+          <div className="w-full">
             <Controller
               name="type"
               control={form.control}
               render={({ field }) => (
-                <Select
-                  value={field.value ?? null}
-                  onValueChange={(val) => handleTypeChange(val, field.onChange)}
-                >
-                  <SelectTrigger>
-                    <SelectValue>Select type</SelectValue>
-                  </SelectTrigger>
-                  <SelectPopup>
-                    <SelectItem value={null}>Select type</SelectItem>
-                    {documentTypeItems.map((item) => (
-                      <SelectItem key={item.value} value={item.value}>
-                        {item.label}
-                      </SelectItem>
-                    ))}
-                  </SelectPopup>
-                </Select>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {documentTypeItems.map((item) => {
+                    const isSelected = field.value === item.value;
+
+                    return (
+                      <Button
+                        key={item.value}
+                        type="button"
+                        variant={isSelected ? 'default' : 'outline'}
+                        className={cn(
+                          'h-auto items-start justify-start px-3 py-3 text-left',
+                          !isSelected && 'text-foreground',
+                        )}
+                        onClick={() =>
+                          handleTypeChange(item.value, field.onChange)
+                        }
+                      >
+                        <span className="flex flex-col items-start gap-1">
+                          <span>{item.label}</span>
+                          <span className="text-xs opacity-72">
+                            {item.description}
+                          </span>
+                        </span>
+                      </Button>
+                    );
+                  })}
+                </div>
               )}
             />
-          </FieldControl>
-          {form.formState.errors.type && (
-            <FieldError>{form.formState.errors.type.message}</FieldError>
-          )}
+          </div>
+          <p className="text-muted-foreground text-xs">
+            Pick the format you are saving. Choosing Note opens the text editor.
+          </p>
+        </div>
+
+        <Field className="space-y-2">
+          <FieldLabel htmlFor="add-document-source">Source URL</FieldLabel>
+          <Input
+            id="add-document-source"
+            aria-invalid={sourceError ? 'true' : undefined}
+            placeholder={sourcePlaceholderByType[selectedType]}
+            type="url"
+            {...form.register('source', {
+              onBlur: (event) => {
+                const trimmedValue = event.target.value.trim();
+                if (trimmedValue !== event.target.value) {
+                  form.setValue('source', trimmedValue, {
+                    shouldDirty: true,
+                    shouldTouch: true,
+                    shouldValidate: true,
+                  });
+                }
+              },
+            })}
+          />
+          <p className="text-muted-foreground text-xs">
+            {sourceHintByType[selectedType]}
+          </p>
+          {sourceError && <FieldError>{sourceError.message}</FieldError>}
         </Field>
 
         <Field className="space-y-2">
-          <FieldLabel>Source URL</FieldLabel>
-          <FieldControl render={<div className="w-full" />}>
-            <Input placeholder="https://..." {...form.register('source')} />
-          </FieldControl>
-          {form.formState.errors.source && (
-            <FieldError>{form.formState.errors.source.message}</FieldError>
-          )}
+          <FieldLabel htmlFor="add-document-title">Title</FieldLabel>
+          <Input
+            id="add-document-title"
+            aria-invalid={titleError ? 'true' : undefined}
+            placeholder="e.g. Next.js 15 Release Notes"
+            {...form.register('title', {
+              onBlur: (event) => {
+                const trimmedValue = event.target.value.trim();
+                if (trimmedValue !== event.target.value) {
+                  form.setValue('title', trimmedValue, {
+                    shouldDirty: true,
+                    shouldTouch: true,
+                    shouldValidate: true,
+                  });
+                }
+              },
+            })}
+          />
+          <p className="text-muted-foreground text-xs">
+            Use a short title that will be easy to scan later.
+          </p>
+          {titleError && <FieldError>{titleError.message}</FieldError>}
         </Field>
 
-        <Field className="space-y-2">
-          <FieldLabel>Title</FieldLabel>
-          <FieldControl render={<div className="w-full" />}>
-            <Input
-              placeholder="e.g. Next.js 15 Release Notes"
-              {...form.register('title')}
-            />
-          </FieldControl>
-          {form.formState.errors.title && (
-            <FieldError>{form.formState.errors.title.message}</FieldError>
-          )}
-        </Field>
-
-        <Field className="space-y-2">
-          <FieldLabel>Related Notes & Mentions</FieldLabel>
-          <FieldControl render={<div className="w-full" />}>
+        <div className="space-y-2">
+          <label
+            className="inline-flex items-center gap-2 font-medium text-base/4.5 text-foreground sm:text-sm/4"
+            htmlFor="add-document-notes"
+          >
+            Related Notes & Mentions
+          </label>
+          <div className="w-full">
             <Controller
               name="notes"
               control={form.control}
               render={({ field }) => (
                 <MentionTextarea
                   {...field}
+                  id="add-document-notes"
+                  aria-invalid={notesError ? 'true' : undefined}
                   placeholder="Type @ to link other documents, knowledge, or relations..."
                   className="resize-y"
                   value={field.value ?? ''}
                 />
               )}
             />
-          </FieldControl>
-          {form.formState.errors.notes && (
-            <FieldError>{form.formState.errors.notes.message}</FieldError>
+          </div>
+          <p className="text-muted-foreground text-xs">
+            Optional context, references, or linked notes.
+          </p>
+          {notesError && (
+            <p className="text-destructive-foreground text-xs">
+              {notesError.message}
+            </p>
           )}
-        </Field>
+        </div>
+
+        {mutation.error && (
+          <p className="text-destructive-foreground text-xs">
+            {mutation.error.message}
+          </p>
+        )}
+      </div>
+
+      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <Button type="button" variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={!canSubmit}>
+          {mutation.isPending ? 'Adding...' : 'Add to Library'}
+        </Button>
       </div>
     </Form>
   );

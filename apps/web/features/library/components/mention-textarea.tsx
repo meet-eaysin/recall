@@ -2,7 +2,9 @@
 
 import * as React from 'react';
 import { useDocuments } from '@/lib/api/documents';
-import { Textarea, type TextareaProps } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+
+type TextareaProps = React.ComponentProps<'textarea'>;
 
 export const MentionTextarea = React.forwardRef<
   HTMLTextAreaElement,
@@ -93,7 +95,6 @@ export const MentionTextarea = React.forwardRef<
     <div className="relative w-full">
       <Textarea
         ref={(node) => {
-          // merge refs
           if (typeof ref === 'function') ref(node);
           else if (ref) ref.current = node;
 
@@ -141,3 +142,21 @@ export const MentionTextarea = React.forwardRef<
 });
 
 MentionTextarea.displayName = 'MentionTextarea';
+
+function Textarea({ className, ...props }: TextareaProps) {
+  return (
+    <span
+      className="relative inline-flex w-full rounded-lg border border-input bg-background text-base text-foreground shadow-xs/5 ring-ring/24 transition-shadow before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] has-focus-within:border-ring has-focus-within:ring-[3px] has-aria-invalid:border-destructive/36 has-focus-within:has-aria-invalid:border-destructive/64 has-focus-within:has-aria-invalid:ring-destructive/16 has-disabled:opacity-64 sm:text-sm dark:bg-input/32"
+      data-slot="textarea-control"
+    >
+      <textarea
+        className={cn(
+          'field-sizing-content min-h-20 w-full rounded-[inherit] bg-transparent px-[calc(--spacing(3)-1px)] py-[calc(--spacing(1.5)-1px)] outline-none',
+          className,
+        )}
+        data-slot="textarea"
+        {...props}
+      />
+    </span>
+  );
+}
