@@ -5,7 +5,8 @@ import { useForm, type Resolver } from 'react-hook-form';
 import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ApiError, apiPost } from '@/lib/api';
+import { ApiError } from '@/lib/api';
+import { QUERY_KEYS } from '@/lib/query-keys';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
@@ -14,6 +15,7 @@ import { MentionTextarea } from '@/features/library/components/mention-textarea'
 import { Controller } from 'react-hook-form';
 import { DocumentType } from '@repo/types';
 import { cn } from '@/lib/utils';
+import { libraryApi } from '../api';
 import {
   FileImageIcon,
   FileTextIcon,
@@ -108,16 +110,25 @@ export function AddDocumentForm({ onSuccess, onCancel }: AddDocumentFormProps) {
   });
 
   const mutation = useMutation({
-    mutationFn: (values: AddDocumentFormValues) => {
-      const payload = {
-        ...values,
-        notes: values.notes?.trim() ? values.notes.trim() : undefined,
-      };
+    mutationFn: async (values: AddDocumentFormValues) => {
+      const documentResponse = await libraryApi.createDocument({
+        source: values.source,
+        title: values.title,
+        type: values.type,
+      });
 
-      return apiPost('/documents', { body: payload });
+      const noteContent = values.notes?.trim();
+      if (noteContent) {
+        await libraryApi.createNote({
+          content: noteContent,
+          documentId: documentResponse.document.id,
+        });
+      }
+
+      return documentResponse;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LIBRARY.ROOT });
       if (onSuccess) onSuccess();
     },
     onError: (error) => {
@@ -152,7 +163,7 @@ export function AddDocumentForm({ onSuccess, onCancel }: AddDocumentFormProps) {
   ) => {
     if (nextType === DocumentType.TEXT) {
       if (onCancel) onCancel();
-      router.push('/documents/new?type=text');
+      router.push('/library/new?type=text');
     } else {
       onChange(nextType);
     }

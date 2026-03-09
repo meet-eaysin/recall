@@ -43,14 +43,27 @@ async function parseEnvelope<T>(response: Response): Promise<T> {
     let message = `Request failed with status ${response.status}`;
     let details: ApiFieldErrorDetail[] | undefined;
 
-    const errorBody = (await response.json()) as {
-      message?: string;
-      details?: ApiFieldErrorDetail[];
-    };
-    if (typeof errorBody?.message === 'string') message = errorBody.message;
-    if (Array.isArray(errorBody?.details)) details = errorBody.details;
+    try {
+      const errorBody = (await response.json()) as {
+        message?: string;
+        details?: ApiFieldErrorDetail[];
+      };
+      if (typeof errorBody?.message === 'string') message = errorBody.message;
+      if (Array.isArray(errorBody?.details)) details = errorBody.details;
+    } catch {
+      // Preserve the fallback message when the response has no JSON body.
+    }
 
     throw new ApiError(message, response.status, details);
+  }
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  const contentType = response.headers.get('content-type') ?? '';
+  if (!contentType.includes('application/json')) {
+    return undefined as T;
   }
 
   const payload = (await response.json()) as ApiResponse<T>;

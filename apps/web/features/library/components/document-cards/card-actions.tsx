@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import { ExternalLink, Link2, Trash2, MoreHorizontal } from 'lucide-react';
 import {
   Menu,
@@ -11,16 +12,20 @@ import {
 } from '@/components/ui/menu';
 import { Button } from '@/components/ui/button';
 import type { DocumentRow } from '../../types';
+import { useDeleteDocument } from '../../hooks';
 
 interface CardActionsProps {
   document: DocumentRow;
 }
 
 export function CardActions({ document }: CardActionsProps) {
+  const router = useRouter();
+  const deleteDocument = useDeleteDocument();
+
   function handleCopyLink(event: React.MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
-    const url = `${window.location.origin}/documents/${document.id}`;
+    const url = `${window.location.origin}/library/${document.id}`;
     void navigator.clipboard.writeText(url);
   }
 
@@ -32,10 +37,12 @@ export function CardActions({ document }: CardActionsProps) {
     }
   }
 
-  function handleDelete(event: React.MouseEvent) {
+  async function handleDelete(event: React.MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
-    // TODO: Wire up delete mutation
+    if (!window.confirm(`Delete "${document.title}"?`)) return;
+    await deleteDocument.mutateAsync(document.id);
+    router.push('/library');
   }
 
   return (
@@ -67,7 +74,7 @@ export function CardActions({ document }: CardActionsProps) {
           Copy link
         </MenuItem>
         <MenuSeparator />
-        <MenuItem variant="destructive" onClick={handleDelete}>
+        <MenuItem variant="destructive" onClick={(event) => void handleDelete(event)}>
           <Trash2 className="size-4" />
           Delete
         </MenuItem>

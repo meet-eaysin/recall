@@ -7,7 +7,7 @@ export default function Page() {
       subtitle="Mind Stack overview"
       description="This is the starting point for your personal knowledge system. Use the sidebar to access document ingestion, knowledge organization, AI search, graph, review, analytics, and integrations."
       ctaLabel="Add Document"
-      ctaHref="/documents/new"
+      ctaHref="/library/new"
       endpoints={['GET /health']}
     />
   );

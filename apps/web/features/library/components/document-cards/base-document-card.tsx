@@ -36,7 +36,7 @@ export function BaseDocumentCard({
 
   return (
     <Link
-      href={`/documents/${document.id}`}
+      href={`/library/${document.id}`}
       className="block group outline-none"
     >
       <Card className="h-full flex flex-col transition-shadow duration-200 hover:shadow-md overflow-hidden">

@@ -19,7 +19,7 @@ export const MentionTextarea = React.forwardRef<
   const internalRef = React.useRef<HTMLTextAreaElement>(null);
 
   // Fetch documents to show in dropdown
-  const { data } = useDocuments(1, 10);
+  const { data } = useDocuments({ limit: 10, page: 1 });
 
   // Filter documents based on current @search
   const suggestions = React.useMemo(() => {
