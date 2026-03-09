@@ -12,7 +12,7 @@ const utilityLinks = [
   { name: 'Add Document', href: '/library/new', icon: 'plus' as const },
   {
     name: 'Notion Sync',
-    href: '/integrations/notion',
+    href: '/settings/notion',
     icon: 'webhook' as const,
   },
 ];

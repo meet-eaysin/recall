@@ -4,11 +4,15 @@ export default function Page() {
   return (
     <FeatureShellPage
       title="Home"
-      subtitle="Mind Stack overview"
-      description="This is the starting point for your personal knowledge system. Use the sidebar to access document ingestion, knowledge organization, AI search, graph, review, analytics, and integrations."
+      subtitle="Daily overview"
+      description="This page is the daily-use surface for your personal knowledge system, where review, current activity, and other always-needed items live together."
       ctaLabel="Add Document"
       ctaHref="/library/new"
-      endpoints={['GET /health']}
+      endpoints={[
+        'GET /analytics/stats',
+        'GET /review/daily',
+        'GET /analytics/heatmap',
+      ]}
     />
   );
 }

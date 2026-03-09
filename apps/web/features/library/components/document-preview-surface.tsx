@@ -27,10 +27,8 @@ export function DocumentPreviewSurface({
   if (document.type === 'youtube' && youtubeId) {
     if (compact) {
       return (
-        <Image
+        <PreviewImage
           alt={document.title}
-          className="h-full w-full object-cover"
-          loading="lazy"
           src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
         />
       );
@@ -70,14 +68,7 @@ export function DocumentPreviewSurface({
   }
 
   if (directImage && sourceUrl) {
-    return (
-      <Image
-        alt={document.title}
-        className="h-full w-full object-cover"
-        loading="lazy"
-        src={sourceUrl}
-      />
-    );
+    return <PreviewImage alt={document.title} src={sourceUrl} />;
   }
 
   if (document.type === 'text') {
@@ -210,6 +201,28 @@ export function DocumentPreviewUnavailable({ sourceUrl }: { sourceUrl?: string }
           <ExternalLink className="size-4" />
         </a>
       ) : null}
+    </div>
+  );
+}
+
+function PreviewImage({
+  alt,
+  src,
+}: {
+  alt: string;
+  src: string;
+}) {
+  return (
+    <div className="relative h-full w-full">
+      <Image
+        alt={alt}
+        className="object-cover"
+        fill
+        loading="lazy"
+        sizes="(max-width: 768px) 100vw, 50vw"
+        src={src}
+        unoptimized
+      />
     </div>
   );
 }

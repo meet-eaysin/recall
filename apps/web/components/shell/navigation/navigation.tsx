@@ -18,15 +18,15 @@ const getNavigationItems = (): NavigationItemType[] => [
     isCurrent: ({ pathname }) => pathname === '/',
   },
   {
-    name: 'library',
-    label: 'Library',
+    name: 'documents',
+    label: 'Documents',
     href: '/library',
     icon: 'library',
     isCurrent: ({ pathname }) => pathname?.startsWith('/library') ?? false,
   },
   {
     name: 'search',
-    label: 'Search & Ask AI',
+    label: 'Search & Ask',
     href: '/search',
     icon: 'search',
     isCurrent: ({ pathname }) => pathname?.startsWith('/search') ?? false,
@@ -59,17 +59,17 @@ const getNavigationItems = (): NavigationItemType[] => [
     moreOnMobile: true,
     child: [
       {
-        name: 'general',
-        label: 'Profile & Security',
+        name: 'profile',
+        label: 'Profile',
         href: '/settings',
         isCurrent: ({ pathname }) => pathname === '/settings',
       },
       {
-        name: 'integrations',
-        label: 'Integrations',
-        href: '/integrations',
+        name: 'security',
+        label: 'Security',
+        href: '/settings/security',
         isCurrent: ({ pathname }) =>
-          pathname?.startsWith('/integrations') ?? false,
+          pathname?.startsWith('/settings/security') ?? false,
       },
       {
         name: 'llm_config',
@@ -77,6 +77,13 @@ const getNavigationItems = (): NavigationItemType[] => [
         href: '/settings/llm',
         isCurrent: ({ pathname }) =>
           pathname?.startsWith('/settings/llm') ?? false,
+      },
+      {
+        name: 'notion',
+        label: 'Notion',
+        href: '/settings/notion',
+        isCurrent: ({ pathname }) =>
+          pathname?.startsWith('/settings/notion') ?? false,
       },
     ],
   },
