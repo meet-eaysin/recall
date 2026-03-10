@@ -47,7 +47,9 @@ export function UserDropdown({ small }: UserDropdownProps) {
     return {
       name: displayName,
       username,
+      email,
       avatarUrl: session.user.avatarUrl ?? '',
+      provider: session.user.provider ?? undefined,
     };
   }, [session?.user]);
 
@@ -67,19 +69,15 @@ export function UserDropdown({ small }: UserDropdownProps) {
   return (
     <Menu open={menuOpen} onOpenChange={setMenuOpen}>
       <MenuTrigger
+        className={cn(
+          'hover:bg-subtle data-[state=open]:bg-subtle group flex w-full items-center gap-2 rounded-md text-left outline-none transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background',
+          small ? 'justify-center p-1.5' : 'px-2 py-1.5',
+        )}
         disabled={isPending}
-        render={
-          <button
-            data-testid="user-dropdown-trigger-button"
-            className={cn(
-              'hover:bg-subtle group flex w-full cursor-pointer items-center gap-2 rounded-md text-left outline-none transition focus:outline-none focus:ring-0',
-              small ? 'justify-center p-1.5' : 'px-2 py-1.5',
-            )}
-          />
-        }
+        data-testid="user-dropdown-trigger-button"
       >
         <span className="relative shrink-0">
-          <Avatar className="size-7">
+          <Avatar className={cn('size-7', small && 'size-8')}>
             <AvatarImage src={user?.avatarUrl} alt="User avatar" />
             <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
               {initials}
@@ -92,15 +90,15 @@ export function UserDropdown({ small }: UserDropdownProps) {
         </span>
 
         {!small && (
-          <span className="flex min-w-0 flex-1 items-center justify-between gap-1">
+          <span className="flex min-w-0 flex-1 items-center justify-between gap-2">
             <span className="min-w-0">
-            <span className="text-emphasis block truncate text-sm font-medium leading-tight">
-              {isPending ? 'Loading…' : (user?.name ?? 'Nameless User')}
+              <span className="text-emphasis block truncate text-sm font-semibold leading-tight">
+                {isPending ? 'Loading…' : (user?.name ?? 'Nameless User')}
+              </span>
+              <span className="text-subtle block truncate text-xs leading-tight">
+                {user?.email || `@${user?.username ?? 'user'}`}
+              </span>
             </span>
-            <span className="text-subtle block truncate text-xs leading-tight">
-              @{user?.username ?? 'user'}
-            </span>
-          </span>
             {menuOpen ? (
               <ChevronUpIcon
                 className="text-muted h-3.5 w-3.5 shrink-0 transition"
@@ -116,12 +114,22 @@ export function UserDropdown({ small }: UserDropdownProps) {
         )}
       </MenuTrigger>
 
-      <MenuPopup align="start" sideOffset={6}>
-        <div className="px-2 py-2">
-          <p className="text-emphasis text-sm font-medium leading-tight">
-            {user?.name ?? 'Nameless User'}
-          </p>
-          <p className="text-subtle text-xs">@{user?.username ?? 'user'}</p>
+      <MenuPopup align="start" sideOffset={8} className="w-64">
+        <div className="flex items-center gap-3 px-2 py-2">
+          <Avatar className="size-9">
+            <AvatarImage src={user?.avatarUrl} alt="User avatar" />
+            <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0">
+            <p className="text-emphasis truncate text-sm font-semibold">
+              {user?.name ?? 'Nameless User'}
+            </p>
+            <p className="text-subtle truncate text-xs">
+              {user?.email || `@${user?.username ?? 'user'}`}
+            </p>
+          </div>
         </div>
         <MenuSeparator />
 
@@ -129,13 +137,13 @@ export function UserDropdown({ small }: UserDropdownProps) {
           <>
             <MenuItem render={<Link href="/settings/my-account/profile" />}>
               <UserIcon />
-              My Profile
+              Profile
             </MenuItem>
             <MenuItem render={<Link href="/settings" />}>
               <SettingsIcon />
               Settings
             </MenuItem>
-            <div className="px-1 py-1">
+            <div className="py-1">
               <ThemeToggle />
             </div>
             <MenuSeparator />
