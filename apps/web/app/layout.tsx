@@ -7,11 +7,11 @@ import { QueryProvider } from '@/providers/query-provider';
 import { cn } from '@/lib/utils';
 
 const geistSans = localFont({
-  src: './fonts/GeistVF.woff',
+  src: '../public/fonts/GeistVF.woff',
   variable: '--font-sans',
 });
 const geistMono = localFont({
-  src: './fonts/GeistMonoVF.woff',
+  src: '../public/fonts/GeistMonoVF.woff',
   variable: '--font-geist-mono',
 });
 

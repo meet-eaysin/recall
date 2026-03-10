@@ -5,14 +5,16 @@ import {
   ArrowRight,
   Bot,
   BrainCircuit,
+  CheckCheck,
   FileText,
   Layers,
   Search,
   ShieldCheck,
   Sparkles,
+  Timer,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardDescription,
@@ -23,55 +25,57 @@ import {
 
 const features = [
   {
-    title: 'Capture everything',
+    title: 'Capture and connect',
     description:
-      'Save links, files, and notes. Mind Stack keeps context and metadata organized.',
+      'Save documents, links, and notes, then watch relationships emerge.',
     icon: FileText,
   },
   {
-    title: 'Ask AI, get citations',
+    title: 'AI answers with sources',
     description:
-      'Grounded answers built on your documents, with sources you can trust.',
+      'Ask the assistant and get citations tied to your original material.',
     icon: Bot,
   },
   {
     title: 'Graph intelligence',
     description:
-      'Surface hidden relationships across projects, people, and concepts.',
+      'Surface hidden paths between people, projects, and themes.',
     icon: BrainCircuit,
   },
   {
     title: 'Fast retrieval',
     description:
-      'Search is tuned for recall and speed so you can find insights instantly.',
+      'Search built for recall and speed so you never lose an insight.',
     icon: Search,
   },
   {
-    title: 'Trusted sessions',
+    title: 'Session control',
     description:
-      'Cookie-based auth and session control keep your workspace protected.',
+      'Cookie-based auth with revocation keeps access tight.',
     icon: ShieldCheck,
   },
   {
-    title: 'Scales with you',
-    description:
-      'Designed for teams and solo researchers who need reliable structure.',
+    title: 'Scales gracefully',
+    description: 'From solo research to team knowledge ops.',
     icon: Layers,
   },
 ];
 
-const highlights = [
+const workflow = [
   {
-    label: 'Knowledge capture',
-    value: 'Store every resource in one place.',
+    title: 'Ingest',
+    description: 'Drop in articles, PDFs, meeting notes, or docs.',
+    icon: FileText,
   },
   {
-    label: 'AI workflow',
-    value: 'Summaries, transcripts, and retrieval.',
+    title: 'Enrich',
+    description: 'Summaries, transcripts, and tags powered by AI.',
+    icon: Sparkles,
   },
   {
-    label: 'Integrations',
-    value: 'Notion + future connectors.',
+    title: 'Retrieve',
+    description: 'Ask questions and jump straight into the source.',
+    icon: Search,
   },
 ];
 
@@ -79,54 +83,60 @@ export function LandingPage() {
   return (
     <main className="bg-default min-h-screen">
       <section className="relative overflow-hidden border-b border-subtle">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(54,86,92,0.18),transparent_55%),radial-gradient(circle_at_bottom_right,rgba(108,85,50,0.18),transparent_50%)]" />
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute -left-32 top-0 h-96 w-96 rounded-full bg-[radial-gradient(circle,rgba(52,83,92,0.35),transparent_70%)]" />
+          <div className="absolute right-0 top-24 h-[28rem] w-[28rem] rounded-full bg-[radial-gradient(circle,rgba(120,86,45,0.32),transparent_70%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(to_top,rgba(10,11,12,0.12),transparent)]" />
+        </div>
+
         <div className="mx-auto max-w-6xl px-6 py-16 md:py-24">
-          <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col gap-12 lg:flex-row lg:items-center">
             <div className="max-w-xl space-y-6">
               <Badge variant="outline" className="w-fit">
-                Built for knowledge workers
+                Premium knowledge workflow
               </Badge>
-              <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-                Your knowledge stack, finally connected.
+              <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+                Build a living knowledge stack your team can trust.
               </h1>
               <p className="text-subtle text-base leading-relaxed sm:text-lg">
-                Mind Stack turns scattered notes into a living knowledge graph.
-                Capture, connect, and ask AI questions with traceable answers.
+                Mind Stack turns scattered research into a coherent graph. Capture
+                context, ask AI questions, and keep every answer linked back to the
+                source.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button render={<Link href="/auth/login" />}>
-                  Get started
+                  Start free
                   <ArrowRight className="size-4" />
                 </Button>
                 <Button variant="outline" render={<Link href="/app/search" />}>
                   Explore search
                 </Button>
               </div>
-              <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-                {highlights.map((item) => (
-                  <div
-                    key={item.label}
-                    className="rounded-full border border-border/60 px-3 py-1.5"
-                  >
-                    <span className="font-medium text-foreground">
-                      {item.label}
-                    </span>
-                    <span className="mx-2 opacity-60">•</span>
-                    <span>{item.value}</span>
-                  </div>
-                ))}
+              <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+                <span className="rounded-full border border-border/60 px-3 py-1.5">
+                  Research-first UX
+                </span>
+                <span className="rounded-full border border-border/60 px-3 py-1.5">
+                  Private by design
+                </span>
+                <span className="rounded-full border border-border/60 px-3 py-1.5">
+                  Built for speed
+                </span>
               </div>
             </div>
 
-            <Card className="w-full max-w-md">
+            <Card className="w-full max-w-lg">
               <CardHeader>
-                <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                  <Sparkles className="size-3.5" />
-                  Daily workflow
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2 font-medium">
+                    <Sparkles className="size-3.5" />
+                    Intelligence feed
+                  </div>
+                  <Badge variant="outline">Live</Badge>
                 </div>
-                <CardTitle>Today in Mind Stack</CardTitle>
+                <CardTitle>Today’s focus</CardTitle>
                 <CardDescription>
-                  Review documents, ask the assistant, and ship insights.
+                  Priority work surfaced from your knowledge graph.
                 </CardDescription>
               </CardHeader>
               <CardPanel className="space-y-3">
@@ -136,24 +146,35 @@ export function LandingPage() {
                     6 documents
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Prioritized by freshness + relevance.
+                    Recency + relevance scoring.
                   </p>
                 </div>
                 <div className="rounded-lg border border-border/60 p-3">
-                  <p className="text-xs text-muted-foreground">Recent AI chats</p>
+                  <p className="text-xs text-muted-foreground">Active threads</p>
                   <p className="mt-2 text-2xl font-semibold text-foreground">
-                    4 threads
+                    4 AI chats
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     Continue conversations instantly.
                   </p>
+                </div>
+                <div className="flex items-center justify-between rounded-lg border border-border/60 p-3">
+                  <div>
+                    <p className="text-xs text-muted-foreground">
+                      Avg. answer time
+                    </p>
+                    <p className="mt-1 text-lg font-semibold text-foreground">
+                      1.6s
+                    </p>
+                  </div>
+                  <Timer className="size-5 text-muted-foreground" />
                 </div>
                 <Button
                   className="w-full"
                   variant="outline"
                   render={<Link href="/app" />}
                 >
-                  Open dashboard
+                  Open workspace
                 </Button>
               </CardPanel>
             </Card>
@@ -162,20 +183,41 @@ export function LandingPage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-16">
-        <div className="flex flex-col gap-8">
-          <div className="flex flex-col gap-3">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+          <div className="space-y-4">
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Why Mind Stack
+              Workflow
             </p>
             <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">
-              Build a system you can trust.
+              Turn raw inputs into trusted answers.
             </h2>
-            <p className="text-subtle max-w-2xl text-base">
-              Designed for fast recall, context-rich answers, and workflows that
-              keep your knowledge current.
+            <p className="text-subtle text-base">
+              Mind Stack keeps a clean pipeline from capture to insight so teams
+              spend time acting, not searching.
             </p>
+            <div className="flex flex-col gap-3">
+              {workflow.map((step) => (
+                <div
+                  key={step.title}
+                  className="flex items-start gap-3 rounded-lg border border-border/60 p-3"
+                >
+                  <div className="rounded-md border border-border/60 bg-muted/40 p-2">
+                    <step.icon className="size-4 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      {step.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {step.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+
+          <div className="grid gap-4 md:grid-cols-2">
             {features.map((feature) => (
               <Card key={feature.title} className="h-full">
                 <CardHeader>
@@ -194,13 +236,30 @@ export function LandingPage() {
       <section className="border-t border-subtle bg-muted/30">
         <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-16 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Security + reliability
+            </p>
             <h3 className="text-2xl font-semibold text-foreground">
-              Ready to connect your knowledge?
+              Built with production-grade auth and auditability.
             </h3>
             <p className="text-subtle max-w-xl">
-              Bring your sources together and let the AI assistant surface the
-              patterns that matter.
+              Sessions are revocable, tokens are short-lived, and every answer
+              is traceable back to source material.
             </p>
+            <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-2 rounded-full border border-border/60 px-3 py-1.5">
+                <CheckCheck className="size-3.5" />
+                HTTP-only cookies
+              </span>
+              <span className="flex items-center gap-2 rounded-full border border-border/60 px-3 py-1.5">
+                <CheckCheck className="size-3.5" />
+                Session revocation
+              </span>
+              <span className="flex items-center gap-2 rounded-full border border-border/60 px-3 py-1.5">
+                <CheckCheck className="size-3.5" />
+                OAuth ready
+              </span>
+            </div>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button render={<Link href="/auth/login" />}>
@@ -208,7 +267,7 @@ export function LandingPage() {
               <ArrowRight className="size-4" />
             </Button>
             <Button variant="outline" render={<Link href="/app/settings" />}>
-              View settings
+              Configure workspace
             </Button>
           </div>
         </div>
