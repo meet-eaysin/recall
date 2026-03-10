@@ -1,4 +1,5 @@
 import type { ApiResponse, PaginatedResponse } from '@repo/types';
+import { getDevUserId } from '@/lib/dev-auth';
 
 export type { ApiResponse as ApiEnvelope, PaginatedResponse };
 
@@ -35,8 +36,6 @@ const rawBaseUrl =
 export const API_BASE_URL = rawBaseUrl.endsWith('/api/v1')
   ? rawBaseUrl
   : `${rawBaseUrl}/api/v1`;
-export const DEV_USER_ID =
-  process.env.NEXT_PUBLIC_DEV_USER_ID ?? '65f1a2b3c4d5e6f7a8b9c0d3';
 
 async function parseEnvelope<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -75,10 +74,14 @@ export async function apiGet<T>(
   options?: ApiGetOptions,
 ): Promise<T> {
   const headers = new Headers(options?.headers);
-  headers.set('x-user-id', DEV_USER_ID);
+  const devUserId = getDevUserId();
+  if (devUserId) {
+    headers.set('x-user-id', devUserId);
+  }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
+    credentials: 'include',
     headers,
   });
 
@@ -94,13 +97,17 @@ export async function apiPost<T>(
   options?: ApiMutationOptions,
 ): Promise<T> {
   const headers = new Headers(options?.headers);
-  headers.set('x-user-id', DEV_USER_ID);
+  const devUserId = getDevUserId();
+  if (devUserId) {
+    headers.set('x-user-id', devUserId);
+  }
   if (options?.body instanceof FormData === false) {
     headers.set('Content-Type', 'application/json');
   }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
+    credentials: 'include',
     method: 'POST',
     body:
       options?.body instanceof FormData
@@ -117,13 +124,17 @@ export async function apiPatch<T>(
   options?: ApiMutationOptions,
 ): Promise<T> {
   const headers = new Headers(options?.headers);
-  headers.set('x-user-id', DEV_USER_ID);
+  const devUserId = getDevUserId();
+  if (devUserId) {
+    headers.set('x-user-id', devUserId);
+  }
   if (options?.body instanceof FormData === false) {
     headers.set('Content-Type', 'application/json');
   }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
+    credentials: 'include',
     method: 'PATCH',
     body:
       options?.body instanceof FormData
@@ -140,13 +151,17 @@ export async function apiPut<T>(
   options?: ApiMutationOptions,
 ): Promise<T> {
   const headers = new Headers(options?.headers);
-  headers.set('x-user-id', DEV_USER_ID);
+  const devUserId = getDevUserId();
+  if (devUserId) {
+    headers.set('x-user-id', devUserId);
+  }
   if (options?.body instanceof FormData === false) {
     headers.set('Content-Type', 'application/json');
   }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
+    credentials: 'include',
     method: 'PUT',
     body:
       options?.body instanceof FormData
@@ -163,10 +178,14 @@ export async function apiDelete<T>(
   options?: RequestInit,
 ): Promise<T> {
   const headers = new Headers(options?.headers);
-  headers.set('x-user-id', DEV_USER_ID);
+  const devUserId = getDevUserId();
+  if (devUserId) {
+    headers.set('x-user-id', devUserId);
+  }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
+    credentials: 'include',
     method: 'DELETE',
     headers,
   });

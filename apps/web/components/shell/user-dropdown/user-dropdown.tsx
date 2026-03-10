@@ -9,10 +9,6 @@ import {
   ChevronUp as ChevronUpIcon,
 } from 'lucide-react';
 
-const signOut = (_options: { callbackUrl: string }) => {
-  console.log('Mock sign out', _options);
-};
-
 import {
   Menu,
   MenuItem,
@@ -21,29 +17,47 @@ import {
   MenuTrigger,
 } from '@/components/ui/menu';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
 import { ThemeToggle } from '../theme-toggle';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuthSession, useLogout } from '@/features/auth/hooks';
 
 interface UserDropdownProps {
   small?: boolean;
 }
 
 export function UserDropdown({ small }: UserDropdownProps) {
-  const isPending = false;
-  const user = { username: 'mockuser', name: 'Mock User', avatarUrl: '' };
+  const { data: session, status } = useAuthSession();
+  const logout = useLogout();
+  const router = useRouter();
   const pathname = usePathname();
   const isPlatformPages = pathname?.startsWith('/settings/platform');
 
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const user = useMemo(() => {
+    if (!session?.user) return null;
+    const displayName = session.user.name ?? 'Nameless User';
+    const email = session.user.email ?? '';
+    const username = email.includes('@')
+      ? email.split('@')[0] ?? 'user'
+      : email || displayName.replace(/\s+/g, '').toLowerCase();
+    return {
+      name: displayName,
+      username,
+      avatarUrl: session.user.avatarUrl ?? '',
+    };
+  }, [session?.user]);
+
+  const isPending = status === 'loading' || logout.isPending;
+
   if (!user && !isPending) {
     return null;
   }
 
-  const initials = user.name
+  const initials = (user?.name ?? 'U')
     .split(' ')
     .map((part) => part[0])
     .join('')
@@ -66,7 +80,7 @@ export function UserDropdown({ small }: UserDropdownProps) {
       >
         <span className="relative shrink-0">
           <Avatar className="size-7">
-            <AvatarImage src={user.avatarUrl} alt="User avatar" />
+            <AvatarImage src={user?.avatarUrl} alt="User avatar" />
             <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
               {initials}
             </AvatarFallback>
@@ -80,13 +94,13 @@ export function UserDropdown({ small }: UserDropdownProps) {
         {!small && (
           <span className="flex min-w-0 flex-1 items-center justify-between gap-1">
             <span className="min-w-0">
-              <span className="text-emphasis block truncate text-sm font-medium leading-tight">
-                {isPending ? 'Loading…' : (user?.name ?? 'Nameless User')}
-              </span>
-              <span className="text-subtle block truncate text-xs leading-tight">
-                @{user.username}
-              </span>
+            <span className="text-emphasis block truncate text-sm font-medium leading-tight">
+              {isPending ? 'Loading…' : (user?.name ?? 'Nameless User')}
             </span>
+            <span className="text-subtle block truncate text-xs leading-tight">
+              @{user?.username ?? 'user'}
+            </span>
+          </span>
             {menuOpen ? (
               <ChevronUpIcon
                 className="text-muted h-3.5 w-3.5 shrink-0 transition"
@@ -105,9 +119,9 @@ export function UserDropdown({ small }: UserDropdownProps) {
       <MenuPopup align="start" sideOffset={6}>
         <div className="px-2 py-2">
           <p className="text-emphasis text-sm font-medium leading-tight">
-            {user.name}
+            {user?.name ?? 'Nameless User'}
           </p>
-          <p className="text-subtle text-xs">@{user.username}</p>
+          <p className="text-subtle text-xs">@{user?.username ?? 'user'}</p>
         </div>
         <MenuSeparator />
 
@@ -130,8 +144,9 @@ export function UserDropdown({ small }: UserDropdownProps) {
 
         <MenuItem
           variant="destructive"
-          onClick={() => {
-            signOut({ callbackUrl: '/auth/logout' });
+          onClick={async () => {
+            await logout.mutateAsync();
+            router.push('/auth/login');
           }}
         >
           <LogOutIcon />

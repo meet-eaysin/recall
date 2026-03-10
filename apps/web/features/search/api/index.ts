@@ -1,4 +1,5 @@
-import { API_BASE_URL, DEV_USER_ID, apiGet, apiPost, ApiError } from '@/lib/api';
+import { API_BASE_URL, apiGet, apiPost, ApiError } from '@/lib/api';
+import { getDevUserId } from '@/lib/dev-auth';
 import { API_ENDPOINTS } from '@/lib/api-endpoints';
 import type {
   AskInput,
@@ -75,12 +76,18 @@ export const searchApi = {
       signal?: AbortSignal;
     },
   ) => {
+    const devUserId = getDevUserId();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (devUserId) {
+      headers['x-user-id'] = devUserId;
+    }
+
     const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.SEARCH.ASK_STREAM}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-user-id': DEV_USER_ID,
-      },
+      headers,
+      credentials: 'include',
       body: JSON.stringify(body),
       signal: handlers.signal,
     });

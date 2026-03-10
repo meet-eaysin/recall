@@ -46,6 +46,12 @@ export const API_ENDPOINTS = {
   },
   AUTH: {
     SESSION: '/auth/session',
+    DEV_LOGIN: '/auth/dev/login',
+    REFRESH: '/auth/refresh',
+    LOGOUT: '/auth/logout',
+    LOGOUT_ALL: '/auth/logout-all',
+    GOOGLE: '/auth/google',
+    GITHUB: '/auth/github',
   },
   USERS: {
     ME: '/users/me',

@@ -6,6 +6,7 @@ import {
   NavigationItem,
 } from './navigation-item';
 import { useMobileMoreItems } from './use-mobile-more-items';
+import { useAuthSession } from '@/features/auth/hooks';
 
 export const MORE_SEPARATOR_NAME = 'more';
 
@@ -175,10 +176,6 @@ const useNavigationItems = (isPlatformNavigation = false) => {
   }, [isPlatformNavigation]);
 };
 
-const useMockSession = () => ({
-  status: 'authenticated' as const,
-});
-
 export const Navigation = ({
   isPlatformNavigation = false,
 }: {
@@ -200,7 +197,7 @@ export function MobileNavigationContainer({
 }: {
   isPlatformNavigation?: boolean;
 }) {
-  const { status } = useMockSession();
+  const { status } = useAuthSession();
   if (status !== 'authenticated') return null;
   return <MobileNavigation isPlatformNavigation={isPlatformNavigation} />;
 }
