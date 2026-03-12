@@ -27,6 +27,8 @@ function isNotConfigured(error: unknown) {
   return error instanceof ApiError && error.status === 404;
 }
 
+import { PageContainer } from '@/features/workspace/components/page-container';
+
 export function SettingsPage() {
   const { data: user, error: userError, isLoading: userLoading } = useCurrentUser();
   const { data: session } = useCurrentSession();
@@ -39,7 +41,7 @@ export function SettingsPage() {
     notionError && !isNotConfigured(notionError) ? (notionError as Error) : null;
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    <PageContainer className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <header className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
         <p className="text-muted-foreground">Manage your account, trusted sessions, and the integrations that power daily work.</p>
@@ -254,6 +256,6 @@ export function SettingsPage() {
           </CardPanel>
         </Card>
       </div>
-    </div>
+    </PageContainer>
   );
 }

@@ -167,6 +167,8 @@ function StatCard({
   );
 }
 
+import { PageContainer } from '@/features/workspace/components/page-container';
+
 export function AnalyticsPage() {
   const { data: stats, error: statsError, isLoading: statsLoading } =
     useAnalyticsStats();
@@ -196,7 +198,7 @@ export function AnalyticsPage() {
     .filter((item) => item.count > 0);
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    <PageContainer className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <header className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
         <p className="text-muted-foreground">Track consistency over time, see where your activity comes from, and spot your strongest learning rhythm.</p>
@@ -389,6 +391,6 @@ export function AnalyticsPage() {
           </CardPanel>
         </Card>
       </div>
-    </div>
+    </PageContainer>
   );
 }

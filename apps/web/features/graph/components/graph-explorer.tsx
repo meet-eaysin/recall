@@ -49,6 +49,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useDocumentSubgraph, useFullGraph, useRebuildDocumentGraph } from '../hooks';
 import type { FullGraphData, GraphEdgeRow, GraphNodeRow } from '../types';
+import { PageContainer } from '@/features/workspace/components/page-container';
 
 type SigmaNodeAttributes = {
   color: string;
@@ -528,7 +529,7 @@ export function GraphExplorer() {
 
   if (error) {
     return (
-      <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      <PageContainer className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
         <header className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Knowledge Graph</h1>
           <p className="text-muted-foreground">Visualize your document network and semantic relationships.</p>
@@ -539,12 +540,12 @@ export function GraphExplorer() {
             <AlertDescription>{(error as Error).message}</AlertDescription>
           </Alert>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    <PageContainer isFullHeight className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <header className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Knowledge Graph</h1>
         <p className="text-muted-foreground">Explore your document network with a stable graph view, direct selection, and scoped subgraphs.</p>
@@ -881,6 +882,6 @@ export function GraphExplorer() {
           </Card>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

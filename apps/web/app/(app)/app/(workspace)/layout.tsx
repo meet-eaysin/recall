@@ -11,12 +11,8 @@ export default function WorkspaceLayout({ children }: { children: ReactNode }) {
     <TooltipProvider>
       <ThreadStreamProvider>
         <div className="relative flex h-screen flex-col bg-background text-foreground selection:bg-primary/10 overflow-hidden">
-          <main className="relative flex flex-1 flex-col overflow-hidden">
-            <div className="flex-1 overflow-hidden px-4 pt-4 pb-28 md:px-8 lg:px-12 flex flex-col">
-              <div className="mx-auto max-w-5xl w-full flex-1 flex flex-col min-h-0">
-                {children}
-              </div>
-            </div>
+          <main className="relative flex flex-1 flex-col overflow-y-auto lg:pl-16">
+            {children}
           </main>
 
           <Dock />

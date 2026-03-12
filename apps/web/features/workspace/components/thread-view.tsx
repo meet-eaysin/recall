@@ -17,6 +17,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { useThreadStream } from './thread-stream-context';
 import { Chat } from '@/components/ai/chat';
 import type { Message } from '@/components/ai/chat-message';
+import { PageContainer } from './page-container';
 
 export function ThreadView() {
   const params = useParams();
@@ -208,10 +209,10 @@ export function ThreadView() {
   }
 
   return (
-    <>
-      <div className="flex flex-col flex-1 h-full max-w-4xl mx-auto">
+    <PageContainer isFullHeight>
+      <div className="flex flex-col flex-1 h-full w-full">
         {/* Header */}
-        <header className="flex items-center gap-4 mb-6 shrink-0">
+        <header className="flex items-center gap-4 mb-6 shrink-0 pt-4">
           <Button variant="ghost" size="icon" onClick={() => router.push('/app')} className="shrink-0">
             <ArrowLeft className="size-4" />
           </Button>
@@ -263,6 +264,6 @@ export function ThreadView() {
           </div>
         </DrawerContent>
       </Drawer>
-    </>
+    </PageContainer>
   );
 }

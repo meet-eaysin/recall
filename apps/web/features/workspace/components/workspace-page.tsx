@@ -16,6 +16,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@
 import { formatDistanceToNow } from 'date-fns';
 import { Chat } from '@/components/ai/chat';
 import type { Message } from '@/components/ai/chat-message';
+import { PageContainer } from './page-container';
 
 export function WorkspacePage() {
   const threadStream = useThreadStream();
@@ -27,7 +28,7 @@ export function WorkspacePage() {
   }
 
   return (
-    <div className="pb-32">
+    <PageContainer>
       <OmniBox />
 
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300 fill-mode-both">
@@ -38,7 +39,7 @@ export function WorkspacePage() {
         </div>
         <HomeContent />
       </div>
-    </div>
+    </PageContainer>
   );
 }
 
@@ -202,10 +203,10 @@ function InlineChat() {
   }, [conversation?.messages, usePersistedOnly, activeStream, showInitialStream, streamingQuestion, streamingAnswer, isStreaming, error]);
 
   return (
-    <>
-      <div className="flex flex-col flex-1 h-full max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <PageContainer isFullHeight className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col flex-1 h-full w-full">
         {/* Header */}
-        <header className="flex items-center gap-4 mb-6 shrink-0">
+        <header className="flex items-center gap-4 mb-6 shrink-0 w-full pt-4">
           <Button variant="ghost" size="icon" onClick={goBack} className="shrink-0">
             <ArrowLeft className="size-4" />
           </Button>
@@ -253,6 +254,6 @@ function InlineChat() {
           </div>
         </DrawerContent>
       </Drawer>
-    </>
+    </PageContainer>
   );
 }
