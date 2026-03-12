@@ -103,28 +103,48 @@ export const searchApi = {
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let buffer = '';
+    let receivedTerminalEvent = false;
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
 
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop() ?? '';
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? '';
 
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed) continue;
-        const event = JSON.parse(trimmed);
-        if (event && typeof event === 'object' && 'type' in event) {
-          handlers.onEvent(event as AskStreamEvent);
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed) continue;
+          const event = JSON.parse(trimmed) as AskStreamEvent;
+          
+          if (event && typeof event === 'object' && 'type' in event) {
+            if (event.type === 'done' || event.type === 'error') {
+              receivedTerminalEvent = true;
+            }
+            handlers.onEvent(event);
+          }
         }
       }
-    }
 
-    buffer += decoder.decode();
-    if (buffer.trim()) {
-      handlers.onEvent(JSON.parse(buffer.trim()) as AskStreamEvent);
+      buffer += decoder.decode();
+      if (buffer.trim()) {
+        const event = JSON.parse(buffer.trim()) as AskStreamEvent;
+        if (event.type === 'done' || event.type === 'error') {
+          receivedTerminalEvent = true;
+        }
+        handlers.onEvent(event);
+      }
+    } finally {
+      if (!receivedTerminalEvent) {
+        // Stream closed unexpectedly without a done/error event.
+        // Prevent UI from hanging indefinitely.
+        handlers.onEvent({
+          type: 'error',
+          message: 'Connection closed unexpectedly by the server.',
+        });
+      }
     }
   },
 };

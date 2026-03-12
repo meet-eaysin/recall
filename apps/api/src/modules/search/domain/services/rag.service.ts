@@ -2,7 +2,6 @@ import {
   Injectable,
   Logger,
   ServiceUnavailableException,
-  UnprocessableEntityException,
 } from '@nestjs/common';
 import {
   AskResultDto,
@@ -207,9 +206,14 @@ export class RagService {
     }).exec();
 
     if (embeddedDocsCount === 0) {
-      throw new UnprocessableEntityException(
-        'No indexed documents found for search',
+      this.logger.warn(
+        `No indexed documents found for user ${internalUserId}`,
       );
+      return {
+        contextStr: '',
+        sources: [],
+        tokensUsed: 0,
+      };
     }
 
     const queryVector = await embeddingAdapter.embedText(question, llmConfig);

@@ -2,17 +2,17 @@
 
 import * as React from 'react';
 
-import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { Search, Sparkles, Command, ArrowRight } from 'lucide-react';
 import { InputGroup, InputGroupAddon, InputGroupText, InputGroupInput } from '@/components/ui/input-group';
 import { Button } from '@/components/ui/button';
 import { searchApi } from '@/features/search/api';
 import { QUERY_KEYS } from '@/lib/query-keys';
+import { useThreadStream } from './thread-stream-context';
 
 export function OmniBox() {
-  const router = useRouter();
   const queryClient = useQueryClient();
+  const threadStream = useThreadStream();
   const [query, setQuery] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -21,24 +21,57 @@ export function OmniBox() {
     if (!trimmed || isSubmitting) return;
 
     setIsSubmitting(true);
+    setQuery('');
+
     try {
-      // We trigger a "new chat" ask. 
-      // The streamAsk will return a conversationId in the first event.
       await searchApi.streamAsk(
         { question: trimmed },
         {
           onEvent: (event) => {
             if (event.type === 'conversation') {
-              // Redirect immediately once we have the ID
-              router.push(`/app/t/${event.conversationId}`);
-              queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chats() });
+              // Set context — WorkspacePage will detect this and render chat inline
+              threadStream.setStream({
+                answer: '',
+                conversationId: event.conversationId,
+                error: null,
+                isStreaming: true,
+                question: trimmed,
+              });
+              // Silently update URL for bookmarkability — no navigation
+              window.history.replaceState(null, '', `/app/t/${event.conversationId}`);
+              return;
             }
-            // We don't need to stay in the OmniBox for the rest of the stream
-          }
+
+            if (event.type === 'delta') {
+              threadStream.updateAnswer(event.chunk);
+              return;
+            }
+
+            if (event.type === 'error') {
+              threadStream.failStream(event.message);
+              const activeId = threadStream.activeStream?.conversationId;
+              if (activeId) {
+                queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chat(activeId) });
+              }
+              queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chats() });
+              setIsSubmitting(false);
+              return;
+            }
+
+            if (event.type === 'done') {
+              threadStream.completeStream();
+              queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chat(event.data.conversationId) });
+              queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chats() });
+              setIsSubmitting(false);
+            }
+          },
         }
       );
     } catch (error) {
       console.error('Failed to start thread:', error);
+      threadStream.failStream(
+        error instanceof Error ? error.message : 'Failed to connect to AI',
+      );
       setIsSubmitting(false);
     }
   };
@@ -55,9 +88,8 @@ export function OmniBox() {
       </div>
 
       <div className="relative group">
-        {/* Glow effect */}
         <div className="absolute -inset-0.5 bg-linear-to-r from-primary/20 via-primary/10 to-primary/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-1000 group-focus-within:opacity-100" />
-        
+
         <div className="relative bg-background border border-subtle rounded-2xl shadow-2xl p-2 transition-all duration-300 group-focus-within:border-primary/50 group-focus-within:ring-4 group-focus-within:ring-primary/5">
           <InputGroup data-align="center" className="border-0 shadow-none">
             <InputGroupAddon>
@@ -65,7 +97,7 @@ export function OmniBox() {
                 <Search className="size-5 text-muted-foreground" />
               </InputGroupText>
             </InputGroupAddon>
-            
+
             <InputGroupInput
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -81,11 +113,11 @@ export function OmniBox() {
 
             <InputGroupAddon align="inline-end">
               <div className="flex items-center gap-2 px-2">
-                <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded bg-muted/50 border border-subtle text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded bg-muted/50 border border-subtle text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   <Command className="size-3" /> K
                 </div>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   onClick={() => void handleSubmit()}
                   disabled={isSubmitting || !query.trim()}
                   className="rounded-xl shadow-lg shadow-primary/20"
