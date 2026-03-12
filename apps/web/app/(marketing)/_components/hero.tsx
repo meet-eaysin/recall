@@ -138,8 +138,8 @@ const Hero = () => {
           className="mb-10 text-[clamp(2.6rem,7vw,5.5rem)] leading-[1.05] tracking-tight"
           style={{ fontFamily: "'Google Sans Display', 'DM Sans', sans-serif" }}
         >
-          Experience liftoff with the<br />
-          next&#8209;generation IDE
+          Capture And Retrieve<br />
+         Your Knowledge Source.
         </h1>
 
         <div className="flex flex-wrap items-center justify-center gap-3">
@@ -150,14 +150,14 @@ const Hero = () => {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
               <path d="M12 2a7 7 0 0 1 7 7c0 2.5-1 4.7-2.6 6.2l-.4.4V18a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.4l-.4-.4A9 9 0 0 1 5 9a7 7 0 0 1 7-7zm-1.5 14h3v2h-3v-2zm1.5-3a5 5 0 1 0 0-10 5 5 0 0 0 0 10z" />
             </svg>
-            Download for Linux
+            Get Started
           </Link>
 
           <Link
             href="/use-cases"
             className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-medium text-foreground shadow-sm transition hover:bg-muted"
           >
-            Explore use cases
+            
           </Link>
         </div>
       </div>
