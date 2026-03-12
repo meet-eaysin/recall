@@ -55,7 +55,7 @@ async function refreshSession(headers: Headers): Promise<boolean> {
   return refreshPromise;
 }
 
-async function requestWithAuth(
+export async function requestWithAuth(
   path: string,
   init: RequestInit,
   retryOnAuth = true,

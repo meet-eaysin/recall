@@ -35,6 +35,7 @@ interface ChatPropsBase {
   ) => void
   setMessages?: (messages: Message[]) => void
   transcribeAudio?: (blob: Blob) => Promise<string>
+  onSourceClick?: (id: string) => void
 }
 
 interface ChatPropsWithoutSuggestions extends ChatPropsBase {
@@ -62,10 +63,11 @@ export function Chat({
   onRateResponse,
   setMessages,
   transcribeAudio,
+  onSourceClick,
 }: ChatProps) {
   const lastMessage = messages.at(-1)
   const isEmpty = messages.length === 0
-  const isTyping = lastMessage?.role === "user"
+  const isTyping = lastMessage?.role === "user" && isGenerating
 
   const messagesRef = useRef(messages)
   messagesRef.current = messages
@@ -156,6 +158,7 @@ export function Chat({
 
   const messageOptions = useCallback(
     (message: Message) => ({
+      onSourceClick,
       actions: onRateResponse ? (
         <>
           <div className="border-r pr-1">
@@ -188,7 +191,7 @@ export function Chat({
         />
       ),
     }),
-    [onRateResponse]
+    [onRateResponse, onSourceClick]
   )
 
   return (

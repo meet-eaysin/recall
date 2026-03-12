@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { motion } from "framer-motion"
-import { Ban, ChevronRight, Code2, Loader2, Terminal } from "lucide-react"
+import { Ban, ChevronRight, Code2, Loader2, Terminal, ExternalLink } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import {
@@ -122,6 +122,14 @@ type MessagePart =
   | FilePart
   | StepStartPart
 
+export interface Source {
+  documentId: string
+  title: string
+  author: string | null
+  publishedAt: string | null
+  originalSource: string | null
+}
+
 export interface Message {
   id: string
   role: "user" | "assistant" | (string & {})
@@ -130,12 +138,14 @@ export interface Message {
   experimental_attachments?: Attachment[]
   toolInvocations?: ToolInvocation[]
   parts?: MessagePart[]
+  sources?: Source[]
 }
 
 export interface ChatMessageProps extends Message {
   showTimeStamp?: boolean
   animation?: Animation
   actions?: React.ReactNode
+  onSourceClick?: (id: string) => void
 }
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({
@@ -148,6 +158,8 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   experimental_attachments,
   toolInvocations,
   parts,
+  sources,
+  onSourceClick,
 }) => {
   const files = useMemo(() => {
     return experimental_attachments?.map((attachment) => {
@@ -211,6 +223,30 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
           >
             <div className={cn(chatBubbleVariants({ isUser, animation }))}>
               <MarkdownRenderer>{part.text}</MarkdownRenderer>
+              {sources && sources.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-subtle space-y-2">
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Sources</p>
+                  <div className="grid gap-2">
+                    {sources.map((source) => (
+                      <button
+                        key={source.documentId}
+                        onClick={() => onSourceClick?.(source.documentId)}
+                        className="flex items-center justify-between gap-3 rounded-xl border border-subtle bg-background/50 p-3 text-left transition hover:bg-accent/50 group/source"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-foreground group-hover/source:text-primary transition-colors">
+                            {source.title}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {source.author || 'Author unknown'}
+                          </p>
+                        </div>
+                        <ExternalLink className="size-3 shrink-0 text-muted-foreground group-hover/source:text-primary transition-colors" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               {actions ? (
                 <div className="absolute -bottom-4 right-2 flex space-x-1 rounded-lg border bg-background p-1 text-foreground opacity-0 transition-opacity group-hover/message:opacity-100">
                   {actions}
@@ -253,6 +289,30 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
     <div className={cn("flex flex-col", isUser ? "items-end" : "items-start")}>
       <div className={cn(chatBubbleVariants({ isUser, animation }))}>
         <MarkdownRenderer>{content}</MarkdownRenderer>
+        {sources && sources.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-subtle space-y-2">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Sources</p>
+            <div className="grid gap-2">
+              {sources.map((source) => (
+                <button
+                  key={source.documentId}
+                  onClick={() => onSourceClick?.(source.documentId)}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-subtle bg-background/50 p-3 text-left transition hover:bg-accent/50 group/source"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-foreground group-hover/source:text-primary transition-colors">
+                      {source.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {source.author || 'Author unknown'}
+                    </p>
+                  </div>
+                  <ExternalLink className="size-3 shrink-0 text-muted-foreground group-hover/source:text-primary transition-colors" />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         {actions ? (
           <div className="absolute -bottom-4 right-2 flex space-x-1 rounded-lg border bg-background p-1 text-foreground opacity-0 transition-opacity group-hover/message:opacity-100">
             {actions}
