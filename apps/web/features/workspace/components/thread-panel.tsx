@@ -12,7 +12,6 @@ import {
   Trash2,
   Archive,
   MoreVertical,
-  History,
   Trash,
 } from 'lucide-react';
 import {
@@ -21,22 +20,14 @@ import {
   useArchiveChat,
   useClearHistory,
 } from '@/features/search/hooks';
+import { LogoIcon } from '@/components/logo';
+import { UserDropdown } from '@/components/shell/user-dropdown/user-dropdown';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/components/ui/drawer';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
-import {
-  Menu,
-  MenuTrigger,
-  MenuPopup,
-  MenuItem,
-} from '@/components/ui/menu';
+import { Menu, MenuTrigger, MenuPopup, MenuItem } from '@/components/ui/menu';
 import { formatDistanceToNow } from 'date-fns';
 
 export function ThreadPanel() {
@@ -45,7 +36,7 @@ export function ThreadPanel() {
   const archiveChat = useArchiveChat();
   const clearHistory = useClearHistory();
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isExpanded, setIsExpanded] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
 
   const filteredChats = React.useMemo(() => {
@@ -64,11 +55,11 @@ export function ThreadPanel() {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'h' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setIsOpen((open) => !open);
+        setIsExpanded((prev) => !prev);
       }
     };
 
-    const handleToggle = () => setIsOpen((open) => !open);
+    const handleToggle = () => setIsExpanded((prev) => !prev);
 
     document.addEventListener('keydown', down);
     window.addEventListener('mind-stack:toggle-threads', handleToggle);
@@ -80,144 +71,232 @@ export function ThreadPanel() {
 
   return (
     <>
-      {/* Persistent mini-sidebar on large screens */}
-      <aside className="fixed top-0 left-0 h-screen w-0 lg:w-16 bg-background border-r border-subtle z-40 hidden lg:flex flex-col items-center py-6 gap-6 shadow-[1px_0_10px_rgba(0,0,0,0.02)]">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsOpen(true)}
-          className="size-10 rounded-xl hover:bg-primary/10 hover:text-primary transition-all group relative"
-        >
-          <Clock className="size-5" />
-          <div className="absolute left-full ml-4 px-3 py-1.5 rounded-lg bg-foreground text-background text-[10px] font-bold tracking-wider uppercase whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-xl">
-            Recent History
-          </div>
-        </Button>
-          <div className="w-8 h-px bg-linear-to-r from-transparent via-subtle to-transparent mx-auto" />
-        <div className="flex-1 flex flex-col gap-3 overflow-y-auto no-scrollbar py-2">
-          {chats?.slice(0, 10).map((chat) => (
-            <Link
-              key={chat.id}
-              href={`/app/t/${chat.id}`}
+      <aside
+        className={cn(
+          'fixed top-0 left-0 h-screen bg-background border-r border-subtle z-60 hidden lg:flex flex-col transition-[width] duration-300 ease-in-out shadow-[1px_0_10px_rgba(0,0,0,0.02)] overflow-hidden',
+          isExpanded ? 'w-80' : 'w-16',
+        )}
+      >
+        {/* Top Header Section */}
+        <div className="flex items-center px-4 py-6 mb-2 h-20 shrink-0 relative">
+          <Link href="/" className="group relative flex items-center gap-3">
+            <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center transition-all group-hover:scale-105 group-hover:bg-primary/20 shrink-0">
+              <LogoIcon className="size-6 text-primary" />
+            </div>
+            <div
               className={cn(
-                'size-10 rounded-xl flex items-center justify-center transition-all duration-300 group relative',
-                pathname.includes(chat.id)
-                  ? 'bg-primary/20 text-primary shadow-[0_0_15px_rgba(var(--primary),0.2)]'
-                  : 'bg-muted/30 text-muted-foreground hover:bg-primary/10 hover:text-primary'
+                'flex flex-col transition-all duration-300 origin-left overflow-hidden',
+                isExpanded
+                  ? 'opacity-100 w-32 ml-0'
+                  : 'opacity-0 w-0 -ml-2 pointer-events-none',
               )}
             >
-              <MessageSquare className="size-4" />
-              <div className="absolute left-full ml-4 px-3 py-2 rounded-lg bg-background border border-subtle text-foreground text-xs font-medium whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-2xl min-w-[120px]">
-                <p className="font-semibold truncate max-w-[180px]">{chat.title}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">
-                  {formatDistanceToNow(new Date(chat.updatedAt))} ago
-                </p>
-              </div>
-              {pathname.includes(chat.id) && (
-                <div className="absolute -left-0.5 top-1/4 bottom-1/4 w-1 bg-primary rounded-full shadow-[0_0_10px_var(--primary)]" />
+              <span className="text-sm font-bold tracking-tight whitespace-nowrap text-foreground/90">
+                dev.me
+              </span>
+              <Badge
+                variant="outline"
+                size="sm"
+                className="w-fit h-3.5 px-1 py-0 text-[8px] font-bold opacity-70"
+              >
+                BETA
+              </Badge>
+            </div>
+            <Badge
+              variant="default"
+              size="sm"
+              className={cn(
+                'absolute -top-1 -right-1 px-1 h-3.5 min-w-8 text-[8px] font-black tracking-tighter transition-all duration-300',
+                isExpanded
+                  ? 'opacity-0 scale-50 pointer-events-none'
+                  : 'opacity-100 scale-100',
               )}
-            </Link>
-          ))}
-        </div>
-        <div className="w-8 h-px bg-linear-to-r from-transparent via-subtle to-transparent mx-auto" />
-        <Button
-          variant="secondary"
-          size="icon"
-          className="size-10 rounded-xl bg-muted/50 hover:bg-muted text-muted-foreground transition-all"
-          onClick={() => setIsOpen(true)}
-        >
-          <Settings className="size-4" />
-        </Button>
-      </aside>
-
-      {/* Main Drawer */}
-      <Drawer direction="left" open={isOpen} onOpenChange={setIsOpen}>
-        <DrawerContent className="h-full w-80 rounded-none border-r border-subtle">
-          <DrawerHeader className="border-b border-subtle flex flex-row items-center justify-between px-4 shrink-0">
-            <DrawerTitle className="text-sm font-semibold tracking-tight">
-              Recent Threads
-            </DrawerTitle>
+            >
+              BETA
+            </Badge>
+          </Link>
+          <div
+            className={cn(
+              'absolute right-4 transition-all duration-300',
+              isExpanded
+                ? 'opacity-100 scale-100'
+                : 'opacity-0 scale-50 pointer-events-none',
+            )}
+          >
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setIsOpen(false)}
+              onClick={() => setIsExpanded(false)}
+              className="size-8 rounded-lg"
             >
               <ChevronRight className="rotate-180 size-5" />
             </Button>
-          </DrawerHeader>
+          </div>
+        </div>
 
-          <div className="flex-1 overflow-hidden flex flex-col pt-4">
-            <div className="px-4 pb-4">
+        {/* Search & Toggle Section */}
+        <div className="px-3 mb-4 h-10 shrink-0">
+          <div className="relative h-10 w-full">
+            <div
+              className={cn(
+                'absolute inset-0 transition-all duration-300',
+                isExpanded
+                  ? 'opacity-100 scale-100'
+                  : 'opacity-0 scale-95 pointer-events-none',
+              )}
+            >
               <div className="relative group">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                 <input
                   placeholder="Search threads..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-muted/50 border-none rounded-xl py-2.5 pl-9 pr-4 text-sm focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60"
+                  className="w-full bg-muted/50 border-none rounded-xl h-10 pl-9 pr-4 text-sm focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60"
                 />
               </div>
             </div>
+            <div
+              className={cn(
+                'absolute inset-0 transition-all duration-300 flex justify-center',
+                !isExpanded
+                  ? 'opacity-100 scale-100'
+                  : 'opacity-0 scale-95 pointer-events-none',
+              )}
+            >
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsExpanded(true)}
+                className="size-10 rounded-xl hover:bg-primary/10 hover:text-primary transition-all group relative"
+              >
+                <Clock className="size-5" />
+                <div className="absolute left-full ml-4 px-3 py-1.5 rounded-lg bg-foreground text-background text-[10px] font-bold tracking-wider uppercase whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-70 shadow-xl">
+                  Recent History
+                </div>
+              </Button>
+            </div>
+          </div>
+        </div>
 
-            <ScrollArea className="flex-1 px-2">
-              <div className="space-y-1 pb-4">
-                {isLoading ? (
-                  Array.from({ length: 5 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="h-20 w-full animate-pulse rounded-xl bg-muted/50 mb-1"
-                    />
-                  ))
-                ) : filteredChats.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-muted-foreground text-sm flex flex-col items-center gap-2">
-                    <History className="size-8 opacity-20" />
-                    <span>No results for &quot;{searchQuery}&quot;</span>
-                  </div>
-                ) : (
-                  filteredChats.map((chat) => {
-                    const isActive = pathname.includes(chat.id);
-                    return (
-                      <div key={chat.id} className="relative group/item mb-1">
-                        <Link
-                          href={`/app/t/${chat.id}`}
-                          onClick={() => setIsOpen(false)}
+        <div className="w-8 h-px bg-linear-to-r from-transparent via-subtle to-transparent mx-auto mb-2 shrink-0" />
+
+        {/* Content Section */}
+        <ScrollArea className="flex-1 px-2">
+          <div className="space-y-1 pb-4">
+            {isLoading
+              ? Array.from({ length: 5 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      'w-full animate-pulse rounded-xl bg-muted/50 mb-1',
+                      isExpanded ? 'h-20' : 'h-10',
+                    )}
+                  />
+                ))
+              : filteredChats.map((chat) => {
+                  const isActive = pathname.includes(chat.id);
+                  return (
+                    <div key={chat.id} className="relative group/item mb-1">
+                      <Link
+                        href={`/app/t/${chat.id}`}
+                        className={cn(
+                          'flex transition-all duration-300 rounded-xl border border-transparent overflow-hidden',
+                          isExpanded
+                            ? 'p-3.5 pr-12 w-full flex-col gap-1.5'
+                            : 'size-10 items-center justify-center mx-auto',
+                          isActive
+                            ? 'bg-primary/10 border-primary/20'
+                            : 'hover:bg-muted/80',
+                        )}
+                      >
+                        <div
                           className={cn(
-                            'flex flex-col gap-1.5 p-3.5 rounded-xl transition-all duration-300',
-                            isActive
-                              ? 'bg-primary/10 border border-primary/20 pr-12'
-                              : 'hover:bg-muted/80 border border-transparent pr-12'
+                            'flex flex-col transition-all duration-300 origin-left overflow-hidden',
+                            isExpanded
+                              ? 'opacity-100 w-full'
+                              : 'opacity-0 w-0 h-0',
                           )}
                         >
-                          <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center justify-between gap-2 overflow-hidden">
                             <span
                               className={cn(
-                                'text-sm font-semibold truncate transition-colors',
-                                isActive ? 'text-primary' : 'text-foreground group-hover/item:text-primary/80'
+                                'text-sm font-semibold truncate transition-colors whitespace-nowrap',
+                                isActive
+                                  ? 'text-primary'
+                                  : 'text-foreground group-hover/item:text-primary/80',
                               )}
                             >
                               {chat.title}
                             </span>
                           </div>
-                          <p className="text-[11px] text-muted-foreground/80 line-clamp-2 leading-relaxed transition-opacity group-hover/item:opacity-80">
+                          <p className="text-[11px] text-muted-foreground/80 line-clamp-2 leading-relaxed">
                             {chat.lastMessagePreview || 'No preview available'}
                           </p>
-                          <p className="text-[10px] text-muted-foreground/50 mt-1 font-medium italic">
-                            {formatDistanceToNow(new Date(chat.updatedAt))} ago
-                          </p>
-                        </Link>
-                        <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-100 transition-opacity flex items-center gap-1">
+                        </div>
+
+                        <div
+                          className={cn(
+                            'transition-all duration-300 flex items-center justify-center relative shrink-0',
+                            !isExpanded
+                              ? 'opacity-100 scale-100 size-10'
+                              : 'opacity-0 scale-50 size-0',
+                          )}
+                        >
+                          <MessageSquare
+                            className={cn(
+                              'size-4',
+                              isActive
+                                ? 'text-primary'
+                                : 'text-muted-foreground',
+                            )}
+                          />
+                          {isActive && (
+                            <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-1 h-4 bg-primary rounded-full shadow-[0_0_10px_var(--primary)]" />
+                          )}
+                          <div className="absolute left-full ml-4 px-3 py-2 rounded-lg bg-background border border-subtle text-foreground text-xs font-medium whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-70 shadow-2xl min-w-[120px]">
+                            <p className="font-semibold truncate max-w-[180px]">
+                              {chat.title}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">
+                              {formatDistanceToNow(new Date(chat.updatedAt))}{' '}
+                              ago
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+
+                      {isExpanded && (
+                        <div className="absolute right-2 top-8 -translate-y-1/2 opacity-0 group-hover/item:opacity-100 transition-opacity flex items-center gap-1">
                           <Menu>
-                            <MenuTrigger render={
-                              <Button variant="ghost" size="icon" className="size-8 rounded-lg hover:bg-muted-foreground/10">
-                                <MoreVertical className="size-4" />
-                              </Button>
-                            } />
-                            <MenuPopup side="right" align="start" className="min-w-32">
-                              <MenuItem onSelect={() => archiveChat.mutate({ id: chat.id, isArchived: true })}>
+                            <MenuTrigger
+                              render={
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="size-8 rounded-lg hover:bg-muted-foreground/10"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <MoreVertical className="size-4" />
+                                </Button>
+                              }
+                            />
+                            <MenuPopup
+                              side="right"
+                              align="start"
+                              className="min-w-32"
+                            >
+                              <MenuItem
+                                onSelect={() =>
+                                  archiveChat.mutate({
+                                    id: chat.id,
+                                    isArchived: true,
+                                  })
+                                }
+                              >
                                 <Archive className="size-4 mr-2" />
                                 <span>Archive</span>
                               </MenuItem>
-                              <MenuItem 
+                              <MenuItem
                                 onSelect={() => deleteChat.mutate(chat.id)}
                                 variant="destructive"
                               >
@@ -227,21 +306,28 @@ export function ThreadPanel() {
                             </MenuPopup>
                           </Menu>
                         </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </ScrollArea>
+                      )}
+                    </div>
+                  );
+                })}
           </div>
+        </ScrollArea>
 
-          <div className="p-4 border-t border-subtle bg-muted/20 flex flex-col gap-2">
+        {/* Footer Section */}
+        <div className="mt-auto p-3 border-t border-subtle bg-muted/5 shrink-0">
+          <div
+            className={cn(
+              'flex flex-col gap-1.5 transition-all duration-300 overflow-hidden',
+              isExpanded
+                ? 'opacity-100 h-auto mb-3'
+                : 'opacity-0 h-0 mb-0 pointer-events-none',
+            )}
+          >
             <Button
               variant="outline"
-              className="w-full justify-start gap-3 rounded-xl text-xs font-semibold hover:bg-primary/5 hover:border-primary/30 transition-all border-dashed"
-              onClick={() => setIsOpen(false)}
+              className="w-full justify-start gap-3 rounded-xl text-[10px] h-8 font-semibold hover:bg-primary/5 hover:border-primary/30 transition-all border-dashed"
             >
-              <Settings className="size-3.5" />
+              <Settings className="size-3" />
               Manage History
             </Button>
             <ConfirmationDialog
@@ -253,16 +339,52 @@ export function ThreadPanel() {
               trigger={
                 <Button
                   variant="ghost"
-                  className="w-full justify-start gap-3 rounded-xl text-xs font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive transition-all"
+                  className="w-full justify-start gap-3 rounded-xl text-[10px] h-8 font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive transition-all"
                 >
-                  <Trash className="size-3.5" />
-                  Clear All History
+                  <Trash className="size-3" />
+                  Clear History
                 </Button>
               }
             />
           </div>
-        </DrawerContent>
-      </Drawer>
+
+          <div className="flex items-center relative w-full h-10">
+            <div
+              className={cn(
+                'transition-all duration-300 flex-1 overflow-hidden',
+                isExpanded
+                  ? 'opacity-100 w-full'
+                  : 'opacity-0 w-0 pointer-events-none',
+              )}
+            >
+              <div className="flex items-center justify-between w-full">
+                <UserDropdown small />
+                <div className="flex gap-1">
+                  {/* Additional expanded actions could go here */}
+                </div>
+              </div>
+            </div>
+            <div
+              className={cn(
+                'absolute left-1/2 -translate-x-1/2 transition-all duration-300 flex flex-col gap-2 shrink-0',
+                !isExpanded
+                  ? 'opacity-100 scale-100'
+                  : 'opacity-0 scale-50 pointer-events-none',
+              )}
+            >
+              <UserDropdown small />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-10 rounded-xl bg-muted/30 hover:bg-muted text-muted-foreground transition-all shrink-0"
+                onClick={() => setIsExpanded(true)}
+              >
+                <Settings className="size-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </aside>
     </>
   );
 }
