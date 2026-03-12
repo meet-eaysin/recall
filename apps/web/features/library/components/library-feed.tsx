@@ -106,7 +106,7 @@ export function LibraryFeed() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
@@ -157,13 +157,13 @@ export function LibraryFeed() {
         </div>
 
         {foldersLoading ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 4 }).map((_, index) => (
               <Skeleton className="h-24 rounded-xl" key={index} />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <FolderShelfCard
               active={!activeFolderId}
               description="Browse everything in your library."
@@ -290,7 +290,7 @@ export function LibraryFeed() {
           </Card>
         ) : (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-4 auto-rows-max sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <div className="grid grid-cols-1 gap-4 auto-rows-max sm:grid-cols-2 lg:grid-cols-3">
               {items.map((doc) => (
                 <DocumentCard key={doc.id} document={doc} />
               ))}
