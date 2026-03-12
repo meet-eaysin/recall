@@ -3,7 +3,9 @@
 import * as React from 'react';
 import { useParams } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
-import { Bot, SendHorizonal, ExternalLink } from 'lucide-react';
+import { Bot, SendHorizonal, ExternalLink, ArrowLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
 import { useSearchChat } from '@/features/search/hooks';
 import { searchApi } from '@/features/search/api';
 import { QUERY_KEYS } from '@/lib/query-keys';
@@ -21,6 +23,7 @@ import { useThreadStream } from './thread-stream-context';
 
 export function ThreadView() {
   const params = useParams();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const threadStream = useThreadStream();
   const threadId = typeof params.threadId === 'string' ? params.threadId : null;
@@ -130,9 +133,12 @@ export function ThreadView() {
     <>
       <div className="flex flex-col h-[calc(100vh-140px)] max-w-4xl mx-auto">
         {/* Header */}
-        <header className="flex items-center justify-between mb-8 shrink-0">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
+        <header className="flex items-center gap-4 mb-8 shrink-0">
+          <Button variant="ghost" size="icon" onClick={() => router.push('/app')} className="shrink-0">
+            <ArrowLeft className="size-4" />
+          </Button>
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold tracking-tight truncate">
               {conversation?.title || omniStream?.question || 'New Thread'}
             </h1>
             {conversation && (
