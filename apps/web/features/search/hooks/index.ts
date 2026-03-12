@@ -31,7 +31,10 @@ export function useDeleteChat() {
       toast.success('Conversation deleted');
     },
     onError: (error: unknown) => {
-      const message = error instanceof ApiError ? error.message : 'Failed to delete conversation';
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : 'Failed to delete conversation';
       toast.error(message);
     },
   });
@@ -45,11 +48,16 @@ export function useArchiveChat() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chats() });
       toast.success(
-        variables.isArchived ? 'Conversation archived' : 'Conversation unarchived',
+        variables.isArchived
+          ? 'Conversation archived'
+          : 'Conversation unarchived',
       );
     },
     onError: (error: unknown) => {
-      const message = error instanceof ApiError ? error.message : 'Failed to archive conversation';
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : 'Failed to archive conversation';
       toast.error(message);
     },
   });
@@ -64,7 +72,10 @@ export function useClearHistory() {
       toast.success('Chat history cleared');
     },
     onError: (error: unknown) => {
-      const message = error instanceof ApiError ? error.message : 'Failed to clear chat history';
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : 'Failed to clear chat history';
       toast.error(message);
     },
   });

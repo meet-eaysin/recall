@@ -5,7 +5,10 @@ import type {
   ChatMessageView,
 } from '@repo/types';
 import { IChatConversationRepository } from '../repositories/chat-conversation.repository';
-import type { ChatConversationEntity, ChatMessageProps } from '../entities/chat-conversation.entity';
+import type {
+  ChatConversationEntity,
+  ChatMessageProps,
+} from '../entities/chat-conversation.entity';
 import type { IChatSourceRef } from '@repo/db';
 
 type PromptMessage = {
@@ -41,7 +44,10 @@ export class SearchChatService {
     userId: string,
     conversationId: string,
   ): Promise<ChatConversationEntity> {
-    const conversation = await this.chatRepository.findById(conversationId, userId);
+    const conversation = await this.chatRepository.findById(
+      conversationId,
+      userId,
+    );
     if (!conversation) {
       throw new NotFoundException('Conversation not found');
     }
@@ -54,7 +60,10 @@ export class SearchChatService {
   ): Promise<PromptMessage[]> {
     if (!conversationId) return [];
 
-    const conversation = await this.getConversationForUser(userId, conversationId);
+    const conversation = await this.getConversationForUser(
+      userId,
+      conversationId,
+    );
     const recentMessages = conversation.props.messages.slice(
       -SearchChatService.MAX_HISTORY_MESSAGES,
     );
@@ -67,14 +76,19 @@ export class SearchChatService {
 
   async listConversations(userId: string): Promise<ChatConversationSummary[]> {
     const conversations = await this.chatRepository.findAll(userId);
-    return conversations.map((conversation) => this.toConversationSummary(conversation));
+    return conversations.map((conversation) =>
+      this.toConversationSummary(conversation),
+    );
   }
 
   async getConversationDetail(
     userId: string,
     conversationId: string,
   ): Promise<ChatConversationDetail> {
-    const conversation = await this.getConversationForUser(userId, conversationId);
+    const conversation = await this.getConversationForUser(
+      userId,
+      conversationId,
+    );
 
     return {
       id: conversation.id,
@@ -84,12 +98,17 @@ export class SearchChatService {
       lastMessagePreview: conversation.props.lastMessagePreview ?? null,
       createdAt: conversation.props.createdAt.toISOString(),
       updatedAt: conversation.props.updatedAt.toISOString(),
-      messages: conversation.props.messages.map((message) => this.toMessageView(message)),
+      messages: conversation.props.messages.map((message) =>
+        this.toMessageView(message),
+      ),
       isArchived: conversation.isArchived,
     };
   }
 
-  async deleteConversation(userId: string, conversationId: string): Promise<void> {
+  async deleteConversation(
+    userId: string,
+    conversationId: string,
+  ): Promise<void> {
     const deleted = await this.chatRepository.delete(conversationId, userId);
     if (!deleted) {
       throw new NotFoundException('Conversation not found');
@@ -127,8 +146,11 @@ export class SearchChatService {
     tokensUsed: number;
     userId: string;
   }): Promise<ChatConversationDetail> {
-    const conversation = await this.getConversationForUser(params.userId, params.conversationId);
-    
+    const conversation = await this.getConversationForUser(
+      params.userId,
+      params.conversationId,
+    );
+
     const messages = [...conversation.props.messages];
     messages.push({
       id: '', // Server will handle

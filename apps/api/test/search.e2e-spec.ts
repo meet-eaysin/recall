@@ -123,7 +123,7 @@ describe('Search (e2e)', () => {
         .post('/api/v1/search/ask')
         .set('Cookie', auth.cookies)
         .send({ question: 'What is in the knowledge base?' });
-      
+
       expect([200, 201]).toContain(response.status);
 
       if (isAskResponse(response.body)) {
@@ -141,7 +141,7 @@ describe('Search (e2e)', () => {
         authId: 'dev:search-list',
         email: 'search-list@test.local',
       });
-      
+
       const { ChatConversationModel } = await import('@repo/db');
       await ChatConversationModel.create({
         userId: auth.userId,
@@ -168,7 +168,7 @@ describe('Search (e2e)', () => {
         authId: 'dev:search-list-archived',
         email: 'search-list-archived@test.local',
       });
-      
+
       const { ChatConversationModel } = await import('@repo/db');
       await ChatConversationModel.create({
         userId: auth.userId,
@@ -191,7 +191,7 @@ describe('Search (e2e)', () => {
         authId: 'dev:search-archive',
         email: 'search-archive@test.local',
       });
-      
+
       const { ChatConversationModel } = await import('@repo/db');
       const chat = await ChatConversationModel.create({
         userId: auth.userId,
@@ -214,7 +214,7 @@ describe('Search (e2e)', () => {
         authId: 'dev:search-delete',
         email: 'search-delete@test.local',
       });
-      
+
       const { ChatConversationModel } = await import('@repo/db');
       const chat = await ChatConversationModel.create({
         userId: auth.userId,
@@ -235,17 +235,25 @@ describe('Search (e2e)', () => {
         authId: 'dev:search-clear',
         email: 'search-clear@test.local',
       });
-      
+
       const { ChatConversationModel } = await import('@repo/db');
-      await ChatConversationModel.create({ userId: auth.userId, title: 'Chat 1' });
-      await ChatConversationModel.create({ userId: auth.userId, title: 'Chat 2' });
+      await ChatConversationModel.create({
+        userId: auth.userId,
+        title: 'Chat 1',
+      });
+      await ChatConversationModel.create({
+        userId: auth.userId,
+        title: 'Chat 2',
+      });
 
       await request(app.getHttpServer())
         .delete('/api/v1/search/chats')
         .set('Cookie', auth.cookies)
         .expect(200);
 
-      const count = await ChatConversationModel.countDocuments({ userId: auth.userId });
+      const count = await ChatConversationModel.countDocuments({
+        userId: auth.userId,
+      });
       expect(count).toBe(0);
     });
   });

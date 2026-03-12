@@ -1,12 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { ChatConversationModel, type IChatConversationDocument } from '@repo/db';
+import {
+  ChatConversationModel,
+  type IChatConversationDocument,
+} from '@repo/db';
 import { IChatConversationRepository } from '../../domain/repositories/chat-conversation.repository';
-import { ChatConversationEntity, type ChatConversationEntityProps } from '../../domain/entities/chat-conversation.entity';
+import {
+  ChatConversationEntity,
+  type ChatConversationEntityProps,
+} from '../../domain/entities/chat-conversation.entity';
 import { Types } from 'mongoose';
 
 @Injectable()
 export class MongooseChatConversationRepository implements IChatConversationRepository {
-  async findById(id: string, userId: string): Promise<ChatConversationEntity | null> {
+  async findById(
+    id: string,
+    userId: string,
+  ): Promise<ChatConversationEntity | null> {
     const doc = await ChatConversationModel.findOne({ _id: id, userId }).exec();
     return doc ? this.toEntity(doc) : null;
   }
@@ -18,7 +27,9 @@ export class MongooseChatConversationRepository implements IChatConversationRepo
     return docs.map((doc) => this.toEntity(doc));
   }
 
-  async create(data: Partial<ChatConversationEntityProps>): Promise<ChatConversationEntity> {
+  async create(
+    data: Partial<ChatConversationEntityProps>,
+  ): Promise<ChatConversationEntity> {
     const doc = await ChatConversationModel.create({
       ...data,
       _id: undefined, // Let mongoose generate it if not provided
@@ -43,7 +54,10 @@ export class MongooseChatConversationRepository implements IChatConversationRepo
   }
 
   async delete(id: string, userId: string): Promise<boolean> {
-    const result = await ChatConversationModel.deleteOne({ _id: id, userId }).exec();
+    const result = await ChatConversationModel.deleteOne({
+      _id: id,
+      userId,
+    }).exec();
     return result.deletedCount > 0;
   }
 
@@ -53,7 +67,10 @@ export class MongooseChatConversationRepository implements IChatConversationRepo
 
   private toEntity(doc: IChatConversationDocument): ChatConversationEntity {
     return ChatConversationEntity.create({
-      id: doc._id instanceof Types.ObjectId ? doc._id.toHexString() : String(doc._id),
+      id:
+        doc._id instanceof Types.ObjectId
+          ? doc._id.toHexString()
+          : String(doc._id),
       userId: String(doc.userId),
       title: doc.title,
       documentIds: doc.documentIds,

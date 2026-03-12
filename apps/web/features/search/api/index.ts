@@ -1,4 +1,11 @@
-import { apiGet, apiPost, apiDelete, apiPatch, ApiError, requestWithAuth } from '@/lib/api';
+import {
+  apiGet,
+  apiPost,
+  apiDelete,
+  apiPatch,
+  ApiError,
+  requestWithAuth,
+} from '@/lib/api';
 import { API_ENDPOINTS } from '@/lib/api-endpoints';
 import type {
   AskInput,
@@ -57,7 +64,9 @@ export const searchApi = {
   },
 
   getChats: async (includeArchived = false) => {
-    const query = buildQueryString({ includeArchived: includeArchived ? 'true' : undefined });
+    const query = buildQueryString({
+      includeArchived: includeArchived ? 'true' : undefined,
+    });
     const response = await apiGet<{ conversations: SearchChatSummary[] }>(
       `${API_ENDPOINTS.SEARCH.CHATS}${query}`,
     );
@@ -74,9 +83,12 @@ export const searchApi = {
   deleteChat: (id: string) => apiDelete(API_ENDPOINTS.SEARCH.chat(id)),
 
   archiveChat: (id: string, isArchived: boolean) =>
-    apiPatch<SearchChatConversation>(`${API_ENDPOINTS.SEARCH.chat(id)}/archive`, {
-      body: { isArchived },
-    }),
+    apiPatch<SearchChatConversation>(
+      `${API_ENDPOINTS.SEARCH.chat(id)}/archive`,
+      {
+        body: { isArchived },
+      },
+    ),
 
   clearHistory: () => apiDelete(API_ENDPOINTS.SEARCH.CHATS),
 

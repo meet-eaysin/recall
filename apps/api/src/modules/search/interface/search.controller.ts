@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Query, Body, Param, Res, Delete, Patch, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Body,
+  Param,
+  Res,
+  Delete,
+  Patch,
+  HttpCode,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { SearchUseCase } from '../application/use-cases/search.usecase';
 import { AskUseCase } from '../application/use-cases/ask.usecase';
@@ -90,7 +101,8 @@ export class SearchController {
     @User('userId') userId: string,
     @Query('includeArchived') includeArchived?: string,
   ) {
-    const conversations = await this.searchChatService.listConversations(userId);
+    const conversations =
+      await this.searchChatService.listConversations(userId);
     const filtered =
       includeArchived === 'true'
         ? conversations

@@ -4,7 +4,6 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  MessageSquare,
   Clock,
   ChevronRight,
   Search,
@@ -73,7 +72,7 @@ export function ThreadPanel() {
     <>
       <aside
         className={cn(
-          'fixed top-0 left-0 h-screen bg-background border-r border-subtle z-60 hidden lg:flex flex-col transition-[width] duration-300 ease-in-out shadow-[1px_0_10px_rgba(0,0,0,0.02)] overflow-hidden',
+          'fixed top-0 left-0 h-screen bg-background border-r border-subtle z-30 hidden lg:flex flex-col transition-[width] duration-300 ease-in-out shadow-[1px_0_10px_rgba(0,0,0,0.02)] overflow-hidden',
           isExpanded ? 'w-80' : 'w-16',
         )}
       >
@@ -209,60 +208,55 @@ export function ThreadPanel() {
                             : 'hover:bg-muted/80',
                         )}
                       >
-                        <div
-                          className={cn(
-                            'flex flex-col transition-all duration-300 origin-left overflow-hidden',
-                            isExpanded
-                              ? 'opacity-100 w-full'
-                              : 'opacity-0 w-0 h-0',
-                          )}
-                        >
-                          <div className="flex items-center justify-between gap-2 overflow-hidden">
-                            <span
+                        {/* Expanded: full title + preview */}
+                        {isExpanded && (
+                          <div className="flex flex-col overflow-hidden">
+                            <div className="flex items-center justify-between gap-2 overflow-hidden">
+                              <span
+                                className={cn(
+                                  'text-sm font-semibold truncate transition-colors whitespace-nowrap',
+                                  isActive
+                                    ? 'text-primary'
+                                    : 'text-foreground group-hover/item:text-primary/80',
+                                )}
+                              >
+                                {chat.title}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-muted-foreground/80 line-clamp-2 leading-relaxed">
+                              {chat.lastMessagePreview ||
+                                'No preview available'}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Collapsed: first letter badge */}
+                        {!isExpanded && (
+                          <div className="flex items-center justify-center relative shrink-0 size-10">
+                            <div
                               className={cn(
-                                'text-sm font-semibold truncate transition-colors whitespace-nowrap',
+                                'size-8 rounded-lg flex items-center justify-center text-[11px] font-bold transition-all',
                                 isActive
-                                  ? 'text-primary'
-                                  : 'text-foreground group-hover/item:text-primary/80',
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-muted text-muted-foreground group-hover/item:bg-primary/10 group-hover/item:text-primary',
                               )}
                             >
-                              {chat.title}
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-muted-foreground/80 line-clamp-2 leading-relaxed">
-                            {chat.lastMessagePreview || 'No preview available'}
-                          </p>
-                        </div>
-
-                        <div
-                          className={cn(
-                            'transition-all duration-300 flex items-center justify-center relative shrink-0',
-                            !isExpanded
-                              ? 'opacity-100 scale-100 size-10'
-                              : 'opacity-0 scale-50 size-0',
-                          )}
-                        >
-                          <MessageSquare
-                            className={cn(
-                              'size-4',
-                              isActive
-                                ? 'text-primary'
-                                : 'text-muted-foreground',
+                              {chat.title.charAt(0).toUpperCase()}
+                            </div>
+                            {isActive && (
+                              <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-1 h-4 bg-primary rounded-full shadow-[0_0_10px_var(--primary)]" />
                             )}
-                          />
-                          {isActive && (
-                            <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-1 h-4 bg-primary rounded-full shadow-[0_0_10px_var(--primary)]" />
-                          )}
-                          <div className="absolute left-full ml-4 px-3 py-2 rounded-lg bg-background border border-subtle text-foreground text-xs font-medium whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-70 shadow-2xl min-w-[120px]">
-                            <p className="font-semibold truncate max-w-[180px]">
-                              {chat.title}
-                            </p>
-                            <p className="text-[10px] text-muted-foreground mt-0.5">
-                              {formatDistanceToNow(new Date(chat.updatedAt))}{' '}
-                              ago
-                            </p>
+                            <div className="absolute left-full ml-4 px-3 py-2 rounded-lg bg-background border border-subtle text-foreground text-xs font-medium whitespace-nowrap opacity-0 pointer-events-none group-hover/item:opacity-100 transition-opacity z-70 shadow-2xl min-w-[120px]">
+                              <p className="font-semibold truncate max-w-[180px]">
+                                {chat.title}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">
+                                {formatDistanceToNow(new Date(chat.updatedAt))}{' '}
+                                ago
+                              </p>
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </Link>
 
                       {isExpanded && (
@@ -315,73 +309,38 @@ export function ThreadPanel() {
 
         {/* Footer Section */}
         <div className="mt-auto p-3 border-t border-subtle bg-muted/5 shrink-0">
-          <div
-            className={cn(
-              'flex flex-col gap-1.5 transition-all duration-300 overflow-hidden',
-              isExpanded
-                ? 'opacity-100 h-auto mb-3'
-                : 'opacity-0 h-0 mb-0 pointer-events-none',
-            )}
-          >
-            <Button
-              variant="outline"
-              className="w-full justify-start gap-3 rounded-xl text-[10px] h-8 font-semibold hover:bg-primary/5 hover:border-primary/30 transition-all border-dashed"
-            >
-              <Settings className="size-3" />
-              Manage History
-            </Button>
-            <ConfirmationDialog
-              title="Clear Chat History"
-              description="Are you sure you want to clear all your chat history? This action cannot be undone."
-              confirmLabel="Clear All"
-              tone="destructive"
-              onConfirm={() => clearHistory.mutate()}
-              trigger={
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-3 rounded-xl text-[10px] h-8 font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive transition-all"
-                >
-                  <Trash className="size-3" />
-                  Clear History
-                </Button>
-              }
-            />
-          </div>
-
-          <div className="flex items-center relative w-full h-10">
-            <div
-              className={cn(
-                'transition-all duration-300 flex-1 overflow-hidden',
-                isExpanded
-                  ? 'opacity-100 w-full'
-                  : 'opacity-0 w-0 pointer-events-none',
-              )}
-            >
-              <div className="flex items-center justify-between w-full">
-                <UserDropdown small />
-                <div className="flex gap-1">
-                  {/* Additional expanded actions could go here */}
-                </div>
-              </div>
-            </div>
-            <div
-              className={cn(
-                'absolute left-1/2 -translate-x-1/2 transition-all duration-300 flex flex-col gap-2 shrink-0',
-                !isExpanded
-                  ? 'opacity-100 scale-100'
-                  : 'opacity-0 scale-50 pointer-events-none',
-              )}
-            >
-              <UserDropdown small />
+          {/* Expanded footer actions */}
+          {isExpanded && (
+            <div className="flex flex-col gap-1.5 mb-3">
               <Button
-                variant="ghost"
-                size="icon"
-                className="size-10 rounded-xl bg-muted/30 hover:bg-muted text-muted-foreground transition-all shrink-0"
-                onClick={() => setIsExpanded(true)}
+                variant="outline"
+                className="w-full justify-start gap-3 rounded-xl text-[10px] h-8 font-semibold hover:bg-primary/5 hover:border-primary/30 transition-all border-dashed"
               >
-                <Settings className="size-4" />
+                <Settings className="size-3" />
+                Manage History
               </Button>
+              <ConfirmationDialog
+                title="Clear Chat History"
+                description="Are you sure you want to clear all your chat history? This action cannot be undone."
+                confirmLabel="Clear All"
+                tone="destructive"
+                onConfirm={() => clearHistory.mutate()}
+                trigger={
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start gap-3 rounded-xl text-[10px] h-8 font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive transition-all"
+                  >
+                    <Trash className="size-3" />
+                    Clear History
+                  </Button>
+                }
+              />
             </div>
+          )}
+
+          {/* UserDropdown — always visible */}
+          <div className="flex items-center justify-center">
+            <UserDropdown small={!isExpanded} />
           </div>
         </div>
       </aside>
