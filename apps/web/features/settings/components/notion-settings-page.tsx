@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { CheckCircle2, Database, RefreshCcw, Unplug, Workflow } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Database, RefreshCcw, Unplug, Workflow } from 'lucide-react';
+import Link from 'next/link';
 import { NotionSyncDirectionType } from '@repo/types';
-import Shell from '@/components/shell';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -170,11 +170,16 @@ export function NotionSettingsPage() {
   }
 
   return (
-    <Shell
-      heading="Notion"
-      subtitle="Connect a workspace, choose the target database, and control how synchronization should behave."
-      backPath="/settings"
-    >
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      <header className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" render={<Link href="/app/settings" />} className="rounded-xl">
+          <ArrowLeft className="size-5" />
+        </Button>
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold tracking-tight">Notion</h1>
+          <p className="text-muted-foreground">Connect a workspace, choose the target database, and control how synchronization should behave.</p>
+        </div>
+      </header>
       <div className="mt-4 space-y-4">
         {fatalError ? (
           <Alert variant="error">
@@ -461,6 +466,6 @@ export function NotionSettingsPage() {
           </div>
         ) : null}
       </div>
-    </Shell>
+    </div>
   );
 }

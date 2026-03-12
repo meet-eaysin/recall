@@ -15,7 +15,6 @@ import {
   Search,
 } from 'lucide-react';
 import { GraphNodeType, GraphRelationType } from '@repo/types';
-import Shell from '@/components/shell';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -529,25 +528,27 @@ export function GraphExplorer() {
 
   if (error) {
     return (
-      <Shell
-        heading="Knowledge Graph"
-        subtitle="Visualize your document network and semantic relationships."
-      >
+      <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+        <header className="space-y-1">
+          <h1 className="text-3xl font-bold tracking-tight">Knowledge Graph</h1>
+          <p className="text-muted-foreground">Visualize your document network and semantic relationships.</p>
+        </header>
         <div className="mt-4">
           <Alert variant="error">
             <AlertTitle>Failed to load graph</AlertTitle>
             <AlertDescription>{(error as Error).message}</AlertDescription>
           </Alert>
         </div>
-      </Shell>
+      </div>
     );
   }
 
   return (
-    <Shell
-      heading="Knowledge Graph"
-      subtitle="Explore your document network with a stable graph view, direct selection, and scoped subgraphs."
-    >
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      <header className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight">Knowledge Graph</h1>
+        <p className="text-muted-foreground">Explore your document network with a stable graph view, direct selection, and scoped subgraphs.</p>
+      </header>
       <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
         <Card className="overflow-hidden border-border/60 bg-card/95 shadow-sm">
           <CardHeader className="px-5 py-4">
@@ -880,6 +881,6 @@ export function GraphExplorer() {
           </Card>
         </div>
       </div>
-    </Shell>
+    </div>
   );
 }

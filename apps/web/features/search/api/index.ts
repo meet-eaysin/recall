@@ -115,7 +115,10 @@ export const searchApi = {
       for (const line of lines) {
         const trimmed = line.trim();
         if (!trimmed) continue;
-        handlers.onEvent(JSON.parse(trimmed) as AskStreamEvent);
+        const event = JSON.parse(trimmed);
+        if (event && typeof event === 'object' && 'type' in event) {
+          handlers.onEvent(event as AskStreamEvent);
+        }
       }
     }
 

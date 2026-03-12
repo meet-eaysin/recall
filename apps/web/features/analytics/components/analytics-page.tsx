@@ -10,7 +10,6 @@ import {
   Sparkles,
 } from 'lucide-react';
 import type { AnalyticsHeatmapItem } from '@repo/types';
-import Shell from '@/components/shell';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -197,10 +196,11 @@ export function AnalyticsPage() {
     .filter((item) => item.count > 0);
 
   return (
-    <Shell
-      heading="Analytics"
-      subtitle="Track consistency over time, see where your activity comes from, and spot your strongest learning rhythm."
-    >
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      <header className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
+        <p className="text-muted-foreground">Track consistency over time, see where your activity comes from, and spot your strongest learning rhythm.</p>
+      </header>
       <div className="mt-4 space-y-4">
         {statsError ? (
           <Alert variant="error">
@@ -389,6 +389,6 @@ export function AnalyticsPage() {
           </CardPanel>
         </Card>
       </div>
-    </Shell>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
-import { LaptopMinimal, ShieldCheck, Smartphone, Trash2 } from 'lucide-react';
-import Shell from '@/components/shell';
+import { ArrowLeft, LaptopMinimal, ShieldCheck, Smartphone, Trash2 } from 'lucide-react';
+import Link from 'next/link';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -38,11 +38,16 @@ export function SecurityPage() {
   const revokeSession = useRevokeUserSession();
 
   return (
-    <Shell
-      heading="Security"
-      subtitle="Review the sessions that can currently access your account and revoke any that should no longer remain active."
-      backPath="/settings"
-    >
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      <header className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" render={<Link href="/app/settings" />} className="rounded-xl">
+          <ArrowLeft className="size-5" />
+        </Button>
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold tracking-tight">Security</h1>
+          <p className="text-muted-foreground">Review the sessions that can currently access your account and revoke any that should no longer remain active.</p>
+        </div>
+      </header>
       <div className="mt-4 space-y-4">
         {error ? (
           <Alert variant="error">
@@ -182,6 +187,6 @@ export function SecurityPage() {
           </CardPanel>
         </Card>
       </div>
-    </Shell>
+    </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { Bot, ShieldCheck, UserCircle2, Workflow } from 'lucide-react';
-import Shell from '@/components/shell';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -40,10 +39,11 @@ export function SettingsPage() {
     notionError && !isNotConfigured(notionError) ? (notionError as Error) : null;
 
   return (
-    <Shell
-      heading="Settings"
-      subtitle="Manage your account, trusted sessions, and the integrations that power daily work."
-    >
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      <header className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+        <p className="text-muted-foreground">Manage your account, trusted sessions, and the integrations that power daily work.</p>
+      </header>
       <div className="mt-4 space-y-4">
         {userError ? (
           <Alert variant="error">
@@ -254,6 +254,6 @@ export function SettingsPage() {
           </CardPanel>
         </Card>
       </div>
-    </Shell>
+    </div>
   );
 }
