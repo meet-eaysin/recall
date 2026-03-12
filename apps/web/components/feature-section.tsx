@@ -126,7 +126,8 @@ function SetupVisual() {
       <div className="relative mt-8 space-y-1.5 text-center">
         <FeatureTitle>Developer First</FeatureTitle>
         <FeatureDescription>
-          Built for developers who value privacy and performance. Deploy anywhere in minutes.
+          Built for developers who value privacy and performance. Deploy
+          anywhere in minutes.
         </FeatureDescription>
       </div>
     </>
@@ -215,8 +216,12 @@ function DashboardVisual() {
               <div className="text-xs font-medium">Deep Dive on RAG</div>
             </div>
             <div className="flex flex-wrap gap-2 text-[10px] text-muted-foreground">
-              <span className="rounded-full border bg-card px-2 py-1">paper</span>
-              <span className="rounded-full border bg-card px-2 py-1">vector</span>
+              <span className="rounded-full border bg-card px-2 py-1">
+                paper
+              </span>
+              <span className="rounded-full border bg-card px-2 py-1">
+                vector
+              </span>
               <span className="rounded-full border bg-card px-2 py-1">
                 retrieval
               </span>
@@ -245,11 +250,10 @@ function PresenceVisual() {
           <NetworkIcon className="size-5 text-primary/80" />
         </div>
         <div className="space-y-2">
-          <FeatureTitle className="text-base">
-            Knowledge Graph
-          </FeatureTitle>
+          <FeatureTitle className="text-base">Knowledge Graph</FeatureTitle>
           <FeatureDescription>
-            Explore your personal knowledge graph. dev.me automatically connects your docs and ideas.
+            Explore your personal knowledge graph. dev.me automatically connects
+            your docs and ideas.
           </FeatureDescription>
         </div>
       </div>

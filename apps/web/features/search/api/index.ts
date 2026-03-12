@@ -65,7 +65,9 @@ export const searchApi = {
 
   search: (filters: SearchFilters) => {
     const query = buildQueryString(filters);
-    return apiGet<SearchResultsResponse>(`${API_ENDPOINTS.SEARCH.LIST}${query}`);
+    return apiGet<SearchResultsResponse>(
+      `${API_ENDPOINTS.SEARCH.LIST}${query}`,
+    );
   },
 
   streamAsk: async (
@@ -112,7 +114,7 @@ export const searchApi = {
           const trimmed = line.trim();
           if (!trimmed) continue;
           const event = JSON.parse(trimmed) as AskStreamEvent;
-          
+
           if (event && typeof event === 'object' && 'type' in event) {
             if (event.type === 'done' || event.type === 'error') {
               receivedTerminalEvent = true;

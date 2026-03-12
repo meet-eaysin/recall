@@ -227,12 +227,15 @@ function ScopeSelector({
       <div className="space-y-1">
         <FieldLabel>Limit to selected documents</FieldLabel>
         <FieldDescription>
-          Optional. Leave everything unchecked to search across your full library.
+          Optional. Leave everything unchecked to search across your full
+          library.
         </FieldDescription>
       </div>
       <div className="space-y-2">
         {documents.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No documents available.</p>
+          <p className="text-sm text-muted-foreground">
+            No documents available.
+          </p>
         ) : (
           documents.map((document) => {
             const checked = selectedDocumentIds.includes(document.id);
@@ -252,7 +255,9 @@ function ScopeSelector({
                     )
                   }
                 />
-                <span className="text-sm text-foreground">{document.title}</span>
+                <span className="text-sm text-foreground">
+                  {document.title}
+                </span>
               </label>
             );
           })
@@ -285,9 +290,8 @@ export function AskAiPage() {
 
   const { data: conversations = [], isLoading: conversationsLoading } =
     useSearchChats();
-  const { data: conversation, isLoading: conversationLoading } = useSearchChat(
-    conversationId,
-  );
+  const { data: conversation, isLoading: conversationLoading } =
+    useSearchChat(conversationId);
   const { data: documentsData } = useDocuments({ limit: 12, page: 1 });
 
   React.useEffect(() => {
@@ -337,7 +341,8 @@ export function AskAiPage() {
     const trimmed = question.trim();
     if (!trimmed || streaming.isStreaming) return;
 
-    const activeDocumentIds = selectedDocumentIds.length > 0 ? selectedDocumentIds : [];
+    const activeDocumentIds =
+      selectedDocumentIds.length > 0 ? selectedDocumentIds : [];
 
     setStreaming({
       answer: '',
@@ -510,7 +515,8 @@ export function AskAiPage() {
                     {conversation?.title ?? 'Start a new conversation'}
                   </CardTitle>
                   <CardDescription>
-                    Ask a question and MindStack AI will answer with sources from your library.
+                    Ask a question and MindStack AI will answer with sources
+                    from your library.
                   </CardDescription>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -521,10 +527,7 @@ export function AskAiPage() {
                     </Button>
                   </DrawerTrigger>
                   {conversationId ? (
-                    <Button
-                      variant="outline"
-                      onClick={startNewConversation}
-                    >
+                    <Button variant="outline" onClick={startNewConversation}>
                       <Plus className="size-4" />
                       New chat
                     </Button>
@@ -541,13 +544,19 @@ export function AskAiPage() {
                     onChange={(event) => setQuestion(event.target.value)}
                     placeholder="Ask about a document, summarize a topic, or continue the current thread."
                     onKeyDown={(event) => {
-                      if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+                      if (
+                        event.key === 'Enter' &&
+                        (event.metaKey || event.ctrlKey)
+                      ) {
                         event.preventDefault();
                         void submitQuestion();
                       }
                     }}
                   />
-                  <InputGroupAddon align="block-end" className="justify-between">
+                  <InputGroupAddon
+                    align="block-end"
+                    className="justify-between"
+                  >
                     <InputGroupText>
                       {streaming.isStreaming ? (
                         <>
@@ -569,10 +578,7 @@ export function AskAiPage() {
                 </InputGroup>
               </Field>
 
-              <Collapsible
-                open={scopeOpen}
-                onOpenChange={setScopeOpen}
-              >
+              <Collapsible open={scopeOpen} onOpenChange={setScopeOpen}>
                 <div className="space-y-3 rounded-lg border px-4 py-3">
                   <div className="flex items-center justify-between gap-3">
                     <div>
@@ -585,9 +591,7 @@ export function AskAiPage() {
                           : 'Search across your whole library'}
                       </p>
                     </div>
-                    <CollapsibleTrigger
-                      className="text-sm font-medium text-foreground"
-                    >
+                    <CollapsibleTrigger className="text-sm font-medium text-foreground">
                       {scopeOpen ? 'Hide' : 'Adjust'}
                     </CollapsibleTrigger>
                   </div>
@@ -632,7 +636,9 @@ export function AskAiPage() {
                         key={message.id}
                         className={cn(
                           'rounded-lg border p-4',
-                          message.role === 'assistant' ? 'bg-background' : 'bg-muted/35',
+                          message.role === 'assistant'
+                            ? 'bg-background'
+                            : 'bg-muted/35',
                         )}
                       >
                         <div className="mb-3 flex items-center justify-between gap-3">
@@ -643,7 +649,9 @@ export function AskAiPage() {
                               <SendHorizonal className="size-4 text-muted-foreground" />
                             )}
                             <p className="text-sm font-medium text-foreground">
-                              {message.role === 'assistant' ? 'MindStack AI' : 'You'}
+                              {message.role === 'assistant'
+                                ? 'MindStack AI'
+                                : 'You'}
                             </p>
                           </div>
                           <p className="text-xs text-muted-foreground">
@@ -664,7 +672,8 @@ export function AskAiPage() {
                           </p>
                         )}
 
-                        {message.role === 'assistant' && message.sources.length > 0 ? (
+                        {message.role === 'assistant' &&
+                        message.sources.length > 0 ? (
                           <div className="mt-5 space-y-3 border-t pt-4">
                             <p className="text-xs font-medium text-muted-foreground">
                               Sources
@@ -699,7 +708,8 @@ export function AskAiPage() {
                     <Alert>
                       <AlertTitle>No messages yet</AlertTitle>
                       <AlertDescription>
-                        Ask your first question to start a grounded conversation.
+                        Ask your first question to start a grounded
+                        conversation.
                       </AlertDescription>
                     </Alert>
                   )}

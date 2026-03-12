@@ -4,7 +4,12 @@ import * as React from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 import { Search, Sparkles, Command, ArrowRight } from 'lucide-react';
-import { InputGroup, InputGroupAddon, InputGroupText, InputGroupInput } from '@/components/ui/input-group';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroupInput,
+} from '@/components/ui/input-group';
 import { Button } from '@/components/ui/button';
 import { searchApi } from '@/features/search/api';
 import { QUERY_KEYS } from '@/lib/query-keys';
@@ -47,7 +52,11 @@ export function OmniBox() {
                 question: trimmed,
               });
               // Silently update URL for bookmarkability — no navigation
-              window.history.replaceState(null, '', `/app/t/${event.conversationId}`);
+              window.history.replaceState(
+                null,
+                '',
+                `/app/t/${event.conversationId}`,
+              );
               return;
             }
 
@@ -60,9 +69,13 @@ export function OmniBox() {
               threadStream.failStream(event.message);
               const activeId = threadStream.activeStream?.conversationId;
               if (activeId) {
-                queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chat(activeId) });
+                queryClient.invalidateQueries({
+                  queryKey: QUERY_KEYS.SEARCH.chat(activeId),
+                });
               }
-              queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chats() });
+              queryClient.invalidateQueries({
+                queryKey: QUERY_KEYS.SEARCH.chats(),
+              });
               setIsSubmitting(false);
               return;
             }
@@ -70,13 +83,17 @@ export function OmniBox() {
             if (event.type === 'done') {
               threadStream.completeStream();
               if (event.data?.conversationId) {
-                queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chat(event.data.conversationId) });
+                queryClient.invalidateQueries({
+                  queryKey: QUERY_KEYS.SEARCH.chat(event.data.conversationId),
+                });
               }
-              queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chats() });
+              queryClient.invalidateQueries({
+                queryKey: QUERY_KEYS.SEARCH.chats(),
+              });
               setIsSubmitting(false);
             }
           },
-        }
+        },
       );
     } catch (error) {
       console.error('Failed to start thread:', error);
@@ -149,7 +166,11 @@ export function OmniBox() {
       {/* Quick Actions / Suggestions */}
       <div className="flex flex-wrap items-center justify-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-1000 delay-300">
         <span className="text-sm text-muted-foreground font-medium">Try:</span>
-        {['Summarize my recent docs', 'Find Notion sync issues', 'Research the MindStack graph'].map((hint) => (
+        {[
+          'Summarize my recent docs',
+          'Find Notion sync issues',
+          'Research the MindStack graph',
+        ].map((hint) => (
           <button
             key={hint}
             onClick={() => setQuery(hint)}

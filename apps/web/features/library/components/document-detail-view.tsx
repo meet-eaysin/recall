@@ -87,7 +87,9 @@ export function DocumentDetailView({ id }: { id: string }) {
   const [noteDraft, setNoteDraft] = React.useState('');
   const [deleteDocumentOpen, setDeleteDocumentOpen] = React.useState(false);
   const [removeSummaryOpen, setRemoveSummaryOpen] = React.useState(false);
-  const [deletingNoteId, setDeletingNoteId] = React.useState<string | null>(null);
+  const [deletingNoteId, setDeletingNoteId] = React.useState<string | null>(
+    null,
+  );
   const [editingNoteId, setEditingNoteId] = React.useState<string | null>(null);
   const [editingNoteDraft, setEditingNoteDraft] = React.useState('');
   const [readerExpanded, setReaderExpanded] = React.useState(false);
@@ -95,10 +97,8 @@ export function DocumentDetailView({ id }: { id: string }) {
   const { data: document, error, isLoading } = useDocument(id);
   const { data: ingestion } = useDocumentIngestion(id);
   const isYoutubeDocument = document?.type === 'youtube';
-  const { data: transcriptResponse, error: transcriptError } = useDocumentTranscript(
-    id,
-    isYoutubeDocument,
-  );
+  const { data: transcriptResponse, error: transcriptError } =
+    useDocumentTranscript(id, isYoutubeDocument);
   const { data: notes = [] } = useNotes(id);
   const { data: folders = [] } = useFolders();
   const updateDocument = useUpdateDocument(id);
@@ -113,7 +113,8 @@ export function DocumentDetailView({ id }: { id: string }) {
 
   const folder = folders.find((item) => item.id === document?.folderId);
   const canRetryIngestion =
-    ingestion?.ingestionStatus === IngestionStatus.FAILED && !ingestion.embeddingsReady;
+    ingestion?.ingestionStatus === IngestionStatus.FAILED &&
+    !ingestion.embeddingsReady;
 
   function showTranscriptUnavailableToast() {
     toastManager.add({
@@ -194,11 +195,16 @@ export function DocumentDetailView({ id }: { id: string }) {
               <EmptyHeader>
                 <EmptyTitle>Document not available</EmptyTitle>
                 <EmptyDescription>
-                  {(error as Error | undefined)?.message ?? 'The document could not be loaded.'}
+                  {(error as Error | undefined)?.message ??
+                    'The document could not be loaded.'}
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
-                <Button render={<Link href="/app/library" />} variant="outline" size="sm">
+                <Button
+                  render={<Link href="/app/library" />}
+                  variant="outline"
+                  size="sm"
+                >
                   <ChevronLeft className="size-4" />
                   Back to Library
                 </Button>
@@ -247,7 +253,10 @@ export function DocumentDetailView({ id }: { id: string }) {
             )}
             <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
               <Clock className="size-3 opacity-60" />
-              Updated {formatDistanceToNow(new Date(document.updatedAt), { addSuffix: true })}
+              Updated{' '}
+              {formatDistanceToNow(new Date(document.updatedAt), {
+                addSuffix: true,
+              })}
             </span>
           </div>
         </div>
@@ -255,7 +264,9 @@ export function DocumentDetailView({ id }: { id: string }) {
         {/* Right actions */}
         <div className="flex items-center gap-2 shrink-0 pt-0.5">
           <Select
-            onValueChange={(value) => updateDocument.mutate({ status: value as DocumentStatus })}
+            onValueChange={(value) =>
+              updateDocument.mutate({ status: value as DocumentStatus })
+            }
             value={document.status}
           >
             <SelectTrigger className="h-8 w-36 text-xs">
@@ -281,14 +292,23 @@ export function DocumentDetailView({ id }: { id: string }) {
             <MenuPopup align="end" className="w-44">
               {document.sourceUrl && (
                 <MenuItem
-                  render={<a href={document.sourceUrl} rel="noreferrer" target="_blank" />}
+                  render={
+                    <a
+                      href={document.sourceUrl}
+                      rel="noreferrer"
+                      target="_blank"
+                    />
+                  }
                 >
                   <ArrowUpRight className="size-4" />
                   Open Source
                 </MenuItem>
               )}
               <MenuSeparator />
-              <MenuItem onClick={() => setDeleteDocumentOpen(true)} variant="destructive">
+              <MenuItem
+                onClick={() => setDeleteDocumentOpen(true)}
+                variant="destructive"
+              >
                 <Trash2 className="size-4" />
                 Delete Document
               </MenuItem>
@@ -299,10 +319,8 @@ export function DocumentDetailView({ id }: { id: string }) {
 
       {/* ── Content grid ── */}
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_21rem]">
-
         {/* ── Left column ── */}
         <div className="space-y-5">
-
           {/* ── Document reader — no card chrome, just immersive content ── */}
           <div
             className={`group relative overflow-hidden border bg-background shadow-sm transition-all duration-300 ${
@@ -352,7 +370,6 @@ export function DocumentDetailView({ id }: { id: string }) {
             </div>
           </div>
 
-
           {/* ── Notes ── */}
           <Card className="overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between gap-3 px-5 py-4">
@@ -363,7 +380,10 @@ export function DocumentDetailView({ id }: { id: string }) {
                 </p>
               </div>
               {notes.length > 0 && (
-                <Badge variant="secondary" className="rounded-full tabular-nums text-xs">
+                <Badge
+                  variant="secondary"
+                  className="rounded-full tabular-nums text-xs"
+                >
                   {notes.length}
                 </Badge>
               )}
@@ -380,12 +400,17 @@ export function DocumentDetailView({ id }: { id: string }) {
                     <StickyNote className="size-3.5" />
                     Quick note
                   </div>
-                  <span className="text-[11px] text-muted-foreground">Ctrl/Cmd + Enter to save</span>
+                  <span className="text-[11px] text-muted-foreground">
+                    Ctrl/Cmd + Enter to save
+                  </span>
                 </div>
                 <Textarea
                   onChange={(e) => setNoteDraft(e.target.value)}
                   onKeyDown={(event) => {
-                    if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+                    if (
+                      (event.metaKey || event.ctrlKey) &&
+                      event.key === 'Enter'
+                    ) {
                       event.preventDefault();
                       const form = event.currentTarget.form;
                       form?.requestSubmit();
@@ -397,7 +422,8 @@ export function DocumentDetailView({ id }: { id: string }) {
                 />
                 <div className="flex items-end justify-between gap-4">
                   <p className="max-w-xl text-xs leading-5 text-muted-foreground">
-                    Notes are saved to your workspace and stay attached to this document.
+                    Notes are saved to your workspace and stay attached to this
+                    document.
                   </p>
                   <Button
                     size="sm"
@@ -421,9 +447,12 @@ export function DocumentDetailView({ id }: { id: string }) {
                     <StickyNote className="size-4 text-muted-foreground/50" />
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-medium text-foreground/80">No notes yet</p>
+                    <p className="text-sm font-medium text-foreground/80">
+                      No notes yet
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                      Start with a quick takeaway or an action item from this document.
+                      Start with a quick takeaway or an action item from this
+                      document.
                     </p>
                   </div>
                 </div>
@@ -440,7 +469,9 @@ export function DocumentDetailView({ id }: { id: string }) {
                             Note
                           </p>
                           <span className="text-[11px] text-muted-foreground">
-                            {formatDistanceToNow(new Date(note.createdAt), { addSuffix: true })}
+                            {formatDistanceToNow(new Date(note.createdAt), {
+                              addSuffix: true,
+                            })}
                           </span>
                         </div>
                         <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover/note:opacity-100">
@@ -451,7 +482,10 @@ export function DocumentDetailView({ id }: { id: string }) {
                                 size="sm"
                                 variant="ghost"
                                 className="h-7 gap-1.5 px-2 text-xs"
-                                disabled={!editingNoteDraft.trim() || updateNote.isPending}
+                                disabled={
+                                  !editingNoteDraft.trim() ||
+                                  updateNote.isPending
+                                }
                               >
                                 {updateNote.isPending ? (
                                   <LoaderCircle className="size-3 animate-spin" />
@@ -473,7 +507,9 @@ export function DocumentDetailView({ id }: { id: string }) {
                           ) : (
                             <>
                               <Button
-                                onClick={() => handleStartEditingNote(note.id, note.content)}
+                                onClick={() =>
+                                  handleStartEditingNote(note.id, note.content)
+                                }
                                 size="sm"
                                 variant="ghost"
                                 className="h-7 gap-1.5 px-2 text-xs text-muted-foreground"
@@ -498,9 +534,14 @@ export function DocumentDetailView({ id }: { id: string }) {
                         <div className="mt-3 space-y-2">
                           <Textarea
                             value={editingNoteDraft}
-                            onChange={(event) => setEditingNoteDraft(event.target.value)}
+                            onChange={(event) =>
+                              setEditingNoteDraft(event.target.value)
+                            }
                             onKeyDown={(event) => {
-                              if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+                              if (
+                                (event.metaKey || event.ctrlKey) &&
+                                event.key === 'Enter'
+                              ) {
                                 event.preventDefault();
                                 void handleSaveNote(note.id);
                               }
@@ -527,12 +568,14 @@ export function DocumentDetailView({ id }: { id: string }) {
             </CardContent>
           </Card>
 
-                    {/* ── Summary ── */}
+          {/* ── Summary ── */}
           <Card className="overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between gap-3 px-5 py-4">
               <div>
                 <CardTitle className="text-sm font-semibold">Summary</CardTitle>
-                <p className="mt-0.5 text-xs text-muted-foreground">AI-generated overview</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  AI-generated overview
+                </p>
               </div>
               <div className="flex items-center gap-1.5">
                 {document.summary && (
@@ -571,7 +614,9 @@ export function DocumentDetailView({ id }: { id: string }) {
                   <div className="rounded-full bg-muted p-3">
                     <Sparkles className="size-5 text-muted-foreground/50" />
                   </div>
-                  <p className="text-sm font-medium text-muted-foreground">No summary yet</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    No summary yet
+                  </p>
                   <p className="text-xs text-muted-foreground/60">
                     Click Generate to create an AI summary
                   </p>
@@ -579,19 +624,21 @@ export function DocumentDetailView({ id }: { id: string }) {
               )}
             </CardContent>
           </Card>
-
         </div>
 
         {/* ── Right column ── */}
         <div className="space-y-4">
-
           {/* ── Transcript ── */}
           {isYoutubeDocument && (
             <Card className="overflow-hidden">
               <CardHeader className="flex flex-row items-center justify-between gap-3 px-5 py-4">
                 <div>
-                  <CardTitle className="text-sm font-semibold">Transcript</CardTitle>
-                  <p className="mt-0.5 text-xs text-muted-foreground">Extracted text content</p>
+                  <CardTitle className="text-sm font-semibold">
+                    Transcript
+                  </CardTitle>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Extracted text content
+                  </p>
                 </div>
                 <Button
                   onClick={handleGenerateTranscript}
@@ -636,7 +683,9 @@ export function DocumentDetailView({ id }: { id: string }) {
             <CardHeader className="flex flex-row items-center justify-between gap-3 px-5 py-4">
               <div>
                 <CardTitle className="text-sm font-semibold">Details</CardTitle>
-                <p className="mt-0.5 text-xs text-muted-foreground">Ingestion & metadata</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Ingestion & metadata
+                </p>
               </div>
               <Button
                 onClick={() => retryIngestion.mutate(id)}
@@ -666,8 +715,8 @@ export function DocumentDetailView({ id }: { id: string }) {
                     ingestion?.ingestionStatus === IngestionStatus.COMPLETED
                       ? 'text-green-600 dark:text-green-400'
                       : ingestion?.ingestionStatus === IngestionStatus.FAILED
-                      ? 'text-destructive'
-                      : 'text-amber-600 dark:text-amber-400'
+                        ? 'text-destructive'
+                        : 'text-amber-600 dark:text-amber-400'
                   }`}
                 >
                   {ingestion?.ingestionStatus ?? 'Unknown'}
@@ -675,10 +724,22 @@ export function DocumentDetailView({ id }: { id: string }) {
               </div>
 
               <div className="divide-y divide-border/50">
-                <MetaRow label="Embeddings" value={ingestion?.embeddingsReady ? 'Ready' : 'Pending'} />
-                <MetaRow label="Source type" value={document.sourceType ?? '—'} />
-                <MetaRow label="Created" value={new Date(document.createdAt).toLocaleString()} />
-                <MetaRow label="Updated" value={new Date(document.updatedAt).toLocaleString()} />
+                <MetaRow
+                  label="Embeddings"
+                  value={ingestion?.embeddingsReady ? 'Ready' : 'Pending'}
+                />
+                <MetaRow
+                  label="Source type"
+                  value={document.sourceType ?? '—'}
+                />
+                <MetaRow
+                  label="Created"
+                  value={new Date(document.createdAt).toLocaleString()}
+                />
+                <MetaRow
+                  label="Updated"
+                  value={new Date(document.updatedAt).toLocaleString()}
+                />
                 <MetaRow
                   label="Last opened"
                   value={
@@ -690,7 +751,9 @@ export function DocumentDetailView({ id }: { id: string }) {
               </div>
 
               {ingestion?.currentStage && (
-                <p className="text-xs text-muted-foreground">{ingestion.currentStage}</p>
+                <p className="text-xs text-muted-foreground">
+                  {ingestion.currentStage}
+                </p>
               )}
 
               {ingestion?.ingestionError && (
@@ -711,7 +774,6 @@ export function DocumentDetailView({ id }: { id: string }) {
               )}
             </CardContent>
           </Card>
-
         </div>
       </div>
 
@@ -757,7 +819,9 @@ function MetaRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-start justify-between gap-3 py-2">
       <span className="shrink-0 text-xs text-muted-foreground">{label}</span>
-      <span className="max-w-[58%] wrap-break-word text-right text-xs">{value}</span>
+      <span className="max-w-[58%] wrap-break-word text-right text-xs">
+        {value}
+      </span>
     </div>
   );
 }

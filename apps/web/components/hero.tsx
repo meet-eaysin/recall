@@ -59,7 +59,8 @@ export function HeroSection() {
             'fade-in slide-in-from-bottom-10 animate-in fill-mode-backwards delay-200 duration-500 ease-out',
           )}
         >
-          dev.me turns your docs, links, and PDFs into a private brain you can search, explore, and ask.
+          dev.me turns your docs, links, and PDFs into a private brain you can
+          search, explore, and ask.
         </p>
 
         <div className="fade-in slide-in-from-bottom-10 flex w-fit animate-in items-center justify-center gap-3 fill-mode-backwards pt-2 delay-300 duration-500 ease-out">

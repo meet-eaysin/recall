@@ -11,7 +11,12 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { useCreateFolder } from '../hooks';
 
@@ -103,7 +108,9 @@ export function FolderCreateDialog({ trigger }: FolderCreateDialogProps) {
               <FieldDescription>Select a folder color.</FieldDescription>
             </Field>
 
-            {mutation.error && <FieldError>{mutation.error.message}</FieldError>}
+            {mutation.error && (
+              <FieldError>{mutation.error.message}</FieldError>
+            )}
 
             <div className="flex justify-end gap-2">
               <Button

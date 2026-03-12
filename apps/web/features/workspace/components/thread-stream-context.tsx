@@ -21,9 +21,8 @@ type ThreadStreamContextValue = {
   abortStream: () => void;
 };
 
-const ThreadStreamContext = React.createContext<ThreadStreamContextValue | null>(
-  null,
-);
+const ThreadStreamContext =
+  React.createContext<ThreadStreamContextValue | null>(null);
 
 export function ThreadStreamProvider({
   children,
@@ -99,7 +98,15 @@ export function ThreadStreamProvider({
       updateAnswer,
       abortStream,
     }),
-    [activeStream, clearStream, completeStream, failStream, setStream, updateAnswer, abortStream],
+    [
+      activeStream,
+      clearStream,
+      completeStream,
+      failStream,
+      setStream,
+      updateAnswer,
+      abortStream,
+    ],
   );
 
   return (

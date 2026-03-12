@@ -157,7 +157,9 @@ export function AddDocumentForm({
 
       error.details.forEach((detail) => {
         const fieldName = detail.field as keyof AddDocumentFormValues;
-        if (!['source', 'title', 'type', 'notes', 'folderId'].includes(fieldName)) {
+        if (
+          !['source', 'title', 'type', 'notes', 'folderId'].includes(fieldName)
+        ) {
           return;
         }
 
@@ -403,10 +405,12 @@ export function AddDocumentForm({
         </div>
 
         {mutation.error &&
-          !(mutation.error instanceof ApiError && mutation.error.details?.length) && (
-          <p className="text-destructive-foreground text-xs">
-            {mutation.error.message}
-          </p>
+          !(
+            mutation.error instanceof ApiError && mutation.error.details?.length
+          ) && (
+            <p className="text-destructive-foreground text-xs">
+              {mutation.error.message}
+            </p>
           )}
       </div>
 

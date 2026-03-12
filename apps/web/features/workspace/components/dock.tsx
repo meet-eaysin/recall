@@ -3,16 +3,20 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  LayoutDashboard, 
-  Library, 
-  Waypoints, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Library,
+  Waypoints,
+  Settings,
   History,
-  Plus
+  Plus,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const navItems = [
   { name: 'Workspace', href: '/app', icon: LayoutDashboard },
@@ -28,7 +32,9 @@ export function Dock() {
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-8 duration-700 delay-500">
       <nav className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-background/60 backdrop-blur-xl border border-subtle shadow-[0_0_40px_-10px_rgba(0,0,0,0.1)] ring-1 ring-white/10">
         {navItems.map((item) => {
-          const isActive = pathname === item.href || (item.href !== '/app' && pathname?.startsWith(item.href));
+          const isActive =
+            pathname === item.href ||
+            (item.href !== '/app' && pathname?.startsWith(item.href));
           const Icon = item.icon;
 
           return (
@@ -38,10 +44,10 @@ export function Dock() {
                   <Link
                     href={item.href}
                     className={cn(
-                      "relative p-3 rounded-xl transition-all duration-300 group hover:scale-110 active:scale-95",
-                      isActive 
-                        ? "bg-foreground text-background shadow-lg shadow-foreground/10" 
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      'relative p-3 rounded-xl transition-all duration-300 group hover:scale-110 active:scale-95',
+                      isActive
+                        ? 'bg-foreground text-background shadow-lg shadow-foreground/10'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                     )}
                   />
                 }
@@ -54,27 +60,37 @@ export function Dock() {
                   </span>
                 )}
               </TooltipTrigger>
-              <TooltipContent side="top" className="rounded-lg bg-foreground text-background border-0 mb-2">
+              <TooltipContent
+                side="top"
+                className="rounded-lg bg-foreground text-background border-0 mb-2"
+              >
                 <p className="text-xs font-medium">{item.name}</p>
               </TooltipContent>
             </Tooltip>
           );
         })}
-        
+
         <div className="w-px h-6 bg-subtle mx-1" />
 
         <Tooltip>
           <TooltipTrigger
             render={
-              <button 
-                onClick={() => window.dispatchEvent(new CustomEvent('mind-stack:toggle-threads'))}
-                className="p-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-300 hover:scale-110 active:scale-95" 
+              <button
+                onClick={() =>
+                  window.dispatchEvent(
+                    new CustomEvent('mind-stack:toggle-threads'),
+                  )
+                }
+                className="p-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-300 hover:scale-110 active:scale-95"
               />
             }
           >
             <History className="size-5" />
           </TooltipTrigger>
-          <TooltipContent side="top" className="rounded-lg bg-foreground text-background border-0 mb-2">
+          <TooltipContent
+            side="top"
+            className="rounded-lg bg-foreground text-background border-0 mb-2"
+          >
             <p className="text-xs font-medium">History (H)</p>
           </TooltipContent>
         </Tooltip>
@@ -90,7 +106,10 @@ export function Dock() {
           >
             <Plus className="size-5" />
           </TooltipTrigger>
-          <TooltipContent side="top" className="rounded-lg bg-foreground text-background border-0 mb-2">
+          <TooltipContent
+            side="top"
+            className="rounded-lg bg-foreground text-background border-0 mb-2"
+          >
             <p className="text-xs font-medium">Add Quick (N)</p>
           </TooltipContent>
         </Tooltip>

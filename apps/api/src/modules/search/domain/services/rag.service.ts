@@ -77,7 +77,9 @@ export class RagService {
     question: string,
     llmConfig: ResolvedLLMConfig,
     handlers: {
-      onComplete: (result: Omit<AskResultDto, 'conversationId'>) => Promise<void>;
+      onComplete: (
+        result: Omit<AskResultDto, 'conversationId'>,
+      ) => Promise<void>;
       onError?: (message: string) => Promise<void> | void;
       onToken: (chunk: string) => Promise<void> | void;
     },
@@ -206,9 +208,7 @@ export class RagService {
     }).exec();
 
     if (embeddedDocsCount === 0) {
-      this.logger.warn(
-        `No indexed documents found for user ${internalUserId}`,
-      );
+      this.logger.warn(`No indexed documents found for user ${internalUserId}`);
       return {
         contextStr: '',
         sources: [],

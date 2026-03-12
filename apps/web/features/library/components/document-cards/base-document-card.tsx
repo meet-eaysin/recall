@@ -3,17 +3,9 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import {
-  Card,
-  CardDescription,
-  CardPanel,
-} from '@/components/ui/card';
+import { Card, CardDescription, CardPanel } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import {
-  Popover,
-  PopoverPopup,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
 import type { DocumentRow } from '@/features/library/types';
 import {
   getDocumentIcon,
@@ -79,9 +71,7 @@ export function BaseDocumentCard({
             </div>
           </div>
 
-          <div className="min-w-0 space-y-0.5">
-            {children}
-          </div>
+          <div className="min-w-0 space-y-0.5">{children}</div>
 
           <div className="flex items-center justify-between gap-2 pt-0.5">
             <div className="flex min-w-0 items-center gap-1.5 overflow-hidden">

@@ -31,7 +31,9 @@ export function useRevokeUserSession() {
   return useMutation({
     mutationFn: settingsApi.revokeUserSession,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USERS.sessions() });
+      void queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.USERS.sessions(),
+      });
     },
   });
 }
@@ -50,7 +52,9 @@ export function useSaveLLMConfig() {
   return useMutation({
     mutationFn: settingsApi.saveLLMConfig,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SETTINGS.llm() });
+      void queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.SETTINGS.llm(),
+      });
     },
   });
 }
@@ -67,7 +71,9 @@ export function useDeleteLLMConfig() {
   return useMutation({
     mutationFn: settingsApi.deleteLLMConfig,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SETTINGS.llm() });
+      void queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.SETTINGS.llm(),
+      });
     },
   });
 }

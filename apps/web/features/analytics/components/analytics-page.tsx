@@ -81,20 +81,25 @@ function Heatmap({
   }
 
   const weeks = groupIntoWeeks(items);
-  const maxCount = items.reduce((highest, item) => Math.max(highest, item.count), 0);
+  const maxCount = items.reduce(
+    (highest, item) => Math.max(highest, item.count),
+    0,
+  );
 
   return (
     <div className="overflow-x-auto">
       <div className="inline-flex min-w-full gap-3">
         <div className="grid shrink-0 grid-rows-7 gap-1.5 pt-6 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-              {Array.from({ length: 7 }).map((_, index) => (
-                <div key={index} className="flex h-4 items-center">
-                  {items[index] &&
-                  WEEKDAY_LABELS.includes(format(parseISO(items[index].date), 'EEE'))
-                    ? format(parseISO(items[index].date), 'EEE')
-                    : ''}
-                </div>
-              ))}
+          {Array.from({ length: 7 }).map((_, index) => (
+            <div key={index} className="flex h-4 items-center">
+              {items[index] &&
+              WEEKDAY_LABELS.includes(
+                format(parseISO(items[index].date), 'EEE'),
+              )
+                ? format(parseISO(items[index].date), 'EEE')
+                : ''}
+            </div>
+          ))}
         </div>
         <div className="flex gap-1.5">
           {weeks.map((week, weekIndex) => (
@@ -111,7 +116,9 @@ function Heatmap({
                       key={`${weekIndex}-${dayIndex}`}
                       className={cn(
                         'size-4 rounded-[6px] border border-border/30 transition',
-                        item ? getHeatTone(item.count, maxCount) : 'bg-transparent',
+                        item
+                          ? getHeatTone(item.count, maxCount)
+                          : 'bg-transparent',
                       )}
                       title={
                         item
@@ -170,10 +177,16 @@ function StatCard({
 import { PageContainer } from '@/features/workspace/components/page-container';
 
 export function AnalyticsPage() {
-  const { data: stats, error: statsError, isLoading: statsLoading } =
-    useAnalyticsStats();
-  const { data: heatmap, error: heatmapError, isLoading: heatmapLoading } =
-    useAnalyticsHeatmap(84);
+  const {
+    data: stats,
+    error: statsError,
+    isLoading: statsLoading,
+  } = useAnalyticsStats();
+  const {
+    data: heatmap,
+    error: heatmapError,
+    isLoading: heatmapLoading,
+  } = useAnalyticsHeatmap(84);
 
   const recentHeatmap = heatmap?.heatmap ?? [];
   const totals = recentHeatmap.reduce(
@@ -191,7 +204,7 @@ export function AnalyticsPage() {
       summaryGenerated: 0,
     },
   );
-  
+
   const topDays = [...recentHeatmap]
     .sort((left, right) => right.count - left.count)
     .slice(0, 5)
@@ -201,7 +214,10 @@ export function AnalyticsPage() {
     <PageContainer className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <header className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
-        <p className="text-muted-foreground">Track consistency over time, see where your activity comes from, and spot your strongest learning rhythm.</p>
+        <p className="text-muted-foreground">
+          Track consistency over time, see where your activity comes from, and
+          spot your strongest learning rhythm.
+        </p>
       </header>
       <div className="mt-4 space-y-4">
         {statsError ? (
@@ -213,7 +229,9 @@ export function AnalyticsPage() {
         {heatmapError ? (
           <Alert variant="error">
             <AlertTitle>Activity history unavailable</AlertTitle>
-            <AlertDescription>{(heatmapError as Error).message}</AlertDescription>
+            <AlertDescription>
+              {(heatmapError as Error).message}
+            </AlertDescription>
           </Alert>
         ) : null}
 
@@ -255,7 +273,9 @@ export function AnalyticsPage() {
                     A compact view of the last twelve weeks of actual usage.
                   </CardDescription>
                 </div>
-                <Badge variant="outline">{recentHeatmap.length} days tracked</Badge>
+                <Badge variant="outline">
+                  {recentHeatmap.length} days tracked
+                </Badge>
               </div>
             </CardHeader>
             <CardPanel className="space-y-4">
@@ -326,13 +346,17 @@ export function AnalyticsPage() {
                           <Icon className="size-4 text-muted-foreground" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-foreground">{label}</p>
+                          <p className="text-sm font-medium text-foreground">
+                            {label}
+                          </p>
                           <p className="text-xs text-muted-foreground">
                             Last 84 days
                           </p>
                         </div>
                       </div>
-                      <p className="text-2xl font-semibold text-foreground">{value}</p>
+                      <p className="text-2xl font-semibold text-foreground">
+                        {value}
+                      </p>
                     </div>
                   ))}
                 </>
@@ -365,7 +389,8 @@ export function AnalyticsPage() {
                   </EmptyMedia>
                   <EmptyTitle>No standout days yet</EmptyTitle>
                   <EmptyDescription>
-                    Once activity starts to accumulate, your strongest days will show up here.
+                    Once activity starts to accumulate, your strongest days will
+                    show up here.
                   </EmptyDescription>
                 </EmptyHeader>
               </Empty>
@@ -381,8 +406,9 @@ export function AnalyticsPage() {
                     {format(parseISO(item.date), 'EEEE, MMM d')}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {item.breakdown.doc_opened} opens, {item.breakdown.note_created}{' '}
-                    notes, {item.breakdown.summary_generated} summaries
+                    {item.breakdown.doc_opened} opens,{' '}
+                    {item.breakdown.note_created} notes,{' '}
+                    {item.breakdown.summary_generated} summaries
                   </p>
                 </div>
                 <Badge variant="secondary">{item.count} actions</Badge>

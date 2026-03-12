@@ -49,68 +49,68 @@ const createMockStream = (chunks: string[]) =>
 
 global.fetch = jest.fn(
   async (input: string | URL | Request, init?: RequestInit) => {
-  const url = typeof input === 'string' ? input : input.toString();
-  const requestBody =
-    typeof init?.body === 'string'
-      ? init.body
-      : input instanceof Request
-        ? await input.text()
-        : '';
-  const streaming = requestBody.includes('"stream":true');
+    const url = typeof input === 'string' ? input : input.toString();
+    const requestBody =
+      typeof init?.body === 'string'
+        ? init.body
+        : input instanceof Request
+          ? await input.text()
+          : '';
+    const streaming = requestBody.includes('"stream":true');
 
-  if (url.includes('/api/chat')) {
-    if (streaming) {
+    if (url.includes('/api/chat')) {
+      if (streaming) {
+        return {
+          ok: true,
+          status: 200,
+          body: createMockStream([
+            JSON.stringify({
+              message: { content: 'Mocked AI response content' },
+              done: true,
+            }) + '\n',
+          ]),
+          json: async () => ({
+            message: { content: 'Mocked AI response content' },
+          }),
+        } as Response;
+      }
+
       return {
         ok: true,
         status: 200,
-        body: createMockStream([
-          JSON.stringify({
-            message: { content: 'Mocked AI response content' },
-            done: true,
-          }) + '\n',
-        ]),
+        body: null,
         json: async () => ({
           message: { content: 'Mocked AI response content' },
         }),
       } as Response;
     }
 
-    return {
-      ok: true,
-      status: 200,
-      body: null,
-      json: async () => ({
-        message: { content: 'Mocked AI response content' },
-      }),
-    } as Response;
-  }
+    if (url.includes('/chat/completions')) {
+      if (streaming) {
+        return {
+          ok: true,
+          status: 200,
+          body: createMockStream([
+            'data: {"choices":[{"delta":{"content":"Mocked AI response content"}}]}\n',
+            'data: [DONE]\n',
+          ]),
+          json: async () => ({
+            choices: [{ message: { content: 'Mocked AI response content' } }],
+          }),
+        } as Response;
+      }
 
-  if (url.includes('/chat/completions')) {
-    if (streaming) {
       return {
         ok: true,
         status: 200,
-        body: createMockStream([
-          'data: {"choices":[{"delta":{"content":"Mocked AI response content"}}]}\n',
-          'data: [DONE]\n',
-        ]),
+        body: null,
         json: async () => ({
           choices: [{ message: { content: 'Mocked AI response content' } }],
         }),
       } as Response;
     }
 
-    return {
-      ok: true,
-      status: 200,
-      body: null,
-      json: async () => ({
-        choices: [{ message: { content: 'Mocked AI response content' } }],
-      }),
-    } as Response;
-  }
-
-  throw new Error(`Unhandled fetch mock for ${url}`);
+    throw new Error(`Unhandled fetch mock for ${url}`);
   },
 ) as typeof fetch;
 

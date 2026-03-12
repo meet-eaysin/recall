@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import {
   Card,
@@ -149,15 +149,11 @@ function ReviewRow({
   );
 }
 
-function RecentWorkRow({
-  document,
-}: {
-  document: DocumentRow;
-}) {
+function RecentWorkRow({ document }: { document: DocumentRow }) {
   const Icon = getDocumentIcon(document.type);
   const updateMutation = useUpdateDocument(document.id);
   const deleteMutation = useDeleteDocument();
-  
+
   const isUpdating = updateMutation.isPending;
   const isDeleting = deleteMutation.isPending;
 
@@ -168,57 +164,63 @@ function RecentWorkRow({
           <Icon className="size-4" />
         </div>
         <div className="min-w-0 flex flex-col gap-0.5">
-          <Link 
-            href={`/app/library/${document.id}`} 
+          <Link
+            href={`/app/library/${document.id}`}
             className="truncate text-sm font-bold tracking-tight text-foreground/90 hover:text-blue-500 transition-colors"
           >
             {document.title}
           </Link>
           <div className="flex items-center gap-3">
-             
-             <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-1.5 outline-none focus-visible:ring-2 focus-visible:ring-blue-500/20 rounded py-0.5 px-1 -ml-1 hover:bg-muted/50 transition-colors group/trigger">
-                  <div className={cn(
-                    "size-1.5 rounded-full shrink-0",
-                    document.status === DocumentStatus.COMPLETED ? "bg-green-500" :
-                    document.status === DocumentStatus.IN_PROCESS ? "bg-amber-500" :
-                    "bg-blue-500"
-                  )} />
-                  <span className="text-xs font-bold text-muted-foreground/64 group-hover/trigger:text-muted-foreground transition-colors">
-                    {getStatusLabel(document.status)}
-                  </span>
-                  <ChevronDown className="size-3 text-muted-foreground/32 group-hover/trigger:text-muted-foreground transition-colors" />
-                  {isUpdating && <Spinner className="size-3 ml-1" />}
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                   {Object.values(DocumentStatus).map((status) => {
-                     const ItemIcon = STATUS_ICON_MAP[status] || Circle;
-                     return (
-                      <DropdownMenuItem 
-                        key={status} 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          void updateMutation.mutateAsync({ status });
-                        }}
-                        className="flex items-center gap-3 text-xs"
-                       >
-                        <ItemIcon className="size-3.5 opacity-64" />
-                        {getStatusLabel(status)}
-                      </DropdownMenuItem>
-                     );
-                   })}
-                </DropdownMenuContent>
-             </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1.5 outline-none focus-visible:ring-2 focus-visible:ring-blue-500/20 rounded py-0.5 px-1 -ml-1 hover:bg-muted/50 transition-colors group/trigger">
+                <div
+                  className={cn(
+                    'size-1.5 rounded-full shrink-0',
+                    document.status === DocumentStatus.COMPLETED
+                      ? 'bg-green-500'
+                      : document.status === DocumentStatus.IN_PROCESS
+                        ? 'bg-amber-500'
+                        : 'bg-blue-500',
+                  )}
+                />
+                <span className="text-xs font-bold text-muted-foreground/64 group-hover/trigger:text-muted-foreground transition-colors">
+                  {getStatusLabel(document.status)}
+                </span>
+                <ChevronDown className="size-3 text-muted-foreground/32 group-hover/trigger:text-muted-foreground transition-colors" />
+                {isUpdating && <Spinner className="size-3 ml-1" />}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                {Object.values(DocumentStatus).map((status) => {
+                  const ItemIcon = STATUS_ICON_MAP[status] || Circle;
+                  return (
+                    <DropdownMenuItem
+                      key={status}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void updateMutation.mutateAsync({ status });
+                      }}
+                      className="flex items-center gap-3 text-xs"
+                    >
+                      <ItemIcon className="size-3.5 opacity-64" />
+                      {getStatusLabel(status)}
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
             <span className="text-xs font-medium text-muted-foreground/32 flex items-center gap-1">
               <Clock3 className="size-3" />
-              {new Date(document.updatedAt || Date.now()).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+              {new Date(document.updatedAt || Date.now()).toLocaleDateString(
+                undefined,
+                { month: 'short', day: 'numeric' },
+              )}
             </span>
           </div>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-         <Button
+        <Button
           size="sm"
           variant="secondary"
           className="font-bold"
@@ -232,11 +234,11 @@ function RecentWorkRow({
           className="font-bold text-muted-foreground/50 hover:text-destructive transition-colors"
           disabled={isDeleting}
           onClick={(e) => {
-             e.stopPropagation();
-             void deleteMutation.mutateAsync(document.id);
+            e.stopPropagation();
+            void deleteMutation.mutateAsync(document.id);
           }}
         >
-          {isDeleting ? <Spinner className="size-4" /> : "Dismiss"}
+          {isDeleting ? <Spinner className="size-4" /> : 'Dismiss'}
         </Button>
       </div>
     </Card>
@@ -376,7 +378,7 @@ export function HomeContent() {
 
           <div className="flex flex-col">
             {documents.slice(0, 4).map((document) => (
-               <RecentWorkRow key={document.id} document={document} />
+              <RecentWorkRow key={document.id} document={document} />
             ))}
           </div>
         </CardPanel>

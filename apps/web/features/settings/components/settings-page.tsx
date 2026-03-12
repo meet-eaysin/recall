@@ -30,21 +30,31 @@ function isNotConfigured(error: unknown) {
 import { PageContainer } from '@/features/workspace/components/page-container';
 
 export function SettingsPage() {
-  const { data: user, error: userError, isLoading: userLoading } = useCurrentUser();
+  const {
+    data: user,
+    error: userError,
+    isLoading: userLoading,
+  } = useCurrentUser();
   const { data: session } = useCurrentSession();
   const { data: sessions } = useUserSessions();
   const { data: llmConfig, error: llmError } = useLLMConfig();
   const { data: notionConfig, error: notionError } = useNotionConfig();
 
-  const fatalLlmError = llmError && !isNotConfigured(llmError) ? (llmError as Error) : null;
+  const fatalLlmError =
+    llmError && !isNotConfigured(llmError) ? (llmError as Error) : null;
   const fatalNotionError =
-    notionError && !isNotConfigured(notionError) ? (notionError as Error) : null;
+    notionError && !isNotConfigured(notionError)
+      ? (notionError as Error)
+      : null;
 
   return (
     <PageContainer className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <header className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">Manage your account, trusted sessions, and the integrations that power daily work.</p>
+        <p className="text-muted-foreground">
+          Manage your account, trusted sessions, and the integrations that power
+          daily work.
+        </p>
       </header>
       <div className="mt-4 space-y-4">
         {userError ? (
@@ -71,7 +81,8 @@ export function SettingsPage() {
             <CardHeader>
               <CardTitle>Account</CardTitle>
               <CardDescription>
-                Identity and session details from the current authenticated user.
+                Identity and session details from the current authenticated
+                user.
               </CardDescription>
             </CardHeader>
             <CardPanel className="space-y-4">
@@ -84,9 +95,14 @@ export function SettingsPage() {
                 <>
                   <div className="flex flex-wrap items-center gap-4 rounded-xl border border-border/60 px-4 py-4">
                     <Avatar className="size-14">
-                      <AvatarImage alt={user?.name || user?.email || 'User'} src={user?.avatarUrl ?? undefined} />
+                      <AvatarImage
+                        alt={user?.name || user?.email || 'User'}
+                        src={user?.avatarUrl ?? undefined}
+                      />
                       <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                        {(user?.name || user?.email || 'U').slice(0, 2).toUpperCase()}
+                        {(user?.name || user?.email || 'U')
+                          .slice(0, 2)
+                          .toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 flex-1">
@@ -102,13 +118,17 @@ export function SettingsPage() {
 
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="rounded-xl border border-border/60 px-4 py-3">
-                      <p className="text-xs text-muted-foreground">Current session</p>
+                      <p className="text-xs text-muted-foreground">
+                        Current session
+                      </p>
                       <p className="mt-1 break-all text-sm font-medium text-foreground">
                         {session?.session.id || 'Unavailable'}
                       </p>
                     </div>
                     <div className="rounded-xl border border-border/60 px-4 py-3">
-                      <p className="text-xs text-muted-foreground">Other active sessions</p>
+                      <p className="text-xs text-muted-foreground">
+                        Other active sessions
+                      </p>
                       <p className="mt-1 text-sm font-medium text-foreground">
                         {Math.max((sessions?.length ?? 1) - 1, 0)}
                       </p>
@@ -129,9 +149,12 @@ export function SettingsPage() {
             <CardPanel className="space-y-3">
               <div className="rounded-xl border border-border/60 px-4 py-3">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-medium text-foreground">Security</p>
+                  <p className="text-sm font-medium text-foreground">
+                    Security
+                  </p>
                   <Badge variant="secondary">
-                    {sessions?.length ?? 0} session{(sessions?.length ?? 0) === 1 ? '' : 's'}
+                    {sessions?.length ?? 0} session
+                    {(sessions?.length ?? 0) === 1 ? '' : 's'}
                   </Badge>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -141,7 +164,9 @@ export function SettingsPage() {
 
               <div className="rounded-xl border border-border/60 px-4 py-3">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-medium text-foreground">LLM config</p>
+                  <p className="text-sm font-medium text-foreground">
+                    LLM config
+                  </p>
                   <Badge variant={llmConfig ? 'secondary' : 'outline'}>
                     {llmConfig ? llmConfig.provider : 'Not configured'}
                   </Badge>
@@ -176,11 +201,15 @@ export function SettingsPage() {
               <ShieldCheck className="size-5 text-muted-foreground" />
               <CardTitle className="text-base">Security</CardTitle>
               <CardDescription>
-                Manage active sessions and remove device access you no longer want to keep.
+                Manage active sessions and remove device access you no longer
+                want to keep.
               </CardDescription>
             </CardHeader>
             <CardPanel className="pt-0">
-              <Button render={<Link href="/app/settings/security" />} variant="outline">
+              <Button
+                render={<Link href="/app/settings/security" />}
+                variant="outline"
+              >
                 Review sessions
               </Button>
             </CardPanel>
@@ -191,11 +220,15 @@ export function SettingsPage() {
               <Bot className="size-5 text-muted-foreground" />
               <CardTitle className="text-base">LLM Config</CardTitle>
               <CardDescription>
-                Set provider credentials, model defaults, and validate the AI runtime.
+                Set provider credentials, model defaults, and validate the AI
+                runtime.
               </CardDescription>
             </CardHeader>
             <CardPanel className="pt-0">
-              <Button render={<Link href="/app/settings/llm" />} variant="outline">
+              <Button
+                render={<Link href="/app/settings/llm" />}
+                variant="outline"
+              >
                 Open LLM settings
               </Button>
             </CardPanel>
@@ -206,11 +239,15 @@ export function SettingsPage() {
               <Workflow className="size-5 text-muted-foreground" />
               <CardTitle className="text-base">Notion</CardTitle>
               <CardDescription>
-                Connect a workspace, choose a target database, and trigger sync when needed.
+                Connect a workspace, choose a target database, and trigger sync
+                when needed.
               </CardDescription>
             </CardHeader>
             <CardPanel className="pt-0">
-              <Button render={<Link href="/app/settings/notion" />} variant="outline">
+              <Button
+                render={<Link href="/app/settings/notion" />}
+                variant="outline"
+              >
                 Open Notion settings
               </Button>
             </CardPanel>
@@ -221,7 +258,8 @@ export function SettingsPage() {
           <CardHeader>
             <CardTitle>What this area controls</CardTitle>
             <CardDescription>
-              Settings are intentionally focused on account trust and the integrations the backend currently supports.
+              Settings are intentionally focused on account trust and the
+              integrations the backend currently supports.
             </CardDescription>
           </CardHeader>
           <CardPanel className="grid gap-3 md:grid-cols-3">

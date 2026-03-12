@@ -57,8 +57,7 @@ const getNavigationItems = (): NavigationItemType[] => [
     label: 'Settings',
     href: '/app/settings',
     icon: 'settings',
-    isCurrent: ({ pathname }) =>
-      pathname?.startsWith('/app/settings') ?? false,
+    isCurrent: ({ pathname }) => pathname?.startsWith('/app/settings') ?? false,
     moreOnMobile: true,
     child: [
       {

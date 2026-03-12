@@ -1,5 +1,11 @@
-import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from "@/components/ui/card";
-import type { FolderRow } from "../types";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardPanel,
+  CardTitle,
+} from '@/components/ui/card';
+import type { FolderRow } from '../types';
 
 export function FolderShelfCard({
   active,
@@ -40,7 +46,9 @@ export function FolderShelfCard({
             </div>
             <div className="min-w-0 flex-1 space-y-1">
               <div className="flex items-center justify-between gap-2">
-                <CardTitle className="truncate text-sm leading-5">{name}</CardTitle>
+                <CardTitle className="truncate text-sm leading-5">
+                  {name}
+                </CardTitle>
                 {active ? (
                   <span className="shrink-0 text-[11px] font-medium text-primary">
                     Active

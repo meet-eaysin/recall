@@ -42,12 +42,13 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Slider } from '@/components/ui/slider';
-import {
-  Toolbar,
-  ToolbarGroup,
-} from '@/components/ui/toolbar';
+import { Toolbar, ToolbarGroup } from '@/components/ui/toolbar';
 import { cn } from '@/lib/utils';
-import { useDocumentSubgraph, useFullGraph, useRebuildDocumentGraph } from '../hooks';
+import {
+  useDocumentSubgraph,
+  useFullGraph,
+  useRebuildDocumentGraph,
+} from '../hooks';
 import type { FullGraphData, GraphEdgeRow, GraphNodeRow } from '../types';
 import { PageContainer } from '@/features/workspace/components/page-container';
 
@@ -81,7 +82,8 @@ function drawGraphNodeLabel(
   if (!data.label) return;
 
   context.save();
-  context.font = "500 11px var(--font-sans, ui-sans-serif, system-ui, sans-serif)";
+  context.font =
+    '500 11px var(--font-sans, ui-sans-serif, system-ui, sans-serif)';
   context.fillStyle = data.highlighted ? '#0f172a' : '#334155';
   context.textAlign = 'center';
   context.textBaseline = 'top';
@@ -270,10 +272,12 @@ export function GraphExplorer() {
   const hoveredNodeIdRef = React.useRef<string | null>(null);
 
   const [search, setSearch] = React.useState('');
-  const [selectedNodeId, setSelectedNodeId] = React.useState<string | null>(null);
-  const [focusedDocumentId, setFocusedDocumentId] = React.useState<string | null>(
+  const [selectedNodeId, setSelectedNodeId] = React.useState<string | null>(
     null,
   );
+  const [focusedDocumentId, setFocusedDocumentId] = React.useState<
+    string | null
+  >(null);
   const [labelThreshold, setLabelThreshold] = React.useState(14);
 
   const { data: fullGraph, error, isLoading } = useFullGraph();
@@ -293,7 +297,10 @@ export function GraphExplorer() {
     selectedNodeIdRef.current = selectedNodeId;
   }, [selectedNodeId]);
 
-  const positionedNodes = React.useMemo(() => positionGraphNodes(graph), [graph]);
+  const positionedNodes = React.useMemo(
+    () => positionGraphNodes(graph),
+    [graph],
+  );
 
   const connectedByNode = React.useMemo(
     () => buildConnections(graph?.edges ?? []),
@@ -374,7 +381,13 @@ export function GraphExplorer() {
         isRoot,
         label: isRoot ? 'User Brain' : truncateLabel(node.label, 24),
         originalLabel: node.label,
-        size: isRoot ? 14 : isFocused ? 8.5 : node.type === GraphNodeType.CONCEPT ? 8 : 7.5,
+        size: isRoot
+          ? 14
+          : isFocused
+            ? 8.5
+            : node.type === GraphNodeType.CONCEPT
+              ? 8
+              : 7.5,
         x: node.x,
         y: node.y,
       });
@@ -412,13 +425,16 @@ export function GraphExplorer() {
       const currentSelected = selectedNodeIdRef.current;
       const currentHovered = hoveredNodeIdRef.current;
       const relatedNodes = currentSelected
-        ? connectedByNode.get(currentSelected) ?? new Set<string>()
+        ? (connectedByNode.get(currentSelected) ?? new Set<string>())
         : new Set<string>();
       const isSelected = node === currentSelected;
       const isHovered = node === currentHovered;
       const isRelated = relatedNodes.has(node);
       const isDimmed =
-        currentSelected != null && !isSelected && !isRelated && currentSelected !== node;
+        currentSelected != null &&
+        !isSelected &&
+        !isRelated &&
+        currentSelected !== node;
       const isDocument = !data.isRoot;
 
       return {
@@ -532,7 +548,9 @@ export function GraphExplorer() {
       <PageContainer className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
         <header className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Knowledge Graph</h1>
-          <p className="text-muted-foreground">Visualize your document network and semantic relationships.</p>
+          <p className="text-muted-foreground">
+            Visualize your document network and semantic relationships.
+          </p>
         </header>
         <div className="mt-4">
           <Alert variant="error">
@@ -545,10 +563,16 @@ export function GraphExplorer() {
   }
 
   return (
-    <PageContainer isFullHeight className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    <PageContainer
+      isFullHeight
+      className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000"
+    >
       <header className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Knowledge Graph</h1>
-        <p className="text-muted-foreground">Explore your document network with a stable graph view, direct selection, and scoped subgraphs.</p>
+        <p className="text-muted-foreground">
+          Explore your document network with a stable graph view, direct
+          selection, and scoped subgraphs.
+        </p>
       </header>
       <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
         <Card className="overflow-hidden border-border/60 bg-card/95 shadow-sm">
@@ -584,8 +608,12 @@ export function GraphExplorer() {
           </CardHeader>
           <CardPanel className="space-y-3 px-5 pb-5 pt-0">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary">{graph?.nodes.length ?? 0} nodes</Badge>
-              <Badge variant="secondary">{graph?.edges.length ?? 0} edges</Badge>
+              <Badge variant="secondary">
+                {graph?.nodes.length ?? 0} nodes
+              </Badge>
+              <Badge variant="secondary">
+                {graph?.edges.length ?? 0} edges
+              </Badge>
               <Badge variant="outline">
                 {focusedDocumentId ? 'Focused subgraph' : 'Full graph'}
               </Badge>
@@ -640,7 +668,9 @@ export function GraphExplorer() {
                       step={0.5}
                       value={labelThreshold}
                       onValueChange={(value) =>
-                        setLabelThreshold(Array.isArray(value) ? value[0] ?? 12 : value)
+                        setLabelThreshold(
+                          Array.isArray(value) ? (value[0] ?? 12) : value,
+                        )
                       }
                     />
                   </ToolbarGroup>
@@ -722,7 +752,9 @@ export function GraphExplorer() {
                             {node.label}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {isFocused ? 'Focused subgraph' : 'Open local graph'}
+                            {isFocused
+                              ? 'Focused subgraph'
+                              : 'Open local graph'}
                           </p>
                         </button>
                       );
@@ -802,7 +834,9 @@ export function GraphExplorer() {
                     <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
                       Connected nodes
                     </p>
-                    {graph?.nodes.filter((node) => connectedNodeIds.has(node.id)).length ? (
+                    {graph?.nodes.filter((node) =>
+                      connectedNodeIds.has(node.id),
+                    ).length ? (
                       <div className="space-y-2">
                         {graph?.nodes
                           .filter((node) => connectedNodeIds.has(node.id))
@@ -864,7 +898,9 @@ export function GraphExplorer() {
               {selectedNode?.documentId ? (
                 <Button
                   className="w-full"
-                  render={<Link href={`/app/library/${selectedNode.documentId}`} />}
+                  render={
+                    <Link href={`/app/library/${selectedNode.documentId}`} />
+                  }
                 >
                   Open document
                 </Button>

@@ -56,9 +56,7 @@ function SearchResultRow({
     : `/app/library/${documentItem!.id}`;
   const preview = semantic
     ? item.preview
-    : documentItem!.summary ||
-      documentItem!.content ||
-      'No preview available.';
+    : documentItem!.summary || documentItem!.content || 'No preview available.';
 
   return (
     <Link
@@ -262,8 +260,15 @@ export function SearchPage() {
               <div className="divide-y rounded-lg border">
                 {data?.items.map((item, index) => (
                   <div
-                    key={mode === 'ai' ? (item as SemanticSearchResult).documentId : (item as IDocumentView).id}
-                    className={cn(index === 0 && 'rounded-t-lg', 'last:rounded-b-lg')}
+                    key={
+                      mode === 'ai'
+                        ? (item as SemanticSearchResult).documentId
+                        : (item as IDocumentView).id
+                    }
+                    className={cn(
+                      index === 0 && 'rounded-t-lg',
+                      'last:rounded-b-lg',
+                    )}
                   >
                     <SearchResultRow item={item} mode={mode} />
                   </div>
@@ -288,7 +293,10 @@ export function SearchPage() {
                     </EmptyDescription>
                   </EmptyHeader>
                   <EmptyContent>
-                    <Button render={<Link href="/app/search/ask" />} variant="outline">
+                    <Button
+                      render={<Link href="/app/search/ask" />}
+                      variant="outline"
+                    >
                       <Bot className="size-4" />
                       Open Ask AI
                     </Button>

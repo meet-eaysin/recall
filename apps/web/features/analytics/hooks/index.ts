@@ -4,10 +4,7 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/lib/query-keys';
 import { analyticsApi } from '../api';
-import type {
-  AnalyticsHeatmapResponse,
-  AnalyticsStatsResponse,
-} from '../api';
+import type { AnalyticsHeatmapResponse, AnalyticsStatsResponse } from '../api';
 
 export function useAnalyticsStats(): UseQueryResult<AnalyticsStatsResponse> {
   return useQuery<AnalyticsStatsResponse>({

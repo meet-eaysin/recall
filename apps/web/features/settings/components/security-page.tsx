@@ -1,6 +1,12 @@
 'use client';
 
-import { ArrowLeft, LaptopMinimal, ShieldCheck, Smartphone, Trash2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  LaptopMinimal,
+  ShieldCheck,
+  Smartphone,
+  Trash2,
+} from 'lucide-react';
 import Link from 'next/link';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -21,12 +27,20 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCurrentSession, useRevokeUserSession, useUserSessions } from '../hooks';
+import {
+  useCurrentSession,
+  useRevokeUserSession,
+  useUserSessions,
+} from '../hooks';
 
 function getDeviceIcon(userAgent: string | null) {
   if (!userAgent) return LaptopMinimal;
   const value = userAgent.toLowerCase();
-  if (value.includes('iphone') || value.includes('android') || value.includes('mobile')) {
+  if (
+    value.includes('iphone') ||
+    value.includes('android') ||
+    value.includes('mobile')
+  ) {
     return Smartphone;
   }
   return LaptopMinimal;
@@ -40,12 +54,20 @@ export function SecurityPage() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <header className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" render={<Link href="/app/settings" />} className="rounded-xl">
+        <Button
+          variant="ghost"
+          size="icon"
+          render={<Link href="/app/settings" />}
+          className="rounded-xl"
+        >
           <ArrowLeft className="size-5" />
         </Button>
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Security</h1>
-          <p className="text-muted-foreground">Review the sessions that can currently access your account and revoke any that should no longer remain active.</p>
+          <p className="text-muted-foreground">
+            Review the sessions that can currently access your account and
+            revoke any that should no longer remain active.
+          </p>
         </div>
       </header>
       <div className="mt-4 space-y-4">
@@ -65,7 +87,8 @@ export function SecurityPage() {
               </CardTitle>
             </CardHeader>
             <CardPanel className="pt-0 text-sm text-muted-foreground">
-              The session you are using right now cannot be revoked from this page.
+              The session you are using right now cannot be revoked from this
+              page.
             </CardPanel>
           </Card>
           <Card>
@@ -81,7 +104,9 @@ export function SecurityPage() {
             <CardHeader>
               <CardDescription>Revokable sessions</CardDescription>
               <CardTitle className="text-lg">
-                {(sessions?.filter((session) => !session.current).length ?? 0).toString()}
+                {(
+                  sessions?.filter((session) => !session.current).length ?? 0
+                ).toString()}
               </CardTitle>
             </CardHeader>
             <CardPanel className="pt-0 text-sm text-muted-foreground">
@@ -94,7 +119,8 @@ export function SecurityPage() {
           <CardHeader>
             <CardTitle>Session list</CardTitle>
             <CardDescription>
-              This backend currently supports viewing sessions and revoking any non-current session.
+              This backend currently supports viewing sessions and revoking any
+              non-current session.
             </CardDescription>
           </CardHeader>
           <CardPanel className="space-y-3">
@@ -114,7 +140,8 @@ export function SecurityPage() {
                   </EmptyMedia>
                   <EmptyTitle>No sessions found</EmptyTitle>
                   <EmptyDescription>
-                    The backend did not return any active sessions for this user.
+                    The backend did not return any active sessions for this
+                    user.
                   </EmptyDescription>
                 </EmptyHeader>
               </Empty>

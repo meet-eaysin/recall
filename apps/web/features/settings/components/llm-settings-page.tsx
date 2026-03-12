@@ -1,7 +1,14 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Bot, CheckCircle2, Cpu, KeyRound, Trash2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  Bot,
+  CheckCircle2,
+  Cpu,
+  KeyRound,
+  Trash2,
+} from 'lucide-react';
 import Link from 'next/link';
 import type { LLMConfigPublicView } from '@repo/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -22,11 +29,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import {
-  Field,
-  FieldDescription,
-  FieldLabel,
-} from '@/components/ui/field';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -170,7 +173,9 @@ export function LlmSettingsPage() {
     } catch (saveError) {
       setFeedback({
         message:
-          saveError instanceof Error ? saveError.message : 'Failed to save configuration.',
+          saveError instanceof Error
+            ? saveError.message
+            : 'Failed to save configuration.',
         tone: 'error',
       });
     }
@@ -204,12 +209,20 @@ export function LlmSettingsPage() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <header className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" render={<Link href="/app/settings" />} className="rounded-xl">
+        <Button
+          variant="ghost"
+          size="icon"
+          render={<Link href="/app/settings" />}
+          className="rounded-xl"
+        >
           <ArrowLeft className="size-5" />
         </Button>
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">LLM Config</h1>
-          <p className="text-muted-foreground">Choose the provider and model defaults that power AI search, summaries, and graph generation.</p>
+          <p className="text-muted-foreground">
+            Choose the provider and model defaults that power AI search,
+            summaries, and graph generation.
+          </p>
         </div>
       </header>
       <div className="mt-4 space-y-4">
@@ -223,7 +236,9 @@ export function LlmSettingsPage() {
         {feedback ? (
           <Alert variant={feedback.tone === 'success' ? 'success' : 'error'}>
             <AlertTitle>
-              {feedback.tone === 'success' ? 'Update complete' : 'Request failed'}
+              {feedback.tone === 'success'
+                ? 'Update complete'
+                : 'Request failed'}
             </AlertTitle>
             <AlertDescription>{feedback.message}</AlertDescription>
           </Alert>
@@ -234,7 +249,8 @@ export function LlmSettingsPage() {
             <CardHeader>
               <CardTitle>Provider settings</CardTitle>
               <CardDescription>
-                Save one configuration that the app can use across AI-powered features.
+                Save one configuration that the app can use across AI-powered
+                features.
               </CardDescription>
             </CardHeader>
             <CardPanel className="space-y-4">
@@ -243,7 +259,9 @@ export function LlmSettingsPage() {
                   <FieldLabel>Provider</FieldLabel>
                   <Select
                     onValueChange={(value) =>
-                      handleProviderChange(value as SaveLLMConfigInput['provider'])
+                      handleProviderChange(
+                        value as SaveLLMConfigInput['provider'],
+                      )
                     }
                     value={form.provider}
                   >
@@ -257,7 +275,8 @@ export function LlmSettingsPage() {
                     </SelectContent>
                   </Select>
                   <FieldDescription>
-                    Pick the provider your backend should use for chat and embeddings.
+                    Pick the provider your backend should use for chat and
+                    embeddings.
                   </FieldDescription>
                 </Field>
 
@@ -265,7 +284,9 @@ export function LlmSettingsPage() {
                   <FieldLabel htmlFor="llm-base-url">Base URL</FieldLabel>
                   <Input
                     id="llm-base-url"
-                    onChange={(event) => updateForm('baseUrl', event.target.value)}
+                    onChange={(event) =>
+                      updateForm('baseUrl', event.target.value)
+                    }
                     placeholder="Optional custom endpoint"
                     value={form.baseUrl ?? ''}
                   />
@@ -280,7 +301,9 @@ export function LlmSettingsPage() {
                   <FieldLabel htmlFor="llm-chat-model">Chat model</FieldLabel>
                   <Input
                     id="llm-chat-model"
-                    onChange={(event) => updateForm('chatModel', event.target.value)}
+                    onChange={(event) =>
+                      updateForm('chatModel', event.target.value)
+                    }
                     placeholder="gpt-4o-mini"
                     value={form.chatModel}
                   />
@@ -311,7 +334,8 @@ export function LlmSettingsPage() {
                   value={form.apiKey ?? ''}
                 />
                 <FieldDescription>
-                  The API key is only needed when you want to set or replace the saved credential.
+                  The API key is only needed when you want to set or replace the
+                  saved credential.
                 </FieldDescription>
               </Field>
 
@@ -321,7 +345,11 @@ export function LlmSettingsPage() {
                   onClick={() => void handleSave()}
                 >
                   <Bot className="size-4" />
-                  {saveConfig.isPending ? 'Saving...' : data ? 'Save changes' : 'Save config'}
+                  {saveConfig.isPending
+                    ? 'Saving...'
+                    : data
+                      ? 'Save changes'
+                      : 'Save config'}
                 </Button>
                 <Button
                   disabled={validateConfig.isPending}
@@ -356,7 +384,8 @@ export function LlmSettingsPage() {
               <CardHeader>
                 <CardTitle>Current status</CardTitle>
                 <CardDescription>
-                  What the backend currently knows about your AI runtime configuration.
+                  What the backend currently knows about your AI runtime
+                  configuration.
                 </CardDescription>
               </CardHeader>
               <CardPanel className="space-y-3">
@@ -376,7 +405,8 @@ export function LlmSettingsPage() {
                       </EmptyMedia>
                       <EmptyTitle>No config saved</EmptyTitle>
                       <EmptyDescription>
-                        Save a provider and model setup to enable AI features reliably.
+                        Save a provider and model setup to enable AI features
+                        reliably.
                       </EmptyDescription>
                     </EmptyHeader>
                   </Empty>
@@ -400,7 +430,9 @@ export function LlmSettingsPage() {
                       </p>
                     </div>
                     <div className="rounded-xl border border-border/60 px-4 py-3">
-                      <p className="text-xs text-muted-foreground">Capabilities</p>
+                      <p className="text-xs text-muted-foreground">
+                        Capabilities
+                      </p>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {capabilities.map((item) => (
                           <Badge key={item} variant="secondary">
@@ -410,11 +442,15 @@ export function LlmSettingsPage() {
                       </div>
                     </div>
                     <div className="rounded-xl border border-border/60 px-4 py-3">
-                      <p className="text-xs text-muted-foreground">Validation</p>
+                      <p className="text-xs text-muted-foreground">
+                        Validation
+                      </p>
                       <p
                         className={cn(
                           'mt-1 text-sm font-medium',
-                          data.validatedAt ? 'text-foreground' : 'text-muted-foreground',
+                          data.validatedAt
+                            ? 'text-foreground'
+                            : 'text-muted-foreground',
                         )}
                       >
                         {data.validatedAt
@@ -431,7 +467,8 @@ export function LlmSettingsPage() {
               <CardHeader>
                 <CardTitle>Where this is used</CardTitle>
                 <CardDescription>
-                  These settings feed the AI features already built into the app.
+                  These settings feed the AI features already built into the
+                  app.
                 </CardDescription>
               </CardHeader>
               <CardPanel className="space-y-3">
@@ -460,7 +497,9 @@ export function LlmSettingsPage() {
                       <Icon className="size-4 text-muted-foreground" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-foreground">{title}</p>
+                      <p className="text-sm font-medium text-foreground">
+                        {title}
+                      </p>
                       <p className="text-xs text-muted-foreground">{text}</p>
                     </div>
                   </div>

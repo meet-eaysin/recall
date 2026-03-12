@@ -3,7 +3,13 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { MessageSquare, Clock, ChevronRight, Search, Settings } from 'lucide-react';
+import {
+  MessageSquare,
+  Clock,
+  ChevronRight,
+  Search,
+  Settings,
+} from 'lucide-react';
 import { useSearchChats } from '@/features/search/hooks';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -28,7 +34,7 @@ export function ThreadPanel() {
         setIsOpen((open) => !open);
       }
     };
-    
+
     const handleToggle = () => setIsOpen((open) => !open);
 
     document.addEventListener('keydown', down);
@@ -43,9 +49,9 @@ export function ThreadPanel() {
     <>
       {/* Persistent mini-sidebar on large screens */}
       <aside className="fixed top-0 left-0 h-screen w-0 lg:w-16 bg-background border-r border-subtle z-40 hidden lg:flex flex-col items-center py-4 gap-4">
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => setIsOpen(true)}
           className="mb-2"
         >
@@ -70,17 +76,23 @@ export function ThreadPanel() {
       <Drawer direction="left" open={isOpen} onOpenChange={setIsOpen}>
         <DrawerContent className="h-full w-80 rounded-none border-r border-subtle">
           <DrawerHeader className="border-b border-subtle flex flex-row items-center justify-between px-4 shrink-0">
-             <DrawerTitle className="text-sm font-semibold tracking-tight">Recent Threads</DrawerTitle>
-             <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
-               <ChevronRight className="rotate-180 size-5" />
-             </Button>
+            <DrawerTitle className="text-sm font-semibold tracking-tight">
+              Recent Threads
+            </DrawerTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsOpen(false)}
+            >
+              <ChevronRight className="rotate-180 size-5" />
+            </Button>
           </DrawerHeader>
 
           <div className="flex-1 overflow-hidden flex flex-col pt-4">
             <div className="px-4 pb-4">
               <div className="relative group">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                <input 
+                <input
                   placeholder="Search threads..."
                   className="w-full bg-muted/50 border-none rounded-xl py-2 pl-9 pr-4 text-sm focus:ring-2 focus:ring-primary/20 transition-all"
                 />
@@ -91,7 +103,10 @@ export function ThreadPanel() {
               <div className="space-y-1 pb-4">
                 {isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="h-20 w-full animate-pulse rounded-xl bg-muted/50 mb-1" />
+                    <div
+                      key={i}
+                      className="h-20 w-full animate-pulse rounded-xl bg-muted/50 mb-1"
+                    />
                   ))
                 ) : chats?.length === 0 ? (
                   <div className="px-4 py-8 text-center text-muted-foreground text-sm">
@@ -106,22 +121,24 @@ export function ThreadPanel() {
                         href={`/app/t/${chat.id}`}
                         onClick={() => setIsOpen(false)}
                         className={cn(
-                          "group flex flex-col gap-1 p-3 rounded-xl transition-all duration-200",
-                          isActive 
-                            ? "bg-primary/10 border border-primary/20" 
-                            : "hover:bg-muted border border-transparent"
+                          'group flex flex-col gap-1 p-3 rounded-xl transition-all duration-200',
+                          isActive
+                            ? 'bg-primary/10 border border-primary/20'
+                            : 'hover:bg-muted border border-transparent',
                         )}
                       >
                         <div className="flex items-center justify-between gap-2">
-                          <span className={cn(
-                            "text-sm font-medium truncate",
-                            isActive ? "text-primary" : "text-foreground"
-                          )}>
+                          <span
+                            className={cn(
+                              'text-sm font-medium truncate',
+                              isActive ? 'text-primary' : 'text-foreground',
+                            )}
+                          >
                             {chat.title}
                           </span>
                         </div>
                         <p className="text-xs text-muted-foreground line-clamp-2 group-hover:text-muted-foreground/80 transition-colors">
-                          {chat.lastMessagePreview || "No preview available"}
+                          {chat.lastMessagePreview || 'No preview available'}
                         </p>
                       </Link>
                     );
@@ -132,9 +149,13 @@ export function ThreadPanel() {
           </div>
 
           <div className="p-4 border-t border-subtle bg-muted/10">
-            <Button variant="outline" className="w-full justify-start gap-2 rounded-xl text-xs" onClick={() => setIsOpen(false)}>
-               <Settings className="size-3" />
-               View All History
+            <Button
+              variant="outline"
+              className="w-full justify-start gap-2 rounded-xl text-xs"
+              onClick={() => setIsOpen(false)}
+            >
+              <Settings className="size-3" />
+              View All History
             </Button>
           </div>
         </DrawerContent>

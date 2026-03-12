@@ -12,7 +12,13 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DocumentDetailView } from '@/features/library/components/document-detail-view';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerClose,
+} from '@/components/ui/drawer';
 import { formatDistanceToNow } from 'date-fns';
 import { useThreadStream } from './thread-stream-context';
 import { Chat } from '@/components/ai/chat';
@@ -92,18 +98,26 @@ export function ThreadView() {
               setError(event.message);
               setIsStreaming(false);
               threadStream.failStream(event.message);
-              queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chat(threadId ?? '') });
-              queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chats() });
+              queryClient.invalidateQueries({
+                queryKey: QUERY_KEYS.SEARCH.chat(threadId ?? ''),
+              });
+              queryClient.invalidateQueries({
+                queryKey: QUERY_KEYS.SEARCH.chats(),
+              });
             } else if (event.type === 'done') {
-              queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chat(threadId ?? '') });
-              queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chats() });
+              queryClient.invalidateQueries({
+                queryKey: QUERY_KEYS.SEARCH.chat(threadId ?? ''),
+              });
+              queryClient.invalidateQueries({
+                queryKey: QUERY_KEYS.SEARCH.chats(),
+              });
               setIsStreaming(false);
               setStreamingAnswer('');
               setStreamingQuestion('');
               threadStream.completeStream();
             }
           },
-        }
+        },
       );
     } catch (error) {
       console.error(error);
@@ -117,9 +131,7 @@ export function ThreadView() {
     setQuestion(e.target.value);
   };
 
-  const handleSubmit = (
-    event?: { preventDefault?: () => void }
-  ) => {
+  const handleSubmit = (event?: { preventDefault?: () => void }) => {
     event?.preventDefault?.();
     if (question.trim()) {
       void submitQuestion();
@@ -131,41 +143,43 @@ export function ThreadView() {
 
   const messages: Message[] = React.useMemo(() => {
     const list: Message[] = [];
-    
+
     // 1. Add persisted messages
     if (conversation?.messages) {
-      conversation.messages.forEach(msg => {
+      conversation.messages.forEach((msg) => {
         list.push({
           id: msg.id,
           role: msg.role as 'user' | 'assistant',
           content: msg.content,
           createdAt: new Date(msg.createdAt),
-          sources: msg.sources ? msg.sources.map(s => ({
-             documentId: s.documentId,
-             title: s.title,
-             author: s.author,
-             publishedAt: s.publishedAt,
-             originalSource: s.originalSource,
-          })) : undefined,
+          sources: msg.sources
+            ? msg.sources.map((s) => ({
+                documentId: s.documentId,
+                title: s.title,
+                author: s.author,
+                publishedAt: s.publishedAt,
+                originalSource: s.originalSource,
+              }))
+            : undefined,
         });
       });
     }
 
     // 2. Add omni stream if active (initial query) and not already persisted
     if (showOmniStream && omniStream) {
-       list.push({
-         id: 'omni-user',
-         role: 'user',
-         content: omniStream.question,
-         createdAt: new Date(),
-       });
-       if (omniStream.answer || omniStream.error) {
-         list.push({
-           id: 'omni-assistant',
-           role: 'assistant',
-           content: omniStream.error ? omniStream.error : omniStream.answer,
-         });
-       }
+      list.push({
+        id: 'omni-user',
+        role: 'user',
+        content: omniStream.question,
+        createdAt: new Date(),
+      });
+      if (omniStream.answer || omniStream.error) {
+        list.push({
+          id: 'omni-assistant',
+          role: 'assistant',
+          content: omniStream.error ? omniStream.error : omniStream.answer,
+        });
+      }
     }
 
     // 3. Add followUp stream
@@ -176,19 +190,27 @@ export function ThreadView() {
           role: 'user',
           content: streamingQuestion,
           createdAt: new Date(),
-        })
+        });
       }
       if (streamingAnswer || error) {
         list.push({
           id: 'followup-assistant',
           role: 'assistant',
           content: error ? error : streamingAnswer,
-        })
+        });
       }
     }
 
     return list;
-  }, [conversation?.messages, omniStream, showOmniStream, showFollowUpStream, streamingQuestion, streamingAnswer, error]);
+  }, [
+    conversation?.messages,
+    omniStream,
+    showOmniStream,
+    showFollowUpStream,
+    streamingQuestion,
+    streamingAnswer,
+    error,
+  ]);
 
   const stopGeneration = () => {
     threadStream.abortStream();
@@ -213,7 +235,12 @@ export function ThreadView() {
       <div className="flex flex-col flex-1 h-full w-full">
         {/* Header */}
         <header className="flex items-center gap-4 mb-6 shrink-0 pt-4">
-          <Button variant="ghost" size="icon" onClick={() => router.push('/app')} className="shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.push('/app')}
+            className="shrink-0"
+          >
             <ArrowLeft className="size-4" />
           </Button>
           <div className="min-w-0">
@@ -222,7 +249,8 @@ export function ThreadView() {
             </h1>
             {conversation && (
               <p className="text-xs text-muted-foreground">
-                Started {formatDistanceToNow(new Date(conversation.createdAt))} ago
+                Started {formatDistanceToNow(new Date(conversation.createdAt))}{' '}
+                ago
               </p>
             )}
           </div>
@@ -230,7 +258,7 @@ export function ThreadView() {
 
         {/* Messages and Input replacing manual blocks */}
         <div className="flex-1 overflow-hidden pb-4 flex flex-col">
-          <Chat 
+          <Chat
             messages={messages}
             input={question}
             handleInputChange={handleInputChange}
@@ -250,9 +278,13 @@ export function ThreadView() {
       >
         <DrawerContent className="h-full sm:max-w-2xl">
           <DrawerHeader className="border-b border-subtle flex flex-row items-center justify-between shrink-0">
-            <DrawerTitle className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Document Preview</DrawerTitle>
+            <DrawerTitle className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+              Document Preview
+            </DrawerTitle>
             <DrawerClose asChild>
-              <Button variant="ghost" size="sm" className="rounded-xl">Close</Button>
+              <Button variant="ghost" size="sm" className="rounded-xl">
+                Close
+              </Button>
             </DrawerClose>
           </DrawerHeader>
           <div className="flex-1 overflow-hidden">

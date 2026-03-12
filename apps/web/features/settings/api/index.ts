@@ -32,12 +32,16 @@ export const settingsApi = {
     }),
   deleteLLMConfig: () => apiDelete<void>(API_ENDPOINTS.LLM_CONFIG.ROOT),
   disconnectNotion: () => apiDelete<void>(API_ENDPOINTS.NOTION.CONFIG),
-  getLLMConfig: () => apiGet<LLMConfigPublicView>(API_ENDPOINTS.LLM_CONFIG.ROOT),
-  getNotionConfig: () => apiGet<NotionConfigPublicView>(API_ENDPOINTS.NOTION.CONFIG),
-  getNotionDatabases: () => apiGet<NotionDatabase[]>(API_ENDPOINTS.NOTION.DATABASES),
+  getLLMConfig: () =>
+    apiGet<LLMConfigPublicView>(API_ENDPOINTS.LLM_CONFIG.ROOT),
+  getNotionConfig: () =>
+    apiGet<NotionConfigPublicView>(API_ENDPOINTS.NOTION.CONFIG),
+  getNotionDatabases: () =>
+    apiGet<NotionDatabase[]>(API_ENDPOINTS.NOTION.DATABASES),
   getSession: () => apiGet<AuthSessionView>(API_ENDPOINTS.AUTH.SESSION),
   getUser: () => apiGet<UserPublicView>(API_ENDPOINTS.USERS.ME),
-  getUserSessions: () => apiGet<UserSessionView[]>(API_ENDPOINTS.USERS.SESSIONS),
+  getUserSessions: () =>
+    apiGet<UserSessionView[]>(API_ENDPOINTS.USERS.SESSIONS),
   revokeUserSession: (sessionId: string) =>
     apiDelete<{ success: boolean }>(API_ENDPOINTS.USERS.session(sessionId)),
   saveLLMConfig: (body: SaveLLMConfigInput) =>

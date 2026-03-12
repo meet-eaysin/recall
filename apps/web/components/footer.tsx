@@ -1,10 +1,7 @@
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
-import {
-  GithubIcon,
-  YoutubeIcon,
-} from 'lucide-react';
+import { GithubIcon, YoutubeIcon } from 'lucide-react';
 import Link from 'next/link';
 
 export function Footer() {
@@ -17,15 +14,16 @@ export function Footer() {
         )}
       >
         <div className="absolute inset-x-0 top-0 h-px w-full bg-border" />
-        
+
         <div className="flex flex-col items-center justify-center gap-8 text-center">
           <a className="w-max" href="#top">
             <Logo className="h-6" />
           </a>
-          
+
           <p className="max-w-md text-balance text-muted-foreground text-sm leading-relaxed">
-            dev.me is a personal AI brain designed to help you organize everything you read, watch, and research. 
-            Open source and private by default.
+            dev.me is a personal AI brain designed to help you organize
+            everything you read, watch, and research. Open source and private by
+            default.
           </p>
 
           <div className="flex items-center gap-4">
@@ -44,7 +42,8 @@ export function Footer() {
 
           <div className="pt-8 w-full border-t">
             <p className="text-muted-foreground text-xs font-light">
-              &copy; {new Date().getFullYear()} dev.me. Built with passion for knowledge explorers.
+              &copy; {new Date().getFullYear()} dev.me. Built with passion for
+              knowledge explorers.
             </p>
           </div>
         </div>

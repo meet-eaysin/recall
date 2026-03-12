@@ -152,7 +152,8 @@ export class AskUseCase {
               },
             })
             .catch((error: unknown) => {
-              const msg = error instanceof Error ? error.message : String(error);
+              const msg =
+                error instanceof Error ? error.message : String(error);
               this.logger.error(`Failed to log user activity: ${msg}`);
             });
 

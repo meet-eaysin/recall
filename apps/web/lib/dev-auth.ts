@@ -17,7 +17,7 @@ export function getDevUserId(): string {
   const stored = window.localStorage.getItem(DEV_USER_ID_KEY);
   return stored && stored.length > 0
     ? stored
-    : process.env.NEXT_PUBLIC_DEV_USER_ID ?? '';
+    : (process.env.NEXT_PUBLIC_DEV_USER_ID ?? '');
 }
 
 export function setDevUserId(userId: string): void {

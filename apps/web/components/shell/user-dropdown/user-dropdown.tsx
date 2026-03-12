@@ -42,7 +42,7 @@ export function UserDropdown({ small }: UserDropdownProps) {
     const displayName = session.user.name ?? 'Nameless User';
     const email = session.user.email ?? '';
     const username = email.includes('@')
-      ? email.split('@')[0] ?? 'user'
+      ? (email.split('@')[0] ?? 'user')
       : email || displayName.replace(/\s+/g, '').toLowerCase();
     return {
       name: displayName,

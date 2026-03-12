@@ -1,7 +1,14 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, CheckCircle2, Database, RefreshCcw, Unplug, Workflow } from 'lucide-react';
+import {
+  ArrowLeft,
+  CheckCircle2,
+  Database,
+  RefreshCcw,
+  Unplug,
+  Workflow,
+} from 'lucide-react';
 import Link from 'next/link';
 import { NotionSyncDirectionType } from '@repo/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -22,11 +29,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import {
-  Field,
-  FieldDescription,
-  FieldLabel,
-} from '@/components/ui/field';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -163,7 +166,8 @@ export function NotionSettingsPage() {
       });
     } catch (syncError) {
       setFeedback({
-        message: syncError instanceof Error ? syncError.message : 'Sync failed.',
+        message:
+          syncError instanceof Error ? syncError.message : 'Sync failed.',
         tone: 'error',
       });
     }
@@ -172,12 +176,20 @@ export function NotionSettingsPage() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <header className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" render={<Link href="/app/settings" />} className="rounded-xl">
+        <Button
+          variant="ghost"
+          size="icon"
+          render={<Link href="/app/settings" />}
+          className="rounded-xl"
+        >
           <ArrowLeft className="size-5" />
         </Button>
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Notion</h1>
-          <p className="text-muted-foreground">Connect a workspace, choose the target database, and control how synchronization should behave.</p>
+          <p className="text-muted-foreground">
+            Connect a workspace, choose the target database, and control how
+            synchronization should behave.
+          </p>
         </div>
       </header>
       <div className="mt-4 space-y-4">
@@ -191,7 +203,9 @@ export function NotionSettingsPage() {
         {feedback ? (
           <Alert variant={feedback.tone === 'success' ? 'success' : 'error'}>
             <AlertTitle>
-              {feedback.tone === 'success' ? 'Update complete' : 'Request failed'}
+              {feedback.tone === 'success'
+                ? 'Update complete'
+                : 'Request failed'}
             </AlertTitle>
             <AlertDescription>{feedback.message}</AlertDescription>
           </Alert>
@@ -202,7 +216,8 @@ export function NotionSettingsPage() {
             <AlertTitle>Last sync result</AlertTitle>
             <AlertDescription>
               <p>
-                {syncSummary.synced} item(s) synced, {syncSummary.failed} failed.
+                {syncSummary.synced} item(s) synced, {syncSummary.failed}{' '}
+                failed.
               </p>
               {syncSummary.errors.length > 0 ? (
                 <div className="space-y-1">
@@ -220,12 +235,15 @@ export function NotionSettingsPage() {
             <CardHeader>
               <CardTitle>Connect a workspace</CardTitle>
               <CardDescription>
-                Start by providing a valid Notion access token for your workspace.
+                Start by providing a valid Notion access token for your
+                workspace.
               </CardDescription>
             </CardHeader>
             <CardPanel className="space-y-4">
               <Field>
-                <FieldLabel htmlFor="notion-access-token">Access token</FieldLabel>
+                <FieldLabel htmlFor="notion-access-token">
+                  Access token
+                </FieldLabel>
                 <Input
                   id="notion-access-token"
                   onChange={(event) => setAccessToken(event.target.value)}
@@ -234,7 +252,8 @@ export function NotionSettingsPage() {
                   value={accessToken}
                 />
                 <FieldDescription>
-                  The backend stores the integration and uses it to fetch available databases.
+                  The backend stores the integration and uses it to fetch
+                  available databases.
                 </FieldDescription>
               </Field>
               <div className="flex gap-2">
@@ -273,7 +292,9 @@ export function NotionSettingsPage() {
                 <Field>
                   <FieldLabel>Target database</FieldLabel>
                   <Select
-                    onValueChange={(value) => setTargetDatabaseId(value ?? 'none')}
+                    onValueChange={(value) =>
+                      setTargetDatabaseId(value ?? 'none')
+                    }
                     value={targetDatabaseId}
                   >
                     <SelectTrigger>
@@ -334,7 +355,9 @@ export function NotionSettingsPage() {
                       </div>
                       <Switch
                         checked={syncEnabled}
-                        onCheckedChange={(value) => setSyncEnabled(Boolean(value))}
+                        onCheckedChange={(value) =>
+                          setSyncEnabled(Boolean(value))
+                        }
                       />
                     </div>
                   </Field>
@@ -384,13 +407,17 @@ export function NotionSettingsPage() {
                 </CardHeader>
                 <CardPanel className="space-y-3">
                   <div className="rounded-xl border border-border/60 px-4 py-3">
-                    <p className="text-xs text-muted-foreground">Workspace name</p>
+                    <p className="text-xs text-muted-foreground">
+                      Workspace name
+                    </p>
                     <p className="mt-1 text-sm font-medium text-foreground">
                       {config.workspaceName || 'Unnamed workspace'}
                     </p>
                   </div>
                   <div className="rounded-xl border border-border/60 px-4 py-3">
-                    <p className="text-xs text-muted-foreground">Workspace ID</p>
+                    <p className="text-xs text-muted-foreground">
+                      Workspace ID
+                    </p>
                     <p className="mt-1 break-all text-sm font-medium text-foreground">
                       {config.workspaceId}
                     </p>
@@ -398,7 +425,9 @@ export function NotionSettingsPage() {
                   <div className="rounded-xl border border-border/60 px-4 py-3">
                     <p className="text-xs text-muted-foreground">Sync status</p>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      <Badge variant={config.syncEnabled ? 'secondary' : 'outline'}>
+                      <Badge
+                        variant={config.syncEnabled ? 'secondary' : 'outline'}
+                      >
                         {config.syncEnabled ? 'Enabled' : 'Paused'}
                       </Badge>
                       <Badge variant="outline">
@@ -441,7 +470,8 @@ export function NotionSettingsPage() {
                         </EmptyMedia>
                         <EmptyTitle>No databases returned</EmptyTitle>
                         <EmptyDescription>
-                          The workspace is connected, but no accessible databases were found.
+                          The workspace is connected, but no accessible
+                          databases were found.
                         </EmptyDescription>
                       </EmptyHeader>
                     </Empty>

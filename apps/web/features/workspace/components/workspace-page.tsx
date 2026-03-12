@@ -12,7 +12,13 @@ import { QUERY_KEYS } from '@/lib/query-keys';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DocumentDetailView } from '@/features/library/components/document-detail-view';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerClose,
+} from '@/components/ui/drawer';
 import { formatDistanceToNow } from 'date-fns';
 import { Chat } from '@/components/ai/chat';
 import type { Message } from '@/components/ai/chat-message';
@@ -97,17 +103,25 @@ function InlineChat() {
               console.error(event.message);
               setError(event.message);
               setIsStreaming(false);
-              queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chat(conversationId) });
-              queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chats() });
+              queryClient.invalidateQueries({
+                queryKey: QUERY_KEYS.SEARCH.chat(conversationId),
+              });
+              queryClient.invalidateQueries({
+                queryKey: QUERY_KEYS.SEARCH.chats(),
+              });
             } else if (event.type === 'done') {
-              queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chat(conversationId) });
-              queryClient.invalidateQueries({ queryKey: QUERY_KEYS.SEARCH.chats() });
+              queryClient.invalidateQueries({
+                queryKey: QUERY_KEYS.SEARCH.chat(conversationId),
+              });
+              queryClient.invalidateQueries({
+                queryKey: QUERY_KEYS.SEARCH.chats(),
+              });
               setIsStreaming(false);
               setStreamingAnswer('');
               setStreamingQuestion('');
             }
           },
-        }
+        },
       );
     } catch (error) {
       console.error(error);
@@ -126,9 +140,7 @@ function InlineChat() {
     setQuestion(e.target.value);
   };
 
-  const handleSubmit = (
-    event?: { preventDefault?: () => void }
-  ) => {
+  const handleSubmit = (event?: { preventDefault?: () => void }) => {
     event?.preventDefault?.();
     if (question.trim()) {
       void submitFollowUp();
@@ -137,47 +149,54 @@ function InlineChat() {
 
   // Build the message list
   const persistedMessages = conversation?.messages ?? [];
-  const showInitialStream = activeStream && (activeStream.isStreaming || activeStream.answer.length > 0);
+  const showInitialStream =
+    activeStream &&
+    (activeStream.isStreaming || activeStream.answer.length > 0);
   // If conversation has messages AND stream is done, show persisted only
-  const usePersistedOnly = persistedMessages.length > 0 && activeStream && !activeStream.isStreaming;
+  const usePersistedOnly =
+    persistedMessages.length > 0 && activeStream && !activeStream.isStreaming;
 
   const messages: Message[] = React.useMemo(() => {
     const list: Message[] = [];
-    
+
     // 1. Add persisted messages
     if (usePersistedOnly && conversation?.messages) {
-      conversation.messages.forEach(msg => {
+      conversation.messages.forEach((msg) => {
         list.push({
           id: msg.id,
           role: msg.role as 'user' | 'assistant',
           content: msg.content,
           createdAt: new Date(msg.createdAt),
-          sources: msg.sources ? msg.sources.map(s => ({
-             documentId: s.documentId,
-             title: s.title,
-             author: s.author,
-             publishedAt: s.publishedAt,
-             originalSource: s.originalSource,
-          })) : undefined,
+          sources: msg.sources
+            ? msg.sources.map((s) => ({
+                documentId: s.documentId,
+                title: s.title,
+                author: s.author,
+                publishedAt: s.publishedAt,
+                originalSource: s.originalSource,
+              }))
+            : undefined,
         });
       });
     }
 
     // 2. Add activeStream if it's the initial query and not yet persisted
     if (!usePersistedOnly && showInitialStream && activeStream) {
-       list.push({
-         id: 'initial-user',
-         role: 'user',
-         content: activeStream.question,
-         createdAt: new Date(),
-       });
-       if (activeStream.answer || activeStream.error) {
-         list.push({
-           id: 'initial-assistant',
-           role: 'assistant',
-           content: activeStream.error ? activeStream.error : activeStream.answer,
-         });
-       }
+      list.push({
+        id: 'initial-user',
+        role: 'user',
+        content: activeStream.question,
+        createdAt: new Date(),
+      });
+      if (activeStream.answer || activeStream.error) {
+        list.push({
+          id: 'initial-assistant',
+          role: 'assistant',
+          content: activeStream.error
+            ? activeStream.error
+            : activeStream.answer,
+        });
+      }
     }
 
     // 3. Add followUp stream
@@ -188,26 +207,43 @@ function InlineChat() {
           role: 'user',
           content: streamingQuestion,
           createdAt: new Date(),
-        })
+        });
       }
       if (streamingAnswer || error) {
         list.push({
           id: 'followup-assistant',
           role: 'assistant',
           content: error ? error : streamingAnswer,
-        })
+        });
       }
     }
 
     return list;
-  }, [conversation?.messages, usePersistedOnly, activeStream, showInitialStream, streamingQuestion, streamingAnswer, isStreaming, error]);
+  }, [
+    conversation?.messages,
+    usePersistedOnly,
+    activeStream,
+    showInitialStream,
+    streamingQuestion,
+    streamingAnswer,
+    isStreaming,
+    error,
+  ]);
 
   return (
-    <PageContainer isFullHeight className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <PageContainer
+      isFullHeight
+      className="animate-in fade-in slide-in-from-bottom-4 duration-500"
+    >
       <div className="flex flex-col flex-1 h-full w-full">
         {/* Header */}
         <header className="flex items-center gap-4 mb-6 shrink-0 w-full pt-4">
-          <Button variant="ghost" size="icon" onClick={goBack} className="shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={goBack}
+            className="shrink-0"
+          >
             <ArrowLeft className="size-4" />
           </Button>
           <div className="min-w-0">
@@ -216,7 +252,8 @@ function InlineChat() {
             </h1>
             {conversation && (
               <p className="text-xs text-muted-foreground">
-                Started {formatDistanceToNow(new Date(conversation.createdAt))} ago
+                Started {formatDistanceToNow(new Date(conversation.createdAt))}{' '}
+                ago
               </p>
             )}
           </div>
@@ -224,7 +261,7 @@ function InlineChat() {
 
         {/* Messages and Input replacing manual blocks */}
         <div className="flex-1 overflow-hidden pb-4 flex flex-col">
-          <Chat 
+          <Chat
             messages={messages}
             input={question}
             handleInputChange={handleInputChange}
@@ -237,12 +274,20 @@ function InlineChat() {
       </div>
 
       {/* Source Preview Drawer */}
-      <Drawer direction="right" open={!!previewId} onOpenChange={(open) => !open && setPreviewId(null)}>
+      <Drawer
+        direction="right"
+        open={!!previewId}
+        onOpenChange={(open) => !open && setPreviewId(null)}
+      >
         <DrawerContent className="h-full sm:max-w-2xl">
           <DrawerHeader className="border-b border-subtle flex flex-row items-center justify-between shrink-0">
-            <DrawerTitle className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Document Preview</DrawerTitle>
+            <DrawerTitle className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+              Document Preview
+            </DrawerTitle>
             <DrawerClose asChild>
-              <Button variant="ghost" size="sm">Close</Button>
+              <Button variant="ghost" size="sm">
+                Close
+              </Button>
             </DrawerClose>
           </DrawerHeader>
           <div className="flex-1 overflow-hidden">

@@ -5,10 +5,7 @@ import { ExternalLink, FileText, Globe, PlayCircle } from 'lucide-react';
 import type { DocumentDetail, DocumentRow } from '../types';
 import Image from 'next/image';
 
-type PreviewDocument = Pick<
-  DocumentRow,
-  'sourceUrl' | 'title' | 'type'
-> &
+type PreviewDocument = Pick<DocumentRow, 'sourceUrl' | 'title' | 'type'> &
   Partial<Pick<DocumentDetail, 'content'>>;
 
 export function DocumentPreviewSurface({
@@ -47,21 +44,38 @@ export function DocumentPreviewSurface({
 
   if (directVideo && sourceUrl) {
     return compact ? (
-      <MediaCard label="Video" title={document.title} subtitle={getHostname(sourceUrl)} />
+      <MediaCard
+        label="Video"
+        title={document.title}
+        subtitle={getHostname(sourceUrl)}
+      />
     ) : (
-      <video className="h-full w-full" controls preload="metadata" src={sourceUrl} />
+      <video
+        className="h-full w-full"
+        controls
+        preload="metadata"
+        src={sourceUrl}
+      />
     );
   }
 
   if (directPdf && sourceUrl) {
     if (compact) {
-      return <MediaCard label="PDF" title={document.title} subtitle={getHostname(sourceUrl)} />;
+      return (
+        <MediaCard
+          label="PDF"
+          title={document.title}
+          subtitle={getHostname(sourceUrl)}
+        />
+      );
     }
 
     return (
       <iframe
         className="h-full w-full bg-background"
-        src={compact ? `${sourceUrl}#toolbar=0&navpanes=0&scrollbar=0` : sourceUrl}
+        src={
+          compact ? `${sourceUrl}#toolbar=0&navpanes=0&scrollbar=0` : sourceUrl
+        }
         title={document.title}
       />
     );
@@ -73,7 +87,11 @@ export function DocumentPreviewSurface({
 
   if (document.type === 'text') {
     return (
-      <TextPreview compact={compact} content={document.content} title={document.title} />
+      <TextPreview
+        compact={compact}
+        content={document.content}
+        title={document.title}
+      />
     );
   }
 
@@ -82,7 +100,11 @@ export function DocumentPreviewSurface({
       <UrlPreviewCard sourceUrl={sourceUrl} title={document.title} />
     ) : (
       <div className="relative h-full w-full">
-        <iframe className="h-full w-full bg-background" src={sourceUrl} title={document.title} />
+        <iframe
+          className="h-full w-full bg-background"
+          src={sourceUrl}
+          title={document.title}
+        />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-background to-transparent p-4" />
       </div>
     );
@@ -107,10 +129,20 @@ function TextPreview({
         <span className="text-xs font-medium tracking-wide">Note</span>
       </div>
       <div className="space-y-2">
-        <p className={compact ? 'line-clamp-3 text-sm font-medium' : 'text-lg font-medium'}>
+        <p
+          className={
+            compact ? 'line-clamp-3 text-sm font-medium' : 'text-lg font-medium'
+          }
+        >
           {title}
         </p>
-        <p className={compact ? 'line-clamp-4 text-xs text-muted-foreground' : 'line-clamp-8 text-sm text-muted-foreground'}>
+        <p
+          className={
+            compact
+              ? 'line-clamp-4 text-xs text-muted-foreground'
+              : 'line-clamp-8 text-sm text-muted-foreground'
+          }
+        >
           {content?.trim() || 'No content preview is available yet.'}
         </p>
       </div>
@@ -153,7 +185,11 @@ function FallbackPreview({
   return (
     <div className="flex h-full flex-col items-center justify-center gap-3 p-4 text-center">
       <PlayCircle className="size-8 text-muted-foreground" />
-      <p className={compact ? 'line-clamp-2 text-sm font-medium' : 'text-lg font-medium'}>
+      <p
+        className={
+          compact ? 'line-clamp-2 text-sm font-medium' : 'text-lg font-medium'
+        }
+      >
         {title}
       </p>
     </div>
@@ -173,17 +209,25 @@ function MediaCard({
     <div className="flex h-full flex-col justify-between p-4">
       <div className="flex items-center gap-2 text-muted-foreground">
         <PlayCircle className="size-4" />
-        <span className="text-xs font-medium uppercase tracking-wide">{label}</span>
+        <span className="text-xs font-medium uppercase tracking-wide">
+          {label}
+        </span>
       </div>
       <div className="space-y-2">
         <p className="line-clamp-3 text-sm font-medium">{title}</p>
-        {subtitle ? <p className="truncate text-xs text-muted-foreground">{subtitle}</p> : null}
+        {subtitle ? (
+          <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
+        ) : null}
       </div>
     </div>
   );
 }
 
-export function DocumentPreviewUnavailable({ sourceUrl }: { sourceUrl?: string }) {
+export function DocumentPreviewUnavailable({
+  sourceUrl,
+}: {
+  sourceUrl?: string;
+}) {
   return (
     <div className="flex h-full min-h-48 flex-col items-center justify-center gap-3 p-6 text-center">
       <Globe className="size-6 text-muted-foreground" />
@@ -205,13 +249,7 @@ export function DocumentPreviewUnavailable({ sourceUrl }: { sourceUrl?: string }
   );
 }
 
-function PreviewImage({
-  alt,
-  src,
-}: {
-  alt: string;
-  src: string;
-}) {
+function PreviewImage({ alt, src }: { alt: string; src: string }) {
   return (
     <div className="relative h-full w-full">
       <Image

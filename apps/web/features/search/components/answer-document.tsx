@@ -28,7 +28,10 @@ function parseBlocks(markdown: string): Block[] {
       const codeLines: string[] = [];
       index += 1;
 
-      while (index < lines.length && !(lines[index] ?? '').trim().startsWith('```')) {
+      while (
+        index < lines.length &&
+        !(lines[index] ?? '').trim().startsWith('```')
+      ) {
         codeLines.push(lines[index] ?? '');
         index += 1;
       }
@@ -206,7 +209,9 @@ export function AnswerDocument({
               )}
             >
               {block.items.map((item, itemIndex) => (
-                <li key={`${itemIndex}-${item.slice(0, 24)}`}>{renderInline(item)}</li>
+                <li key={`${itemIndex}-${item.slice(0, 24)}`}>
+                  {renderInline(item)}
+                </li>
               ))}
             </ListTag>
           );
@@ -231,7 +236,10 @@ export function AnswerDocument({
         }
 
         return (
-          <p key={`${block.type}-${index}`} className="text-sm leading-7 text-foreground">
+          <p
+            key={`${block.type}-${index}`}
+            className="text-sm leading-7 text-foreground"
+          >
             {renderInline(block.text)}
           </p>
         );

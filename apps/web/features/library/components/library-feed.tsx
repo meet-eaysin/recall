@@ -4,9 +4,7 @@ import * as React from 'react';
 import { DocumentStatus, DocumentType } from '@repo/types';
 import { BookOpen, Files, Filter, Folder, FolderPlus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-} from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import {
   Empty,
   EmptyContent,
@@ -179,7 +177,8 @@ export function LibraryFeed() {
                 key={folder.id}
                 active={activeFolderId === folder.id}
                 description={
-                  folder.description?.trim() || 'Open this folder to view its documents.'
+                  folder.description?.trim() ||
+                  'Open this folder to view its documents.'
                 }
                 folder={folder}
                 icon={Folder}
@@ -247,7 +246,9 @@ export function LibraryFeed() {
                   <MenuSubPopup className="w-52">
                     <MenuRadioGroup
                       onValueChange={(value) =>
-                        setStatus(value === ALL ? null : (value as DocumentStatus))
+                        setStatus(
+                          value === ALL ? null : (value as DocumentStatus),
+                        )
                       }
                       value={status ?? ALL}
                     >
@@ -336,7 +337,9 @@ export function LibraryFeed() {
                     <PaginationNext
                       aria-disabled={page >= totalPages}
                       className={
-                        page >= totalPages ? 'pointer-events-none opacity-50' : ''
+                        page >= totalPages
+                          ? 'pointer-events-none opacity-50'
+                          : ''
                       }
                       href="#"
                       onClick={(event) => {
@@ -354,7 +357,6 @@ export function LibraryFeed() {
     </div>
   );
 }
-
 
 function getVisiblePages(currentPage: number, totalPages: number) {
   if (totalPages <= 5) {

@@ -8,7 +8,9 @@ export default function AppLibraryPage() {
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Library</h1>
-          <p className="text-muted-foreground">Manage and organize your synchronized knowledge base.</p>
+          <p className="text-muted-foreground">
+            Manage and organize your synchronized knowledge base.
+          </p>
         </div>
         <AddDocumentDialog />
       </header>

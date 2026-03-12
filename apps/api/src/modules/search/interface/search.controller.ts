@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Query,
-  Body,
-  Param,
-  Res,
-} from '@nestjs/common';
+import { Controller, Get, Post, Query, Body, Param, Res } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { SearchUseCase } from '../application/use-cases/search.usecase';
 import { AskUseCase } from '../application/use-cases/ask.usecase';
@@ -94,7 +86,8 @@ export class SearchController {
   @ApiOperation({ summary: 'List previous AI chat conversations' })
   @ApiSuccessResponse(ChatConversationListDto)
   async listChats(@User('userId') userId: string) {
-    const conversations = await this.searchChatService.listConversations(userId);
+    const conversations =
+      await this.searchChatService.listConversations(userId);
     return { conversations };
   }
 

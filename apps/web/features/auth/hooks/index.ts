@@ -39,7 +39,9 @@ export function useDevLogin() {
         setDevUserId(session.user.id);
       }
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AUTH.SESSION });
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USERS.sessions() });
+      void queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.USERS.sessions(),
+      });
     },
   });
 }
@@ -51,7 +53,9 @@ export function useLogout() {
     onSettled: () => {
       clearDevUserId();
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AUTH.SESSION });
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USERS.sessions() });
+      void queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.USERS.sessions(),
+      });
     },
   });
 }
