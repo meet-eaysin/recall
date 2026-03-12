@@ -1,33 +1,17 @@
-'use client';
+"use client"
 
 import {
-  ArrowRight,
-  BookOpenCheck,
-  Bot,
-  CalendarDays,
-  CheckCheck,
-  Clock3,
-  MoveRight,
-  Plus,
-  Search,
-  Sparkles,
-  Tag,
-} from 'lucide-react';
-import type { ReviewItem } from '@repo/types';
-import Link from 'next/link';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
   Card,
-  CardDescription,
-  CardHeader,
+  CardFrame,
+  CardFrameAction,
+  CardFrameDescription,
+  CardFrameHeader,
+  CardFrameTitle,
   CardPanel,
-  CardTitle,
 } from '@/components/ui/card';
 import {
   Empty,
-  EmptyDescription,
+  EmptyContent,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
@@ -40,12 +24,26 @@ import {
   getStatusBadgeVariant,
   getStatusLabel,
 } from '@/features/library/utils/document-helpers';
-import { useSearchChats } from '@/features/search/hooks';
 import {
   useDailyReview,
   useDismissReview,
   useReviewRecommendations,
 } from '../hooks';
+import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  ArrowRight,
+  BookOpenCheck,
+  CalendarDays,
+  CheckCheck,
+  Clock3,
+  MoveRight,
+  Plus,
+  Search,
+  Sparkles,
+} from 'lucide-react';
+import type { ReviewItem } from '@repo/types';
 
 function formatPriority(score: number) {
   return `${Math.round(score * 100)}%`;
@@ -63,434 +61,358 @@ function ReviewRow({
   const Icon = getDocumentIcon(item.type);
 
   return (
-    <div className="flex items-start justify-between gap-3 rounded-lg border border-border/60 p-3">
-      <div className="min-w-0 space-y-2">
-        <div className="flex items-center gap-2">
-          <div className="rounded-md border border-border/60 bg-muted/30 p-1.5">
-            <Icon className="size-4 text-muted-foreground" />
+    <Card className="group relative flex items-start justify-between gap-4 p-4 transition-all hover:bg-accent/50">
+      <div className="min-w-0 flex-1 space-y-1">
+        <div className="flex items-center gap-3">
+          <div className="flex size-8 items-center justify-center rounded-sm border bg-muted/40 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-all">
+            <Icon className="size-3.5" />
           </div>
-          <Link
-            href={`/app/library/${item.documentId}`}
-            className="truncate text-sm font-medium text-foreground hover:underline"
-          >
-            {item.title}
-          </Link>
+          <div className="min-w-0 flex-1">
+            <Link
+              href={`/app/library/${item.documentId}`}
+              className="truncate text-sm font-semibold tracking-tight text-foreground hover:underline"
+            >
+              {item.title}
+            </Link>
+            <div className="mt-0.5 flex items-center gap-1.5">
+              <Badge
+                variant={getStatusBadgeVariant(item.status)}
+                size="sm"
+                className="font-bold uppercase tracking-wider h-4 text-[10px]"
+              >
+                {getStatusLabel(item.status)}
+              </Badge>
+              <Badge variant="outline" size="sm" className="opacity-70 h-4 text-[10px]">
+                {formatPriority(item.priorityScore)} intent
+              </Badge>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant={getStatusBadgeVariant(item.status)}>
-            {getStatusLabel(item.status)}
-          </Badge>
-          <Badge variant="outline">{formatPriority(item.priorityScore)}</Badge>
-        </div>
-        <p className="text-sm text-muted-foreground">{item.reason}</p>
+
+        <p className="text-[12px] leading-snug text-muted-foreground/80 line-clamp-1">
+          {item.reason}
+        </p>
       </div>
-      <div className="flex shrink-0 gap-2">
+
+      <div className="flex shrink-0 items-center gap-2">
         <Button
-          size="sm"
-          variant="outline"
+          size="xs"
+          variant="secondary"
+          className="h-7 px-3 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity"
           render={<Link href={`/app/library/${item.documentId}`} />}
         >
           Review
         </Button>
         <Button
-          size="sm"
+          size="icon-xs"
           variant="ghost"
+          className="text-muted-foreground/60 hover:text-destructive transition-all"
           disabled={isPending}
           onClick={() => onDismiss(item.documentId)}
         >
-          {isPending ? <Spinner className="size-4" /> : 'Dismiss'}
+          {isPending ? (
+            <Spinner className="size-3" />
+          ) : (
+            <CheckCheck className="size-3.5" />
+          )}
         </Button>
       </div>
-    </div>
+    </Card>
   );
 }
 
 function SectionSkeleton({ rows = 3 }: { rows?: number }) {
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col">
       {Array.from({ length: rows }).map((_, index) => (
-        <div key={index} className="rounded-lg border border-border/60 p-3">
-          <Skeleton className="h-4 w-1/3" />
-          <Skeleton className="mt-3 h-4 w-2/3" />
-          <Skeleton className="mt-2 h-4 w-1/2" />
-        </div>
+        <Card key={index} className="p-4">
+          <div className="flex items-center gap-3">
+            <Skeleton className="size-8 rounded-sm" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-4 w-1/3" />
+              <Skeleton className="h-3 w-1/4" />
+            </div>
+          </div>
+        </Card>
       ))}
     </div>
   );
 }
 
 export function HomeContent() {
-  const { data: reviewItems, error: reviewError, isLoading: reviewLoading } =
-    useDailyReview();
-  const {
-    data: recommendations,
-    error: recommendationError,
-    isLoading: recommendationLoading,
-  } = useReviewRecommendations();
+  const { data: reviewItems, isLoading: reviewLoading } = useDailyReview();
+  const { data: recommendations, isLoading: recommendationLoading } =
+    useReviewRecommendations();
   const { data: documentsData, isLoading: docsLoading } = useDocuments({
     limit: 6,
     page: 1,
   });
-  const { data: chats, isLoading: chatsLoading } = useSearchChats();
   const dismissReview = useDismissReview();
 
   const documents = documentsData?.items ?? [];
-  const recentChats = (chats ?? []).slice(0, 4);
 
   return (
-    <div className="mt-4 space-y-4">
-      <Card>
-        <CardHeader>
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="space-y-1">
-              <div className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                <Clock3 className="size-3.5" />
-                Today
-              </div>
-              <CardTitle>Your daily flow</CardTitle>
-              <CardDescription>
-                Review what is due, pick up a recommended document, or jump back into
-                an active conversation.
-              </CardDescription>
+    <div className="space-y-8">
+      <CardFrame>
+        <CardFrameHeader>
+          <div className="flex items-center gap-2.5">
+            <div className="flex size-7 items-center justify-center rounded-sm bg-primary/10 text-primary border">
+              <BookOpenCheck className="size-4" />
             </div>
-            <Button variant="outline" render={<Link href="/app/search" />}>
-              <Search className="size-4" />
-              Ask AI
-            </Button>
+            <CardFrameTitle className="text-sm font-bold">
+              Review queue
+            </CardFrameTitle>
           </div>
-        </CardHeader>
-        <CardPanel className="grid gap-3 md:grid-cols-3">
-          <div className="rounded-lg border border-border/60 p-4">
-            <p className="text-xs text-muted-foreground">Due for review</p>
-            <p className="mt-2 text-2xl font-semibold text-foreground">
+          <CardFrameDescription className="text-xs">
+            High-priority knowledge synthesis required for today.
+          </CardFrameDescription>
+          <CardFrameAction>
+            <Badge variant="secondary" size="sm" className="font-bold">
               {reviewItems?.length ?? 0}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Start here if you want the system to guide the next step.
-            </p>
-          </div>
-          <div className="rounded-lg border border-border/60 p-4">
-            <p className="text-xs text-muted-foreground">Recommended next</p>
-            <p className="mt-2 text-2xl font-semibold text-foreground">
-              {recommendations?.ownedDocuments.length ?? 0}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Unread items connected to your current topics.
-            </p>
-          </div>
-          <div className="rounded-lg border border-border/60 p-4">
-            <p className="text-xs text-muted-foreground">Recent conversations</p>
-            <p className="mt-2 text-2xl font-semibold text-foreground">
-              {recentChats.length}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              AI chats you can reopen without searching again.
-            </p>
+            </Badge>
+          </CardFrameAction>
+        </CardFrameHeader>
+        <CardPanel className="p-0">
+          {reviewLoading ? <SectionSkeleton rows={2} /> : null}
+
+          {!reviewLoading && (reviewItems?.length ?? 0) === 0 ? (
+            <Card className="p-8">
+              <Empty className="py-8">
+                <EmptyHeader>
+                  <EmptyMedia
+                    variant="icon"
+                    className="bg-primary/5 text-primary/30"
+                  >
+                    <CheckCheck className="size-6" />
+                  </EmptyMedia>
+                  <EmptyTitle>Fully Synchronized</EmptyTitle>
+                </EmptyHeader>
+              </Empty>
+            </Card>
+          ) : null}
+
+          <div className="flex flex-col">
+            {reviewItems?.slice(0, 4).map((item) => (
+              <ReviewRow
+                key={item.documentId}
+                item={item}
+                isPending={
+                  dismissReview.isPending &&
+                  dismissReview.variables === item.documentId
+                }
+                onDismiss={(documentId) =>
+                  void dismissReview.mutateAsync(documentId)
+                }
+              />
+            ))}
           </div>
         </CardPanel>
-      </Card>
+      </CardFrame>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-        <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                    <BookOpenCheck className="size-3.5" />
-                    Daily review
-                  </div>
-                  <CardTitle>Review queue</CardTitle>
-                  <CardDescription>
-                    The best place to start when you want a useful, focused task.
-                  </CardDescription>
-                </div>
-                <Badge variant="secondary">{reviewItems?.length ?? 0} due</Badge>
-              </div>
-            </CardHeader>
-            <CardPanel className="space-y-3">
-              {reviewError ? (
-                <Alert variant="error">
-                  <AlertTitle>Review unavailable</AlertTitle>
-                  <AlertDescription>
-                    {(reviewError as Error).message}
-                  </AlertDescription>
-                </Alert>
-              ) : null}
+      <CardFrame>
+        <CardFrameHeader>
+          <div className="flex items-center gap-2.5">
+            <div className="flex size-7 items-center justify-center rounded-sm bg-blue-500/10 text-blue-500 border">
+              <Clock3 className="size-4" />
+            </div>
+            <CardFrameTitle className="text-sm font-bold">
+              Recent work
+            </CardFrameTitle>
+          </div>
+          <CardFrameDescription className="text-xs">
+            Continuity for your latest research and annotations.
+          </CardFrameDescription>
+          <CardFrameAction>
+            <Button
+              variant="ghost"
+              size="xs"
+              render={<Link href="/app/library" />}
+            >
+              Library
+              <ArrowRight className="ml-1 size-3" />
+            </Button>
+          </CardFrameAction>
+        </CardFrameHeader>
+        <CardPanel className="p-0">
+          {docsLoading ? <SectionSkeleton rows={2} /> : null}
 
-              {reviewLoading ? <SectionSkeleton rows={4} /> : null}
-
-              {!reviewLoading && (reviewItems?.length ?? 0) === 0 ? (
-                <Empty className="min-h-0 px-0 py-8">
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <CheckCheck className="size-4" />
-                    </EmptyMedia>
-                    <EmptyTitle>Nothing due right now</EmptyTitle>
-                    <EmptyDescription>
-                      Your review queue is clear. Continue a document or pick
-                      something from the recommendations.
-                    </EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              ) : null}
-
-              {reviewItems?.map((item) => (
-                <ReviewRow
-                  key={item.documentId}
-                  item={item}
-                  isPending={
-                    dismissReview.isPending &&
-                    dismissReview.variables === item.documentId
-                  }
-                  onDismiss={(documentId) =>
-                    void dismissReview.mutateAsync(documentId)
-                  }
-                />
-              ))}
-            </CardPanel>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                    <CalendarDays className="size-3.5" />
-                    Continue where you left off
-                  </div>
-                  <CardTitle>Recent documents</CardTitle>
-                  <CardDescription>
-                    Resume the documents you already touched recently.
-                  </CardDescription>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  render={<Link href="/app/library" />}
-                >
-                  Library
-                </Button>
-              </div>
-            </CardHeader>
-            <CardPanel className="space-y-2">
-              {docsLoading ? <SectionSkeleton /> : null}
-              {!docsLoading && documents.length === 0 ? (
-                <Empty className="min-h-0 px-0 py-8">
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <CalendarDays className="size-4" />
-                    </EmptyMedia>
-                    <EmptyTitle>No documents yet</EmptyTitle>
-                    <EmptyDescription>
-                      Start by adding a document to build your review flow.
-                    </EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              ) : null}
-
-              {documents.map((document) => {
-                const Icon = getDocumentIcon(document.type);
-
-                return (
-                  <Link
-                    key={document.id}
-                    href={`/app/library/${document.id}`}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-border/60 p-3 transition hover:bg-accent/20"
+          {!docsLoading && documents.length === 0 ? (
+            <Card className="p-8">
+              <Empty className="py-6">
+                <EmptyHeader>
+                  <EmptyMedia
+                    variant="icon"
+                    className="bg-blue-500/5 text-blue-500/30"
                   >
-                    <div className="flex min-w-0 items-center gap-3">
-                      <div className="rounded-md border border-border/60 bg-muted/30 p-1.5">
-                        <Icon className="size-4 text-muted-foreground" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-foreground">
-                          {document.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
+                    <CalendarDays className="size-6" />
+                  </EmptyMedia>
+                  <EmptyTitle>No history yet</EmptyTitle>
+                </EmptyHeader>
+              </Empty>
+            </Card>
+          ) : null}
+
+          <div className="flex flex-col">
+            {documents.slice(0, 4).map((document) => {
+              const Icon = getDocumentIcon(document.type);
+              return (
+                <Card
+                  key={document.id}
+                  render={<Link href={`/app/library/${document.id}`} />}
+                  className="group flex flex-row items-center justify-between gap-4 p-4 hover:bg-accent/50"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex size-8 items-center justify-center rounded-sm border bg-muted/40 text-muted-foreground group-hover:bg-blue-500/10 group-hover:text-blue-500 transition-all">
+                      <Icon className="size-3.5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-bold tracking-tight text-foreground">
+                        {document.title}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          size="sm"
+                          variant="outline"
+                          className="opacity-70 font-bold uppercase tracking-widest text-[8px] h-3.5"
+                        >
                           {getStatusLabel(document.status)}
-                        </p>
+                        </Badge>
+                        <span className="text-[10px] text-muted-foreground/50">
+                          {new Date(
+                            document.updatedAt || Date.now(),
+                          ).toLocaleDateString()}
+                        </span>
                       </div>
                     </div>
-                    <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
-                  </Link>
-                );
-              })}
-            </CardPanel>
-          </Card>
-        </div>
-
-        <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                    <Tag className="size-3.5" />
-                    Suggested next
                   </div>
-                  <CardTitle>Recommendations</CardTitle>
-                  <CardDescription>
-                    Good next reads based on the topics already forming in your
-                    library.
-                  </CardDescription>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  render={<Link href="/app/search" />}
+                  <MoveRight className="size-3.5 shrink-0 translate-x-[-8px] text-blue-500 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
+                </Card>
+              );
+            })}
+          </div>
+        </CardPanel>
+      </CardFrame>
+
+      <CardFrame>
+        <CardFrameHeader>
+          <div className="flex items-center gap-2.5">
+            <div className="flex size-7 items-center justify-center rounded-sm bg-orange-500/10 text-orange-500 border">
+              <Sparkles className="size-4" />
+            </div>
+            <CardFrameTitle className="text-sm font-bold">
+              Recommended
+            </CardFrameTitle>
+          </div>
+          <CardFrameDescription className="text-xs">
+            AI-driven serendipity based on your current knowledge graph.
+          </CardFrameDescription>
+          <CardFrameAction>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              render={<Link href="/app/search" />}
+            >
+              <Search className="size-3.5" />
+            </Button>
+          </CardFrameAction>
+        </CardFrameHeader>
+        <CardPanel className="p-0">
+          {recommendationLoading ? <SectionSkeleton rows={2} /> : null}
+
+          {!recommendationLoading &&
+          (recommendations?.ownedDocuments.length ?? 0) === 0 ? (
+            <Card className="p-8">
+              <Empty className="py-6">
+                <EmptyContent>
+                  <EmptyMedia
+                    variant="icon"
+                    className="bg-orange-500/5 text-orange-500/30"
+                  >
+                    <Plus className="size-6" />
+                  </EmptyMedia>
+                  <EmptyTitle>Building Context</EmptyTitle>
+                </EmptyContent>
+              </Empty>
+            </Card>
+          ) : null}
+
+          <div className="flex flex-col">
+            {recommendations?.ownedDocuments.slice(0, 4).map((document) => {
+              const Icon = getDocumentIcon(document.type);
+              return (
+                <Card
+                  key={document.id}
+                  render={<Link href={`/app/library/${document.id}`} />}
+                  className="group flex flex-row items-center justify-between gap-4 p-4 hover:bg-accent/50"
                 >
-                  <Search className="size-4" />
-                  Explore
-                </Button>
-              </div>
-            </CardHeader>
-            <CardPanel className="space-y-4">
-              {recommendationError ? (
-                <Alert variant="error">
-                  <AlertTitle>Recommendations unavailable</AlertTitle>
-                  <AlertDescription>
-                    {(recommendationError as Error).message}
-                  </AlertDescription>
-                </Alert>
-              ) : null}
-
-              {recommendationLoading ? <SectionSkeleton rows={2} /> : null}
-
-              {!recommendationLoading &&
-              (recommendations?.ownedDocuments.length ?? 0) === 0 &&
-              (recommendations?.suggestedTopics.length ?? 0) === 0 ? (
-                <Empty className="min-h-0 px-0 py-8">
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <Sparkles className="size-4" />
-                    </EmptyMedia>
-                    <EmptyTitle>No recommendations yet</EmptyTitle>
-                    <EmptyDescription>
-                      Add a few more documents and tags to unlock better
-                      next-step suggestions.
-                    </EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              ) : null}
-
-              {(recommendations?.suggestedTopics.length ?? 0) > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {recommendations?.suggestedTopics.slice(0, 8).map((topic) => (
-                    <Badge key={topic} variant="secondary">
-                      {topic}
-                    </Badge>
-                  ))}
-                </div>
-              ) : null}
-
-              <div className="space-y-2">
-                {recommendations?.ownedDocuments.map((document) => {
-                  const Icon = getDocumentIcon(document.type);
-
-                  return (
-                    <Link
-                      key={document.id}
-                      href={`/app/library/${document.id}`}
-                      className="flex items-center justify-between gap-3 rounded-lg border border-border/60 p-3 transition hover:bg-accent/20"
-                    >
-                      <div className="flex min-w-0 items-center gap-3">
-                        <div className="rounded-md border border-border/60 bg-muted/30 p-1.5">
-                          <Icon className="size-4 text-muted-foreground" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-medium text-foreground">
-                            {document.title}
-                          </p>
-                          <p className="truncate text-xs text-muted-foreground">
-                            {document.tags.slice(0, 3).join(' • ') ||
-                              'Recommended next'}
-                          </p>
-                        </div>
-                      </div>
-                      <MoveRight className="size-4 shrink-0 text-muted-foreground" />
-                    </Link>
-                  );
-                })}
-              </div>
-            </CardPanel>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                    <Search className="size-3.5" />
-                    Continue conversations
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex size-8 items-center justify-center rounded-sm border bg-muted/40 text-muted-foreground group-hover:text-orange-500 transition-all">
+                      <Icon className="size-3.5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-bold tracking-tight text-foreground">
+                        {document.title}
+                      </p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+                        {document.tags[0] || 'Discovery'}
+                      </p>
+                    </div>
                   </div>
-                  <CardTitle>Recent conversations</CardTitle>
-                  <CardDescription>
-                    Reopen the AI conversations you are actively building on.
-                  </CardDescription>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  render={<Link href="/app/search" />}
-                >
-                  <Bot className="size-4" />
-                  Open search
-                </Button>
-              </div>
-            </CardHeader>
-            <CardPanel className="space-y-2">
-              {chatsLoading ? <SectionSkeleton rows={3} /> : null}
-              {!chatsLoading && recentChats.length === 0 ? (
-                <Empty className="min-h-0 px-0 py-8">
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <Bot className="size-4" />
-                    </EmptyMedia>
-                    <EmptyTitle>No conversations yet</EmptyTitle>
-                    <EmptyDescription>
-                      Ask a question and your recent conversations will appear
-                      here.
-                    </EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              ) : null}
-
-              {recentChats.map((chat) => (
-                <Link
-                  key={chat.id}
-                  href={`/app/search?chat=${chat.id}`}
-                  className="block rounded-lg border border-border/60 p-3 transition hover:bg-accent/20"
-                >
-                  <p className="line-clamp-1 text-sm font-medium text-foreground">
-                    {chat.title}
-                  </p>
-                  <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">
-                    {chat.lastMessagePreview || 'Continue this conversation.'}
-                  </p>
-                </Link>
-              ))}
-            </CardPanel>
-          </Card>
-        </div>
-      </div>
+                  <Sparkles className="size-3.5 shrink-0 text-orange-500 opacity-0 transition-all group-hover:opacity-100" />
+                </Card>
+              );
+            })}
+          </div>
+        </CardPanel>
+      </CardFrame>
     </div>
   );
 }
 
 export function HomePage() {
+  const currentHour = new Date().getHours();
+  const greeting =
+    currentHour < 12
+      ? 'Good morning'
+      : currentHour < 18
+        ? 'Good afternoon'
+        : 'Good evening';
+
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Home</h1>
-          <p className="text-muted-foreground">Start with what needs attention today, then continue the work already in motion.</p>
+    <div className="container max-w-4xl space-y-10 py-12 animate-in fade-in slide-in-from-top-4 duration-1000">
+      <header className="flex flex-col items-start justify-between gap-6 px-1 lg:flex-row lg:items-end">
+        <div className="space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-1 bg-primary rounded-full" />
+            <h1 className="text-3xl font-black tracking-tighter sm:text-4xl">
+              {greeting}.
+            </h1>
+          </div>
+          <p className="max-w-xl text-base font-medium text-muted-foreground/60 leading-relaxed">
+            Ready to synchronize your mind-stack? Review your high-intent items
+            and continue your research threads.
+          </p>
         </div>
-        <Button render={<Link href="/app/library/new" />}>
-          <Plus className="size-4" />
-          Add document
+        <Button
+          variant="default"
+          size="default"
+          className="rounded-lg font-bold"
+          render={<Link href="/app/library/new" />}
+        >
+          <Plus className="mr-2 size-4" />
+          Add Document
         </Button>
       </header>
-      <HomeContent />
+
+      <main>
+        <HomeContent />
+      </main>
+
+      <footer className="pt-12 text-center">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">
+          Integrated Intelligence Catalyst
+        </p>
+      </footer>
     </div>
   );
 }
