@@ -16,9 +16,20 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
-import { useDocuments } from '@/features/library/hooks';
+import { cn } from '@/lib/utils';
+import {
+  useDocuments,
+  useUpdateDocument,
+  useDeleteDocument,
+} from '@/features/library/hooks';
 import {
   getDocumentIcon,
   getStatusBadgeVariant,
@@ -35,15 +46,32 @@ import { Button } from '@/components/ui/button';
 import {
   ArrowRight,
   BookOpenCheck,
+  BookOpen,
   CalendarDays,
+  Check,
   CheckCheck,
+  ChevronDown,
+  Circle,
+  Clock,
   Clock3,
-  MoveRight,
+  History,
   Plus,
   Search,
   Sparkles,
+  Youtube,
 } from 'lucide-react';
-import type { ReviewItem } from '@repo/types';
+import { type ReviewItem, DocumentStatus } from '@repo/types';
+import type { DocumentRow } from '@/features/library/types';
+
+const STATUS_ICON_MAP: Record<DocumentStatus, React.ElementType> = {
+  [DocumentStatus.TO_READ]: BookOpen,
+  [DocumentStatus.TO_WATCH]: Youtube,
+  [DocumentStatus.IN_PROCESS]: Clock,
+  [DocumentStatus.REVIEW]: Sparkles,
+  [DocumentStatus.UPCOMING]: CalendarDays,
+  [DocumentStatus.COMPLETED]: Check,
+  [DocumentStatus.PENDING_COMPLETION]: History,
+};
 
 function formatPriority(score: number) {
   return `${Math.round(score * 100)}%`;
@@ -74,22 +102,22 @@ function ReviewRow({
             >
               {item.title}
             </Link>
-            <div className="mt-0.5 flex items-center gap-1.5">
+            <div className="mt-0.5 flex items-center gap-2">
               <Badge
                 variant={getStatusBadgeVariant(item.status)}
                 size="sm"
-                className="font-bold uppercase tracking-wider h-4 text-[10px]"
+                className="font-bold uppercase tracking-wider"
               >
                 {getStatusLabel(item.status)}
               </Badge>
-              <Badge variant="outline" size="sm" className="opacity-70 h-4 text-[10px]">
+              <Badge variant="outline" size="sm" className="opacity-70">
                 {formatPriority(item.priorityScore)} intent
               </Badge>
             </div>
           </div>
         </div>
 
-        <p className="text-[12px] leading-snug text-muted-foreground/80 line-clamp-1">
+        <p className="text-xs leading-relaxed text-muted-foreground/80 line-clamp-1">
           {item.reason}
         </p>
       </div>
@@ -98,7 +126,7 @@ function ReviewRow({
         <Button
           size="xs"
           variant="secondary"
-          className="h-7 px-3 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+          className="font-bold opacity-0 group-hover:opacity-100 transition-opacity"
           render={<Link href={`/app/library/${item.documentId}`} />}
         >
           Review
@@ -113,8 +141,102 @@ function ReviewRow({
           {isPending ? (
             <Spinner className="size-3" />
           ) : (
-            <CheckCheck className="size-3.5" />
+            <CheckCheck className="size-4" />
           )}
+        </Button>
+      </div>
+    </Card>
+  );
+}
+
+function RecentWorkRow({
+  document,
+}: {
+  document: DocumentRow;
+}) {
+  const Icon = getDocumentIcon(document.type);
+  const updateMutation = useUpdateDocument(document.id);
+  const deleteMutation = useDeleteDocument();
+  
+  const isUpdating = updateMutation.isPending;
+  const isDeleting = deleteMutation.isPending;
+
+  return (
+    <Card className="group flex flex-row items-center justify-between gap-4 p-4 hover:bg-accent/40 transition-colors">
+      <div className="flex min-w-0 items-center gap-4">
+        <div className="flex size-9 items-center justify-center rounded-md border bg-muted/30 text-muted-foreground group-hover:bg-blue-500/10 group-hover:text-blue-500 transition-colors">
+          <Icon className="size-4" />
+        </div>
+        <div className="min-w-0 flex flex-col gap-0.5">
+          <Link 
+            href={`/app/library/${document.id}`} 
+            className="truncate text-sm font-bold tracking-tight text-foreground/90 hover:text-blue-500 transition-colors"
+          >
+            {document.title}
+          </Link>
+          <div className="flex items-center gap-3">
+             
+             <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center gap-1.5 outline-none focus-visible:ring-2 focus-visible:ring-blue-500/20 rounded py-0.5 px-1 -ml-1 hover:bg-muted/50 transition-colors group/trigger">
+                  <div className={cn(
+                    "size-1.5 rounded-full shrink-0",
+                    document.status === DocumentStatus.COMPLETED ? "bg-green-500" :
+                    document.status === DocumentStatus.IN_PROCESS ? "bg-amber-500" :
+                    "bg-blue-500"
+                  )} />
+                  <span className="text-xs font-bold text-muted-foreground/64 group-hover/trigger:text-muted-foreground transition-colors">
+                    {getStatusLabel(document.status)}
+                  </span>
+                  <ChevronDown className="size-3 text-muted-foreground/32 group-hover/trigger:text-muted-foreground transition-colors" />
+                  {isUpdating && <Spinner className="size-3 ml-1" />}
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                   {Object.values(DocumentStatus).map((status) => {
+                     const ItemIcon = STATUS_ICON_MAP[status] || Circle;
+                     return (
+                      <DropdownMenuItem 
+                        key={status} 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void updateMutation.mutateAsync({ status });
+                        }}
+                        className="flex items-center gap-3 text-xs"
+                       >
+                        <ItemIcon className="size-3.5 opacity-64" />
+                        {getStatusLabel(status)}
+                      </DropdownMenuItem>
+                     );
+                   })}
+                </DropdownMenuContent>
+             </DropdownMenu>
+            <span className="text-xs font-medium text-muted-foreground/32 flex items-center gap-1">
+              <Clock3 className="size-3" />
+              {new Date(document.updatedAt || Date.now()).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+         <Button
+          size="sm"
+          variant="secondary"
+          className="font-bold"
+          render={<Link href={`/app/library/${document.id}`} />}
+        >
+          View
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="font-bold text-muted-foreground/50 hover:text-destructive transition-colors"
+          disabled={isDeleting}
+          onClick={(e) => {
+             e.stopPropagation();
+             void deleteMutation.mutateAsync(document.id);
+          }}
+        >
+          {isDeleting ? <Spinner className="size-4" /> : "Dismiss"}
         </Button>
       </div>
     </Card>
@@ -253,42 +375,9 @@ export function HomeContent() {
           ) : null}
 
           <div className="flex flex-col">
-            {documents.slice(0, 4).map((document) => {
-              const Icon = getDocumentIcon(document.type);
-              return (
-                <Card
-                  key={document.id}
-                  render={<Link href={`/app/library/${document.id}`} />}
-                  className="group flex flex-row items-center justify-between gap-4 p-4 hover:bg-accent/50"
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div className="flex size-8 items-center justify-center rounded-sm border bg-muted/40 text-muted-foreground group-hover:bg-blue-500/10 group-hover:text-blue-500 transition-all">
-                      <Icon className="size-3.5" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-bold tracking-tight text-foreground">
-                        {document.title}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          size="sm"
-                          variant="outline"
-                          className="opacity-70 font-bold uppercase tracking-widest text-[8px] h-3.5"
-                        >
-                          {getStatusLabel(document.status)}
-                        </Badge>
-                        <span className="text-[10px] text-muted-foreground/50">
-                          {new Date(
-                            document.updatedAt || Date.now(),
-                          ).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <MoveRight className="size-3.5 shrink-0 translate-x-[-8px] text-blue-500 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
-                </Card>
-              );
-            })}
+            {documents.slice(0, 4).map((document) => (
+               <RecentWorkRow key={document.id} document={document} />
+            ))}
           </div>
         </CardPanel>
       </CardFrame>
