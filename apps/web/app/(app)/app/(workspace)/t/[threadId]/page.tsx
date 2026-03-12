@@ -1,5 +1,10 @@
 import { ThreadView } from '@/features/workspace/components/thread-view';
+import { PageContainer } from '@/features/workspace/components/page-container';
 
 export default function ThreadPage() {
-  return <ThreadView />;
+  return (
+    <PageContainer>
+      <ThreadView />
+    </PageContainer>
+  );
 }

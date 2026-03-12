@@ -7,12 +7,13 @@ import {
   CardPanel,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { PageContainer } from '@/features/workspace/components/page-container';
 
 export default function AppLibraryNewPage() {
   const endpoints = ['POST /documents'];
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    <PageContainer className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <header className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Add to Library</h1>
         <p className="text-muted-foreground">
@@ -55,6 +56,6 @@ export default function AppLibraryNewPage() {
           </CardPanel>
         </Card>
       </div>
-    </div>
+    </PageContainer>
   );
 }

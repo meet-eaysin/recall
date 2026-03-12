@@ -1,4 +1,5 @@
 import { DocumentDetailView } from '@/features/library/components/document-detail-view';
+import { PageContainer } from '@/features/workspace/components/page-container';
 
 export default async function AppLibraryDocumentPage({
   params,
@@ -7,8 +8,8 @@ export default async function AppLibraryDocumentPage({
 }) {
   const { id } = await params;
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    <PageContainer className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <DocumentDetailView id={id} />
-    </div>
+    </PageContainer>
   );
 }
