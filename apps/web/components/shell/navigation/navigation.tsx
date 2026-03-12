@@ -81,13 +81,6 @@ const getNavigationItems = (): NavigationItemType[] => [
         isCurrent: ({ pathname }) =>
           pathname?.startsWith('/app/settings/llm') ?? false,
       },
-      {
-        name: 'notion',
-        label: 'Notion',
-        href: '/settings/notion',
-        isCurrent: ({ pathname }) =>
-          pathname?.startsWith('/settings/notion') ?? false,
-      },
     ],
   },
 ];
