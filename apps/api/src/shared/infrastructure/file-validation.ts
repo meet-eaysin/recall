@@ -1,6 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
 
-
 export type FileType = 'pdf' | 'image' | 'text';
 
 export function validateFileType(

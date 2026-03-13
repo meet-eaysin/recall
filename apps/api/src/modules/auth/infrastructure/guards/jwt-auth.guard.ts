@@ -23,7 +23,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
 
     const request = context.switchToHttp().getRequest();
-    
+
     // Dev auth bypass
     if (
       process.env.DEV_AUTH_ENABLED === 'true' &&
