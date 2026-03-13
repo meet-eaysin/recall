@@ -219,10 +219,10 @@ export function ThreadView() {
 
   if (isLoading && !hasOmniStream) {
     return (
-      <div className="max-w-4xl mx-auto space-y-8 py-8">
+      <div className="w-full max-w-4xl mx-auto space-y-8 py-8 px-4 md:px-8 mt-12">
         {[1, 2, 3].map((i) => (
           <div key={i} className="space-y-4">
-            <Skeleton className="h-6 w-24" />
+            <Skeleton className="h-6 w-32" />
             <Skeleton className="h-24 w-full rounded-2xl" />
           </div>
         ))}

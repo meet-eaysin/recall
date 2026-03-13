@@ -266,10 +266,10 @@ export function ChatMessages({
 
       {!shouldAutoScroll && (
         <div className="pointer-events-none flex flex-1 items-end justify-end col-[1/1] row-[1/1] w-full max-w-4xl mx-auto px-4 md:px-8 pb-4">
-          <div className="sticky bottom-0 left-0 flex w-full justify-end">
+          <div className="sticky bottom-0 left-0 flex w-full justify-center">
             <Button
               onClick={scrollToBottom}
-              className="pointer-events-auto h-8 w-8 rounded-full ease-in-out animate-in fade-in-0 slide-in-from-bottom-1"
+              className="pointer-events-auto h-8 w-8 rounded-full ease-in-out animate-in fade-in-0 slide-in-from-bottom-1 bg-background"
               size="icon"
               variant="ghost"
             >
