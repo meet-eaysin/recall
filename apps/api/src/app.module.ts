@@ -27,8 +27,20 @@ import { UsersModule } from './modules/users/users.module';
 import { HealthController } from './modules/health/health.controller';
 import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
 
+import { CacheModule } from '@repo/cache';
+
 @Module({
   imports: [
+    CacheModule.forRoot({
+      provider: env.CACHE_PROVIDER,
+      upstash: {
+        url: env.UPSTASH_REDIS_REST_URL,
+        token: env.UPSTASH_REDIS_REST_TOKEN,
+      },
+      redis: {
+        url: 'redis://localhost:6379',
+      },
+    }),
     AnalyticsModule,
     AuthModule,
     DocumentsModule,

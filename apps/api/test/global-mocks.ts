@@ -164,41 +164,29 @@ jest.mock('@repo/ai', () => ({
   chunkPipeline: jest.fn(),
 }));
 
-jest.mock('bullmq', () => ({
-  Queue: jest.fn().mockImplementation(() => ({
-    add: jest.fn<any>().mockResolvedValue({ id: 'mock-job-id' }),
-    on: jest.fn<any>(),
-    close: jest.fn<any>().mockResolvedValue(undefined),
-    disconnect: jest.fn<any>().mockResolvedValue(undefined),
+jest.mock('@upstash/qstash', () => ({
+  Client: jest.fn().mockImplementation(() => ({
+    publishJSON: jest
+      .fn<(...args: unknown[]) => Promise<{ messageId: string }>>()
+      .mockResolvedValue({ messageId: 'mock-message-id' }),
+    publish: jest
+      .fn<(...args: unknown[]) => Promise<{ messageId: string }>>()
+      .mockResolvedValue({ messageId: 'mock-message-id' }),
   })),
-  Worker: jest.fn().mockImplementation(() => ({
-    on: jest.fn<any>(),
-    close: jest.fn<any>().mockResolvedValue(undefined),
-    disconnect: jest.fn<any>().mockResolvedValue(undefined),
-  })),
-  QueueEvents: jest.fn().mockImplementation(() => ({
-    on: jest.fn<any>(),
-    close: jest.fn<any>().mockResolvedValue(undefined),
-    disconnect: jest.fn<any>().mockResolvedValue(undefined),
+  Receiver: jest.fn().mockImplementation(() => ({
+    verify: jest
+      .fn<(...args: unknown[]) => Promise<boolean>>()
+      .mockResolvedValue(true),
   })),
 }));
 
-jest.mock('ioredis', () => {
-  const MockRedis = jest.fn().mockImplementation(() => ({
-    on: jest.fn<any>(),
-    off: jest.fn<any>(),
-    connect: jest.fn<any>().mockResolvedValue(undefined),
-    disconnect: jest.fn<any>().mockResolvedValue(undefined),
-    quit: jest.fn<any>().mockResolvedValue(undefined),
-    get: jest.fn<any>(),
-    set: jest.fn<any>(),
-    del: jest.fn<any>(),
-    duplicate: jest.fn<any>().mockReturnThis(),
-    info: jest.fn<any>().mockResolvedValue('redis_version:6.0.0'),
-    ping: jest.fn<any>().mockResolvedValue('PONG'),
-    defineCommand: jest.fn<any>(),
-    status: 'ready',
-    emit: jest.fn<any>(),
-  }));
-  return MockRedis;
-});
+jest.mock('@upstash/redis', () => ({
+  Redis: jest.fn().mockImplementation(() => ({
+    get: jest.fn<(...args: unknown[]) => Promise<unknown>>().mockResolvedValue('mock-value'),
+    set: jest.fn<(...args: unknown[]) => Promise<string>>().mockResolvedValue('OK'),
+    del: jest.fn<(...args: unknown[]) => Promise<number>>().mockResolvedValue(1),
+    exists: jest.fn<(...args: unknown[]) => Promise<number>>().mockResolvedValue(1),
+    expire: jest.fn<(...args: unknown[]) => Promise<number>>().mockResolvedValue(1),
+  })),
+}));
+

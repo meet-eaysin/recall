@@ -1,15 +1,9 @@
 import { Module } from '@nestjs/common';
-import { IngestionWorker } from './processors/ingestion.worker';
-import { BullModule } from '@repo/queue';
-import { QUEUE_GRAPH, QUEUE_NOTION_SYNC } from '@repo/types';
+import { IngestionController } from './processors/ingestion.controller';
+import { QStashModule } from '@repo/queue';
 
 @Module({
-  imports: [
-    BullModule.registerQueue(
-      { name: QUEUE_GRAPH },
-      { name: QUEUE_NOTION_SYNC },
-    ),
-  ],
-  providers: [IngestionWorker],
+  imports: [QStashModule],
+  controllers: [IngestionController],
 })
 export class IngestionModule {}

@@ -1,5 +1,5 @@
-import { Processor, WorkerHost, OnWorkerEvent, Job } from '@repo/queue';
-import { Injectable, Logger } from '@nestjs/common';
+import { Logger, Controller, Post, UseGuards, Body, Headers } from '@nestjs/common';
+import { QStashGuard } from '../../../shared/guards/qstash.guard';
 import {
   youtubeExtractor,
   chunkText,
@@ -15,30 +15,34 @@ import {
 } from '@repo/db';
 import { env } from '../../../shared/utils/env';
 
-@Processor(QUEUE_TRANSCRIPT)
-@Injectable()
-export class TranscriptWorker extends WorkerHost {
-  private readonly logger = new Logger(TranscriptWorker.name);
+@Controller('api/webhooks')
+export class TranscriptController {
+  private readonly logger = new Logger(TranscriptController.name);
   private qdrant: QdrantWrapper;
 
   constructor(private readonly documentRepository: IDocumentRepository) {
-    super();
     this.qdrant = new QdrantWrapper(env.QDRANT_URL, env.QDRANT_API_KEY);
   }
 
-  async process(job: Job<TranscriptJobData>): Promise<void> {
-    await this.processJob(job);
+  @Post(QUEUE_TRANSCRIPT)
+  @UseGuards(QStashGuard)
+  async process(
+    @Body() data: TranscriptJobData,
+    @Headers('Upstash-Message-Id') messageId: string,
+  ): Promise<void> {
+    try {
+      await this.processJob(data);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      this.logger.error(
+        `[TranscriptController] Job ${messageId} failed: ${errorMessage}`,
+      );
+      throw err;
+    }
   }
 
-  @OnWorkerEvent('failed')
-  async onFailed(job: Job<TranscriptJobData> | undefined, err: Error) {
-    this.logger.error(
-      `[TranscriptWorker] Job ${job?.id} failed: ${err.message}`,
-    );
-  }
-
-  private async processJob(job: Job<TranscriptJobData>): Promise<void> {
-    const { documentId, userId } = job.data;
+  private async processJob(data: TranscriptJobData): Promise<void> {
+    const { documentId, userId } = data;
 
     const doc = await this.documentRepository.findById(documentId, userId);
     if (!doc) throw new Error('Document not found');

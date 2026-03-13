@@ -3,8 +3,8 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { InjectQueue, Queue } from '@repo/queue';
-import { DocumentType, TranscriptJobData, QUEUE_TRANSCRIPT } from '@repo/types';
+import { DocumentType, QUEUE_TRANSCRIPT } from '@repo/types';
+import { QStashService } from '@repo/queue';
 import { IDocumentRepository } from '../../domain/repositories/document.repository';
 import { ITranscriptRepository } from '../../domain/repositories/transcript.repository';
 
@@ -13,8 +13,7 @@ export class TranscriptUseCase {
   constructor(
     private readonly documentRepository: IDocumentRepository,
     private readonly transcriptRepository: ITranscriptRepository,
-    @InjectQueue(QUEUE_TRANSCRIPT)
-    private readonly transcriptQueue: Queue<TranscriptJobData>,
+    private readonly qstashService: QStashService,
   ) {}
 
   async getTranscript(documentId: string, userId: string) {
@@ -64,7 +63,7 @@ export class TranscriptUseCase {
       };
     }
 
-    await this.transcriptQueue.add('transcript', { documentId, userId });
+    await this.qstashService.publishMessage(QUEUE_TRANSCRIPT, { documentId, userId });
     return { alreadyExists: false };
   }
 }

@@ -1,12 +1,6 @@
-import {
-  Processor,
-  WorkerHost,
-  OnWorkerEvent,
-  InjectQueue,
-  Job,
-  Queue,
-} from '@repo/queue';
-import { Injectable, Logger } from '@nestjs/common';
+import { Logger, Controller, Post, UseGuards, Body, Headers } from '@nestjs/common';
+import { QStashGuard } from '../../../shared/guards/qstash.guard';
+import { QStashService } from '@repo/queue';
 import {
   pdfExtractor,
   urlExtractor,
@@ -42,45 +36,46 @@ import { Types } from 'mongoose';
 import axios from 'axios';
 import * as crypto from 'crypto';
 
-@Processor(QUEUE_INGESTION)
-@Injectable()
-export class IngestionWorker extends WorkerHost {
-  private readonly logger = new Logger(IngestionWorker.name);
+@Controller('api/webhooks')
+export class IngestionController {
+  private readonly logger = new Logger(IngestionController.name);
   private qdrant: QdrantWrapper;
 
   constructor(
     private readonly documentRepository: IDocumentRepository,
     private readonly ingestionJobRepository: IIngestionJobRepository,
     private readonly localStorage: LocalStorage,
-    @InjectQueue(QUEUE_GRAPH)
-    private readonly graphQueue: Queue<GraphJobData>,
-    @InjectQueue(QUEUE_NOTION_SYNC)
-    private readonly notionQueue: Queue<NotionSyncJobData>,
+    private readonly qstashService: QStashService,
   ) {
-    super();
     this.qdrant = new QdrantWrapper(env.QDRANT_URL, env.QDRANT_API_KEY);
   }
 
-  async process(job: Job<IngestionJobData>): Promise<void> {
-    await this.processJob(job);
-  }
-
-  @OnWorkerEvent('failed')
-  async onFailed(job: Job<IngestionJobData> | undefined, err: Error) {
-    const jobId = job?.id ?? 'unknown';
-    this.logger.error(`Job ${jobId} failed: ${err.message}`);
-    if (job) {
-      const { documentId, userId } = job.data;
-      await this.ingestionJobRepository.markFailed(documentId, err.message);
+  @Post(QUEUE_INGESTION)
+  @UseGuards(QStashGuard)
+  async process(
+    @Body() data: IngestionJobData,
+    @Headers('Upstash-Message-Id') messageId: string,
+  ): Promise<void> {
+    try {
+      await this.processJob(data);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      this.logger.error(
+        `[IngestionController] Job ${messageId} failed: ${errorMessage}`,
+      );
+      const { documentId, userId } = data;
+      await this.ingestionJobRepository.markFailed(documentId, errorMessage);
       await this.documentRepository.update(documentId, userId, {
         ingestionStatus: IngestionStatus.FAILED as any,
-        ingestionError: err.message,
+        ingestionError: errorMessage,
       });
+
+      throw err;
     }
   }
 
-  private async processJob(job: Job<IngestionJobData>): Promise<void> {
-    const { documentId, userId } = job.data;
+  private async processJob(data: IngestionJobData): Promise<void> {
+    const { documentId, userId } = data;
 
     const doc = await this.documentRepository.findById(documentId, userId);
     if (!doc) throw new Error('Document not found');
@@ -248,7 +243,7 @@ export class IngestionWorker extends WorkerHost {
         IngestionStatus.PROCESSING,
         userId,
       );
-      await this.graphQueue.add('graph', { documentId, userId });
+      await this.qstashService.publishMessage(QUEUE_GRAPH, { documentId, userId });
 
       await this.documentRepository.update(documentId, userId, {
         ingestionStatus: IngestionStatus.COMPLETED as any,
@@ -263,7 +258,7 @@ export class IngestionWorker extends WorkerHost {
         userId,
       );
 
-      await this.notionQueue.add('sync', {
+      await this.qstashService.publishMessage(QUEUE_NOTION_SYNC, {
         documentId,
         userId,
         action: NotionAction.CREATE,

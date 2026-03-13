@@ -1,5 +1,5 @@
-import { Processor, WorkerHost, OnWorkerEvent, Job } from '@repo/queue';
-import { Injectable, Logger } from '@nestjs/common';
+import { Logger, Controller, Post, UseGuards, Body, Headers } from '@nestjs/common';
+import { QStashGuard } from '../../../shared/guards/qstash.guard';
 import {
   NotionSyncJobData,
   QUEUE_NOTION_SYNC,
@@ -10,27 +10,31 @@ import { NotionClient } from '../notion-client';
 import { decrypt } from '@repo/crypto';
 import { env } from '../../../shared/utils/env';
 
-@Processor(QUEUE_NOTION_SYNC)
-@Injectable()
-export class NotionWorker extends WorkerHost {
-  private readonly logger = new Logger(NotionWorker.name);
+@Controller('api/webhooks')
+export class NotionController {
+  private readonly logger = new Logger(NotionController.name);
 
-  constructor(private readonly notionClient: NotionClient) {
-    super();
+  constructor(private readonly notionClient: NotionClient) {}
+
+  @Post(QUEUE_NOTION_SYNC)
+  @UseGuards(QStashGuard)
+  async process(
+    @Body() data: NotionSyncJobData,
+    @Headers('Upstash-Message-Id') messageId: string,
+  ): Promise<void> {
+    try {
+      await this.processJob(data);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      this.logger.error(
+        `[NotionController] Job ${messageId} failed: ${errorMessage}`,
+      );
+      throw err;
+    }
   }
 
-  async process(job: Job<NotionSyncJobData>): Promise<void> {
-    await this.processJob(job);
-  }
-
-  @OnWorkerEvent('failed')
-  async onFailed(job: Job<NotionSyncJobData> | undefined, err: Error) {
-    const jobId = job?.id ?? 'unknown';
-    this.logger.error(`[NotionWorker] Job ${jobId} failed: ${err.message}`);
-  }
-
-  private async processJob(job: Job<NotionSyncJobData>): Promise<void> {
-    const { documentId, userId, action } = job.data;
+  private async processJob(data: NotionSyncJobData): Promise<void> {
+    const { documentId, userId, action } = data;
 
     const config = await NotionConfigModel.findOne({ userId });
     if (
@@ -112,7 +116,7 @@ export class NotionWorker extends WorkerHost {
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.error(`Sync failed for doc ${documentId}: ${message}`);
-      throw error; // Let BullMQ handle retries
+      throw error; // Let QStash handle retries
     }
   }
 }

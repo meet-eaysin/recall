@@ -108,11 +108,16 @@ describe('AI Ingestion (e2e)', () => {
       authId: 'dev:ai-ingestion-invalid',
       email: 'ai-ingestion-invalid@test.local',
     });
-    const filePath = path.join(__dirname, 'fixtures/documents/sample.txt');
+
+    // Create an invalid "binary" buffer that doesn't match any supported magic bytes
+    const invalidBuffer = Buffer.from([0x00, 0x01, 0x02, 0x03]);
     const response = await request(app.getHttpServer())
       .post('/api/v1/documents/upload')
       .set(auth.headers)
-      .attach('file', filePath)
+      .attach('file', invalidBuffer, {
+        filename: 'unsupported.bin',
+        contentType: 'application/octet-stream',
+      })
       .field('title', 'Invalid Type Doc')
       .expect(400);
 

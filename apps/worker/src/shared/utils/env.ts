@@ -31,11 +31,14 @@ function getEnv(key: string, required = true, defaultValue?: string): string {
 }
 
 export const env = {
+  PORT: getEnv('PORT', false, '3002'),
   NODE_ENV: getEnv('NODE_ENV', false, 'development'),
   MONGODB_URI: getEnv('MONGODB_URI'),
-  REDIS_HOST: getEnv('REDIS_HOST'),
-  REDIS_PORT: Number(getEnv('REDIS_PORT', false, '6379')),
-  REDIS_PASSWORD: getEnv('REDIS_PASSWORD', false),
+  QSTASH_CURRENT_SIGNING_KEY: getEnv('QSTASH_CURRENT_SIGNING_KEY', false),
+  QSTASH_NEXT_SIGNING_KEY: getEnv('QSTASH_NEXT_SIGNING_KEY', false),
+  CACHE_PROVIDER: getEnv('CACHE_PROVIDER', false, 'upstash') as 'redis' | 'upstash',
+  UPSTASH_REDIS_REST_URL: getEnv('UPSTASH_REDIS_REST_URL', false),
+  UPSTASH_REDIS_REST_TOKEN: getEnv('UPSTASH_REDIS_REST_TOKEN', false),
   QDRANT_URL: getEnv('QDRANT_URL'),
   QDRANT_API_KEY: getEnv('QDRANT_API_KEY', false),
   OLLAMA_URL: getEnv('OLLAMA_URL'),

@@ -16,6 +16,7 @@
     "@nestjs/common": "^11.1.11",
     "@nestjs/core": "^11.1.11",
     "@repo/ai": "*",
+    "@repo/cache": "*",
     "@repo/db": "*",
     "@repo/queue": "*",
     "@repo/types": "*",

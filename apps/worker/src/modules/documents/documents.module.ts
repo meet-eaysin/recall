@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { SummaryWorker } from './processors/summary.worker';
-import { TranscriptWorker } from './processors/transcript.worker';
+import { SummaryController } from './processors/summary.controller';
+import { TranscriptController } from './processors/transcript.controller';
 
 @Module({
-  providers: [SummaryWorker, TranscriptWorker],
+  controllers: [SummaryController, TranscriptController],
 })
 export class DocumentsModule {}

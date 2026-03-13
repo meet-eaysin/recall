@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { NotionClient } from './notion-client';
-import { NotionWorker } from './processors/notion.worker';
+import { NotionController } from './processors/notion.controller';
 
 @Module({
-  providers: [NotionClient, NotionWorker],
+  providers: [NotionClient],
+  controllers: [NotionController],
 })
 export class NotionModule {}

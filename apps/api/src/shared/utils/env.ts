@@ -38,13 +38,8 @@ function getEnv(key: string, required = true, defaultValue?: string): string {
   return value ?? '';
 }
 
-function getRedisUrl(): string {
-  const host = getEnv('REDIS_HOST');
-  const port = getEnv('REDIS_PORT');
-  const password = getEnv('REDIS_PASSWORD', false);
-  const auth = password ? `:${encodeURIComponent(password)}@` : '';
-
-  return `redis://${auth}${host}:${port}`;
+function getWorkerUrl(): string {
+  return getEnv('WORKER_URL', false, 'http://localhost:3002');
 }
 
 export const env = {
@@ -54,10 +49,12 @@ export const env = {
   DEV_AUTH_ENABLED:
     getEnv('DEV_AUTH_ENABLED', false, 'true').toLowerCase() === 'true',
   MONGODB_URI: getEnv('MONGODB_URI'),
-  REDIS_HOST: getEnv('REDIS_HOST'),
-  REDIS_PORT: Number(getEnv('REDIS_PORT', false, '6379')),
-  REDIS_PASSWORD: getEnv('REDIS_PASSWORD', false),
-  REDIS_URL: getRedisUrl(),
+  WORKER_URL: getWorkerUrl(),
+  QSTASH_URL: getEnv('QSTASH_URL', false, 'https://qstash.upstash.io/v2/publish'),
+  QSTASH_TOKEN: getEnv('QSTASH_TOKEN', false),
+  CACHE_PROVIDER: getEnv('CACHE_PROVIDER', false, 'upstash') as 'redis' | 'upstash',
+  UPSTASH_REDIS_REST_URL: getEnv('UPSTASH_REDIS_REST_URL', false),
+  UPSTASH_REDIS_REST_TOKEN: getEnv('UPSTASH_REDIS_REST_TOKEN', false),
   QDRANT_URL: getEnv('QDRANT_URL'),
   QDRANT_API_KEY: getEnv('QDRANT_API_KEY', false),
   OLLAMA_URL: getEnv('OLLAMA_URL'),

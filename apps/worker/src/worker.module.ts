@@ -1,9 +1,6 @@
 import { Module, Global } from '@nestjs/common';
-import { BullModule } from '@repo/queue';
-import { createBullQueueConfig } from '@repo/queue';
 import { connectMongoDB } from '@repo/db';
 import { env } from './shared/utils/env';
-
 // Repositories
 import { IDocumentRepository, MongooseDocumentRepository } from '@repo/db';
 import { ITranscriptRepository, MongooseTranscriptRepository } from '@repo/db';
@@ -26,17 +23,20 @@ import { IngestionModule } from './modules/ingestion/ingestion.module';
 import { GraphModule } from './modules/graph/graph.module';
 import { NotionModule } from './modules/notion/notion.module';
 
+import { CacheModule } from '@repo/cache';
+
 @Global()
 @Module({
   imports: [
-    BullModule.forRoot({
-      ...createBullQueueConfig({
-        redis: {
-          host: env.REDIS_HOST,
-          port: env.REDIS_PORT,
-          password: env.REDIS_PASSWORD,
-        },
-      }),
+    CacheModule.forRoot({
+      provider: env.CACHE_PROVIDER,
+      upstash: {
+        url: env.UPSTASH_REDIS_REST_URL,
+        token: env.UPSTASH_REDIS_REST_TOKEN,
+      },
+      redis: {
+        url: 'redis://localhost:6379',
+      },
     }),
     EmailModule,
     DocumentsModule,

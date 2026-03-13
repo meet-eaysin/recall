@@ -1,5 +1,5 @@
-import { Processor, WorkerHost, OnWorkerEvent, Job } from '@repo/queue';
-import { Injectable, Logger } from '@nestjs/common';
+import { Logger, Controller, Post, UseGuards, Body, Headers } from '@nestjs/common';
+import { QStashGuard } from '../../../shared/guards/qstash.guard';
 import { summarizePipeline, ProviderFactory } from '@repo/ai';
 import { SummaryJobData, QUEUE_SUMMARY, DocumentType } from '@repo/types';
 import {
@@ -8,42 +8,31 @@ import {
   DocumentTranscriptModel,
 } from '@repo/db';
 
-@Processor(QUEUE_SUMMARY)
-@Injectable()
-export class SummaryWorker extends WorkerHost {
-  private readonly logger = new Logger(SummaryWorker.name);
+@Controller('api/webhooks')
+export class SummaryController {
+  private readonly logger = new Logger(SummaryController.name);
 
-  constructor(private readonly documentRepository: IDocumentRepository) {
-    super();
-  }
+  constructor(private readonly documentRepository: IDocumentRepository) {}
 
-  async process(job: Job<SummaryJobData>): Promise<void> {
-    await this.processJob(job);
-  }
-
-  @OnWorkerEvent('failed')
-  async onFailed(job: Job<SummaryJobData> | undefined, err: Error) {
-    const jobId = job?.id ?? 'unknown';
-    this.logger.error(`[SummaryWorker] Job ${jobId} failed: ${err.message}`);
-    if (job) {
-      try {
-        const { documentId, userId } = job.data;
-        await this.documentRepository.update(documentId, userId, {
-          summary: `Error: ${err.message}`,
-        });
-      } catch (updateErr: unknown) {
-        const errorMsg =
-          updateErr instanceof Error ? updateErr.message : String(updateErr);
-        this.logger.error(
-          '[SummaryWorker] Could not update document error state:',
-          errorMsg,
-        );
-      }
+  @Post(QUEUE_SUMMARY)
+  @UseGuards(QStashGuard)
+  async process(
+    @Body() data: SummaryJobData,
+    @Headers('Upstash-Message-Id') messageId: string,
+  ): Promise<void> {
+    try {
+      await this.processJob(data);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      this.logger.error(
+        `[SummaryController] Job ${messageId} failed: ${errorMessage}`,
+      );
+      throw err;
     }
   }
 
-  private async processJob(job: Job<SummaryJobData>): Promise<void> {
-    const { documentId, userId } = job.data;
+  private async processJob(data: SummaryJobData): Promise<void> {
+    const { documentId, userId } = data;
 
     const doc = await this.documentRepository.findById(documentId, userId);
     if (!doc) throw new Error('Document not found');

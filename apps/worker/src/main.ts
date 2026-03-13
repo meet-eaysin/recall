@@ -12,9 +12,12 @@ async function bootstrap() {
     await connectMongoDB(env.MONGODB_URI);
     logger.log('Connected to MongoDB');
 
-    const app = await NestFactory.createApplicationContext(WorkerModule);
+    const app = await NestFactory.create(WorkerModule, { rawBody: true });
 
-    logger.log('Worker Application Context initialized');
+    const port = env.PORT || 3002;
+    await app.listen(port);
+
+    logger.log(`Worker Webhook Server listening on port ${port}`);
 
     // Graceful shutdown
     process.on('SIGTERM', async () => {

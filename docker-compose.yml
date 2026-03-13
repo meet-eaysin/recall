@@ -6,6 +6,7 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  # Local Redis for development
   redis:
     image: redis:7-alpine
     ports:
