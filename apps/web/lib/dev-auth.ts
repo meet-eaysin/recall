@@ -1,7 +1,6 @@
-const DEV_AUTH_FLAG =
-  process.env.NEXT_PUBLIC_ENABLE_DEV_AUTH !== undefined
-    ? process.env.NEXT_PUBLIC_ENABLE_DEV_AUTH === 'true'
-    : process.env.NODE_ENV === 'development';
+import { env } from '@/lib/env';
+
+const DEV_AUTH_FLAG = env.isDevAuthEnabled;
 const DEV_USER_ID_KEY = 'dev-user-id';
 
 export function isDevAuthEnabled(): boolean {
@@ -11,13 +10,13 @@ export function isDevAuthEnabled(): boolean {
 export function getDevUserId(): string {
   if (!DEV_AUTH_FLAG) return '';
   if (typeof window === 'undefined') {
-    return process.env.NEXT_PUBLIC_DEV_USER_ID ?? '';
+    return env.NEXT_PUBLIC_DEV_USER_ID ?? '';
   }
 
   const stored = window.localStorage.getItem(DEV_USER_ID_KEY);
   return stored && stored.length > 0
     ? stored
-    : (process.env.NEXT_PUBLIC_DEV_USER_ID ?? '');
+    : (env.NEXT_PUBLIC_DEV_USER_ID ?? '');
 }
 
 export function setDevUserId(userId: string): void {

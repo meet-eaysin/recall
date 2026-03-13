@@ -1,9 +1,10 @@
+import type { NextConfig } from 'next';
 import { createRequire } from 'module';
+import { env } from './lib/env';
 
 const require = createRequire(import.meta.url);
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
   allowedDevOrigins: ['http://localhost:3000'],
   images: {
     remotePatterns: [
@@ -19,6 +20,14 @@ const nextConfig = {
       'tailwindcss-radix': require.resolve('tailwindcss-radix'),
       'tailwind-scrollbar': require.resolve('tailwind-scrollbar'),
     },
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/v1/:path*',
+        destination: `${env.apiRewriteDestination}/:path*`,
+      },
+    ];
   },
 };
 
