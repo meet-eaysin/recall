@@ -1,6 +1,5 @@
-import { InjectQueue } from '@nestjs/bullmq';
+import { InjectQueue, Queue } from '@repo/queue';
 import { Injectable } from '@nestjs/common';
-import type { Queue } from 'bullmq';
 import { EmailJobData, QUEUE_EMAILS } from '@repo/types';
 import { IEmailQueueDispatcher } from '../../domain/repositories/email-queue-dispatcher.repository';
 const EMAIL_JOB_NAME = 'send-email'; // Keep it local or move to constants

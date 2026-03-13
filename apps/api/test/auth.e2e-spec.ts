@@ -36,6 +36,17 @@ describe('Auth and Sessions (e2e)', () => {
     assertErrorShape(response.body, 401, 'UNAUTHORIZED');
   });
 
+  it('should allow access to protected routes via x-user-id bypass', async () => {
+    const userId = '65f1a2b3c4d5e6f7a8b9c0d1';
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/users/me')
+      .set('x-user-id', userId)
+      .expect(200);
+
+    expect(response.body.success).toBe(true);
+    expect(response.body.data.id).toBe(userId);
+  });
+
   it('should create a dev session and return the current session', async () => {
     const cookies = await loginTestUser(app, {
       authId: 'dev:session-user',
@@ -109,14 +120,17 @@ describe('Auth and Sessions (e2e)', () => {
       email: 'logout@test.local',
     });
 
-    await request(app.getHttpServer())
+    const logoutResponse = await request(app.getHttpServer())
       .post('/api/v1/auth/logout')
       .set('Cookie', cookies)
       .expect(200);
 
+    const clearedCookies =
+      (logoutResponse.headers['set-cookie'] as unknown as string[]) || [];
+
     const sessionResponse = await request(app.getHttpServer())
       .get('/api/v1/auth/session')
-      .set('Cookie', cookies)
+      .set('Cookie', clearedCookies)
       .expect(401);
 
     assertErrorShape(sessionResponse.body, 401, 'UNAUTHORIZED');

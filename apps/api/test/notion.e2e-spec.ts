@@ -40,7 +40,7 @@ describe('Notion (e2e)', () => {
       });
       await request(app.getHttpServer())
         .get('/api/v1/notion/config')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(404);
     });
 
@@ -53,7 +53,7 @@ describe('Notion (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/notion/config')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       if (isNotionConfigResponse(response.body)) {
@@ -79,7 +79,7 @@ describe('Notion (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .patch('/api/v1/notion/config')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .send(payload)
         .expect(200);
 
@@ -98,13 +98,13 @@ describe('Notion (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete('/api/v1/notion/config')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(204);
 
       // Verify it's gone
       await request(app.getHttpServer())
         .get('/api/v1/notion/config')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(404);
     });
   });

@@ -3,8 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
+import { InjectQueue, Queue } from '@repo/queue';
 import { DocumentType, TranscriptJobData, QUEUE_TRANSCRIPT } from '@repo/types';
 import { IDocumentRepository } from '../../domain/repositories/document.repository';
 import { ITranscriptRepository } from '../../domain/repositories/transcript.repository';

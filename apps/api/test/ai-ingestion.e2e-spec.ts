@@ -44,7 +44,7 @@ describe('AI Ingestion (e2e)', () => {
     const filePath = path.join(__dirname, 'fixtures/documents/test.pdf');
     const response = await request(app.getHttpServer())
       .post('/api/v1/documents/upload')
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .attach('file', filePath)
       .field('title', 'Ingestion E2E Doc')
       .expect(201);
@@ -66,7 +66,7 @@ describe('AI Ingestion (e2e)', () => {
     const filePath = path.join(__dirname, 'fixtures/documents/test.pdf');
     const uploadResponse = await request(app.getHttpServer())
       .post('/api/v1/documents/upload')
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .attach('file', filePath)
       .field('title', 'Status Check Doc')
       .expect(201);
@@ -78,7 +78,7 @@ describe('AI Ingestion (e2e)', () => {
 
     const statusResponse = await request(app.getHttpServer())
       .get(`/api/v1/documents/${docId}/ingestion-status`)
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .expect(200);
 
     if (isIngestionStatusResponse(statusResponse.body)) {
@@ -98,7 +98,7 @@ describe('AI Ingestion (e2e)', () => {
     });
     await request(app.getHttpServer())
       .post('/api/v1/documents/upload')
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .field('title', 'No File Doc')
       .expect(400);
   });
@@ -111,7 +111,7 @@ describe('AI Ingestion (e2e)', () => {
     const filePath = path.join(__dirname, 'fixtures/documents/sample.txt');
     const response = await request(app.getHttpServer())
       .post('/api/v1/documents/upload')
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .attach('file', filePath)
       .field('title', 'Invalid Type Doc')
       .expect(400);
@@ -134,7 +134,7 @@ describe('AI Ingestion (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .post(`/api/v1/documents/${docId}/retry-ingestion`)
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .expect(422);
 
     assertErrorShape(response.body, 422, 'UNPROCESSABLE_ENTITY');
@@ -154,7 +154,7 @@ describe('AI Ingestion (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .post(`/api/v1/documents/${docId}/transcript`)
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .expect(400);
 
     assertErrorShape(response.body, 400, 'BAD_REQUEST');

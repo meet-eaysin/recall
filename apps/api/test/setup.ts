@@ -26,6 +26,9 @@ function formatValidationErrors(
 }
 
 export async function setupApp(): Promise<INestApplication> {
+  process.env.DEV_AUTH_ENABLED = 'true';
+  process.env.NODE_ENV = 'development';
+
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
   }).compile();

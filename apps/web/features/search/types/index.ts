@@ -6,7 +6,7 @@ import type {
   SemanticSearchResult,
   SourceRef,
 } from '@repo/types';
-import type { IDocumentView } from '@repo/types';
+import type { DocumentPublicView } from '@repo/types';
 
 export type SearchFilters = {
   limit?: number;
@@ -17,7 +17,7 @@ export type SearchFilters = {
   type?: string;
 };
 
-export type SearchResultItem = IDocumentView | SemanticSearchResult;
+export type SearchResultItem = DocumentPublicView | SemanticSearchResult;
 export type SearchResultsResponse = SearchResultsData<SearchResultItem>;
 
 export type AskInput = {

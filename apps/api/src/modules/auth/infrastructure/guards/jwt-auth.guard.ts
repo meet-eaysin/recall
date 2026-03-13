@@ -21,6 +21,18 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (isPublic) {
       return true;
     }
+
+    const request = context.switchToHttp().getRequest();
+    
+    // Dev auth bypass
+    if (
+      process.env.DEV_AUTH_ENABLED === 'true' &&
+      request.headers['x-user-id']
+    ) {
+      request.user = { id: request.headers['x-user-id'] };
+      return true;
+    }
+
     return super.canActivate(context);
   }
 

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import * as React from 'react';
 import { ArrowRight, Bot, Brain, FileText, Search } from 'lucide-react';
-import type { IDocumentView, SemanticSearchResult } from '@repo/types';
+import type { DocumentPublicView, SemanticSearchResult } from '@repo/types';
 import Shell from '@/components/shell';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -36,7 +36,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useSearchResults } from '../hooks';
 
-type ResultItem = IDocumentView | SemanticSearchResult;
+type ResultItem = DocumentPublicView | SemanticSearchResult;
 
 function isSemanticResult(item: ResultItem): item is SemanticSearchResult {
   return 'documentId' in item;
@@ -50,10 +50,11 @@ function SearchResultRow({
   mode: 'normal' | 'ai';
 }) {
   const semantic = mode === 'ai' && isSemanticResult(item);
-  const documentItem = semantic ? undefined : (item as IDocumentView);
+  const documentItem = semantic ? undefined : (item as DocumentPublicView);
   const href = semantic
     ? `/app/library/${item.documentId}`
     : `/app/library/${documentItem!.id}`;
+
   const preview = semantic
     ? item.preview
     : documentItem!.summary || documentItem!.content || 'No preview available.';
@@ -263,7 +264,7 @@ export function SearchPage() {
                     key={
                       mode === 'ai'
                         ? (item as SemanticSearchResult).documentId
-                        : (item as IDocumentView).id
+                        : (item as DocumentPublicView).id
                     }
                     className={cn(
                       index === 0 && 'rounded-t-lg',

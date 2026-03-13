@@ -5,7 +5,6 @@ import {
   GraphEdgeModel,
   IGraphNodeDocument,
   IGraphEdgeDocument,
-  GraphNodeType,
 } from '@repo/db';
 import {
   IGraphRepository,
@@ -13,6 +12,7 @@ import {
 } from '../../domain/repositories/graph.repository';
 import { GraphNodeEntity } from '../../domain/entities/graph-node.entity';
 import { GraphEdgeEntity } from '../../domain/entities/graph-edge.entity';
+import { GraphNodeType } from '@repo/types';
 
 @Injectable()
 export class MongooseGraphRepository extends IGraphRepository {

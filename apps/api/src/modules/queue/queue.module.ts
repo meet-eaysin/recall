@@ -1,4 +1,4 @@
-import { BullModule } from '@nestjs/bullmq';
+import { createBullQueueConfig, BullModule } from '@repo/queue';
 import { Module, Global } from '@nestjs/common';
 import {
   DEFAULT_QUEUE_JOB_OPTIONS,
@@ -11,15 +11,20 @@ import {
 } from '@repo/types';
 import { EnqueueEmailUseCase } from './application/use-cases/enqueue-email.usecase';
 import { IEmailQueueDispatcher } from './domain/repositories/email-queue-dispatcher.repository';
-import { createBullQueueConfig } from './infrastructure/bullmq/bull-queue.config';
+import { env } from '../../shared/utils/env';
 import { BullEmailQueueDispatcher } from './infrastructure/bullmq/bull-email-queue.dispatcher';
-import { EmailProcessor } from './infrastructure/bullmq/email.processor';
 
 @Global()
 @Module({
   imports: [
     BullModule.forRoot({
-      ...createBullQueueConfig(),
+      ...createBullQueueConfig({
+        redis: {
+          host: env.REDIS_HOST,
+          port: env.REDIS_PORT,
+          password: env.REDIS_PASSWORD,
+        },
+      }),
       prefix: 'mindstack',
       defaultJobOptions: DEFAULT_QUEUE_JOB_OPTIONS,
     }),
@@ -34,7 +39,6 @@ import { EmailProcessor } from './infrastructure/bullmq/email.processor';
   ],
   providers: [
     EnqueueEmailUseCase,
-    EmailProcessor,
     {
       provide: IEmailQueueDispatcher,
       useClass: BullEmailQueueDispatcher,

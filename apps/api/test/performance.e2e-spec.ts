@@ -28,11 +28,11 @@ describe('Performance and Edge Cases (e2e)', () => {
 
   afterAll(async () => {
     await teardownApp(app);
-  });
+  }, 30000);
 
   afterEach(async () => {
     await cleanupDatabase();
-  });
+  }, 30000);
 
   describe('Large Lists Pagination', () => {
     it('should handle fetching 100+ documents efficiently', async () => {
@@ -52,7 +52,7 @@ describe('Performance and Edge Cases (e2e)', () => {
 
       const page1Res = await request(app.getHttpServer())
         .get('/api/v1/documents?page=1&limit=50')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       if (isListDocumentsResponse(page1Res.body)) {
@@ -65,7 +65,7 @@ describe('Performance and Edge Cases (e2e)', () => {
 
       const page3Res = await request(app.getHttpServer())
         .get('/api/v1/documents?page=3&limit=50')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       if (isListDocumentsResponse(page3Res.body)) {
@@ -87,7 +87,7 @@ describe('Performance and Edge Cases (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/knowledge/folders')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       expect(response.body.success).toBe(true);
@@ -104,7 +104,7 @@ describe('Performance and Edge Cases (e2e)', () => {
       });
       const response = await request(app.getHttpServer())
         .get('/api/v1/documents')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       if (isListDocumentsResponse(response.body)) {
@@ -122,7 +122,7 @@ describe('Performance and Edge Cases (e2e)', () => {
       });
       const response = await request(app.getHttpServer())
         .get('/api/v1/knowledge/folders')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       expect(response.body.success).toBe(true);
@@ -138,7 +138,7 @@ describe('Performance and Edge Cases (e2e)', () => {
       });
       const response = await request(app.getHttpServer())
         .get('/api/v1/documents/000000000000000000000000')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(404);
 
       expect(response.body).toHaveProperty('success', false);
@@ -156,7 +156,7 @@ describe('Performance and Edge Cases (e2e)', () => {
       });
       const response = await request(app.getHttpServer())
         .get('/api/v1/knowledge/folders/invalid-id')
-        .set('Cookie', auth.cookies);
+        .set(auth.headers);
 
       expect(response.body).toHaveProperty('success', false);
       expect(response.body).toHaveProperty('statusCode');

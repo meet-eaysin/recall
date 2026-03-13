@@ -138,6 +138,14 @@ export async function loginTestUser(
   return [...setCookieHeader];
 }
 
+export interface AuthContext {
+  headers: Record<string, string>;
+  userId: string;
+  sessionId?: string;
+  email: string | null;
+  cookies?: string[];
+}
+
 export async function createTestAuthContext(
   app: INestApplication<Server>,
   overrides: {
@@ -145,13 +153,27 @@ export async function createTestAuthContext(
     email?: string;
     name?: string;
     avatarUrl?: string;
+    useBypass?: boolean;
   } = {},
-): Promise<{
-  cookies: string[];
-  userId: string;
-  sessionId: string;
-  email: string | null;
-}> {
+): Promise<AuthContext> {
+  const useBypass = overrides.useBypass ?? true; // Default to bypass for speed
+
+  if (useBypass) {
+    // Generate a consistent ID based on authId or random
+    const userId = overrides.authId
+      ? Buffer.from(overrides.authId)
+          .toString('hex')
+          .slice(0, 24)
+          .padEnd(24, '0')
+      : generateId();
+
+    return {
+      headers: { 'x-user-id': userId },
+      userId,
+      email: overrides.email ?? 'dev@test.local',
+    };
+  }
+
   const cookies = await loginTestUser(app, overrides);
 
   const response = await request(app.getHttpServer())
@@ -165,6 +187,7 @@ export async function createTestAuthContext(
   }
 
   return {
+    headers: { Cookie: cookies.join('; ') },
     cookies,
     userId: body.data.user.id,
     sessionId: body.data.session.id,

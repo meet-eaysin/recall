@@ -1609,6 +1609,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ioredis/commands@npm:1.5.1":
+  version: 1.5.1
+  resolution: "@ioredis/commands@npm:1.5.1"
+  checksum: 10c0/cb8f6d13cff0753e3e7ef001fb895491985d9a623248192538f13bc2fd9bfdfde3c18cf2ba6f20ec8ceaa681b0771070d3a09b82eed044c798bcfef5e3ae54b3
+  languageName: node
+  linkType: hard
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -4107,6 +4114,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@repo/queue@npm:*, @repo/queue@workspace:packages/queue":
+  version: 0.0.0-use.local
+  resolution: "@repo/queue@workspace:packages/queue"
+  dependencies:
+    "@nestjs/bullmq": "npm:^11.0.4"
+    "@repo/types": "npm:*"
+    bullmq: "npm:^5.70.4"
+    ioredis: "npm:^5.4.1"
+    typescript: "npm:5.5.4"
+  languageName: unknown
+  linkType: soft
+
 "@repo/types@npm:*, @repo/types@workspace:packages/types":
   version: 0.0.0-use.local
   resolution: "@repo/types@workspace:packages/types"
@@ -5641,7 +5660,6 @@ __metadata:
   resolution: "api@workspace:apps/api"
   dependencies:
     "@jest/globals": "npm:^30.2.0"
-    "@nestjs/bullmq": "npm:^11.0.4"
     "@nestjs/cli": "npm:^11.0.14"
     "@nestjs/common": "npm:^11.1.11"
     "@nestjs/core": "npm:^11.1.11"
@@ -5656,6 +5674,7 @@ __metadata:
     "@repo/db": "npm:*"
     "@repo/eslint-config": "npm:*"
     "@repo/jest-config": "npm:*"
+    "@repo/queue": "npm:*"
     "@repo/types": "npm:*"
     "@repo/typescript-config": "npm:*"
     "@types/cookie-parser": "npm:^1.4.10"
@@ -5665,7 +5684,6 @@ __metadata:
     "@types/passport": "npm:^0"
     "@types/passport-jwt": "npm:^4"
     "@types/supertest": "npm:^6.0.3"
-    bullmq: "npm:^5.70.4"
     class-transformer: "npm:^0.5.1"
     class-validator: "npm:^0.15.1"
     cookie-parser: "npm:^1.4.7"
@@ -8866,6 +8884,23 @@ __metadata:
     redis-parser: "npm:^3.0.0"
     standard-as-callback: "npm:^2.1.0"
   checksum: 10c0/f3d5c811bc1f320236f488ee6bd8a4857c7c0e8e5de1154b064afc03eb35aafbf24156e430025061b6939c58a5a6b424d86814d726439f5811b2e9c56c710dd4
+  languageName: node
+  linkType: hard
+
+"ioredis@npm:^5.4.1":
+  version: 5.10.0
+  resolution: "ioredis@npm:5.10.0"
+  dependencies:
+    "@ioredis/commands": "npm:1.5.1"
+    cluster-key-slot: "npm:^1.1.0"
+    debug: "npm:^4.3.4"
+    denque: "npm:^2.1.0"
+    lodash.defaults: "npm:^4.2.0"
+    lodash.isarguments: "npm:^3.1.0"
+    redis-errors: "npm:^1.2.0"
+    redis-parser: "npm:^3.0.0"
+    standard-as-callback: "npm:^2.1.0"
+  checksum: 10c0/294e8cdef963f922b04ad023d4165f1d399b27279b9890f3e1311da57fb2a082c8dca52d18bd14a54acd6fb82853783641a0c47ff18661a8756221049f807e88
   languageName: node
   linkType: hard
 
@@ -15477,6 +15512,33 @@ __metadata:
   checksum: 10c0/7ed2e44f3c33c5c3e3771134d2b0aee4314c9e49c749e37f464bf69f2bcdf0cbf9419ca638098e2717cff4875c47f56a007532f6111c3319f557a2ca91278e92
   languageName: node
   linkType: hard
+
+"worker@workspace:apps/worker":
+  version: 0.0.0-use.local
+  resolution: "worker@workspace:apps/worker"
+  dependencies:
+    "@nestjs/cli": "npm:^11.0.14"
+    "@nestjs/common": "npm:^11.1.11"
+    "@nestjs/core": "npm:^11.1.11"
+    "@nestjs/schematics": "npm:^11.0.9"
+    "@nestjs/testing": "npm:^11.1.11"
+    "@repo/ai": "npm:*"
+    "@repo/db": "npm:*"
+    "@repo/eslint-config": "npm:*"
+    "@repo/queue": "npm:*"
+    "@repo/types": "npm:*"
+    "@repo/typescript-config": "npm:*"
+    "@types/node": "npm:^22.19.3"
+    eslint: "npm:^9.39.2"
+    reflect-metadata: "npm:^0.2.2"
+    rxjs: "npm:^7.8.2"
+    source-map-support: "npm:^0.5.21"
+    ts-loader: "npm:^9.5.4"
+    ts-node: "npm:^10.9.2"
+    tsconfig-paths: "npm:^4.2.0"
+    typescript: "npm:5.5.4"
+  languageName: unknown
+  linkType: soft
 
 "wrap-ansi-cjs@npm:wrap-ansi@^7.0.0, wrap-ansi@npm:^7.0.0":
   version: 7.0.0

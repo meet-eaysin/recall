@@ -34,3 +34,17 @@ export interface NotionSyncResult {
   failed: number;
   errors: string[];
 }
+
+export interface NotionConfigProps {
+  id?: string;
+  userId: string;
+  accessToken: string;
+  workspaceId: string;
+  workspaceName?: string;
+  targetDatabaseId?: string;
+  syncEnabled: boolean;
+  syncDirection: NotionSyncDirectionType;
+  lastSyncedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}

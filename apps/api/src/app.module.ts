@@ -22,7 +22,6 @@ import { LLMConfigModule } from './modules/llm-config/llm-config.module';
 import { NotionModule } from './modules/notion/notion.module';
 import { ReviewModule } from './modules/review/review.module';
 import { SearchModule } from './modules/search/search.module';
-import { SummaryModule } from './modules/summary/summary.module';
 import { QueueModule } from './modules/queue/queue.module';
 import { UsersModule } from './modules/users/users.module';
 import { HealthController } from './modules/health/health.controller';
@@ -41,7 +40,6 @@ import { TransformInterceptor } from './shared/interceptors/transform.intercepto
     QueueModule,
     ReviewModule,
     SearchModule,
-    SummaryModule,
     UsersModule,
   ],
   controllers: [HealthController],

@@ -50,7 +50,7 @@ describe('Documents (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/documents')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .send(payload)
         .expect(201);
 
@@ -75,7 +75,7 @@ describe('Documents (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/documents')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .send(payload)
         .expect(400);
 
@@ -94,7 +94,7 @@ describe('Documents (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/documents')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       const { body } = response;
@@ -121,7 +121,7 @@ describe('Documents (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/documents/${docId}`)
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       const { body } = response;
@@ -141,7 +141,7 @@ describe('Documents (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/documents/${nonExistentId}`)
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(404);
 
       assertErrorShape(response.body, 404, 'NOT_FOUND');
@@ -166,7 +166,7 @@ describe('Documents (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/documents/${docId}`)
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .send(payload)
         .expect(200);
 
@@ -193,13 +193,13 @@ describe('Documents (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/api/v1/documents/${docId}`)
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(204);
 
       // Verify it's gone
       await request(app.getHttpServer())
         .get(`/api/v1/documents/${docId}`)
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(404);
     });
   });

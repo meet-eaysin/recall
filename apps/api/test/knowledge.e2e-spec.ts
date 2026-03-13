@@ -44,7 +44,7 @@ describe('Knowledge (e2e)', () => {
 
       const createResponse = await request(app.getHttpServer())
         .post('/api/v1/knowledge/folders')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .send(payload)
         .expect(201);
 
@@ -54,7 +54,7 @@ describe('Knowledge (e2e)', () => {
 
         const getResponse = await request(app.getHttpServer())
           .get(`/api/v1/knowledge/folders/${folderId}`)
-          .set('Cookie', auth.cookies)
+          .set(auth.headers)
           .expect(200);
 
         // Note: Looking at controller, getFolder returns { success: true, data: result }
@@ -74,7 +74,7 @@ describe('Knowledge (e2e)', () => {
       const folderId = await seedFolder('Delete Me', auth.userId);
       await request(app.getHttpServer())
         .delete(`/api/v1/knowledge/folders/${folderId}`)
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(204);
     });
   });
@@ -89,13 +89,13 @@ describe('Knowledge (e2e)', () => {
 
       await request(app.getHttpServer())
         .post('/api/v1/knowledge/tags')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .send(payload)
         .expect(201);
 
       const listResponse = await request(app.getHttpServer())
         .get('/api/v1/knowledge/tags')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       expect(listResponse.body.success).toBe(true);
@@ -117,7 +117,7 @@ describe('Knowledge (e2e)', () => {
 
       const createResponse = await request(app.getHttpServer())
         .post('/api/v1/knowledge/notes')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .send(payload)
         .expect(201);
 
@@ -127,7 +127,7 @@ describe('Knowledge (e2e)', () => {
 
         const updateResponse = await request(app.getHttpServer())
           .patch(`/api/v1/knowledge/notes/${noteId}`)
-          .set('Cookie', auth.cookies)
+          .set(auth.headers)
           .send(updatePayload)
           .expect(200);
 

@@ -49,7 +49,7 @@ describe('AI Knowledge Graph (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .get('/api/v1/graph')
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .expect(200);
 
     if (isFullGraphResponse(response.body)) {
@@ -81,7 +81,7 @@ describe('AI Knowledge Graph (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .get('/api/v1/graph')
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .expect(200);
 
     if (isFullGraphResponse(response.body)) {
@@ -105,7 +105,7 @@ describe('AI Knowledge Graph (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .get(`/api/v1/graph/document/${docId}`)
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .expect(200);
 
     if (isDocumentSubgraphResponse(response.body)) {
@@ -124,7 +124,7 @@ describe('AI Knowledge Graph (e2e)', () => {
     const fakeId = generateId();
     await request(app.getHttpServer())
       .get(`/api/v1/graph/document/${fakeId}`)
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .expect(404);
   });
 });

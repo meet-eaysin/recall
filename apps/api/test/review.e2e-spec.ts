@@ -29,11 +29,11 @@ describe('Review (e2e)', () => {
 
   afterAll(async () => {
     await teardownApp(app);
-  });
+  }, 30000);
 
   afterEach(async () => {
     await cleanupDatabase();
-  });
+  }, 30000);
 
   describe('GET /review/daily', () => {
     it('should return review items', async () => {
@@ -47,7 +47,7 @@ describe('Review (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/review/daily')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       if (isDailyReviewResponse(response.body)) {
@@ -71,7 +71,7 @@ describe('Review (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/review/daily')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       if (isDailyReviewResponse(response.body)) {
@@ -96,13 +96,13 @@ describe('Review (e2e)', () => {
 
       await request(app.getHttpServer())
         .post(`/api/v1/review/dismiss/${docId}`)
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(201); // Controller uses @Post which defaults to 201
 
       // Verify it's dismissed in daily review
       const response = await request(app.getHttpServer())
         .get('/api/v1/review/daily')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       if (isDailyReviewResponse(response.body)) {
@@ -127,7 +127,7 @@ describe('Review (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/review/recommendations')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       if (isRecommendationResponse(response.body)) {

@@ -21,3 +21,12 @@ export enum NotionAction {
   UPDATE = 'update',
   DELETE = 'delete',
 }
+
+export interface IngestionJobView {
+  documentId: string;
+  userId: string;
+  status: IngestionStatus;
+  error: string | undefined;
+  progress: number;
+  metadata: Record<string, unknown>;
+}

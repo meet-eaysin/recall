@@ -67,7 +67,7 @@ describe('Graph (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/graph')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       if (isFullGraphResponse(response.body)) {
@@ -89,7 +89,7 @@ describe('Graph (e2e)', () => {
       });
       const response = await request(app.getHttpServer())
         .get('/api/v1/graph')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       if (isFullGraphResponse(response.body)) {
@@ -136,7 +136,7 @@ describe('Graph (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/graph/document/${docId}`)
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       if (isDocumentSubgraphResponse(response.body)) {
@@ -158,7 +158,7 @@ describe('Graph (e2e)', () => {
 
       await request(app.getHttpServer())
         .get(`/api/v1/graph/document/${fakeDocId}`)
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(404);
     });
   });
@@ -176,7 +176,7 @@ describe('Graph (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .post(`/api/v1/graph/rebuild/${docId}`)
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(202);
 
       if (isRebuildGraphResponse(response.body)) {

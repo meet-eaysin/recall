@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Types, FilterQuery, SortOrder } from 'mongoose';
 import { DocumentModel, IDocumentDocument, IDocument } from '@repo/db';
-import { IngestionStatus } from '@repo/types';
+import { IngestionStatus, IngestionStage } from '@repo/types';
 import {
   IDocumentRepository,
   DocFilters,
@@ -203,7 +203,7 @@ export class MongooseDocumentRepository extends IDocumentRepository {
       embeddingsReady: props.embeddingsReady,
       folderId: props.folderId ? new Types.ObjectId(props.folderId) : undefined,
       ingestionStatus: props.ingestionStatus ?? IngestionStatus.PENDING,
-      currentStage: props.currentStage ?? undefined,
+      currentStage: (props.currentStage as IngestionStage) ?? undefined,
       ocrConfidence: props.ocrConfidence ?? undefined,
       chunkCount: props.chunkCount ?? undefined,
       ingestionError: props.ingestionError ?? undefined,

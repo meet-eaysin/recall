@@ -1,0 +1,30 @@
+{
+  "name": "@repo/queue",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@nestjs/bullmq": "^11.0.4",
+    "@repo/types": "*",
+    "bullmq": "^5.70.4",
+    "ioredis": "^5.4.1"
+  },
+  "devDependencies": {
+    "typescript": "5.5.4"
+  }
+}

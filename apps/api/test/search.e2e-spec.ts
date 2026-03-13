@@ -45,7 +45,7 @@ describe('Search (e2e)', () => {
       const response = await request(app.getHttpServer())
         .get('/api/v1/search')
         .query({ q: 'Searchable', mode: 'normal' })
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       if (isSearchResponse(response.body)) {
@@ -71,7 +71,7 @@ describe('Search (e2e)', () => {
       const response = await request(app.getHttpServer())
         .get('/api/v1/search')
         .query({ q: 'AI', mode: 'ai' })
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       if (isSearchResponse(response.body)) {
@@ -90,7 +90,7 @@ describe('Search (e2e)', () => {
       });
       await request(app.getHttpServer())
         .post('/api/v1/search/ask')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .send({ question: '' })
         .expect(400);
     });
@@ -121,7 +121,7 @@ describe('Search (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/search/ask')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .send({ question: 'What is in the knowledge base?' });
 
       expect([200, 201]).toContain(response.status);
@@ -156,7 +156,7 @@ describe('Search (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/search/chats')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       expect(response.body.data.conversations).toHaveLength(1);
@@ -179,7 +179,7 @@ describe('Search (e2e)', () => {
       const response = await request(app.getHttpServer())
         .get('/api/v1/search/chats')
         .query({ includeArchived: 'true' })
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       expect(response.body.data.conversations).toHaveLength(1);
@@ -202,7 +202,7 @@ describe('Search (e2e)', () => {
       await request(app.getHttpServer())
         .patch(`/api/v1/search/chats/${chat._id}/archive`)
         .send({ isArchived: true })
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       const updated = await ChatConversationModel.findById(chat._id);
@@ -223,7 +223,7 @@ describe('Search (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/api/v1/search/chats/${chat._id}`)
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       const deleted = await ChatConversationModel.findById(chat._id);
@@ -248,7 +248,7 @@ describe('Search (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete('/api/v1/search/chats')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       const count = await ChatConversationModel.countDocuments({

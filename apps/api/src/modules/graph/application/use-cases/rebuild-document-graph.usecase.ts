@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
+import { InjectQueue, Queue } from '@repo/queue';
 import { GraphJobData, QUEUE_GRAPH } from '@repo/types';
 import { IGraphRepository } from '../../domain/repositories/graph.repository';
 

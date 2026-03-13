@@ -46,7 +46,7 @@ describe('Analytics (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/analytics/heatmap')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       const { body } = response;
@@ -86,7 +86,7 @@ describe('Analytics (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/analytics/stats')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       const { body } = response;

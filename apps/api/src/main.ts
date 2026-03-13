@@ -72,8 +72,6 @@ export async function bootstrap(): Promise<INestApplication> {
     }),
   );
 
-  // Global Error Handling & Transformation are handled via AppModule providers
-
   // Versioned API prefix
   app.setGlobalPrefix('api/v1');
 

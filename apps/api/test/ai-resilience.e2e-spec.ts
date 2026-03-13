@@ -24,7 +24,7 @@ describe('AI Resilience (e2e)', () => {
     });
     const response = await request(app.getHttpServer())
       .post('/api/v1/search/ask')
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .send({ question: '' })
       .expect(400);
 
@@ -38,7 +38,7 @@ describe('AI Resilience (e2e)', () => {
     });
     const response = await request(app.getHttpServer())
       .post('/api/v1/search/ask')
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .send({})
       .expect(400);
 
@@ -53,7 +53,7 @@ describe('AI Resilience (e2e)', () => {
     const response = await request(app.getHttpServer())
       .get('/api/v1/search')
       .query({ q: '' })
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .expect(400);
 
     assertErrorShape(response.body, 400, 'VALIDATION_ERROR');
@@ -67,7 +67,7 @@ describe('AI Resilience (e2e)', () => {
     const fakeId = generateId();
     const response = await request(app.getHttpServer())
       .get(`/api/v1/documents/${fakeId}/ingestion-status`)
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .expect(404);
 
     assertErrorShape(response.body, 404, 'NOT_FOUND');
@@ -81,7 +81,7 @@ describe('AI Resilience (e2e)', () => {
     const fakeId = generateId();
     const response = await request(app.getHttpServer())
       .get(`/api/v1/graph/document/${fakeId}`)
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .expect(404);
 
     assertErrorShape(response.body, 404, 'NOT_FOUND');
@@ -94,7 +94,7 @@ describe('AI Resilience (e2e)', () => {
     });
     await request(app.getHttpServer())
       .post('/api/v1/search/ask')
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .send({
         question: 'What is this about?',
         documentIds: ['not-an-objectid'],

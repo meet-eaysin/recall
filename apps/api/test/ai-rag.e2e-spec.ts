@@ -70,7 +70,7 @@ describe('AI RAG & Search (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .post('/api/v1/search/ask')
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .send({ question: 'What is the project codename?' })
       .expect(201);
 
@@ -95,7 +95,7 @@ describe('AI RAG & Search (e2e)', () => {
     const response = await request(app.getHttpServer())
       .get('/api/v1/search')
       .query({ q: 'Carbon Nanotubes', mode: 'ai' })
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .expect(200);
 
     if (isSearchResponse(response.body)) {
@@ -112,7 +112,7 @@ describe('AI RAG & Search (e2e)', () => {
     });
     await request(app.getHttpServer())
       .post('/api/v1/search/ask')
-      .set('Cookie', auth.cookies)
+      .set(auth.headers)
       .send({ question: '' })
       .expect(400);
   });

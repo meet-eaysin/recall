@@ -1,6 +1,5 @@
 import { Injectable, Logger, ConflictException } from '@nestjs/common';
-import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
+import { InjectQueue, Queue } from '@repo/queue';
 import { IDocumentRepository } from '../../domain/repositories/document.repository';
 import {
   DocumentEntity,

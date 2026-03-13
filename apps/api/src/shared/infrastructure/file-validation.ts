@@ -1,13 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 
-const MAGIC_BYTES = {
-  PDF: '25504446',
-  JPEG: 'ffd8ff',
-  PNG: '89504e47',
-  WEBP: '52494646',
-};
 
-export type FileType = 'pdf' | 'image';
+export type FileType = 'pdf' | 'image' | 'text';
 
 export function validateFileType(
   buffer: Buffer,
@@ -15,25 +9,35 @@ export function validateFileType(
 ): FileType {
   const hex = buffer.toString('hex', 0, 4).toLowerCase();
 
-  if (hex === MAGIC_BYTES.PDF) {
-    if (declaredMime !== 'application/pdf') {
-      throw new BadRequestException(
-        'Mime type mismatch: expected application/pdf',
-      );
-    }
+  // PDF magic bytes: %PDF
+  if (hex === '25504446') {
     return 'pdf';
   }
 
+  // Image magic bytes
   if (
-    hex.startsWith('ffd8ff') ||
-    hex.startsWith('89504e47') ||
-    hex.startsWith('52494646')
+    hex.startsWith('ffd8ff') || // JPEG
+    hex.startsWith('89504e47') || // PNG
+    hex.startsWith('52494646') // WEBP
   ) {
-    if (!declaredMime.startsWith('image/')) {
-      throw new BadRequestException('Mime type mismatch: expected image/*');
-    }
     return 'image';
   }
 
-  throw new BadRequestException('Invalid file type');
+  // Text validation
+  if (
+    declaredMime.startsWith('text/') ||
+    declaredMime === 'application/json' ||
+    declaredMime === 'application/javascript'
+  ) {
+    // Basic check for text: no null bytes in the first 512 bytes
+    const sample = buffer.slice(0, 512);
+    for (let i = 0; i < sample.length; i++) {
+      if (sample[i] === 0) {
+        throw new BadRequestException('Binary data detected in text file');
+      }
+    }
+    return 'text';
+  }
+
+  throw new BadRequestException(`Unsupported file type: ${declaredMime}`);
 }

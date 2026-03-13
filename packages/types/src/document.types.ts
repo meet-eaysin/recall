@@ -1,3 +1,5 @@
+import type { IngestionStatus, IngestionStage } from './ingestion.types';
+
 export enum DocumentType {
   URL = 'url',
   YOUTUBE = 'youtube',
@@ -22,21 +24,80 @@ export enum SourceType {
   NOTION = 'notion',
 }
 
-export interface IDocumentView {
+export interface DocFilters {
+  status?: DocumentStatus | undefined;
+  type?: DocumentType | undefined;
+  folderIds?: string[] | undefined;
+  tagIds?: string[] | undefined;
+  q?: string | undefined;
+  page: number;
+  limit: number;
+}
+
+export interface IngestionStatusView {
+  ingestionStatus?: IngestionStatus | undefined;
+  currentStage?: IngestionStage | undefined;
+  embeddingsReady: boolean;
+  ingestionError?: string | undefined;
+}
+
+export interface DocumentPublicView {
   id: string;
   userId: string;
-  folderId?: string;
+  folderId?: string | undefined;
   title: string;
-  content?: string;
   type: DocumentType;
   status: DocumentStatus;
   sourceType: SourceType;
-  sourceUrl?: string;
-  mimeType?: string;
+  sourceUrl?: string | undefined;
   tags: string[];
-  summary?: string;
+  summary?: string | undefined;
+  content?: string | undefined;
+  lastOpenedAt?: Date | undefined;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface DocumentDetailView extends DocumentPublicView {
+  content?: string | undefined;
+  summary?: string | undefined;
   metadata: Record<string, unknown>;
-  ingestionStatus?: string;
-  createdAt: string;
-  updatedAt: string;
+}
+
+export interface DocumentEntityProps {
+  id: string;
+  userId: string;
+  folderId?: string | undefined;
+  title: string;
+  content?: string | undefined;
+  type: DocumentType;
+  status: DocumentStatus;
+  sourceType: SourceType;
+  sourceUrl?: string | undefined;
+  mimeType?: string | undefined;
+  tags: string[];
+  summary?: string | undefined;
+  metadata: Record<string, unknown>;
+  lastOpenedAt?: Date | undefined;
+  createdAt: Date;
+  updatedAt: Date;
+  // Internal fields
+  ingestionStatus?: IngestionStatus | undefined;
+  currentStage?: IngestionStage | undefined;
+  embeddingsReady: boolean;
+  ocrConfidence?: number | undefined;
+  chunkCount?: number | undefined;
+  ingestionError?: string | undefined;
+}
+
+export interface TranscriptSegment {
+  text: string;
+  start: number;
+  duration: number;
+}
+
+export interface DocumentTranscript {
+  documentId: string;
+  content: string;
+  segments: TranscriptSegment[];
 }

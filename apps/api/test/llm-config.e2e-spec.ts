@@ -26,11 +26,11 @@ describe('LLM Config (e2e)', () => {
 
   afterAll(async () => {
     await teardownApp(app);
-  });
+  }, 30000);
 
   afterEach(async () => {
     await cleanupDatabase();
-  });
+  }, 30000);
 
   describe('PUT /llm-config', () => {
     it('should save a new LLM config', async () => {
@@ -47,7 +47,7 @@ describe('LLM Config (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .put('/api/v1/llm-config')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .send(payload)
         .expect(200);
 
@@ -68,7 +68,7 @@ describe('LLM Config (e2e)', () => {
       });
       await request(app.getHttpServer())
         .get('/api/v1/llm-config')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(404);
     });
 
@@ -81,7 +81,7 @@ describe('LLM Config (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/llm-config')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(200);
 
       if (isLLMConfigResponse(response.body)) {
@@ -107,7 +107,7 @@ describe('LLM Config (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/llm-config/validate')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .send(payload)
         .expect(201);
 
@@ -126,13 +126,13 @@ describe('LLM Config (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete('/api/v1/llm-config')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(204);
 
       // Verify it's gone
       await request(app.getHttpServer())
         .get('/api/v1/llm-config')
-        .set('Cookie', auth.cookies)
+        .set(auth.headers)
         .expect(404);
     });
   });
