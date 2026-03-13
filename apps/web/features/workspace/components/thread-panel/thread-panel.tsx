@@ -59,10 +59,7 @@ export function ThreadPanel() {
     if (!isExpanded) return;
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        asideRef.current &&
-        !asideRef.current.contains(e.target as Node)
-      ) {
+      if (asideRef.current && !asideRef.current.contains(e.target as Node)) {
         setIsExpanded(false);
       }
     };

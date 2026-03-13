@@ -38,9 +38,7 @@ export function ThreadItem({
           isExpanded
             ? 'p-3.5 pr-12 w-full flex-col gap-1.5'
             : 'size-10 items-center justify-center mx-auto',
-          isActive
-            ? 'bg-primary/10 border-primary/20'
-            : 'hover:bg-muted/80',
+          isActive ? 'bg-primary/10 border-primary/20' : 'hover:bg-muted/80',
         )}
       >
         {/* Expanded: full title + preview */}
