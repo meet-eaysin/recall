@@ -23,6 +23,7 @@ export function ThreadPanel() {
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
+  const asideRef = React.useRef<HTMLElement>(null);
 
   const filteredChats = React.useMemo(() => {
     if (!chats) return [];
@@ -53,8 +54,26 @@ export function ThreadPanel() {
     };
   }, []);
 
+  // Close on click outside
+  React.useEffect(() => {
+    if (!isExpanded) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        asideRef.current &&
+        !asideRef.current.contains(e.target as Node)
+      ) {
+        setIsExpanded(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isExpanded]);
+
   return (
     <aside
+      ref={asideRef}
       className={cn(
         'fixed top-0 left-0 h-screen bg-background border-r border-subtle z-30 hidden lg:flex flex-col transition-[width] duration-150 ease-out shadow-[1px_0_10px_rgba(0,0,0,0.02)] overflow-hidden',
         isExpanded ? 'w-80' : 'w-16',
