@@ -1,4 +1,11 @@
-import { Logger, Controller, Post, UseGuards, Body, Headers } from '@nestjs/common';
+import {
+  Logger,
+  Controller,
+  Post,
+  UseGuards,
+  Body,
+  Headers,
+} from '@nestjs/common';
 import { EmailJobData, QUEUE_EMAILS } from '@repo/types';
 import { QStashGuard } from '../../../shared/guards/qstash.guard';
 

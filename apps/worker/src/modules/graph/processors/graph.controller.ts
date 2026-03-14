@@ -1,4 +1,11 @@
-import { Logger, Controller, Post, UseGuards, Body, Headers } from '@nestjs/common';
+import {
+  Logger,
+  Controller,
+  Post,
+  UseGuards,
+  Body,
+  Headers,
+} from '@nestjs/common';
 import { QStashGuard } from '../../../shared/guards/qstash.guard';
 import { GraphJobData, QUEUE_GRAPH } from '@repo/types';
 import { GraphBuilderService } from '../graph-builder.service';

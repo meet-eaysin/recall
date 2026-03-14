@@ -182,11 +182,20 @@ jest.mock('@upstash/qstash', () => ({
 
 jest.mock('@upstash/redis', () => ({
   Redis: jest.fn().mockImplementation(() => ({
-    get: jest.fn<(...args: unknown[]) => Promise<unknown>>().mockResolvedValue('mock-value'),
-    set: jest.fn<(...args: unknown[]) => Promise<string>>().mockResolvedValue('OK'),
-    del: jest.fn<(...args: unknown[]) => Promise<number>>().mockResolvedValue(1),
-    exists: jest.fn<(...args: unknown[]) => Promise<number>>().mockResolvedValue(1),
-    expire: jest.fn<(...args: unknown[]) => Promise<number>>().mockResolvedValue(1),
+    get: jest
+      .fn<(...args: unknown[]) => Promise<unknown>>()
+      .mockResolvedValue('mock-value'),
+    set: jest
+      .fn<(...args: unknown[]) => Promise<string>>()
+      .mockResolvedValue('OK'),
+    del: jest
+      .fn<(...args: unknown[]) => Promise<number>>()
+      .mockResolvedValue(1),
+    exists: jest
+      .fn<(...args: unknown[]) => Promise<number>>()
+      .mockResolvedValue(1),
+    expire: jest
+      .fn<(...args: unknown[]) => Promise<number>>()
+      .mockResolvedValue(1),
   })),
 }));
-

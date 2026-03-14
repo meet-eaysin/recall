@@ -6,10 +6,7 @@ import {
 } from '@nestjs/common';
 import { QStashService } from '@repo/queue';
 import { IDocumentRepository } from '../../domain/repositories/document.repository';
-import {
-  IngestionStatus,
-  QUEUE_INGESTION,
-} from '@repo/types';
+import { IngestionStatus, QUEUE_INGESTION } from '@repo/types';
 
 @Injectable()
 export class RetryIngestionUseCase {

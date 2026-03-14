@@ -1,4 +1,11 @@
-import { Logger, Controller, Post, UseGuards, Body, Headers } from '@nestjs/common';
+import {
+  Logger,
+  Controller,
+  Post,
+  UseGuards,
+  Body,
+  Headers,
+} from '@nestjs/common';
 import { QStashGuard } from '../../../shared/guards/qstash.guard';
 import { QStashService } from '@repo/queue';
 import {
@@ -20,8 +27,6 @@ import {
   QUEUE_INGESTION,
   QUEUE_GRAPH,
   QUEUE_NOTION_SYNC,
-  NotionSyncJobData,
-  GraphJobData,
 } from '@repo/types';
 import {
   IDocumentRepository,
@@ -117,7 +122,7 @@ export class IngestionController {
         text = result.markdown;
         await this.documentRepository.update(documentId, userId, {
           renderedMarkdown: text,
-        } as any);
+        });
       } else if (type === 'youtube') {
         const result = await youtubeExtractor.extractYouTube(source);
         text = result.transcript.map((t) => t.text).join(' ');
@@ -180,7 +185,9 @@ export class IngestionController {
           }
         }
       } catch (error: unknown) {
-        this.logger.warn(`Topic classification skipped: ${error instanceof Error ? error.message : String(error)}`);
+        this.logger.warn(
+          `Topic classification skipped: ${error instanceof Error ? error.message : String(error)}`,
+        );
       }
 
       await this.ingestionJobRepository.updateStage(
@@ -249,7 +256,10 @@ export class IngestionController {
         IngestionStatus.PROCESSING,
         userId,
       );
-      await this.qstashService.publishMessage(QUEUE_GRAPH, { documentId, userId });
+      await this.qstashService.publishMessage(QUEUE_GRAPH, {
+        documentId,
+        userId,
+      });
 
       await this.documentRepository.update(documentId, userId, {
         ingestionStatus: IngestionStatus.COMPLETED as any,
@@ -276,7 +286,7 @@ export class IngestionController {
       await this.documentRepository.update(documentId, userId, {
         ingestionStatus: IngestionStatus.FAILED,
         ingestionError: errorMessage || 'Unknown error',
-      } as any);
+      });
       throw error;
     }
   }
@@ -306,7 +316,7 @@ export class IngestionController {
             .map((s) => s.trim())
             .filter(Boolean);
         }
-      } catch (error: any) {
+      } catch {
         return [];
       }
     }

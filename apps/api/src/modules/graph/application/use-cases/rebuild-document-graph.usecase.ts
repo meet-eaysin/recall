@@ -13,7 +13,10 @@ export class RebuildDocumentGraphUseCase {
   async execute(documentId: string, userId: string): Promise<string> {
     await this.graphRepository.deleteEdgesForDocument(documentId, userId);
 
-    await this.qstashService.publishMessage(QUEUE_GRAPH, { documentId, userId });
+    await this.qstashService.publishMessage(QUEUE_GRAPH, {
+      documentId,
+      userId,
+    });
 
     return 'triggered';
   }

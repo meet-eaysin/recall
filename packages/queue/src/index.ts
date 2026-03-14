@@ -16,7 +16,9 @@ export function initializeQStash(options: QStashConfigOptions): Client {
 
 export function getQStashClient(): Client {
   if (!qstashClient) {
-    throw new Error('QStash client has not been initialized. Call initializeQStash first.');
+    throw new Error(
+      'QStash client has not been initialized. Call initializeQStash first.',
+    );
   }
   return qstashClient;
 }
@@ -60,7 +62,9 @@ export class QStashService implements OnModuleInit {
     }
 
     if (!token) {
-      throw new Error('QSTASH_TOKEN is required in non-development environments');
+      throw new Error(
+        'QSTASH_TOKEN is required in non-development environments',
+      );
     }
 
     const client = getQStashClient();

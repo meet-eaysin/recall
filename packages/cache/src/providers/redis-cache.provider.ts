@@ -21,7 +21,8 @@ export class RedisCacheProvider implements ICacheProvider {
   }
 
   async set<T>(key: string, value: T, ttlSeconds?: number): Promise<void> {
-    const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
+    const stringValue =
+      typeof value === 'string' ? value : JSON.stringify(value);
     if (ttlSeconds) {
       await this.redis.set(key, stringValue, 'EX', ttlSeconds);
     } else {

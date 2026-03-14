@@ -1,5 +1,4 @@
 import { Module, Global } from '@nestjs/common';
-import { connectMongoDB } from '@repo/db';
 import { env } from './shared/utils/env';
 // Repositories
 import { IDocumentRepository, MongooseDocumentRepository } from '@repo/db';

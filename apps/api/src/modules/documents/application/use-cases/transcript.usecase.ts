@@ -63,7 +63,10 @@ export class TranscriptUseCase {
       };
     }
 
-    await this.qstashService.publishMessage(QUEUE_TRANSCRIPT, { documentId, userId });
+    await this.qstashService.publishMessage(QUEUE_TRANSCRIPT, {
+      documentId,
+      userId,
+    });
     return { alreadyExists: false };
   }
 }

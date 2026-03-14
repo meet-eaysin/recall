@@ -1,4 +1,11 @@
-import { Logger, Controller, Post, UseGuards, Body, Headers } from '@nestjs/common';
+import {
+  Logger,
+  Controller,
+  Post,
+  UseGuards,
+  Body,
+  Headers,
+} from '@nestjs/common';
 import { QStashGuard } from '../../../shared/guards/qstash.guard';
 import { summarizePipeline, ProviderFactory } from '@repo/ai';
 import { SummaryJobData, QUEUE_SUMMARY, DocumentType } from '@repo/types';

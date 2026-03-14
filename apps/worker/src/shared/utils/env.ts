@@ -36,7 +36,9 @@ export const env = {
   MONGODB_URI: getEnv('MONGODB_URI'),
   QSTASH_CURRENT_SIGNING_KEY: getEnv('QSTASH_CURRENT_SIGNING_KEY', false),
   QSTASH_NEXT_SIGNING_KEY: getEnv('QSTASH_NEXT_SIGNING_KEY', false),
-  CACHE_PROVIDER: getEnv('CACHE_PROVIDER', false, 'upstash') as 'redis' | 'upstash',
+  CACHE_PROVIDER: getEnv('CACHE_PROVIDER', false, 'upstash') as
+    | 'redis'
+    | 'upstash',
   UPSTASH_REDIS_REST_URL: getEnv('UPSTASH_REDIS_REST_URL', false),
   UPSTASH_REDIS_REST_TOKEN: getEnv('UPSTASH_REDIS_REST_TOKEN', false),
   QDRANT_URL: getEnv('QDRANT_URL'),

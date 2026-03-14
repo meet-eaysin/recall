@@ -22,12 +22,17 @@ export class CacheModule {
 
     if (options.provider === 'upstash') {
       if (!options.upstash) {
-        throw new Error('Upstash configuration is required for Upstash provider');
+        throw new Error(
+          'Upstash configuration is required for Upstash provider',
+        );
       }
 
       providers.push({
         provide: ICacheProvider,
-        useValue: new UpstashCacheProvider(options.upstash.url, options.upstash.token),
+        useValue: new UpstashCacheProvider(
+          options.upstash.url,
+          options.upstash.token,
+        ),
       });
     } else if (options.provider === 'redis') {
       if (!options.redis) {

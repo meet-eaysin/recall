@@ -22,7 +22,10 @@ export class SummaryUseCase {
       throw new BadRequestException('Document ingestion is not completed yet');
     }
 
-    await this.qstashService.publishMessage(QUEUE_SUMMARY, { documentId, userId });
+    await this.qstashService.publishMessage(QUEUE_SUMMARY, {
+      documentId,
+      userId,
+    });
   }
 
   async deleteSummary(documentId: string, userId: string): Promise<void> {

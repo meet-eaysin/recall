@@ -30,7 +30,9 @@ export class EmbeddingAdapter {
         return parsed.embedding;
       } catch (error) {
         if (process.env.NODE_ENV === 'development') {
-          console.warn(`[EmbeddingAdapter] Ollama unreachable, using random vector fallback for development`);
+          console.warn(
+            `[EmbeddingAdapter] Ollama unreachable, using random vector fallback for development`,
+          );
           return Array.from({ length: 768 }, () => Math.random() * 2 - 1);
         }
         throw error;
@@ -79,8 +81,12 @@ export class EmbeddingAdapter {
         return Promise.all(texts.map((t) => this.embedText(t, config)));
       } catch (error) {
         if (process.env.NODE_ENV === 'development') {
-          console.warn(`[EmbeddingAdapter] Ollama unreachable, using random vector fallback for development`);
-          return texts.map(() => Array.from({ length: 768 }, () => Math.random() * 2 - 1));
+          console.warn(
+            `[EmbeddingAdapter] Ollama unreachable, using random vector fallback for development`,
+          );
+          return texts.map(() =>
+            Array.from({ length: 768 }, () => Math.random() * 2 - 1),
+          );
         }
         // Fallback to sequential if /api/embed fails (404) or bad request
         if (axios.isAxiosError(error) && error.response?.status !== 500) {
