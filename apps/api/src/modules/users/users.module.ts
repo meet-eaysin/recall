@@ -1,5 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { UsersController } from './interface/users.controller';
+import { UserLlmSettingsController } from './interface/user-llm-settings.controller';
 import { GetMeUseCase } from './application/use-cases/get-me.usecase';
 import { UpsertUserFromIdentityUseCase } from './application/use-cases/upsert-user-from-identity.usecase';
 import { EnsureDevUserUseCase } from './application/use-cases/ensure-dev-user.usecase';
@@ -11,7 +12,7 @@ import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [forwardRef(() => AuthModule)],
-  controllers: [UsersController],
+  controllers: [UsersController, UserLlmSettingsController],
   providers: [
     GetMeUseCase,
     EnsureDevUserUseCase,

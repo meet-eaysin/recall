@@ -31,5 +31,8 @@
   ],
   "dependencies": {
     "@notionhq/client": "^5.11.1"
+  },
+  "resolutions": {
+    "zod": "latest"
   }
 }

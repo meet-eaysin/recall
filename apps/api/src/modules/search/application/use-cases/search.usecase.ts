@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NormalSearchService } from '../../domain/services/normal-search.service';
 import { SemanticSearchService } from '../../domain/services/semantic-search.service';
-import { ProviderFactory } from '@repo/ai';
+import { LLMClientFactory } from '@repo/ai';
 import {
   SearchQueryDto,
   SemanticSearchResultDto,
@@ -13,6 +13,7 @@ export class SearchUseCase {
   constructor(
     private readonly normalSearchService: NormalSearchService,
     private readonly semanticSearchService: SemanticSearchService,
+    private readonly llmClientFactory: LLMClientFactory,
   ) {}
 
   async execute(
@@ -26,11 +27,11 @@ export class SearchUseCase {
     mode: 'normal' | 'ai';
   }> {
     if (query.mode === 'ai') {
-      const llmConfig = await ProviderFactory.getLLMConfig(userId);
+      const config = await this.llmClientFactory.resolveConfigForUserId(userId);
       const results = await this.semanticSearchService.search(
         userId,
         query,
-        llmConfig,
+        config,
       );
       return {
         items: results,

@@ -58,9 +58,9 @@ export const API_ENDPOINTS = {
     SESSIONS: '/users/me/sessions',
     session: (sessionId: string) => `/users/me/sessions/${sessionId}`,
   },
-  LLM_CONFIG: {
-    ROOT: '/llm-config',
-    VALIDATE: '/llm-config/validate',
+  LLM_SETTINGS: {
+    ROOT: '/user/settings/llm',
+    TEST: '/user/settings/llm/test',
   },
   NOTION: {
     CONFIG: '/notion/config',

@@ -1,5 +1,11 @@
 import { jest } from '@jest/globals';
 import 'async_hooks';
+import type { LLMConfig } from '@repo/types';
+import type {
+  ChatCompletionMessageParam,
+  ResolvedClient,
+  ResolvedLLMConfig,
+} from '@repo/ai';
 
 // Type definitions for mocks
 interface MockAxiosResponse {
@@ -160,6 +166,63 @@ jest.mock('@repo/ai', () => ({
   UrlExtractor: jest.fn().mockImplementation(() => ({})),
   PdfExtractor: jest.fn().mockImplementation(() => ({})),
   ImageExtractor: jest.fn().mockImplementation(() => ({})),
+  LLMClientFactory: jest.fn().mockImplementation(() => ({
+    resolveConfig: jest.fn<(config?: LLMConfig | null) => ResolvedLLMConfig>().mockReturnValue({
+      provider: 'ollama',
+      chatModel: 'llama3',
+      embeddingModel: 'nomic-embed-text',
+      baseUrl: 'http://localhost:11434',
+      apiKey: 'mock-api-key',
+    }),
+    createForUser: jest.fn<(config?: LLMConfig | null) => Promise<ResolvedClient>>().mockImplementation(async () => {
+      const mockComplete = jest.fn<(params: { messages: ChatCompletionMessageParam[]; temperature?: number }) => Promise<string>>().mockResolvedValue('Mocked AI response content');
+      const mockStream = jest.fn<(params: { messages: ChatCompletionMessageParam[]; temperature?: number; onToken: (token: string) => void | Promise<void> }) => Promise<string>>().mockImplementation(async (params) => {
+        if (params.onToken) {
+          await params.onToken('Mocked ');
+          await params.onToken('AI ');
+          await params.onToken('response ');
+          await params.onToken('content');
+        }
+        return 'Mocked AI response content';
+      });
+
+      const mockClient: ResolvedClient = {
+        providerId: 'ollama',
+        modelId: 'llama3',
+        complete: mockComplete,
+        stream: mockStream,
+      };
+      return mockClient;
+    }),
+    resolveConfigForUserId: jest.fn<(userId: string) => Promise<ResolvedLLMConfig>>().mockResolvedValue({
+      provider: 'ollama',
+      chatModel: 'llama3',
+      embeddingModel: 'nomic-embed-text',
+      baseUrl: 'http://localhost:11434',
+      apiKey: 'mock-api-key',
+    }),
+    createForUserId: jest.fn<(userId: string) => Promise<ResolvedClient>>().mockImplementation(async () => {
+      const mockComplete = jest.fn<(params: { messages: ChatCompletionMessageParam[]; temperature?: number }) => Promise<string>>().mockResolvedValue('Mocked AI response content');
+      const mockStream = jest.fn<(params: { messages: ChatCompletionMessageParam[]; temperature?: number; onToken: (token: string) => void | Promise<void> }) => Promise<string>>().mockImplementation(async (params) => {
+        if (params.onToken) {
+          await params.onToken('Mocked ');
+          await params.onToken('AI ');
+          await params.onToken('response ');
+          await params.onToken('content');
+        }
+        return 'Mocked AI response content';
+      });
+
+      const mockClient: ResolvedClient = {
+        providerId: 'ollama',
+        modelId: 'llama3',
+        complete: mockComplete,
+        stream: mockStream,
+      };
+      return mockClient;
+    }),
+  })),
+  getProviderRegistry: jest.fn().mockReturnValue([]),
   summarizePipeline: jest.fn(),
   chunkPipeline: jest.fn(),
 }));

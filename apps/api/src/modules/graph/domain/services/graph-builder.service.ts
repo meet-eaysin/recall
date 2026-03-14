@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { IGraphRepository } from '../repositories/graph.repository';
 import { IDocumentRepository } from '../../../documents/domain/repositories/document.repository';
-import { ProviderFactory, embeddingAdapter, QdrantWrapper } from '@repo/ai';
+import { LLMClientFactory, embeddingAdapter, QdrantWrapper } from '@repo/ai';
 import { env } from '../../../../shared/utils/env';
 import { GraphGenerationMethod, GraphRelationType } from '@repo/types';
 
@@ -30,6 +30,7 @@ export class GraphBuilderService {
   constructor(
     private readonly graphRepository: IGraphRepository,
     private readonly documentRepository: IDocumentRepository,
+    private readonly llmClientFactory: LLMClientFactory,
   ) {
     this.qdrant = new QdrantWrapper(env.QDRANT_URL, env.QDRANT_API_KEY);
   }
@@ -76,7 +77,7 @@ export class GraphBuilderService {
 
       // 4. If embeddings are ready, build similarity edges
       if (doc.embeddingsReady) {
-        const config = await ProviderFactory.getLLMConfig(internalUserId);
+        const config = await this.llmClientFactory.resolveConfigForUserId(internalUserId);
 
         try {
           const queryVector = await embeddingAdapter.embedText(

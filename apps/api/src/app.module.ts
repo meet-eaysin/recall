@@ -13,7 +13,7 @@ import { DocumentsModule } from './modules/documents/documents.module';
 import { GraphModule } from './modules/graph/graph.module';
 import { IngestionModule } from './modules/ingestion/ingestion.module';
 import { KnowledgeModule } from './modules/knowledge/knowledge.module';
-import { LLMConfigModule } from './modules/llm-config/llm-config.module';
+import { LlmModule } from './modules/llm/llm.module';
 import { NotionModule } from './modules/notion/notion.module';
 import { ReviewModule } from './modules/review/review.module';
 import { SearchModule } from './modules/search/search.module';
@@ -42,7 +42,7 @@ import { CacheModule } from '@repo/cache';
     GraphModule,
     IngestionModule,
     KnowledgeModule,
-    LLMConfigModule,
+    LlmModule,
     NotionModule,
     QueueModule,
     ReviewModule,

@@ -7,7 +7,7 @@ import {
   Headers,
 } from '@nestjs/common';
 import { QStashGuard } from '../../../shared/guards/qstash.guard';
-import { summarizePipeline, ProviderFactory } from '@repo/ai';
+import { summarizePipeline, LLMClientFactory } from '@repo/ai';
 import { QUEUE_SUMMARY, DocumentType } from '@repo/types';
 import type { SummaryJobData } from '@repo/types';
 import {
@@ -20,7 +20,10 @@ import {
 export class SummaryController {
   private readonly logger = new Logger(SummaryController.name);
 
-  constructor(private readonly documentRepository: IDocumentRepository) {}
+  constructor(
+    private readonly documentRepository: IDocumentRepository,
+    private readonly llmClientFactory: LLMClientFactory,
+  ) {}
 
   @Post(QUEUE_SUMMARY)
   @UseGuards(QStashGuard)
@@ -70,12 +73,12 @@ export class SummaryController {
       throw new Error('Document has no extractable text for summarization');
     }
 
-    const llmConfig = await ProviderFactory.getLLMConfig(userId);
+    const resolvedClient = await this.llmClientFactory.createForUserId(userId);
 
     const summary = await summarizePipeline.generateSummary(
       textForSummary,
       type,
-      llmConfig,
+      resolvedClient,
     );
 
     await this.documentRepository.update(documentId, userId, {

@@ -24,6 +24,8 @@ import { NotionModule } from './modules/notion/notion.module';
 
 import { CacheModule } from '@repo/cache';
 
+import { LlmModule } from './modules/llm/llm.module';
+
 @Global()
 @Module({
   imports: [
@@ -37,6 +39,7 @@ import { CacheModule } from '@repo/cache';
         url: 'redis://localhost:6379',
       },
     }),
+    LlmModule,
     EmailModule,
     DocumentsModule,
     IngestionModule,

@@ -46,11 +46,11 @@ export function useLLMConfig() {
   });
 }
 
-export function useSaveLLMConfig() {
+export function useUpdateLLMConfig() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: settingsApi.saveLLMConfig,
+    mutationFn: settingsApi.updateLLMConfig,
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.SETTINGS.llm(),
@@ -59,22 +59,9 @@ export function useSaveLLMConfig() {
   });
 }
 
-export function useValidateLLMConfig() {
+export function useTestLLMConfig() {
   return useMutation({
-    mutationFn: settingsApi.validateLLMConfig,
-  });
-}
-
-export function useDeleteLLMConfig() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: settingsApi.deleteLLMConfig,
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.SETTINGS.llm(),
-      });
-    },
+    mutationFn: settingsApi.testLLMConfig,
   });
 }
 

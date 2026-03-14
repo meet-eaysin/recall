@@ -12,7 +12,7 @@ import {
   chunkText,
   embeddingAdapter,
   QdrantWrapper,
-  ProviderFactory,
+  LLMClientFactory,
 } from '@repo/ai';
 import { QUEUE_TRANSCRIPT, DocumentType } from '@repo/types';
 import type { TranscriptJobData } from '@repo/types';
@@ -28,7 +28,10 @@ export class TranscriptController {
   private readonly logger = new Logger(TranscriptController.name);
   private qdrant: QdrantWrapper;
 
-  constructor(private readonly documentRepository: IDocumentRepository) {
+  constructor(
+    private readonly documentRepository: IDocumentRepository,
+    private readonly llmClientFactory: LLMClientFactory,
+  ) {
     this.qdrant = new QdrantWrapper(env.QDRANT_URL, env.QDRANT_API_KEY);
   }
 
@@ -95,7 +98,7 @@ export class TranscriptController {
     await transcriptDoc.save();
 
     const chunks = chunkText(fullText);
-    const llmConfig = await ProviderFactory.getLLMConfig(userId);
+    const resolvedConfig = await this.llmClientFactory.resolveConfigForUserId(userId);
 
     for (let i = 0; i < chunks.length; i++) {
       const chunkObj = chunks[i];
@@ -103,7 +106,7 @@ export class TranscriptController {
 
       const vector = await embeddingAdapter.embedText(
         chunkObj.content,
-        llmConfig,
+        resolvedConfig,
       );
 
       await this.qdrant.upsertPoints('mindstack', [

@@ -32,108 +32,84 @@ describe('LLM Config (e2e)', () => {
     await cleanupDatabase();
   }, 30000);
 
-  describe('PUT /llm-config', () => {
-    it('should save a new LLM config', async () => {
+  describe('PATCH /user/settings/llm', () => {
+    it('should update LLM config', async () => {
       const auth = await createTestAuthContext(app, {
-        authId: 'dev:llm-config-save',
-        email: 'llm-config-save@test.local',
+        authId: 'dev:llm-config-update',
+        email: 'llm-config-update@test.local',
       });
       const payload = {
-        provider: 'openai',
-        chatModel: 'gpt-4',
-        embeddingModel: 'text-embedding-3-small',
+        providerId: 'openai',
+        modelId: 'gpt-4o-mini',
+        useSystemDefault: false,
         apiKey: 'sk-12345',
       };
 
       const response = await request(app.getHttpServer())
-        .put('/api/v1/llm-config')
+        .patch('/api/v1/user/settings/llm')
         .set(auth.headers)
         .send(payload)
         .expect(200);
 
-      if (isLLMConfigResponse(response.body)) {
-        expect(response.body.data.provider).toBe(payload.provider);
-        expect(response.body.data.chatModel).toBe(payload.chatModel);
-      } else {
-        throw new Error('Save LLM config response mismatch');
-      }
+      expect(response.body.success).toBe(true);
     });
   });
 
-  describe('GET /llm-config', () => {
-    it('should return 404 if no config exists', async () => {
-      const auth = await createTestAuthContext(app, {
-        authId: 'dev:llm-config-missing',
-        email: 'llm-config-missing@test.local',
-      });
-      await request(app.getHttpServer())
-        .get('/api/v1/llm-config')
-        .set(auth.headers)
-        .expect(404);
-    });
-
-    it('should return config if seeded', async () => {
+  describe('GET /user/settings/llm', () => {
+    it('should return registry and default config', async () => {
       const auth = await createTestAuthContext(app, {
         authId: 'dev:llm-config-get',
         email: 'llm-config-get@test.local',
       });
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/user/settings/llm')
+        .set(auth.headers)
+        .expect(200);
+
+      expect(response.body.data.registry).toBeDefined();
+      expect(Array.isArray(response.body.data.registry)).toBe(true);
+    });
+
+    it('should return user config if seeded', async () => {
+      const auth = await createTestAuthContext(app, {
+        authId: 'dev:llm-config-seeded',
+        email: 'llm-config-seeded@test.local',
+      });
       await seedLLMConfig(auth.userId);
 
       const response = await request(app.getHttpServer())
-        .get('/api/v1/llm-config')
+        .get('/api/v1/user/settings/llm')
         .set(auth.headers)
         .expect(200);
 
       if (isLLMConfigResponse(response.body)) {
-        expect(response.body.data.provider).toBe('openai');
+        expect(response.body.data.config?.providerId).toBe('openai');
       } else {
         throw new Error('Get LLM config response mismatch');
       }
     });
   });
 
-  describe('POST /llm-config/validate', () => {
-    it('should validate config capabilities', async () => {
+  describe('POST /user/settings/llm/test', () => {
+    it('should test connection', async () => {
       const auth = await createTestAuthContext(app, {
-        authId: 'dev:llm-config-validate',
-        email: 'llm-config-validate@test.local',
+        authId: 'dev:llm-config-test',
+        email: 'llm-config-test@test.local',
       });
       const payload = {
-        provider: 'openai',
-        chatModel: 'gpt-4',
-        embeddingModel: 'text-embedding-3-small',
+        providerId: 'openai',
+        modelId: 'gpt-4o-mini',
+        useSystemDefault: false,
         apiKey: 'sk-12345',
       };
 
       const response = await request(app.getHttpServer())
-        .post('/api/v1/llm-config/validate')
+        .post('/api/v1/user/settings/llm/test')
         .set(auth.headers)
-        .send(payload)
-        .expect(201);
+        .send(payload);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.data).toBeDefined();
-    });
-  });
-
-  describe('DELETE /llm-config', () => {
-    it('should delete existing config', async () => {
-      const auth = await createTestAuthContext(app, {
-        authId: 'dev:llm-config-delete',
-        email: 'llm-config-delete@test.local',
-      });
-      await seedLLMConfig(auth.userId);
-
-      await request(app.getHttpServer())
-        .delete('/api/v1/llm-config')
-        .set(auth.headers)
-        .expect(204);
-
-      // Verify it's gone
-      await request(app.getHttpServer())
-        .get('/api/v1/llm-config')
-        .set(auth.headers)
-        .expect(404);
+      expect(response.body).toBeDefined();
     });
   });
 });

@@ -7,7 +7,7 @@ import {
   AskResultDto,
   SourceRefDto,
 } from '../../interface/schemas/search.schema';
-import { QdrantWrapper, embeddingAdapter, ResolvedLLMConfig } from '@repo/ai';
+import { QdrantWrapper, embeddingAdapter, ResolvedLLMConfig, ResolvedClient, ChatCompletionMessageParam } from '@repo/ai';
 import { env } from '../../../../shared/utils/env';
 import { DocumentChunkModel, DocumentModel, IDocument } from '@repo/db';
 import { Types } from 'mongoose';
@@ -48,6 +48,7 @@ export class RagService {
   async ask(
     userId: string,
     question: string,
+    resolvedClient: ResolvedClient,
     llmConfig: ResolvedLLMConfig,
     documentIds?: string[],
     history: Array<{ role: 'user' | 'assistant'; content: string }> = [],
@@ -60,7 +61,7 @@ export class RagService {
     );
 
     const answer = await this.complete(
-      llmConfig,
+      resolvedClient,
       this.buildMessages(question, preparation.contextStr, history),
     );
 
@@ -75,6 +76,7 @@ export class RagService {
   async stream(
     userId: string,
     question: string,
+    resolvedClient: ResolvedClient,
     llmConfig: ResolvedLLMConfig,
     handlers: {
       onComplete: (
@@ -101,74 +103,12 @@ export class RagService {
     let answer = '';
 
     try {
-      if (llmConfig.provider === 'ollama') {
-        const response = await fetch(`${llmConfig.baseUrl}/api/chat`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: llmConfig.chatModel,
-            messages,
-            stream: true,
-          }),
-        });
-
-        if (!response.ok || !response.body) {
-          throw new Error(`Ollama streaming failed with ${response.status}`);
-        }
-
-        for await (const line of this.readLines(response.body)) {
-          if (!line.trim()) continue;
-          const payload = JSON.parse(line) as {
-            done?: boolean;
-            message?: { content?: string };
-          };
-          const chunk = payload.message?.content;
-          if (typeof chunk === 'string' && chunk.length > 0) {
-            answer += chunk;
-            await handlers.onToken(chunk);
-          }
-          if (payload.done) break;
-        }
-      } else {
-        const response = await fetch(
-          `${llmConfig.baseUrl || 'https://api.openai.com/v1'}/chat/completions`,
-          {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${llmConfig.apiKey}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              model: llmConfig.chatModel,
-              messages,
-              stream: true,
-            }),
-          },
-        );
-
-        if (!response.ok || !response.body) {
-          throw new Error(`OpenAI streaming failed with ${response.status}`);
-        }
-
-        for await (const line of this.readLines(response.body)) {
-          const trimmed = line.trim();
-          if (!trimmed.startsWith('data:')) continue;
-
-          const data = trimmed.slice(5).trim();
-          if (data === '[DONE]') break;
-
-          const payload = JSON.parse(data) as {
-            choices?: Array<{ delta?: { content?: string } }>;
-          };
-          const chunk = payload.choices?.[0]?.delta?.content;
-          if (typeof chunk === 'string' && chunk.length > 0) {
-            answer += chunk;
-            await handlers.onToken(chunk);
-          }
-        }
-      }
+      answer = await resolvedClient.stream({
+        messages,
+        onToken: async (token: string) => {
+          await handlers.onToken(token);
+        },
+      });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.error(`LLM streaming failed: ${message}`);
@@ -369,10 +309,10 @@ export class RagService {
     question: string,
     contextStr: string,
     history: Array<{ role: 'user' | 'assistant'; content: string }>,
-  ): Array<{ role: 'system' | 'user' | 'assistant'; content: string }> {
+  ): ChatCompletionMessageParam[] {
     const systemPrompt = `You are a helpful AI assistant. Answer the user's question ONLY using the provided context. If the context does not contain the answer, say "I cannot answer this based on the provided documents." clearly. Always cite which document your answer comes from using the [Source: Title] format. Prefer clear markdown with headings, short paragraphs, and bullet lists when useful.`;
 
-    const historyMessages = history.map((message) => ({
+    const historyMessages: ChatCompletionMessageParam[] = history.map((message) => ({
       role: message.role,
       content: message.content,
     }));
@@ -390,84 +330,19 @@ export class RagService {
   }
 
   private async complete(
-    llmConfig: ResolvedLLMConfig,
-    messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
+    resolvedClient: ResolvedClient,
+    messages: ChatCompletionMessageParam[],
   ): Promise<string> {
     try {
-      if (llmConfig.provider === 'ollama') {
-        const response = await fetch(`${llmConfig.baseUrl}/api/chat`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: llmConfig.chatModel,
-            messages,
-            stream: false,
-          }),
-        });
-        const payload = (await response.json()) as {
-          message?: { content?: string };
-        };
-        const content = payload.message?.content;
-        if (typeof content === 'string') {
-          return content;
-        }
-        throw new Error('Invalid response from Ollama endpoint');
-      }
-
-      const response = await fetch(
-        `${llmConfig.baseUrl || 'https://api.openai.com/v1'}/chat/completions`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${llmConfig.apiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: llmConfig.chatModel,
-            messages,
-          }),
-        },
-      );
-      const payload = (await response.json()) as {
-        choices?: Array<{ message?: { content?: string } }>;
-      };
-      const content = payload.choices?.[0]?.message?.content;
-      if (typeof content === 'string') {
-        return content;
-      }
-      throw new Error('Invalid response from OpenAI endpoint');
+      return await resolvedClient.complete({
+        messages,
+      });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.error(`LLM call failed: ${message}`);
       throw new ServiceUnavailableException(
         'LLM service is currently unavailable',
       );
-    }
-  }
-
-  private async *readLines(stream: ReadableStream<Uint8Array>) {
-    const reader = stream.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-      const parts = buffer.split('\n');
-      buffer = parts.pop() ?? '';
-
-      for (const part of parts) {
-        yield part;
-      }
-    }
-
-    buffer += decoder.decode();
-    if (buffer.trim()) {
-      yield buffer;
     }
   }
 }

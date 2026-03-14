@@ -167,13 +167,15 @@ export function SettingsPage() {
                   <p className="text-sm font-medium text-foreground">
                     LLM config
                   </p>
-                  <Badge variant={llmConfig ? 'secondary' : 'outline'}>
-                    {llmConfig ? llmConfig.provider : 'Not configured'}
+                  <Badge variant={llmConfig?.config ? 'secondary' : 'outline'}>
+                    {llmConfig?.config
+                      ? llmConfig.config.providerId
+                      : 'Not configured'}
                   </Badge>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {llmConfig
-                    ? `${llmConfig.chatModel} is ready for AI features.`
+                  {llmConfig?.config
+                    ? `${llmConfig.config.modelId} is ready for AI features.`
                     : 'Save a provider and model set to enable AI-powered features.'}
                 </p>
               </div>

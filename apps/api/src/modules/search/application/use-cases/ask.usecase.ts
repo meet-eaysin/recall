@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { RagService } from '../../domain/services/rag.service';
-import { ProviderFactory } from '@repo/ai';
+import { LLMClientFactory } from '@repo/ai';
 import {
   AskQueryDto,
   AskResultDto,
@@ -16,6 +16,7 @@ export class AskUseCase {
     private readonly ragService: RagService,
     private readonly searchChatService: SearchChatService,
     private readonly userActivityRepository: IUserActivityRepository,
+    private readonly llmClientFactory: LLMClientFactory,
   ) {}
 
   async execute(userId: string, query: AskQueryDto): Promise<AskResultDto> {
@@ -44,11 +45,15 @@ export class AskUseCase {
       userId,
       conversationId,
     );
-    const llmConfig = await ProviderFactory.getLLMConfig(userId);
+    
+    const resolvedClient = await this.llmClientFactory.createForUserId(userId);
+    const resolvedConfig = await this.llmClientFactory.resolveConfigForUserId(userId);
+
     const result = await this.ragService.ask(
       userId,
       query.question,
-      llmConfig,
+      resolvedClient,
+      resolvedConfig,
       activeDocumentIds,
       history,
     );
@@ -122,12 +127,14 @@ export class AskUseCase {
       userId,
       conversationId,
     );
-    const llmConfig = await ProviderFactory.getLLMConfig(userId);
+    const resolvedClient = await this.llmClientFactory.createForUserId(userId);
+    const resolvedConfig = await this.llmClientFactory.resolveConfigForUserId(userId);
 
     await this.ragService.stream(
       userId,
       query.question,
-      llmConfig,
+      resolvedClient,
+      resolvedConfig,
       {
         onComplete: async (result) => {
           const detail = await this.searchChatService.appendExchange({

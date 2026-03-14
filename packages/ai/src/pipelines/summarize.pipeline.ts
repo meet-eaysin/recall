@@ -1,47 +1,24 @@
-import axios from 'axios';
-import { ResolvedLLMConfig } from '../providers/provider.factory';
 import { DocumentType } from '@repo/types';
+import type { ResolvedClient, ChatCompletionMessageParam } from '../providers/provider.factory';
 
 export class SummarizePipeline {
   private async callLlm(
     prompt: string,
     text: string,
-    llmConfig: ResolvedLLMConfig,
+    resolvedClient: ResolvedClient,
   ): Promise<string> {
-    const messages = [
+    const messages: ChatCompletionMessageParam[] = [
       { role: 'system', content: prompt },
       { role: 'user', content: text },
     ];
 
     try {
-      if (llmConfig.provider === 'ollama') {
-        const response = await axios.post(`${llmConfig.baseUrl}/api/chat`, {
-          model: llmConfig.chatModel,
-          messages,
-          stream: false,
-          options: {
-            temperature: 0.3, // Lower temp for more factual summaries
-          },
-        });
-        return response.data.message.content;
-      } else {
-        const response = await axios.post(
-          `${llmConfig.baseUrl}/chat/completions`,
-          {
-            model: llmConfig.chatModel,
-            messages,
-            temperature: 0.3,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${llmConfig.apiKey}`,
-            },
-          },
-        );
-        return response.data.choices[0].message.content;
-      }
-    } catch {
-      throw new Error('Service Unavailable Error: LLM provider failed');
+      return await resolvedClient.complete({
+        messages,
+        temperature: 0.3,
+      });
+    } catch (e) {
+      throw new Error(`Service Unavailable Error: LLM provider failed. ${e}`);
     }
   }
 
@@ -75,7 +52,7 @@ export class SummarizePipeline {
   async generateSummary(
     text: string,
     _docType: DocumentType,
-    llmConfig: ResolvedLLMConfig,
+    resolvedClient: ResolvedClient,
   ): Promise<string> {
     if (!text || text.trim() === '') {
       throw new Error('No text provided for summary generation');
@@ -92,12 +69,11 @@ export class SummarizePipeline {
       const miniSummaries: string[] = [];
 
       // Process segments sequentially or in parallel depending on the provider limits
-      // For general reliability, particularly with local Ollama, we'll run sequentially
       for (const segment of segments) {
         const miniSummary = await this.callLlm(
           'Summarize the following text segment concisely, focusing on key points.',
           segment,
-          llmConfig,
+          resolvedClient,
         );
         miniSummaries.push(miniSummary);
       }
@@ -109,13 +85,14 @@ export class SummarizePipeline {
         systemPrompt +
           ' Please synthesize these segment summaries into one cohesive final summary.',
         combinedMiniSummaries,
-        llmConfig,
+        resolvedClient,
       );
     } else {
       // Direct summarization
-      return this.callLlm(systemPrompt, text, llmConfig);
+      return this.callLlm(systemPrompt, text, resolvedClient);
     }
   }
 }
 
 export const summarizePipeline = new SummarizePipeline();
+

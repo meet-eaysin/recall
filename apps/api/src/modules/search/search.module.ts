@@ -5,7 +5,6 @@ import { RagService } from './domain/services/rag.service';
 import { SearchUseCase } from './application/use-cases/search.usecase';
 import { AskUseCase } from './application/use-cases/ask.usecase';
 import { DocumentsModule } from '../documents/documents.module';
-import { LLMConfigModule } from '../llm-config/llm-config.module';
 import { SearchController } from './interface/search.controller';
 import { AnalyticsModule } from '../analytics/analytics.module';
 import { SearchChatService } from './domain/services/search-chat.service';
@@ -13,7 +12,7 @@ import { IChatConversationRepository } from './domain/repositories/chat-conversa
 import { MongooseChatConversationRepository } from './infrastructure/persistence/mongoose-chat-conversation.repository';
 
 @Module({
-  imports: [DocumentsModule, LLMConfigModule, AnalyticsModule],
+  imports: [DocumentsModule, AnalyticsModule],
   controllers: [SearchController],
   providers: [
     NormalSearchService,

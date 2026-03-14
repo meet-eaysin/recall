@@ -1,17 +1,14 @@
 import { TEST_USER_ID } from './common';
+import type { LLMConfig } from '@repo/types';
 
 export interface LLMConfigResponse {
   success: boolean;
   data: {
-    userId: string;
-    provider: string;
-    chatModel: string;
-    embeddingModel: string;
-    apiKey?: string;
-    baseUrl?: string;
-    organization?: string;
-    capabilities: Record<string, unknown>;
-    validatedAt: string;
+    registry: Array<{
+      id: string;
+      name: string;
+    }>;
+    config: (Omit<LLMConfig, 'apiKey'> & { hasApiKey: boolean }) | null;
   };
 }
 
@@ -21,28 +18,28 @@ export function isLLMConfigResponse(body: unknown): body is LLMConfigResponse {
   if (!('data' in body) || typeof body.data !== 'object' || body.data === null)
     return false;
   const data = body.data;
-  return (
-    'provider' in data &&
-    typeof data.provider === 'string' &&
-    'chatModel' in data &&
-    typeof data.chatModel === 'string' &&
-    'embeddingModel' in data &&
-    typeof data.embeddingModel === 'string'
-  );
+  return 'registry' in data && Array.isArray(data.registry);
 }
 
 export async function seedLLMConfig(
   userId: string = TEST_USER_ID,
 ): Promise<void> {
-  const { LLMConfigModel } = await import('@repo/db');
-  const config = new LLMConfigModel({
+  const { UserModel } = await import('@repo/db');
+  const authId = `dev:${userId}`;
+  await UserModel.findByIdAndUpdate(
     userId,
-    provider: 'openai',
-    chatModel: 'gpt-4',
-    embeddingModel: 'text-embedding-3-small',
-    apiKey: 'mock-api-key',
-    capabilities: { chat: true, embeddings: true },
-    validatedAt: new Date(),
-  });
-  await config.save();
+    {
+      $set: {
+        email: `dev-${userId}@test.local`,
+        name: 'Test User',
+        authId,
+        llmConfig: {
+          providerId: 'openai',
+          modelId: 'gpt-4o-mini',
+          useSystemDefault: true,
+        },
+      },
+    },
+    { upsert: true },
+  );
 }

@@ -16,7 +16,7 @@ import {
   chunkText,
   embeddingAdapter,
   QdrantWrapper,
-  ProviderFactory,
+  LLMClientFactory,
 } from '@repo/ai';
 import type { ResolvedLLMConfig } from '@repo/ai';
 import {
@@ -51,6 +51,7 @@ export class IngestionController {
     private readonly ingestionJobRepository: IIngestionJobRepository,
     private readonly localStorage: LocalStorage,
     private readonly qstashService: QStashService,
+    private readonly llmClientFactory: LLMClientFactory,
   ) {
     this.qdrant = new QdrantWrapper(env.QDRANT_URL, env.QDRANT_API_KEY);
   }
@@ -163,7 +164,7 @@ export class IngestionController {
         IngestionStatus.PROCESSING,
         userId,
       );
-      const config = await ProviderFactory.getLLMConfig(userId);
+      const config = await this.llmClientFactory.resolveConfigForUserId(userId);
       try {
         const topics = await this.classifyTopics(
           text.substring(0, 5000),
