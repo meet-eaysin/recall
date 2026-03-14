@@ -19,7 +19,7 @@ interface MessageInputBaseProps extends React.TextareaHTMLAttributes<HTMLTextAre
   stop?: () => void;
   isGenerating: boolean;
   enableInterrupt?: boolean;
-  transcribeAudio?: (blob: Blob) => Promise<string>;
+  transcribeAudio?: (blob: Blob | null) => Promise<string>;
 }
 
 interface MessageInputWithoutAttachmentProps extends MessageInputBaseProps {

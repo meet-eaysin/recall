@@ -34,7 +34,7 @@ interface ChatPropsBase {
     rating: 'thumbs-up' | 'thumbs-down',
   ) => void;
   setMessages?: (messages: Message[]) => void;
-  transcribeAudio?: (blob: Blob) => Promise<string>;
+  transcribeAudio?: (blob: Blob | null) => Promise<string>;
   onSourceClick?: (id: string) => void;
 }
 
