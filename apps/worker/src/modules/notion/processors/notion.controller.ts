@@ -126,8 +126,7 @@ export class NotionController {
         }
       }
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Unknown error';
+      const message = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(
         `Sync failed for doc ${documentId}: ${message}`,
         error instanceof Error ? error.stack : undefined,

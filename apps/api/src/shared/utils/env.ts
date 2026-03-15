@@ -97,6 +97,8 @@ export const env = {
     'qstash',
   ),
   QSTASH_TOKEN: getEnv({ key: 'QSTASH_TOKEN', required: false }),
+  QSTASH_URL: getEnv({ key: 'QSTASH_URL', required: false }),
+
   CACHE_PROVIDER: parseCacheProvider(
     getEnv({ key: 'CACHE_PROVIDER', required: false, defaultValue: 'upstash' }),
     'upstash',

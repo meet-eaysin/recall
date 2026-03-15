@@ -12,9 +12,11 @@ import { env } from '../../shared/utils/env';
       provider: env.QUEUE_PROVIDER,
       qstash: {
         token: env.QSTASH_TOKEN,
+        baseUrl: env.QSTASH_URL,
         workerUrl: env.WORKER_URL,
         devBypass: env.NODE_ENV === 'development',
       },
+
       http: {
         baseUrl: env.WORKER_URL,
         devBypassHeader: true,

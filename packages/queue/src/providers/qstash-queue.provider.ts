@@ -5,9 +5,11 @@ import { HttpQueueProvider } from './http-queue.provider';
 
 export interface QStashQueueProviderOptions {
   token?: string;
+  baseUrl?: string;
   workerUrl: string;
   devBypass?: boolean;
 }
+
 
 export class QStashQueueProvider implements IQueueProvider {
   private client: Client | null = null;
@@ -27,7 +29,11 @@ export class QStashQueueProvider implements IQueueProvider {
           'QSTASH_TOKEN is required for QStash provider',
         );
       }
-      this.client = new Client({ token: this.options.token });
+      this.client = new Client({
+        token: this.options.token,
+        baseUrl: this.options.baseUrl,
+      });
+
     }
     return this.client;
   }

@@ -89,6 +89,8 @@ export const env = {
     'qstash',
   ),
   QSTASH_TOKEN: getEnv({ key: 'QSTASH_TOKEN', required: false }),
+  QSTASH_URL: getEnv({ key: 'QSTASH_URL', required: false }),
+
   QSTASH_CURRENT_SIGNING_KEY: getEnv({
     key: 'QSTASH_CURRENT_SIGNING_KEY',
     required: false,

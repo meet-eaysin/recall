@@ -148,10 +148,6 @@ export class TokenService {
   }
 
   private isIdentityProvider(value: unknown): value is IdentityProvider {
-    return (
-      value === 'google' ||
-      value === 'github' ||
-      value === 'dev'
-    );
+    return value === 'google' || value === 'github' || value === 'dev';
   }
 }

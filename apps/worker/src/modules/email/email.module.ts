@@ -1,7 +1,10 @@
 import { Module, InternalServerErrorException } from '@nestjs/common';
 import { EmailController } from './processors/email.controller';
 import { EmailService } from './email.service';
-import { EMAIL_PROVIDER_TOKEN, EmailProvider } from './providers/email-provider';
+import {
+  EMAIL_PROVIDER_TOKEN,
+  EmailProvider,
+} from './providers/email-provider';
 import { ResendEmailProvider } from './providers/resend-email.provider';
 import { env } from '../../shared/utils/env';
 

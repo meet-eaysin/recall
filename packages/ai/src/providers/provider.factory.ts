@@ -156,7 +156,8 @@ export class LLMClientFactory {
     providerDef: { models: Array<{ id: string; name: string }> },
   ): boolean {
     return providerDef.models.some(
-      (model) => model.id === modelId && model.name.toLowerCase().includes('embedding'),
+      (model) =>
+        model.id === modelId && model.name.toLowerCase().includes('embedding'),
     );
   }
 }
