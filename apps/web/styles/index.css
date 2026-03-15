@@ -182,11 +182,6 @@ html.todesktop.dark {
   }
 }
 
-/* TODO: avoid global specific css */
-/* button[role="switch"][data-state="checked"] span {
-  transform: translateX(16px);
-} */
-
 @layer components {
   /* slider */
   .slider {
@@ -214,6 +209,28 @@ html.todesktop.dark {
   }
 }
 
+@layer components {
+  .react-multi-email {
+    @apply flex min-h-10 w-full flex-wrap gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm;
+  }
+
+  .react-multi-email.focused {
+    @apply ring-2 ring-ring ring-offset-1 ring-offset-background;
+  }
+
+  .react-multi-email__input {
+    @apply flex-1 border-0 bg-transparent p-0 text-sm outline-none;
+  }
+
+  .react-multi-email__email {
+    @apply inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs text-foreground;
+  }
+
+  .react-multi-email__email .react-multi-email__remove {
+    @apply cursor-pointer text-muted-foreground hover:text-foreground;
+  }
+}
+
 /* hide chat bubble on mobile */
 @media only screen and (max-width: 768px) {
   /* Intercom FAB*/
@@ -234,8 +251,6 @@ html.todesktop.dark {
     z-index: 1058 !important;
   }
 }
-
-/* TODO: implement styling for react-multi-email */
 
 /* !important to override react-dates */
 .DateRangePickerInput__withBorder {

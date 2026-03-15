@@ -39,6 +39,7 @@ function getEnv(options: EnvOptions): string {
 
 type CacheProvider = 'redis' | 'upstash';
 type QueueProvider = 'qstash' | 'http';
+type EmailProvider = 'resend';
 
 function parseCacheProvider(
   value: string,
@@ -55,6 +56,16 @@ function parseQueueProvider(
   fallback: QueueProvider,
 ): QueueProvider {
   if (value === 'qstash' || value === 'http') {
+    return value;
+  }
+  return fallback;
+}
+
+function parseEmailProvider(
+  value: string,
+  fallback: EmailProvider,
+): EmailProvider {
+  if (value === 'resend') {
     return value;
   }
   return fallback;
@@ -86,6 +97,12 @@ export const env = {
     key: 'QSTASH_NEXT_SIGNING_KEY',
     required: false,
   }),
+  EMAIL_PROVIDER: parseEmailProvider(
+    getEnv({ key: 'EMAIL_PROVIDER', required: false, defaultValue: 'resend' }),
+    'resend',
+  ),
+  RESEND_API_KEY: getEnv({ key: 'RESEND_API_KEY', required: false }),
+  EMAIL_FROM: getEnv({ key: 'EMAIL_FROM', required: false }),
   CACHE_PROVIDER: parseCacheProvider(
     getEnv({ key: 'CACHE_PROVIDER', required: false, defaultValue: 'upstash' }),
     'upstash',
