@@ -37,7 +37,8 @@
     "GITHUB_CLIENT_ID",
     "GITHUB_CLIENT_SECRET",
     "GITHUB_CALLBACK_URL",
-    "QSTASH_URL"
+    "QSTASH_URL",
+    "ENABLE_EXPERIMENTAL_COREPACK"
   ],
   "tasks": {
     "dev": {
