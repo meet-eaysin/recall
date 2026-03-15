@@ -2011,6 +2011,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mixmark-io/domino@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "@mixmark-io/domino@npm:2.2.0"
+  checksum: 10c0/aa468a15f9217d425220fe6a4b3f9416cbe8e566ee14efc191c6d5cc04fe39338b16a90bbac190f28d44e69465db5f2cf95f479c621ce38060ca6b2a3d346e9d
+  languageName: node
+  linkType: hard
+
 "@modelcontextprotocol/sdk@npm:^1.26.0":
   version: 1.27.1
   resolution: "@modelcontextprotocol/sdk@npm:1.27.1"
@@ -4069,6 +4076,7 @@ __metadata:
     "@repo/types": "npm:*"
     "@types/node": "npm:^20.0.0"
     "@types/pdf-parse": "npm:^1.1.5"
+    "@types/turndown": "npm:^5.0.6"
     axios: "npm:^1.6.7"
     openai: "npm:^6.29.0"
     p-limit: "npm:^3.1.0"
@@ -4076,6 +4084,7 @@ __metadata:
     pdfjs-dist: "npm:^4.10.38"
     sharp: "npm:^0.33.2"
     tesseract.js: "npm:^5.1.0"
+    turndown: "npm:^7.2.2"
     typescript: "npm:^5.0.0"
     youtube-transcript: "npm:^1.2.1"
     zod: "npm:^4.3.6"
@@ -4984,6 +4993,13 @@ __metadata:
     "@types/methods": "npm:^1.1.4"
     "@types/superagent": "npm:^8.1.0"
   checksum: 10c0/a2080f870154b09db123864a484fb633bc9e2a0f7294a194388df4c7effe5af9de36d5a5ebf819f72b404fa47b5e813c47d5a3a51354251fd2fa8589bfb64f2c
+  languageName: node
+  linkType: hard
+
+"@types/turndown@npm:^5.0.6":
+  version: 5.0.6
+  resolution: "@types/turndown@npm:5.0.6"
+  checksum: 10c0/cc5648c115b67ba413782fd0a8ae273ad6b87940df770ab9a5fefe0303c368704013fca2a55dd08f46a2132a747912fd47f96a83162c47fd189babf1352ac4be
   languageName: node
   linkType: hard
 
@@ -14745,6 +14761,15 @@ __metadata:
   bin:
     turbo: bin/turbo
   checksum: 10c0/879b9dbb337097fac8f5d2fe22d200c6af80bda3c8b9edc4a45d1febcd6e4a54b5be89de082b2eac693828b5b9795e7863d4c1b92137414ce832271c20564d5d
+  languageName: node
+  linkType: hard
+
+"turndown@npm:^7.2.2":
+  version: 7.2.2
+  resolution: "turndown@npm:7.2.2"
+  dependencies:
+    "@mixmark-io/domino": "npm:^2.2.0"
+  checksum: 10c0/ee09f7bd67c468505aad6c3a26b11269ca49ffce07eaa9c212926d068f242b11b4e955b31a58289f26674ff29f91209b29454907551dcaec7da712e524cc78c2
   languageName: node
   linkType: hard
 

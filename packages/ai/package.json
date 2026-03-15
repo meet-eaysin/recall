@@ -33,12 +33,14 @@
     "pdfjs-dist": "^4.10.38",
     "sharp": "^0.33.2",
     "tesseract.js": "^5.1.0",
+    "turndown": "^7.2.2",
     "youtube-transcript": "^1.2.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/pdf-parse": "^1.1.5",
+    "@types/turndown": "^5.0.6",
     "typescript": "^5.0.0"
   }
 }

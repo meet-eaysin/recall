@@ -253,7 +253,6 @@ export class IngestionController {
           const vector = embeddings[i];
           if (!vector) return null;
           return {
-            id: crypto.randomUUID(),
             vector,
             payload: {
               documentId: documentId.toString(),
@@ -265,7 +264,32 @@ export class IngestionController {
         .filter((p): p is NonNullable<typeof p> => p !== null);
 
       if (points.length > 0) {
-        await this.qdrant.upsertPoints('mindstack', points);
+        // Clean up any existing points for this document to prevent duplicates
+        // if re-indexing happened with different chunk counts
+        await this.qdrant.deleteByFilter('mindstack', {
+          must: [
+            { key: 'documentId', match: { value: documentId.toString() } }
+          ]
+        });
+        
+        // Generate deterministic IDs for the points for double-protection
+        const pointsForUpsert = points.map(p => {
+          // Create a deterministic UUID from documentId and chunkIndex
+          const hash = crypto.createHash('md5')
+            .update(`${documentId.toString()}-${p.payload.chunkIndex}`)
+            .digest('hex');
+          
+          // Format as UUID: 8-4-4-4-12
+          const id = `${hash.slice(0, 8)}-${hash.slice(8, 12)}-${hash.slice(12, 16)}-${hash.slice(16, 20)}-${hash.slice(20, 32)}`;
+          
+          return {
+            id,
+            vector: p.vector,
+            payload: p.payload,
+          };
+        });
+
+        await this.qdrant.upsertPoints('mindstack', pointsForUpsert);
       }
 
       await this.ingestionJobRepository.updateStage(
