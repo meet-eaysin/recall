@@ -10,7 +10,6 @@ export interface QStashQueueProviderOptions {
   devBypass?: boolean;
 }
 
-
 export class QStashQueueProvider implements IQueueProvider {
   private client: Client | null = null;
   private readonly httpFallback: HttpQueueProvider;
@@ -33,7 +32,6 @@ export class QStashQueueProvider implements IQueueProvider {
         token: this.options.token,
         baseUrl: this.options.baseUrl,
       });
-
     }
     return this.client;
   }

@@ -132,10 +132,13 @@ const ollamaAdapter: ProviderAdapter = {
   },
   embedBatch: async (texts, config) => {
     try {
-      const response = await axios.post(`${config.embeddingBaseUrl}/api/embed`, {
-        model: config.embeddingModel,
-        input: texts,
-      });
+      const response = await axios.post(
+        `${config.embeddingBaseUrl}/api/embed`,
+        {
+          model: config.embeddingModel,
+          input: texts,
+        },
+      );
 
       if (response.data.embeddings) {
         return response.data.embeddings;

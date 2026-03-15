@@ -24,7 +24,8 @@ export class LLMClientFactory {
   }
 
   resolveConfig(config?: LLMConfig | null): ResolvedLLMConfig {
-    const useSystemDefault = !config || config.useSystemDefault;
+    const useSystemDefault =
+      !config || config.useSystemDefault === true || !config.providerId;
 
     // 1. Resolve Chat Configuration
     let providerId: string;

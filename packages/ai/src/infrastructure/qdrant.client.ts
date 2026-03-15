@@ -24,7 +24,6 @@ export class QdrantWrapper {
       checkCompatibility: false,
       ...(apiKey ? { apiKey } : {}),
     });
-
   }
 
   async ensureCollection(name: string, vectorSize: number): Promise<void> {
