@@ -3,21 +3,23 @@
 import type { ReactNode } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Dock } from '@/features/workspace/components/dock';
-import { ThreadPanel } from '@/features/workspace/components/thread-panel';
 import { ThreadStreamProvider } from '@/features/workspace/components/thread-stream-context';
+import { AppSidebar } from '@/components/app-sidebar';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
 export default function WorkspaceLayout({ children }: { children: ReactNode }) {
   return (
     <TooltipProvider>
       <ThreadStreamProvider>
-        <div className="relative flex h-screen flex-col bg-background text-foreground selection:bg-primary/10 overflow-hidden">
-          <main className="relative flex flex-1 flex-col overflow-y-auto lg:pl-16">
-            {children}
-          </main>
+        <SidebarProvider className="[&_[data-slot=sidebar-gap]]:w-0">
+          <AppSidebar />
+          <SidebarInset>
+            <main>{children}</main>
 
-          <Dock />
-          <ThreadPanel />
-        </div>
+            <Dock />
+            {/* <ThreadPanel /> */}
+          </SidebarInset>
+        </SidebarProvider>
       </ThreadStreamProvider>
     </TooltipProvider>
   );
