@@ -8,7 +8,8 @@ export interface LLMConfigResponse {
       id: string;
       name: string;
     }>;
-    config: (Omit<LLMConfig, 'apiKey'> & { hasApiKey: boolean }) | null;
+    configs: Array<Omit<LLMConfig, 'apiKey'> & { hasApiKey: boolean }>;
+    activeConfigId?: string;
   };
 }
 
@@ -26,6 +27,7 @@ export async function seedLLMConfig(
 ): Promise<void> {
   const { UserModel } = await import('@repo/db');
   const authId = `dev:${userId}`;
+  const configId = 'seeded-llm-config';
   await UserModel.findByIdAndUpdate(
     userId,
     {
@@ -33,10 +35,16 @@ export async function seedLLMConfig(
         email: `dev-${userId}@test.local`,
         name: 'Test User',
         authId,
-        llmConfig: {
-          providerId: 'openai',
-          modelId: 'gpt-4o-mini',
-          useSystemDefault: true,
+        llmUserSettings: {
+          activeConfigId: configId,
+          configs: [
+            {
+              id: configId,
+              providerId: 'openai',
+              modelId: 'gpt-4o-mini',
+              useSystemDefault: true,
+            },
+          ],
         },
       },
     },

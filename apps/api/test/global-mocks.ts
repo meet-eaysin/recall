@@ -166,10 +166,14 @@ jest.mock('@repo/ai', () => ({
       .mockReturnValue({
         provider: 'ollama',
         chatModel: 'llama3',
+        embeddingProvider: 'ollama',
         embeddingModel: 'nomic-embed-text',
         baseUrl: 'http://localhost:11434',
+        embeddingBaseUrl: 'http://localhost:11434',
         apiKey: 'mock-api-key',
+        embeddingApiKey: undefined,
         adapterKey: 'ollama',
+        embeddingAdapterKey: 'ollama',
         allowDevFallback: false,
       }),
     createForUser: jest
@@ -214,10 +218,14 @@ jest.mock('@repo/ai', () => ({
       .mockResolvedValue({
         provider: 'ollama',
         chatModel: 'llama3',
+        embeddingProvider: 'ollama',
         embeddingModel: 'nomic-embed-text',
         baseUrl: 'http://localhost:11434',
+        embeddingBaseUrl: 'http://localhost:11434',
         apiKey: 'mock-api-key',
+        embeddingApiKey: undefined,
         adapterKey: 'ollama',
+        embeddingAdapterKey: 'ollama',
         allowDevFallback: false,
       }),
     createForUserId: jest

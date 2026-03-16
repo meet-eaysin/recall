@@ -84,7 +84,11 @@ describe('LLM Config (e2e)', () => {
         .expect(200);
 
       if (isLLMConfigResponse(response.body)) {
-        expect(response.body.data.config?.providerId).toBe('openai');
+        const active =
+          response.body.data.configs.find(
+            (config) => config.id === response.body.data.activeConfigId,
+          ) ?? response.body.data.configs[0];
+        expect(active?.providerId).toBe('openai');
       } else {
         throw new Error('Get LLM config response mismatch');
       }
