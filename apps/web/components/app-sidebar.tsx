@@ -177,41 +177,10 @@ function SidebarChatList({ query }: { query: string }) {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [searchQuery, setSearchQuery] = React.useState("")
   const [searchFocusKey, setSearchFocusKey] = React.useState(0)
-  const { state, isMobile, openMobile, setOpen, setOpenMobile } = useSidebar()
-  const sidebarRef = React.useRef<HTMLDivElement>(null)
-
-  React.useEffect(() => {
-    if (isMobile) return
-    if (state !== "expanded") return
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node
-      if (sidebarRef.current && !sidebarRef.current.contains(target)) {
-        setOpen(false)
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [isMobile, setOpen, state])
-
-  React.useEffect(() => {
-    if (!isMobile || !openMobile) return
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node
-      if (sidebarRef.current && !sidebarRef.current.contains(target)) {
-        setOpenMobile(false)
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [isMobile, openMobile, setOpenMobile])
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <div ref={sidebarRef} className="flex size-full flex-col">
+      <div className="flex size-full flex-col">
         <SidebarHeader>
           <ApplicationIcon />
         </SidebarHeader>
