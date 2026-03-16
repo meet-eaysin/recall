@@ -180,7 +180,7 @@ export function DocumentDetailView({ id }: { id: string }) {
         <Skeleton className="h-4 w-32" />
         <Skeleton className="h-7 w-1/2" />
         <Skeleton className="h-4 w-40" />
-        <Skeleton className="h-[600px] w-full rounded-2xl mt-5" />
+        <Skeleton className="mt-5 h-[600px] w-full" />
       </div>
     );
   }
@@ -323,7 +323,7 @@ export function DocumentDetailView({ id }: { id: string }) {
         <div className="space-y-5">
           {/* ── Document reader — no card chrome, just immersive content ── */}
           <div
-            className={`group relative overflow-hidden border bg-background shadow-sm transition-all duration-300 ${
+            className={`group relative overflow-hidden border bg-background ${
               readerExpanded ? 'ring-2 ring-ring/50' : ''
             }`}
           >
@@ -331,11 +331,7 @@ export function DocumentDetailView({ id }: { id: string }) {
             <div className="absolute right-3 top-3 z-10 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
               {document.sourceUrl && (
                 <a href={document.sourceUrl} rel="noreferrer" target="_blank">
-                  <Button
-                    size="icon-sm"
-                    variant="secondary"
-                    className="h-7 w-7 shadow-sm backdrop-blur-sm"
-                  >
+                  <Button size="icon-sm" variant="secondary" className="h-7 w-7">
                     <ArrowUpRight className="size-3.5" />
                   </Button>
                 </a>
@@ -343,7 +339,7 @@ export function DocumentDetailView({ id }: { id: string }) {
               <Button
                 size="icon-sm"
                 variant="secondary"
-                className="h-7 w-7 shadow-sm backdrop-blur-sm"
+                className="h-7 w-7"
                 onClick={() => setReaderExpanded((v) => !v)}
               >
                 {readerExpanded ? (
@@ -391,10 +387,7 @@ export function DocumentDetailView({ id }: { id: string }) {
             <Separator />
             <CardContent className="space-y-5 px-5 py-5">
               {/* Composer */}
-              <form
-                onSubmit={handleCreateNote}
-                className="space-y-4 rounded-2xl bg-muted/10 p-4 shadow-sm"
-              >
+              <form onSubmit={handleCreateNote} className="space-y-4 rounded-lg border bg-muted/10 p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2 text-xs font-medium text-foreground/80">
                     <StickyNote className="size-3.5" />
@@ -418,7 +411,7 @@ export function DocumentDetailView({ id }: { id: string }) {
                   }}
                   placeholder="Capture a takeaway, next step, or reference while you read..."
                   value={noteDraft}
-                  className="min-h-[120px] rounded-xl border-border/60 bg-background/80 text-sm shadow-none"
+                  className="min-h-[120px] text-sm"
                 />
                 <div className="flex items-end justify-between gap-4">
                   <p className="max-w-xl text-xs leading-5 text-muted-foreground">
@@ -442,7 +435,7 @@ export function DocumentDetailView({ id }: { id: string }) {
 
               {/* Notes list */}
               {notes.length === 0 ? (
-                <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border/70 bg-muted/10 px-6 py-10 text-center">
+                <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed bg-muted/10 px-6 py-10 text-center">
                   <div className="rounded-full bg-muted p-3">
                     <StickyNote className="size-4 text-muted-foreground/50" />
                   </div>
@@ -461,7 +454,7 @@ export function DocumentDetailView({ id }: { id: string }) {
                   {notes.map((note) => (
                     <article
                       key={note.id}
-                      className="group/note rounded-2xl border border-border/70 bg-background p-4 shadow-sm transition-colors hover:bg-muted/10"
+                      className="group/note rounded-lg border bg-background p-4 transition-colors hover:bg-muted/10"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>

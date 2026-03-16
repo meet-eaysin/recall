@@ -60,12 +60,12 @@ function Heatmap({
   isLoading: boolean;
 }) {
   if (isLoading) {
-    return <Skeleton className="h-52 w-full rounded-xl" />;
+    return <Skeleton className="h-52 w-full" />;
   }
 
   if (items.length === 0) {
     return (
-      <Empty className="min-h-0 rounded-xl border border-dashed border-border/70 px-6 py-10">
+      <Empty className="min-h-0 rounded-lg border border-dashed px-6 py-10">
         <EmptyHeader>
           <EmptyMedia variant="icon">
             <CalendarRange className="size-4" />
@@ -162,7 +162,7 @@ function StatCard({
               <CardTitle className="text-3xl">{value}</CardTitle>
             )}
           </div>
-          <div className="rounded-lg border border-border/60 bg-muted/35 p-2">
+          <div className="rounded-lg border bg-muted/35 p-2">
             <Icon className="size-4 text-muted-foreground" />
           </div>
         </div>
@@ -211,7 +211,7 @@ export function AnalyticsPage() {
     .filter((item) => item.count > 0);
 
   return (
-    <PageContainer className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    <PageContainer className="space-y-8">
       <header className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
         <p className="text-muted-foreground">
@@ -308,10 +308,10 @@ export function AnalyticsPage() {
             <CardPanel className="space-y-3">
               {heatmapLoading ? (
                 <>
-                  <Skeleton className="h-16 w-full rounded-xl" />
-                  <Skeleton className="h-16 w-full rounded-xl" />
-                  <Skeleton className="h-16 w-full rounded-xl" />
-                  <Skeleton className="h-16 w-full rounded-xl" />
+                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-16 w-full" />
                 </>
               ) : (
                 <>
@@ -339,10 +339,10 @@ export function AnalyticsPage() {
                   ].map(({ icon: Icon, label, value }) => (
                     <div
                       key={label}
-                      className="flex items-center justify-between rounded-xl border border-border/60 bg-muted/20 px-4 py-3"
+                      className="flex items-center justify-between rounded-lg border bg-muted/20 px-4 py-3"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="rounded-lg border border-border/60 bg-background p-2">
+                        <div className="rounded-lg border bg-background p-2">
                           <Icon className="size-4 text-muted-foreground" />
                         </div>
                         <div>
@@ -375,9 +375,9 @@ export function AnalyticsPage() {
           <CardPanel className="space-y-2">
             {heatmapLoading ? (
               <>
-                <Skeleton className="h-14 w-full rounded-xl" />
-                <Skeleton className="h-14 w-full rounded-xl" />
-                <Skeleton className="h-14 w-full rounded-xl" />
+                <Skeleton className="h-14 w-full" />
+                <Skeleton className="h-14 w-full" />
+                <Skeleton className="h-14 w-full" />
               </>
             ) : null}
 
@@ -399,7 +399,7 @@ export function AnalyticsPage() {
             {topDays.map((item) => (
               <div
                 key={item.date}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 px-4 py-3"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-lg border px-4 py-3"
               >
                 <div>
                   <p className="text-sm font-medium text-foreground">

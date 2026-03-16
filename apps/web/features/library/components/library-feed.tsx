@@ -106,10 +106,7 @@ export function LibraryFeed() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="flex flex-col gap-3 rounded-2xl border bg-card p-4"
-            >
+            <div key={i} className="flex flex-col gap-3 rounded-lg border p-4">
               <div className="flex items-center gap-3">
                 <Skeleton className="size-8 rounded-lg" />
                 <Skeleton className="h-3 w-16" />
@@ -157,7 +154,7 @@ export function LibraryFeed() {
         {foldersLoading ? (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton className="h-24 rounded-xl" key={index} />
+              <Skeleton className="h-24" key={index} />
             ))}
           </div>
         ) : (

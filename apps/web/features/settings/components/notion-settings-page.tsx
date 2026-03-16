@@ -174,13 +174,12 @@ export function NotionSettingsPage() {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    <div className="space-y-8">
       <header className="flex items-center gap-4">
         <Button
           variant="ghost"
           size="icon"
           render={<Link href="/app/settings" />}
-          className="rounded-xl"
         >
           <ArrowLeft className="size-5" />
         </Button>
@@ -272,9 +271,9 @@ export function NotionSettingsPage() {
         {isLoading ? (
           <Card>
             <CardPanel className="space-y-3">
-              <Skeleton className="h-16 w-full rounded-xl" />
-              <Skeleton className="h-16 w-full rounded-xl" />
-              <Skeleton className="h-16 w-full rounded-xl" />
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
             </CardPanel>
           </Card>
         ) : null}
@@ -344,7 +343,7 @@ export function NotionSettingsPage() {
 
                   <Field>
                     <FieldLabel>Automatic sync</FieldLabel>
-                    <div className="flex min-h-10 items-center justify-between rounded-xl border border-border/60 px-3 py-2">
+                    <div className="flex min-h-10 items-center justify-between rounded-lg border px-3 py-2">
                       <div>
                         <p className="text-sm font-medium text-foreground">
                           Keep sync enabled
@@ -406,7 +405,7 @@ export function NotionSettingsPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardPanel className="space-y-3">
-                  <div className="rounded-xl border border-border/60 px-4 py-3">
+                  <div className="rounded-lg border px-4 py-3">
                     <p className="text-xs text-muted-foreground">
                       Workspace name
                     </p>
@@ -414,7 +413,7 @@ export function NotionSettingsPage() {
                       {config.workspaceName || 'Unnamed workspace'}
                     </p>
                   </div>
-                  <div className="rounded-xl border border-border/60 px-4 py-3">
+                  <div className="rounded-lg border px-4 py-3">
                     <p className="text-xs text-muted-foreground">
                       Workspace ID
                     </p>
@@ -422,7 +421,7 @@ export function NotionSettingsPage() {
                       {config.workspaceId}
                     </p>
                   </div>
-                  <div className="rounded-xl border border-border/60 px-4 py-3">
+                  <div className="rounded-lg border px-4 py-3">
                     <p className="text-xs text-muted-foreground">Sync status</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       <Badge
@@ -457,13 +456,13 @@ export function NotionSettingsPage() {
                 <CardPanel className="space-y-2">
                   {databasesLoading ? (
                     <>
-                      <Skeleton className="h-14 w-full rounded-xl" />
-                      <Skeleton className="h-14 w-full rounded-xl" />
+                      <Skeleton className="h-14 w-full" />
+                      <Skeleton className="h-14 w-full" />
                     </>
                   ) : null}
 
                   {!databasesLoading && (databases?.length ?? 0) === 0 ? (
-                    <Empty className="min-h-0 rounded-xl border border-dashed border-border/70 px-4 py-8">
+                    <Empty className="min-h-0 rounded-lg border border-dashed px-4 py-8">
                       <EmptyHeader>
                         <EmptyMedia variant="icon">
                           <Database className="size-4" />
@@ -480,7 +479,7 @@ export function NotionSettingsPage() {
                   {databases?.map((database) => (
                     <div
                       key={database.id}
-                      className="rounded-xl border border-border/60 px-4 py-3"
+                      className="rounded-lg border px-4 py-3"
                     >
                       <p className="text-sm font-medium text-foreground">
                         {database.title}

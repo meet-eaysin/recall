@@ -26,20 +26,20 @@ export function FolderShelfCard({
     <button
       type="button"
       onClick={onClick}
-      className="rounded-xl text-left outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       <Card
         className={[
           'h-full transition-colors duration-150',
           active
-            ? 'border-primary/40 bg-accent/15 shadow-sm'
-            : 'hover:border-border hover:bg-accent/8',
+            ? 'border-primary/40 bg-accent'
+            : 'hover:border-border hover:bg-accent',
         ].join(' ')}
       >
         <CardHeader className="p-3.5 pb-2">
           <div className="flex items-start gap-3">
             <div
-              className="flex size-9 shrink-0 items-center justify-center rounded-lg text-white shadow-xs"
+              className="flex size-9 shrink-0 items-center justify-center rounded-lg text-white"
               style={{ backgroundColor: folder?.color ?? '#64748b' }}
             >
               <Icon className="size-4" />

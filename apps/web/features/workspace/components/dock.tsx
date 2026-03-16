@@ -30,7 +30,7 @@ export function Dock() {
 
   return (
     <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
-      <nav className="flex items-center gap-1 rounded-xl border bg-background p-1 shadow-sm">
+      <nav className="flex items-center gap-1 rounded-lg border bg-background p-1">
         {navItems.map((item) => {
           const isActive =
             pathname === item.href ||

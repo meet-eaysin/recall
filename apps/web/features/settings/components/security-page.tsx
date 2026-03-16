@@ -52,13 +52,12 @@ export function SecurityPage() {
   const revokeSession = useRevokeUserSession();
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    <div className="space-y-8">
       <header className="flex items-center gap-4">
         <Button
           variant="ghost"
           size="icon"
           render={<Link href="/app/settings" />}
-          className="rounded-xl"
         >
           <ArrowLeft className="size-5" />
         </Button>
@@ -126,9 +125,9 @@ export function SecurityPage() {
           <CardPanel className="space-y-3">
             {isLoading ? (
               <>
-                <Skeleton className="h-24 w-full rounded-xl" />
-                <Skeleton className="h-24 w-full rounded-xl" />
-                <Skeleton className="h-24 w-full rounded-xl" />
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
               </>
             ) : null}
 
@@ -153,10 +152,10 @@ export function SecurityPage() {
               return (
                 <div
                   key={session.sessionId}
-                  className="flex flex-wrap items-start justify-between gap-4 rounded-xl border border-border/60 px-4 py-4"
+                  className="flex flex-wrap items-start justify-between gap-4 rounded-lg border px-4 py-4"
                 >
                   <div className="flex min-w-0 gap-3">
-                    <div className="rounded-lg border border-border/60 bg-muted/35 p-2">
+                    <div className="rounded-lg border bg-muted/35 p-2">
                       <DeviceIcon className="size-4 text-muted-foreground" />
                     </div>
                     <div className="min-w-0">
@@ -183,7 +182,7 @@ export function SecurityPage() {
                   </div>
 
                   {session.current ? (
-                    <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-muted/25 px-3 py-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2 rounded-lg border bg-muted/25 px-3 py-2 text-xs text-muted-foreground">
                       <ShieldCheck className="size-4" />
                       Current session stays active here.
                     </div>

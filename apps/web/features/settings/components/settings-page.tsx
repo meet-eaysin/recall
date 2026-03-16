@@ -60,7 +60,7 @@ export function SettingsPage() {
       : null;
 
   return (
-    <PageContainer className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    <PageContainer className="space-y-8">
       <header className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
         <p className="text-muted-foreground">
@@ -100,12 +100,12 @@ export function SettingsPage() {
             <CardPanel className="space-y-4">
               {userLoading ? (
                 <>
-                  <Skeleton className="h-20 w-full rounded-xl" />
-                  <Skeleton className="h-24 w-full rounded-xl" />
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-24 w-full" />
                 </>
               ) : (
                 <>
-                  <div className="flex flex-wrap items-center gap-4 rounded-xl border border-border/60 px-4 py-4">
+                  <div className="flex flex-wrap items-center gap-4 rounded-lg border px-4 py-4">
                     <Avatar className="size-14">
                       <AvatarImage
                         alt={user?.name || user?.email || 'User'}
@@ -129,7 +129,7 @@ export function SettingsPage() {
                   </div>
 
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-xl border border-border/60 px-4 py-3">
+                    <div className="rounded-lg border px-4 py-3">
                       <p className="text-xs text-muted-foreground">
                         Current session
                       </p>
@@ -137,7 +137,7 @@ export function SettingsPage() {
                         {session?.session.id || 'Unavailable'}
                       </p>
                     </div>
-                    <div className="rounded-xl border border-border/60 px-4 py-3">
+                    <div className="rounded-lg border px-4 py-3">
                       <p className="text-xs text-muted-foreground">
                         Other active sessions
                       </p>
@@ -159,7 +159,7 @@ export function SettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardPanel className="space-y-3">
-              <div className="rounded-xl border border-border/60 px-4 py-3">
+              <div className="rounded-lg border px-4 py-3">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-medium text-foreground">
                     Security
@@ -174,7 +174,7 @@ export function SettingsPage() {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-border/60 px-4 py-3">
+              <div className="rounded-lg border px-4 py-3">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-medium text-foreground">
                     LLM config
@@ -192,7 +192,7 @@ export function SettingsPage() {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-border/60 px-4 py-3">
+              <div className="rounded-lg border px-4 py-3">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-medium text-foreground">Notion</p>
                   <Badge variant={notionConfig ? 'secondary' : 'outline'}>
@@ -296,7 +296,7 @@ export function SettingsPage() {
             ].map(({ icon: Icon, title, text }) => (
               <div
                 key={title}
-                className="rounded-xl border border-border/60 px-4 py-3"
+                className="rounded-lg border px-4 py-3"
               >
                 <div className="flex items-center gap-2">
                   <Icon className="size-4 text-muted-foreground" />

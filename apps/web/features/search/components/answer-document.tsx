@@ -221,7 +221,7 @@ export function AnswerDocument({
           return (
             <div
               key={`${block.type}-${index}`}
-              className="overflow-hidden rounded-xl border border-border bg-neutral-950 text-neutral-100"
+              className="overflow-hidden rounded-md border bg-neutral-950 text-neutral-100"
             >
               {block.language ? (
                 <div className="border-b border-white/10 px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-neutral-400">

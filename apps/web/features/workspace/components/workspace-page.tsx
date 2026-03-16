@@ -248,13 +248,10 @@ function InlineChat() {
   ]);
 
   return (
-    <PageContainer
-      isFullHeight
-      className="animate-in fade-in slide-in-from-bottom-4 duration-500"
-    >
-      <div className="flex flex-col flex-1 h-full w-full">
+    <PageContainer isFullHeight>
+      <div className="flex flex-1 flex-col">
         {/* Header */}
-        <header className="flex items-center gap-4 mb-6 shrink-0 w-full pt-4 max-w-4xl mx-auto px-4 md:px-8">
+        <header className="flex items-center gap-4 pb-4">
           <Button
             variant="ghost"
             size="icon"
@@ -297,8 +294,8 @@ function InlineChat() {
         onOpenChange={(open) => !open && setPreviewId(null)}
       >
         <DrawerContent className="h-full sm:max-w-2xl">
-          <DrawerHeader className="border-b border-subtle flex flex-row items-center justify-between shrink-0">
-            <DrawerTitle className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+          <DrawerHeader className="border-b flex flex-row items-center justify-between">
+            <DrawerTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
               Document Preview
             </DrawerTitle>
             <DrawerClose asChild>

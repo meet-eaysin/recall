@@ -470,7 +470,7 @@ export function HomePage() {
         : 'Good evening';
 
   return (
-    <div className="container max-w-4xl space-y-10 py-12 animate-in fade-in slide-in-from-top-4 duration-1000">
+    <div className="container max-w-4xl space-y-10 py-12">
       <header className="flex flex-col items-start justify-between gap-6 px-1 lg:flex-row lg:items-end">
         <div className="space-y-3">
           <div className="flex items-center gap-3">
@@ -484,12 +484,7 @@ export function HomePage() {
             and continue your research threads.
           </p>
         </div>
-        <Button
-          variant="default"
-          size="default"
-          className="rounded-lg font-bold"
-          render={<Link href="/app/library/new" />}
-        >
+        <Button variant="default" size="default" render={<Link href="/app/library/new" />}>
           <Plus className="mr-2 size-4" />
           Add Document
         </Button>

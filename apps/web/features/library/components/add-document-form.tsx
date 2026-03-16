@@ -252,8 +252,8 @@ export function AddDocumentForm({
                         className={cn(
                           'relative flex w-full flex-col items-start justify-start rounded-lg border px-3 py-2.5 text-left transition-colors',
                           isSelected
-                            ? 'border-primary/50 bg-primary/10 text-foreground ring-1 ring-primary/25'
-                            : 'border-border/70 bg-background hover:border-primary/30 hover:bg-accent/30',
+                            ? 'border-primary bg-primary/10 text-foreground'
+                            : 'border bg-background hover:bg-accent',
                           item.value === DocumentType.TEXT && 'col-span-2 h-16',
                         )}
                         onClick={() =>

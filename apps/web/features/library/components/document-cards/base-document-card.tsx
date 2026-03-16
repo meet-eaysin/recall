@@ -34,10 +34,10 @@ export function BaseDocumentCard({
   return (
     <Link
       href={`/app/library/${document.id}`}
-      className="group block rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="group block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
-      <Card className="flex h-full flex-col overflow-hidden border-border/70 bg-card shadow-xs/5 transition-colors duration-150 group-hover:border-border group-hover:shadow-sm">
-        <div className="border-b border-border/50 bg-muted/10 p-2">
+      <Card className="flex h-full flex-col overflow-hidden border transition-colors duration-150 group-hover:border-border">
+        <div className="border-b bg-muted/10 p-2">
           <div className="aspect-[16/8.6] overflow-hidden rounded-lg bg-muted/20">
             <DocumentPreviewSurface compact document={document} />
           </div>

@@ -545,7 +545,7 @@ export function GraphExplorer() {
 
   if (error) {
     return (
-      <PageContainer className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      <PageContainer className="space-y-8">
         <header className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Knowledge Graph</h1>
           <p className="text-muted-foreground">
@@ -563,10 +563,7 @@ export function GraphExplorer() {
   }
 
   return (
-    <PageContainer
-      isFullHeight
-      className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000"
-    >
+    <PageContainer isFullHeight className="space-y-8">
       <header className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Knowledge Graph</h1>
         <p className="text-muted-foreground">
@@ -575,7 +572,7 @@ export function GraphExplorer() {
         </p>
       </header>
       <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
-        <Card className="overflow-hidden border-border/60 bg-card/95 shadow-sm">
+        <Card className="overflow-hidden">
           <CardHeader className="px-5 py-4">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="space-y-1">
@@ -625,9 +622,9 @@ export function GraphExplorer() {
               ) : null}
             </div>
 
-            <div className="relative overflow-hidden rounded-sm border border-border/60 bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.08),transparent_28%),linear-gradient(180deg,rgba(248,250,252,0.98),rgba(241,245,249,0.98))]">
+            <div className="relative overflow-hidden rounded-sm border bg-background">
               <div className="absolute right-3 top-3 z-10">
-                <Toolbar className="items-center gap-2 border-border/70 shadow-sm backdrop-blur-md rounded-sm">
+                <Toolbar className="items-center gap-2 rounded-sm border">
                   <ToolbarGroup>
                     <Button
                       size="icon-sm"
@@ -655,7 +652,7 @@ export function GraphExplorer() {
                     </Button>
                   </ToolbarGroup>
                 </Toolbar>
-                <Toolbar className="mt-2 w-32 border-border/70 bg-background/92 p-1.5 shadow-sm backdrop-blur-md md:hidden">
+                <Toolbar className="mt-2 w-32 border bg-background p-1.5 md:hidden">
                   <ToolbarGroup className="w-full gap-2">
                     <span className="text-xs font-medium text-muted-foreground">
                       Labels
@@ -705,7 +702,7 @@ export function GraphExplorer() {
         </Card>
 
         <div className="space-y-4">
-          <Card className="border-border/60 bg-card/95 shadow-sm">
+          <Card>
             <CardHeader className="px-4 py-4">
               <CardTitle>Focus documents</CardTitle>
               <CardDescription>
@@ -726,7 +723,7 @@ export function GraphExplorer() {
                 />
               </InputGroup>
 
-              <ScrollArea className="h-72 rounded-lg border border-border/60 bg-muted/15">
+            <ScrollArea className="h-72 rounded-lg border bg-muted/15">
                 <div className="space-y-1 p-2">
                   {filteredDocumentNodes.length > 0 ? (
                     filteredDocumentNodes.map((node) => {
@@ -738,8 +735,8 @@ export function GraphExplorer() {
                           key={node.id}
                           type="button"
                           className={cn(
-                            'w-full rounded-md px-3 py-2 text-left transition hover:bg-accent/20',
-                            (isFocused || isSelected) && 'bg-accent/20',
+                            'w-full rounded-md px-3 py-2 text-left transition hover:bg-accent',
+                            (isFocused || isSelected) && 'bg-accent',
                           )}
                           onClick={() => {
                             setSelectedNodeId(String(node.id));
@@ -769,7 +766,7 @@ export function GraphExplorer() {
             </CardPanel>
           </Card>
 
-          <Card className="border-border/60 bg-card/95 shadow-sm">
+          <Card>
             <CardHeader className="px-4 py-4">
               <CardTitle>Selection</CardTitle>
               <CardDescription>
@@ -844,7 +841,7 @@ export function GraphExplorer() {
                             <button
                               key={node.id}
                               type="button"
-                              className="w-full rounded-md border border-border/60 px-3 py-2 text-left transition hover:bg-accent/20"
+                              className="w-full rounded-md border px-3 py-2 text-left transition hover:bg-accent"
                               onClick={() => setSelectedNodeId(node.id)}
                             >
                               <p className="text-sm font-medium text-foreground">
@@ -873,7 +870,7 @@ export function GraphExplorer() {
                         {selectedEdges.map((edge) => (
                           <div
                             key={edge.id}
-                            className="rounded-md border border-border/60 px-3 py-2 text-sm"
+                            className="rounded-md border px-3 py-2 text-sm"
                           >
                             <p className="font-medium text-foreground">
                               {getRelationLabel(edge.relationType)}

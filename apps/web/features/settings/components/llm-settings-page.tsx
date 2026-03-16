@@ -164,28 +164,25 @@ export function LlmSettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-8 animate-in fade-in duration-500">
-        <Skeleton className="h-20 w-full rounded-xl" />
-        <Skeleton className="h-64 w-full rounded-xl" />
+      <div className="space-y-8">
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-64 w-full" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    <div className="space-y-8">
       <header className="flex items-center gap-4">
         <Button
           variant="ghost"
           size="icon"
           render={<Link href="/app/settings" />}
-          className="rounded-xl"
         >
           <ArrowLeft className="size-5" />
         </Button>
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            LLM Config
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">LLM Config</h1>
           <p className="text-muted-foreground">
             Choose the provider and model defaults that power AI features.
           </p>
@@ -223,7 +220,7 @@ export function LlmSettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardPanel className="space-y-6">
-                <Field className="flex items-center justify-between gap-4 rounded-xl border border-border/60 bg-muted/20 px-4 py-3">
+                <Field className="flex items-center justify-between gap-4 rounded-lg border bg-muted/20 px-4 py-3">
                   <div className="space-y-0.5">
                     <FieldLabel>Use system defaults</FieldLabel>
                     <FieldDescription>
@@ -244,7 +241,7 @@ export function LlmSettingsPage() {
                 </Field>
 
                 {!watchedUseSystemDefault && (
-                  <div className="space-y-4 animate-in fade-in zoom-in-95 duration-300">
+                  <div className="space-y-4">
                     <div className="grid gap-4 md:grid-cols-2">
                       <Field>
                         <FieldLabel>Provider</FieldLabel>
@@ -360,7 +357,7 @@ export function LlmSettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardPanel className="space-y-4">
-                <div className="rounded-xl border border-border/60 p-4">
+                <div className="rounded-lg border p-4">
                   <div className="flex items-center gap-3">
                     <div className="rounded-lg bg-primary/10 p-2 text-primary">
                       <Shield className="size-4" />
@@ -380,7 +377,7 @@ export function LlmSettingsPage() {
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-border/60 p-4">
+                <div className="rounded-lg border p-4">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
                     Current Model
                   </p>
@@ -392,7 +389,7 @@ export function LlmSettingsPage() {
                 </div>
 
                 {activeConfig && (
-                  <div className="rounded-xl border border-border/60 p-4">
+                  <div className="rounded-lg border p-4">
                     <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
                       Capabilities
                     </p>
