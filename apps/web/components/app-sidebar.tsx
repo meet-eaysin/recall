@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation"
 
 import { useArchiveChat, useDeleteChat, useSearchChats } from "@/features/search/hooks"
 import { NavUser } from "@/components/nav-user"
-import { ApplicationIcon } from "@/components/team-switcher"
+import { ApplicationIcon } from "@/components/application-logo"
 import {
   Sidebar,
   SidebarContent,
