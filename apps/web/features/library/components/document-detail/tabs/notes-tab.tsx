@@ -41,128 +41,139 @@ export function NotesTab() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="flex items-center justify-between">
+    <div className="max-w-5xl mx-auto space-y-12 pb-20">
+      <div className="flex flex-col gap-8">
         <div className="space-y-1">
-          <h3 className="text-xl font-bold">Research Notes</h3>
-          <p className="text-sm text-muted-foreground">
-            Capture your thoughts and takeaways as you digest the content.
+          <h3 className="text-2xl font-bold tracking-tight">Research Notes</h3>
+          <p className="text-muted-foreground text-sm">
+            Synthesize your findings and keep track of key insights.
           </p>
         </div>
+
+        <form
+          onSubmit={handleCreateNote}
+          className="group relative rounded-2xl border bg-card shadow-sm transition-all focus-within:ring-2 focus-within:ring-primary/20 hover:shadow-md"
+        >
+          <div className="p-6 pb-0">
+            <Textarea
+              onChange={(e) => setNoteDraft(e.target.value)}
+              onKeyDown={(event) => {
+                if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+                  event.preventDefault();
+                  const form = event.currentTarget.form;
+                  form?.requestSubmit();
+                }
+              }}
+              placeholder="Start typing your insight... (Cmd + Enter to save)"
+              value={noteDraft}
+              className="min-h-[120px] resize-none border-none bg-transparent p-0 text-lg shadow-none focus-visible:ring-0 leading-relaxed placeholder:text-muted-foreground/50"
+            />
+          </div>
+          <div className="mt-2 flex items-center justify-between border-t bg-muted/5 px-6 py-3 rounded-b-2xl">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 flex items-center gap-2">
+              <Clock className="size-3" />
+              Private Workspace Note
+            </p>
+            <Button
+              disabled={!noteDraft.trim() || actions.createNote.isPending}
+              size="sm"
+              className="h-8 px-4 rounded-full font-semibold shadow-sm transition-transform active:scale-95"
+            >
+              {actions.createNote.isPending ? (
+                <LoaderCircle className="size-3.5 animate-spin mr-2" />
+              ) : (
+                <StickyNote className="size-3.5 mr-2" />
+              )}
+              Save Note
+            </Button>
+          </div>
+        </form>
       </div>
 
-      <form
-        onSubmit={handleCreateNote}
-        className="group relative rounded-2xl border bg-card p-6 shadow-sm transition-all focus-within:ring-2 focus-within:ring-primary/20 hover:shadow-md"
-      >
-        <Textarea
-          onChange={(e) => setNoteDraft(e.target.value)}
-          onKeyDown={(event) => {
-            if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
-              event.preventDefault();
-              const form = event.currentTarget.form;
-              form?.requestSubmit();
-            }
-          }}
-          placeholder="Type your note here... (Cmd + Enter to save)"
-          value={noteDraft}
-          className="min-h-[140px] resize-none border-none bg-transparent p-0 text-base shadow-none focus-visible:ring-0 leading-relaxed"
-        />
-        <div className="mt-4 flex items-center justify-between border-t pt-4">
-          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-            <Clock className="size-3" />
-            Notes are private to your workspace.
-          </p>
-          <Button
-            disabled={!noteDraft.trim() || actions.createNote.isPending}
-            className="px-6 h-9"
-          >
-            {actions.createNote.isPending ? (
-              <LoaderCircle className="size-4 animate-spin mr-2" />
-            ) : (
-              <StickyNote className="size-4 mr-2" />
-            )}
-            Add Note
-          </Button>
-        </div>
-      </form>
-
-      {notes.length === 0 ? (
-        <div className="flex flex-col items-center gap-4 py-12 text-center">
-          <div className="rounded-full bg-muted p-6">
-            <StickyNote className="size-8 text-muted-foreground/30" />
+      <div className="space-y-6">
+        {notes.length === 0 ? (
+          <div className="flex flex-col items-center gap-4 py-24 text-center">
+            <div className="rounded-3xl bg-muted/30 p-8 ring-1 ring-border shadow-inner">
+              <StickyNote className="size-10 text-muted-foreground/20" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-base font-semibold text-foreground/80">
+                No insights captured yet
+              </p>
+              <p className="text-sm text-muted-foreground max-w-[240px] leading-relaxed">
+                As you read, capture important quotes or personal thoughts here.
+              </p>
+            </div>
           </div>
-          <p className="text-sm text-muted-foreground max-w-xs">
-            No notes captured for this document yet. Start typing above to save
-            your first insight.
-          </p>
-        </div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {notes.map((note) => (
-            <article
-              key={note.id}
-              className="group/note flex flex-col rounded-xl border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-sm"
-            >
-              <div className="flex items-center justify-between mb-3 pb-3 border-b border-muted">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  {formatDistanceToNow(new Date(note.createdAt), {
-                    addSuffix: true,
-                  })}
-                </span>
-                <div className="flex items-center gap-1 opacity-0 group-hover/note:opacity-100 transition-opacity">
-                  <Button
-                    onClick={() => handleStartEditingNote(note.id, note.content)}
-                    size="icon-sm"
-                    variant="ghost"
-                    className="h-7 w-7"
-                  >
-                    <PencilLine className="size-3.5" />
-                  </Button>
-                  <Button
-                    onClick={() => setDeletingNoteId(note.id)}
-                    size="icon-sm"
-                    variant="ghost"
-                    className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                  >
-                    <Trash2 className="size-3.5" />
-                  </Button>
-                </div>
-              </div>
-
-              {editingNoteId === note.id ? (
-                <div className="space-y-3">
-                  <Textarea
-                    value={editingNoteDraft}
-                    onChange={(event) => setEditingNoteDraft(event.target.value)}
-                    autoFocus
-                    className="min-h-[100px] text-sm resize-none"
-                  />
-                  <div className="flex justify-end gap-2">
+        ) : (
+          <div className="columns-1 md:columns-2 gap-6 space-y-6">
+            {notes.map((note) => (
+              <article
+                key={note.id}
+                className="break-inside-avoid flex flex-col rounded-2xl border bg-card p-6 shadow-sm transition-all hover:shadow-md hover:border-primary/20 hover:translate-y-[-2px]"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/50">
+                    {formatDistanceToNow(new Date(note.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </span>
+                  <div className="flex items-center gap-0.5">
                     <Button
-                      onClick={handleCancelEditingNote}
+                      onClick={() => handleStartEditingNote(note.id, note.content)}
+                      size="icon-sm"
                       variant="ghost"
-                      size="sm"
+                      className="h-7 w-7 rounded-full text-muted-foreground/60 hover:text-foreground"
                     >
-                      Cancel
+                      <PencilLine className="size-3.5" />
                     </Button>
                     <Button
-                      onClick={() => void handleSaveNote(note.id)}
-                      size="sm"
+                      onClick={() => setDeletingNoteId(note.id)}
+                      size="icon-sm"
+                      variant="ghost"
+                      className="h-7 w-7 rounded-full text-muted-foreground/60 hover:text-destructive"
                     >
-                      Save
+                      <Trash2 className="size-3.5" />
                     </Button>
                   </div>
                 </div>
-              ) : (
-                <p className="text-sm leading-relaxed text-foreground/85 whitespace-pre-wrap flex-1">
-                  {note.content}
-                </p>
-              )}
-            </article>
-          ))}
-        </div>
-      )}
+
+                {editingNoteId === note.id ? (
+                  <div className="space-y-4">
+                    <Textarea
+                      value={editingNoteDraft}
+                      onChange={(event) => setEditingNoteDraft(event.target.value)}
+                      autoFocus
+                      className="min-h-[120px] text-base resize-none bg-muted/10"
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        onClick={handleCancelEditingNote}
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 rounded-full"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={() => void handleSaveNote(note.id)}
+                        size="sm"
+                        className="h-8 rounded-full px-4"
+                      >
+                        Save Changes
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-[15px] leading-relaxed text-foreground/80 whitespace-pre-wrap font-sans-subtle">
+                    {note.content}
+                  </p>
+                )}
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
 
       <ConfirmationDialog
         open={deletingNoteId !== null}

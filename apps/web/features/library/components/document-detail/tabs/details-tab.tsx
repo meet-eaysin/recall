@@ -5,7 +5,6 @@ import { LoaderCircle, RefreshCcw, X, Zap } from 'lucide-react';
 import { IngestionStatus } from '@repo/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useDocumentDetail } from '../context';
 import { MetaRow } from '../meta-row';
@@ -20,106 +19,130 @@ export function DetailsTab() {
     !ingestion.embeddingsReady;
 
   return (
-    <div className="grid gap-8 lg:grid-cols-2">
-      <Card className="p-6 space-y-6 shadow-sm">
-        <div className="flex items-center justify-between">
-          <h3 className="font-bold flex items-center gap-2">
-            <Zap className="size-5 text-amber-500" />
-            Ingestion Pipeline
-          </h3>
-          <Button
-            onClick={() => actions.retryIngestion.mutate(id)}
-            size="sm"
-            variant="outline"
-            disabled={!canRetryIngestion || actions.retryIngestion.isPending}
-            className="h-8 gap-2"
-          >
-            {actions.retryIngestion.isPending ? (
-              <LoaderCircle className="size-3.5 animate-spin" />
-            ) : (
-              <RefreshCcw className="size-3.5" />
-            )}
-            Retry Pipeline
-          </Button>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 rounded-xl bg-muted/40">
-            <span className="text-sm font-medium text-muted-foreground">
-              Pipeline Status
-            </span>
-            <Badge
-              className={`px-3 py-1 font-semibold ${
-                ingestion?.ingestionStatus === IngestionStatus.COMPLETED
-                  ? 'bg-green-100 text-green-700 hover:bg-green-100 dark:bg-green-500/10 dark:text-green-400'
-                  : ingestion?.ingestionStatus === IngestionStatus.FAILED
-                    ? 'bg-red-100 text-red-700 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400'
-                    : 'bg-amber-100 text-amber-700 hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400'
-              }`}
+    <div className="grid gap-10 lg:grid-cols-2 pb-20">
+      <div className="space-y-8">
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h3 className="text-xl font-bold flex items-center gap-2">
+                <Zap className="size-5 text-amber-500" />
+                Ingestion Pipeline
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Technical status of the document processing pipeline.
+              </p>
+            </div>
+            <Button
+              onClick={() => actions.retryIngestion.mutate(id)}
+              size="sm"
+              variant="outline"
+              disabled={!canRetryIngestion || actions.retryIngestion.isPending}
+              className="h-8 rounded-full gap-2 text-xs font-semibold"
             >
-              {ingestion?.ingestionStatus ?? 'Unknown'}
-            </Badge>
+              {actions.retryIngestion.isPending ? (
+                <LoaderCircle className="size-3.5 animate-spin" />
+              ) : (
+                <RefreshCcw className="size-3.5" />
+              )}
+              Retry Pipeline
+            </Button>
           </div>
 
-          <div className="grid gap-1 border rounded-xl overflow-hidden divide-y">
+          <div className="rounded-2xl border bg-card shadow-sm overflow-hidden divide-y divide-border/50">
+            <div className="flex items-center justify-between p-5 bg-muted/5">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/70">
+                Pipeline Status
+              </span>
+              <Badge
+                className={`rounded-full px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                  ingestion?.ingestionStatus === IngestionStatus.COMPLETED
+                    ? 'bg-green-500/10 text-green-600 border-green-500/20 shadow-none'
+                    : ingestion?.ingestionStatus === IngestionStatus.FAILED
+                      ? 'bg-red-500/10 text-red-600 border-red-500/20 shadow-none'
+                      : 'bg-amber-500/10 text-amber-600 border-amber-500/20 shadow-none'
+                }`}
+              >
+                {ingestion?.ingestionStatus ?? 'Unknown'}
+              </Badge>
+            </div>
             <MetaRow
-              label="Embedding Vector"
-              value={ingestion?.embeddingsReady ? 'Ready & Indexed' : 'Pending'}
+              label="Vector Indexing"
+              value={ingestion?.embeddingsReady ? 'Completed' : 'Pending'}
             />
             <MetaRow
-              label="Semantic Stage"
-              value={ingestion?.currentStage ?? 'Ready'}
+              label="Semantic State"
+              value={ingestion?.currentStage ?? 'Stable'}
             />
             <MetaRow
               label="Source Connector"
-              value={document.sourceType ?? 'Direct Upload'}
+              value={document.sourceType ?? 'Direct'}
             />
-            <MetaRow label="Original ID" value={document.id} />
           </div>
 
           {ingestion?.ingestionError && (
-            <div className="p-4 rounded-xl border border-red-200 bg-red-50 dark:bg-red-500/5 dark:border-red-500/20 text-sm text-red-600 dark:text-red-400 flex items-start gap-3">
-              <X className="size-5 shrink-0 mt-0.5" />
-              <p className="font-medium italic">{ingestion.ingestionError}</p>
+            <div className="p-4 rounded-xl border border-red-100 bg-red-50/50 dark:bg-red-500/5 dark:border-red-500/10 text-xs text-red-600 dark:text-red-400 flex items-start gap-3">
+              <X className="size-4 shrink-0 mt-0.5" />
+              <p className="font-medium leading-relaxed italic">
+                Error Trace: {ingestion.ingestionError}
+              </p>
             </div>
           )}
         </div>
-      </Card>
+      </div>
 
-      <Card className="p-6 space-y-6 shadow-sm">
-        <h3 className="font-bold">Lifecycle & Metadata</h3>
-        <div className="grid gap-1 border rounded-xl overflow-hidden divide-y">
-          <MetaRow
-            label="Created On"
-            value={new Date(document.createdAt).toLocaleString()}
-          />
-          <MetaRow
-            label="Last Modified"
-            value={new Date(document.updatedAt).toLocaleString()}
-          />
-          <MetaRow
-            label="Last Read"
-            value={
-              document.lastOpenedAt
-                ? new Date(document.lastOpenedAt).toLocaleString()
-                : 'Never opened'
-            }
-          />
+      <div className="space-y-8">
+        <div className="space-y-6">
+          <div className="space-y-1">
+            <h3 className="text-xl font-bold">Document Lifecycle</h3>
+            <p className="text-sm text-muted-foreground">
+              History and system-level metadata.
+            </p>
+          </div>
+          
+          <div className="rounded-2xl border bg-card shadow-sm overflow-hidden divide-y divide-border/50">
+            <MetaRow
+              label="Created"
+              value={new Date(document.createdAt).toLocaleString(undefined, {
+                dateStyle: 'medium',
+                timeStyle: 'short',
+              })}
+            />
+            <MetaRow
+              label="Last Modified"
+              value={new Date(document.updatedAt).toLocaleString(undefined, {
+                dateStyle: 'medium',
+                timeStyle: 'short',
+              })}
+            />
+            <MetaRow
+              label="Last Read"
+              value={
+                document.lastOpenedAt
+                  ? new Date(document.lastOpenedAt).toLocaleString(undefined, {
+                      dateStyle: 'medium',
+                      timeStyle: 'short',
+                    })
+                  : 'Never'
+              }
+            />
+          </div>
         </div>
 
         {Object.keys(document.metadata).length > 0 && (
-          <div className="space-y-3">
-            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-              Raw JSON Metadata
+          <div className="space-y-4">
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">
+              Raw Metadata
             </p>
-            <ScrollArea className="h-48 rounded-xl border bg-muted/20 p-4">
-              <pre className="text-xs leading-relaxed font-mono">
-                {JSON.stringify(document.metadata, null, 2)}
-              </pre>
-            </ScrollArea>
+            <div className="rounded-2xl border bg-muted/20 p-6">
+              <ScrollArea className="h-[240px] w-full">
+                <pre className="text-[12px] leading-relaxed font-mono opacity-80">
+                  {JSON.stringify(document.metadata, null, 2)}
+                </pre>
+              </ScrollArea>
+            </div>
           </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 }

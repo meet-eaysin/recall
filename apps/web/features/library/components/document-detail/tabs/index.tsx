@@ -2,13 +2,8 @@
 
 import * as React from 'react';
 import { Brain, Sparkles, StickyNote, Zap } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
+import { DocumentType } from '@repo/types';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
 import { useDocumentDetail } from '../context';
 import { SummaryTab } from './summary-tab';
 import { NotesTab } from './notes-tab';
@@ -20,66 +15,55 @@ export function DocumentDetailTabs() {
 
   if (!document) return null;
 
-  const isYoutubeDocument = document.type === 'youtube';
+  const isYoutubeDocument = document.type === DocumentType.YOUTUBE;
 
   return (
-    <Tabs defaultValue="summary" className="w-full">
-      <TabsList className="h-11 w-full justify-start rounded-none border-b bg-transparent p-0">
-        <TabsTrigger
-          value="summary"
-          className="relative rounded-none border-b-2 border-transparent px-6 py-2.5 font-semibold text-muted-foreground transition-all data-[state=active]:border-primary data-[state=active]:text-primary"
-        >
-          <Sparkles className="mr-2 size-4" />
+    <Tabs defaultValue="summary">
+      <TabsList>
+        <TabsTab value="summary">
+          <Sparkles />
           Summary
-        </TabsTrigger>
-        <TabsTrigger
-          value="notes"
-          className="relative rounded-none border-b-2 border-transparent px-6 py-2.5 font-semibold text-muted-foreground transition-all data-[state=active]:border-primary data-[state=active]:text-primary"
-        >
-          <StickyNote className="mr-2 size-4" />
-          Notes
+        </TabsTab>
+        <TabsTab value="notes">
+          <StickyNote />
+          Research Notes
           {notes.length > 0 && (
-            <Badge variant="secondary" className="ml-2 h-5 px-1.5 tabular-nums">
+            <span className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary ring-1 ring-inset ring-primary/20">
               {notes.length}
-            </Badge>
+            </span>
           )}
-        </TabsTrigger>
+        </TabsTab>
         {isYoutubeDocument && (
-          <TabsTrigger
-            value="transcript"
-            className="relative rounded-none border-b-2 border-transparent px-6 py-2.5 font-semibold text-muted-foreground transition-all data-[state=active]:border-primary data-[state=active]:text-primary"
-          >
-            <Brain className="mr-2 size-4" />
+          <TabsTab value="transcript">
+            <Brain />
             Transcript
-          </TabsTrigger>
+          </TabsTab>
         )}
-        <TabsTrigger
-          value="details"
-          className="relative rounded-none border-b-2 border-transparent px-6 py-2.5 font-semibold text-muted-foreground transition-all data-[state=active]:border-primary data-[state=active]:text-primary"
-        >
-          <Zap className="mr-2 size-4" />
-          Technical Details
-        </TabsTrigger>
+
+        <TabsTab value="details">
+          <Zap />
+          Details
+        </TabsTab>
       </TabsList>
 
-      <div className="mt-8">
-        <TabsContent value="summary" className="focus-visible:outline-none">
+      <div className="focus-visible:outline-none mt-3">
+        <TabsPanel value="summary" className="focus-visible:outline-none">
           <SummaryTab />
-        </TabsContent>
+        </TabsPanel>
 
-        <TabsContent value="notes" className="focus-visible:outline-none">
+        <TabsPanel value="notes" className="focus-visible:outline-none">
           <NotesTab />
-        </TabsContent>
+        </TabsPanel>
 
         {isYoutubeDocument && (
-          <TabsContent value="transcript" className="focus-visible:outline-none">
+          <TabsPanel value="transcript" className="focus-visible:outline-none">
             <TranscriptTab />
-          </TabsContent>
+          </TabsPanel>
         )}
 
-        <TabsContent value="details" className="focus-visible:outline-none">
+        <TabsPanel value="details" className="focus-visible:outline-none">
           <DetailsTab />
-        </TabsContent>
+        </TabsPanel>
       </div>
     </Tabs>
   );
