@@ -24,7 +24,6 @@ import {
   X,
   Zap,
 } from 'lucide-react';
-import { PageBreadcrumbs } from '@/components/page-breadcrumbs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -62,7 +61,6 @@ import {
   useDocument,
   useDocumentIngestion,
   useDocumentTranscript,
-  useFolders,
   useGenerateSummary,
   useGenerateTranscript,
   useNotes,
@@ -100,7 +98,6 @@ export function DocumentDetailView({ id }: { id: string }) {
   const { data: transcriptResponse, error: transcriptError } =
     useDocumentTranscript(id, isYoutubeDocument);
   const { data: notes = [] } = useNotes(id);
-  const { data: folders = [] } = useFolders();
   const updateDocument = useUpdateDocument(id);
   const generateSummary = useGenerateSummary(id);
   const deleteSummary = useDeleteSummary(id);
@@ -111,7 +108,6 @@ export function DocumentDetailView({ id }: { id: string }) {
   const deleteNote = useDeleteNote(id);
   const updateNote = useUpdateNote(id);
 
-  const folder = folders.find((item) => item.id === document?.folderId);
   const canRetryIngestion =
     ingestion?.ingestionStatus === IngestionStatus.FAILED &&
     !ingestion.embeddingsReady;
@@ -173,7 +169,6 @@ export function DocumentDetailView({ id }: { id: string }) {
     handleCancelEditingNote();
   }
 
-  // ── Loading ──────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -185,7 +180,6 @@ export function DocumentDetailView({ id }: { id: string }) {
     );
   }
 
-  // ── Error ────────────────────────────────────────────────────────────────
   if (error || !document) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -218,26 +212,14 @@ export function DocumentDetailView({ id }: { id: string }) {
 
   const hasContent = !!(document.sourceUrl || document.content);
 
-  // ── Main ─────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-5">
-      <PageBreadcrumbs
-        current={document.title}
-        items={[
-          { href: '/app/library', label: 'Library' },
-          ...(folder ? [{ label: folder.name }] : []),
-        ]}
-      />
-
-      {/* ── Page header ── */}
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 space-y-2">
-          {/* Title */}
           <h1 className="text-xl font-semibold tracking-tight leading-snug">
             {document.title}
           </h1>
 
-          {/* Meta pills */}
           <div className="flex flex-wrap items-center gap-2">
             <Badge
               variant={getStatusBadgeVariant(document.status)}
@@ -261,7 +243,6 @@ export function DocumentDetailView({ id }: { id: string }) {
           </div>
         </div>
 
-        {/* Right actions */}
         <div className="flex items-center gap-2 shrink-0 pt-0.5">
           <Select
             onValueChange={(value) =>
@@ -317,17 +298,13 @@ export function DocumentDetailView({ id }: { id: string }) {
         </div>
       </div>
 
-      {/* ── Content grid ── */}
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_21rem]">
-        {/* ── Left column ── */}
         <div className="space-y-5">
-          {/* ── Document reader — no card chrome, just immersive content ── */}
           <div
             className={`group relative overflow-hidden border bg-background ${
               readerExpanded ? 'ring-2 ring-ring/50' : ''
             }`}
           >
-            {/* Floating toolbar — only visible on hover */}
             <div className="absolute right-3 top-3 z-10 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
               {document.sourceUrl && (
                 <a href={document.sourceUrl} rel="noreferrer" target="_blank">
@@ -354,7 +331,6 @@ export function DocumentDetailView({ id }: { id: string }) {
               </Button>
             </div>
 
-            {/* The document itself */}
             <div
               className={`w-full transition-all duration-300 ${
                 readerExpanded
@@ -370,7 +346,6 @@ export function DocumentDetailView({ id }: { id: string }) {
             </div>
           </div>
 
-          {/* ── Notes ── */}
           <Card className="overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between gap-3 px-5 py-4">
               <div>
@@ -390,7 +365,6 @@ export function DocumentDetailView({ id }: { id: string }) {
             </CardHeader>
             <Separator />
             <CardContent className="space-y-5 px-5 py-5">
-              {/* Composer */}
               <form
                 onSubmit={handleCreateNote}
                 className="space-y-4 rounded-lg border bg-muted/10 p-4"
@@ -440,7 +414,6 @@ export function DocumentDetailView({ id }: { id: string }) {
                 </div>
               </form>
 
-              {/* Notes list */}
               {notes.length === 0 ? (
                 <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed bg-muted/10 px-6 py-10 text-center">
                   <div className="rounded-full bg-muted p-3">
@@ -568,7 +541,6 @@ export function DocumentDetailView({ id }: { id: string }) {
             </CardContent>
           </Card>
 
-          {/* ── Summary ── */}
           <Card className="overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between gap-3 px-5 py-4">
               <div>
@@ -626,9 +598,7 @@ export function DocumentDetailView({ id }: { id: string }) {
           </Card>
         </div>
 
-        {/* ── Right column ── */}
         <div className="space-y-4">
-          {/* ── Transcript ── */}
           {isYoutubeDocument && (
             <Card className="overflow-hidden">
               <CardHeader className="flex flex-row items-center justify-between gap-3 px-5 py-4">
@@ -678,7 +648,6 @@ export function DocumentDetailView({ id }: { id: string }) {
             </Card>
           )}
 
-          {/* ── Details ── */}
           <Card className="overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between gap-3 px-5 py-4">
               <div>
@@ -704,7 +673,6 @@ export function DocumentDetailView({ id }: { id: string }) {
             </CardHeader>
             <Separator />
             <CardContent className="px-5 py-4 space-y-3">
-              {/* Ingestion status */}
               <div className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2">
                 <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <Zap className="size-3" />
