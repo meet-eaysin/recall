@@ -274,7 +274,7 @@ function InlineChat() {
 
       {/* Source Preview Drawer */}
       <Drawer
-        direction="right"
+        position="right"
         open={!!previewId}
         onOpenChange={(open) => !open && setPreviewId(null)}
       >
@@ -283,7 +283,7 @@ function InlineChat() {
             <DrawerTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
               Document Preview
             </DrawerTitle>
-            <DrawerClose asChild>
+            <DrawerClose>
               <Button variant="ghost" size="sm">
                 Close
               </Button>

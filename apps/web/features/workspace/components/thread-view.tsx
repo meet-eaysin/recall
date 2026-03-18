@@ -280,7 +280,7 @@ export function ThreadView() {
 
       {/* Document Preview Drawer */}
       <Drawer
-        direction="right"
+        position="right"
         open={!!previewId}
         onOpenChange={(open) => !open && setPreviewId(null)}
       >
@@ -289,7 +289,7 @@ export function ThreadView() {
             <DrawerTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
               Document Preview
             </DrawerTitle>
-            <DrawerClose asChild>
+            <DrawerClose>
               <Button variant="ghost" size="sm">
                 Close
               </Button>

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { Manrope, Sora } from 'next/font/google';
-import '../styles/index.css';
+import '../styles/globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AnchoredToastProvider, ToastProvider } from '@/components/ui/toast';
 import { QueryProvider } from '@/providers/query-provider';
