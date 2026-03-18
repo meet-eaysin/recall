@@ -12,6 +12,8 @@ import {
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { useDocumentDetail } from '../context';
 
+import { MarkdownRenderer } from '@/components/ai/markdown-renderer';
+
 const HIGHLIGHTS = [
   'Automated key theme extraction',
   'Saves ~15 mins of reading time',
@@ -104,14 +106,12 @@ export function SummaryTab() {
 
         <div className="relative group">
           {document.summary ? (
-            <div className="relative rounded-2xl border bg-card p-8 shadow-sm transition-all hover:shadow-md hover:border-primary/20">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Sparkles className="size-12 text-primary" />
+            <div className="relative rounded-2xl border bg-card p-8 shadow-sm transition-all hover:shadow-md hover:border-primary/10">
+              <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:opacity-40 transition-opacity">
+                <Sparkles className="size-6 text-primary" />
               </div>
-              <div className="prose prose-slate dark:prose-invert max-w-none">
-                <p className="text-[17px] leading-relaxed text-foreground/80 font-serif-subtle whitespace-pre-wrap">
-                  {document.summary}
-                </p>
+              <div className="max-w-none text-foreground/90 font-serif-subtle">
+                <MarkdownRenderer>{document.summary}</MarkdownRenderer>
               </div>
             </div>
           ) : (
