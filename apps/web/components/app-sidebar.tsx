@@ -12,16 +12,15 @@ import {
   useSearchChats,
 } from '@/features/search/hooks';
 import { NavUser } from '@/components/nav-user';
-import { Button } from '@/components/ui/button';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSkeleton,
@@ -51,37 +50,41 @@ function SidebarSearch({
 }) {
   const { state, setOpen } = useSidebar();
 
+  if (state === 'collapsed') {
+    return (
+      <SidebarGroup className="py-0 mb-1">
+        <SidebarMenu className="gap-1">
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip="Search"
+              className="group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center"
+              onClick={() => {
+                onRequestFocus();
+                setOpen(true);
+              }}
+            >
+              <SearchIcon className="size-4.5" />
+              <span className="sr-only">Search</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarGroup>
+    );
+  }
+
   return (
-    <SidebarGroup>
-      <SidebarGroupContent>
-        {state === 'collapsed' ? (
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                tooltip="Search"
-                className="justify-center"
-                onClick={() => {
-                  onRequestFocus();
-                  setOpen(true);
-                }}
-              >
-                <SearchIcon />
-                <span className="group-data-[collapsible=icon]:hidden">
-                  Search
-                </span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        ) : (
-          <SidebarInput
-            key={`search-input-${focusKey}`}
-            placeholder="Search chats..."
-            value={value}
-            onChange={(event) => onChange(event.target.value)}
-            autoFocus={focusKey > 0}
-          />
-        )}
-      </SidebarGroupContent>
+    <SidebarGroup className="py-0 mb-2">
+      <div className="relative mt-1">
+        <SearchIcon className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/70" />
+        <SidebarInput
+          key={`search-input-${focusKey}`}
+          placeholder="Search chats..."
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          autoFocus={focusKey > 0}
+          className="pl-9 bg-sidebar-accent/50 border-none focus-visible:ring-1 focus-visible:ring-sidebar-ring transition-all"
+        />
+      </div>
     </SidebarGroup>
   );
 }
@@ -130,47 +133,48 @@ function SidebarChatList({ query }: { query: string }) {
 
   const renderChatItem = (chat: NonNullable<typeof chats>[number]) => (
     <SidebarMenuItem key={chat.id}>
-      <div className="flex items-start gap-2">
-        <SidebarMenuButton
-          render={<Link href={`/app/t/${chat.id}`} />}
-          isActive={pathname.includes(chat.id)}
-          tooltip={chat.title}
-          className="h-auto flex-1 items-start gap-2 py-2 group-data-[collapsible=icon]:justify-center"
-        >
-          <MessageSquareIcon className="mt-0.5" />
-          <span className="flex min-w-0 flex-col group-data-[collapsible=icon]:hidden">
-            <span className="truncate">{chat.title}</span>
-            <span className="line-clamp-1 text-xs text-muted-foreground">
-              {chat.lastMessagePreview || 'No preview available'}
-            </span>
+      <SidebarMenuButton
+        render={<Link href={`/app/t/${chat.id}`} />}
+        isActive={pathname.includes(chat.id)}
+        tooltip={chat.title}
+        className="h-auto py-2.5 transition-all duration-200 hover:bg-sidebar-accent/50 data-active:bg-sidebar-accent data-active:shadow-sm"
+      >
+        <MessageSquareIcon className="size-4 shrink-0 transition-transform duration-200 group-hover/menu-button:scale-110" />
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <span className="truncate font-medium leading-none text-sidebar-foreground">
+            {chat.title}
           </span>
-        </SidebarMenuButton>
-        <div className="flex items-center gap-1 group-data-[collapsible=icon]:hidden">
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              archiveChat.mutate({ id: chat.id, isArchived: true });
-            }}
-            aria-label={`Archive ${chat.title}`}
-          >
-            <ArchiveIcon className="size-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              deleteChat.mutate(chat.id);
-            }}
-            aria-label={`Delete ${chat.title}`}
-          >
-            <Trash2Icon className="size-4" />
-          </Button>
+          <span className="line-clamp-1 text-xs text-muted-foreground/80 leading-tight">
+            {chat.lastMessagePreview || 'No preview available'}
+          </span>
         </div>
+      </SidebarMenuButton>
+      
+      <div className="absolute right-1 top-1/2 flex -translate-y-1/2 items-center gap-0.5 opacity-0 transition-all duration-200 group-hover/menu-item:opacity-100 group-data-[collapsible=icon]:hidden">
+        <SidebarMenuAction
+          showOnHover
+          className="static size-7 hover:bg-sidebar-accent-foreground/10"
+          onClick={(event: React.MouseEvent) => {
+            event.preventDefault();
+            event.stopPropagation();
+            archiveChat.mutate({ id: chat.id, isArchived: true });
+          }}
+          aria-label={`Archive ${chat.title}`}
+        >
+          <ArchiveIcon className="size-3.5" />
+        </SidebarMenuAction>
+        <SidebarMenuAction
+          showOnHover
+          className="static size-7 hover:bg-destructive/10 hover:text-destructive"
+          onClick={(event: React.MouseEvent) => {
+            event.preventDefault();
+            event.stopPropagation();
+            deleteChat.mutate(chat.id);
+          }}
+          aria-label={`Delete ${chat.title}`}
+        >
+          <Trash2Icon className="size-3.5" />
+        </SidebarMenuAction>
       </div>
     </SidebarMenuItem>
   );
@@ -250,25 +254,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [searchFocusKey, setSearchFocusKey] = React.useState(0);
 
   return (
-    <Sidebar variant="inset" collapsible="icon" {...props}>
-      <div className="flex size-full flex-col">
-        <SidebarHeader>
-          <ApplicationIcon />
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarSearch
-            value={searchQuery}
-            onChange={setSearchQuery}
-            focusKey={searchFocusKey}
-            onRequestFocus={() => setSearchFocusKey((prev) => prev + 1)}
-          />
-          <SidebarChatList query={searchQuery} />
-        </SidebarContent>
-        <SidebarFooter>
-          <NavUser />
-        </SidebarFooter>
-        <SidebarRail />
-      </div>
+    <Sidebar variant="sidebar" collapsible="icon" {...props}>
+      <SidebarHeader className="pb-2">
+        <ApplicationIcon />
+      </SidebarHeader>
+      <SidebarContent className="gap-0">
+        <SidebarSearch
+          value={searchQuery}
+          onChange={setSearchQuery}
+          focusKey={searchFocusKey}
+          onRequestFocus={() => setSearchFocusKey((prev) => prev + 1)}
+        />
+        <SidebarChatList query={searchQuery} />
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser />
+      </SidebarFooter>
+      <SidebarRail className="-right-2" />
     </Sidebar>
   );
 }
