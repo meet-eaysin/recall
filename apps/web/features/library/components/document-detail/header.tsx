@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
+import { cn } from '@/lib/utils';
 import {
   getStatusBadgeVariant,
   getStatusLabel,
@@ -40,7 +41,13 @@ import { useRouter } from 'next/navigation';
 
 const STATUS_OPTIONS = Object.values(DocumentStatus);
 
-export function DocumentDetailHeader() {
+interface DocumentDetailHeaderProps {
+  isCompact?: boolean;
+}
+
+export function DocumentDetailHeader({
+  isCompact = false,
+}: DocumentDetailHeaderProps) {
   const router = useRouter();
   const { document, actions } = useDocumentDetail();
   const [deleteDocumentOpen, setDeleteDocumentOpen] = React.useState(false);
@@ -54,22 +61,34 @@ export function DocumentDetailHeader() {
   }
 
   return (
-    <div className="flex items-start justify-between gap-4 pb-3 mb-2">
-      <div className="min-w-0 space-y-3">
-        <div className="flex items-center gap-2 text-muted-foreground mb-1">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className="-ml-2 h-8 w-8"
-            render={<Link href="/app/library" />}
-          >
-            <ChevronLeft className="size-4" />
-          </Button>
-          <span className="text-xs font-medium uppercase tracking-wider">
-            Document Library
-          </span>
-        </div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground/90">
+    <div
+      className={cn(
+        'flex items-start justify-between gap-4 pb-3 mb-2',
+        isCompact && 'items-center mb-3 pb-0',
+      )}
+    >
+      <div className={cn('min-w-0 space-y-3', isCompact && 'space-y-1.5')}>
+        {!isCompact && (
+          <div className="flex items-center gap-2 text-muted-foreground mb-1">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="-ml-2 h-8 w-8"
+              render={<Link href="/app/library" />}
+            >
+              <ChevronLeft className="size-4" />
+            </Button>
+            <span className="text-xs font-medium uppercase tracking-wider">
+              Document Library
+            </span>
+          </div>
+        )}
+        <h1
+          className={cn(
+            'text-3xl font-bold tracking-tight text-foreground/90',
+            isCompact && 'text-xl',
+          )}
+        >
           {document.title}
         </h1>
 
@@ -106,14 +125,21 @@ export function DocumentDetailHeader() {
         </div>
       </div>
 
-      <div className="flex items-center gap-3 shrink-0 pt-10">
+      <div
+        className={cn(
+          'flex items-center gap-3 shrink-0 pt-10',
+          isCompact && 'pt-0',
+        )}
+      >
         <Select
           onValueChange={(value) =>
             actions.updateDocument.mutate({ status: value as DocumentStatus })
           }
           value={document.status}
         >
-          <SelectTrigger className="h-9 w-40 text-sm font-medium">
+          <SelectTrigger
+            className={cn('h-9 w-40 text-sm font-medium', isCompact && 'w-32')}
+          >
             <SelectValue>{getStatusLabel(document.status)}</SelectValue>
           </SelectTrigger>
           <SelectContent>

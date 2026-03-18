@@ -12,6 +12,7 @@ import {
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { useDocumentDetail } from '../context';
 
+import { cn } from '@/lib/utils';
 import { MarkdownRenderer } from '@/components/ai/markdown-renderer';
 
 const HIGHLIGHTS = [
@@ -21,7 +22,7 @@ const HIGHLIGHTS = [
   'Instant retrieval ready',
 ];
 
-export function SummaryTab() {
+export function SummaryTab({ isCompact = false }: { isCompact?: boolean }) {
   const { id, document, actions } = useDocumentDetail();
   const [removeSummaryOpen, setRemoveSummaryOpen] = React.useState(false);
 
@@ -33,7 +34,12 @@ export function SummaryTab() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 pb-20">
+    <div
+      className={cn(
+        'max-w-5xl mx-auto space-y-6 pb-20',
+        isCompact && 'max-w-none pb-10',
+      )}
+    >
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-1">

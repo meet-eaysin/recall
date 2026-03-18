@@ -9,7 +9,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useDocumentDetail } from '../context';
 import { MetaRow } from '../meta-row';
 
-export function DetailsTab() {
+import { cn } from '@/lib/utils';
+
+export function DetailsTab({ isCompact = false }: { isCompact?: boolean }) {
   const { id, document, ingestion, actions } = useDocumentDetail();
 
   if (!document) return null;
@@ -19,7 +21,12 @@ export function DetailsTab() {
     !ingestion.embeddingsReady;
 
   return (
-    <div className="grid gap-10 lg:grid-cols-2 pb-20">
+    <div
+      className={cn(
+        'grid gap-10 lg:grid-cols-2 pb-20',
+        isCompact && 'grid-cols-1 gap-8 pb-10',
+      )}
+    >
       <div className="space-y-8">
         <div className="space-y-6">
           <div className="flex items-center justify-between">

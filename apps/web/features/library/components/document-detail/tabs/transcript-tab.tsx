@@ -6,19 +6,30 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useDocumentDetail } from '../context';
 
-export function TranscriptTab() {
+import { cn } from '@/lib/utils';
+
+export function TranscriptTab({ isCompact = false }: { isCompact?: boolean }) {
   const { id, document, transcript, actions } = useDocumentDetail();
 
   if (!document) return null;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-12 pb-20">
+    <div
+      className={cn(
+        'max-w-5xl mx-auto space-y-12 pb-20',
+        isCompact && 'max-w-none space-y-6 pb-10',
+      )}
+    >
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h3 className="text-2xl font-bold tracking-tight">Video Transcript</h3>
-          <p className="text-sm text-muted-foreground">
-            Full extraction of audio content for deep search and analysis.
-          </p>
+          <h3 className={cn('text-2xl font-bold tracking-tight', isCompact && 'text-xl')}>
+            Video Transcript
+          </h3>
+          {!isCompact && (
+            <p className="text-sm text-muted-foreground">
+              Full extraction of audio content for deep search and analysis.
+            </p>
+          )}
         </div>
         <Button
           onClick={() => actions.generateTranscript.mutate(id)}
@@ -47,8 +58,10 @@ export function TranscriptTab() {
               <div className="size-1.5 rounded-full bg-border" />
             </div>
           </div>
-          <ScrollArea className="h-[60vh] max-h-[700px]">
-            <div className="p-10">
+          <ScrollArea
+            className={cn('h-[60vh] max-h-[700px]', isCompact && 'h-[50vh]')}
+          >
+            <div className={cn('p-10', isCompact && 'p-6')}>
               <p className="text-[15px] leading-relaxed text-foreground/80 whitespace-pre-wrap font-sans-subtle selection:bg-primary/20">
                 {transcript.content}
               </p>
@@ -56,14 +69,20 @@ export function TranscriptTab() {
           </ScrollArea>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-6 py-24 text-center rounded-3xl border border-dashed bg-muted/20">
+        <div
+          className={cn(
+            'flex flex-col items-center gap-6 py-24 text-center rounded-3xl border border-dashed bg-muted/20',
+            isCompact && 'py-12 gap-4',
+          )}
+        >
           <div className="rounded-3xl bg-muted/40 p-8 ring-1 ring-border shadow-inner">
             <Brain className="size-10 text-muted-foreground/20" />
           </div>
           <div className="space-y-2">
             <h4 className="font-semibold text-lg">No transcript available</h4>
             <p className="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
-              Unlock full-text search and AI insights for this video by generating a transcript.
+              Unlock full-text search and AI insights for this video by generating
+              a transcript.
             </p>
           </div>
           <Button

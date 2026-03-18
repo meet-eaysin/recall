@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ExternalLink } from 'lucide-react';
 
 import { useSearchChat } from '@/features/search/hooks';
 import { searchApi } from '@/features/search/api';
@@ -14,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { DocumentDetailView } from '@/features/library/components/document-detail-view';
 import {
   Drawer,
-  DrawerContent,
+  DrawerPopup as DrawerContent,
   DrawerHeader,
   DrawerTitle,
   DrawerClose,
@@ -284,21 +284,37 @@ export function ThreadView() {
         open={!!previewId}
         onOpenChange={(open) => !open && setPreviewId(null)}
       >
-        <DrawerContent className="h-full sm:max-w-2xl">
-          <DrawerHeader className="border-b flex flex-row items-center justify-between">
-            <DrawerTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Document Preview
-            </DrawerTitle>
+        <DrawerContent className="h-full sm:max-w-3xl border-l shadow-2xl">
+          <DrawerHeader className="border-b flex flex-row items-center justify-between bg-muted/5 py-4">
+            <div className="flex items-center gap-3">
+              <DrawerTitle className="text-xs font-semibold text-muted-foreground/80">
+                Document Preview
+              </DrawerTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push(`/app/library/${previewId}`)}
+              >
+                <ExternalLink className="size-3" />
+                Open Full Page
+              </Button>
+            </div>
             <DrawerClose>
-              <Button variant="ghost" size="sm">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 rounded-full"
+              >
                 Close
               </Button>
             </DrawerClose>
           </DrawerHeader>
           <div className="flex-1 overflow-hidden">
             <ScrollArea className="h-full">
-              <div className="p-6">
-                {previewId && <DocumentDetailView id={previewId} />}
+              <div className="p-0">
+                {previewId && (
+                  <DocumentDetailView id={previewId} isCompact={true} />
+                )}
               </div>
             </ScrollArea>
           </div>

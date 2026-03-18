@@ -3,6 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -21,15 +22,21 @@ import { DocumentDetailReader } from './document-detail/reader';
 import { DocumentDetailTabs } from './document-detail/tabs';
 import { DocumentDetailSkeleton } from './document-detail/skeleton';
 
-export function DocumentDetailView({ id }: { id: string }) {
+export function DocumentDetailView({
+  id,
+  isCompact = false,
+}: {
+  id: string;
+  isCompact?: boolean;
+}) {
   return (
     <DocumentDetailProvider id={id}>
-      <DocumentDetailContent />
+      <DocumentDetailContent isCompact={isCompact} />
     </DocumentDetailProvider>
   );
 }
 
-function DocumentDetailContent() {
+function DocumentDetailContent({ isCompact }: { isCompact: boolean }) {
   const { document, error, isLoading } = useDocumentDetail();
 
   if (isLoading) {
@@ -67,11 +74,11 @@ function DocumentDetailContent() {
   }
 
   return (
-    <div className="space-y-5">
-      <DocumentDetailHeader />
-      <section className="space-y-8">
+    <div className={cn('space-y-5', isCompact && 'px-6 py-4')}>
+      <DocumentDetailHeader isCompact={isCompact} />
+      <section className={cn('space-y-8', isCompact && 'space-y-6')}>
         <DocumentDetailReader />
-        <DocumentDetailTabs />
+        <DocumentDetailTabs isCompact={isCompact} />
       </section>
     </div>
   );

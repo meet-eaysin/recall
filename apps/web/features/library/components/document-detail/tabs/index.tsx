@@ -10,7 +10,7 @@ import { NotesTab } from './notes-tab';
 import { TranscriptTab } from './transcript-tab';
 import { DetailsTab } from './details-tab';
 
-export function DocumentDetailTabs() {
+export function DocumentDetailTabs({ isCompact = false }: { isCompact?: boolean }) {
   const { document, notes } = useDocumentDetail();
 
   if (!document) return null;
@@ -48,21 +48,21 @@ export function DocumentDetailTabs() {
 
       <div className="focus-visible:outline-none mt-3">
         <TabsPanel value="summary" className="focus-visible:outline-none">
-          <SummaryTab />
+          <SummaryTab isCompact={isCompact} />
         </TabsPanel>
 
         <TabsPanel value="notes" className="focus-visible:outline-none">
-          <NotesTab />
+          <NotesTab isCompact={isCompact} />
         </TabsPanel>
 
         {isYoutubeDocument && (
           <TabsPanel value="transcript" className="focus-visible:outline-none">
-            <TranscriptTab />
+            <TranscriptTab isCompact={isCompact} />
           </TabsPanel>
         )}
 
         <TabsPanel value="details" className="focus-visible:outline-none">
-          <DetailsTab />
+          <DetailsTab isCompact={isCompact} />
         </TabsPanel>
       </div>
     </Tabs>

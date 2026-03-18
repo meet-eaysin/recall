@@ -8,7 +8,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { useDocumentDetail } from '../context';
 
-export function NotesTab() {
+import { cn } from '@/lib/utils';
+
+export function NotesTab({ isCompact = false }: { isCompact?: boolean }) {
   const { id, notes, actions } = useDocumentDetail();
   const [noteDraft, setNoteDraft] = React.useState('');
   const [deletingNoteId, setDeletingNoteId] = React.useState<string | null>(null);
@@ -41,10 +43,17 @@ export function NotesTab() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-12 pb-20">
-      <div className="flex flex-col gap-8">
+    <div
+      className={cn(
+        'max-w-5xl mx-auto space-y-12 pb-20',
+        isCompact && 'max-w-none space-y-8 pb-10',
+      )}
+    >
+      <div className={cn('flex flex-col gap-8', isCompact && 'gap-4')}>
         <div className="space-y-1">
-          <h3 className="text-2xl font-bold tracking-tight">Research Notes</h3>
+          <h3 className={cn('text-2xl font-bold tracking-tight', isCompact && 'text-xl')}>
+            Research Notes
+          </h3>
           <p className="text-muted-foreground text-sm">
             Synthesize your findings and keep track of key insights.
           </p>
@@ -54,7 +63,7 @@ export function NotesTab() {
           onSubmit={handleCreateNote}
           className="group relative rounded-2xl border bg-card shadow-sm transition-all focus-within:ring-2 focus-within:ring-primary/20 hover:shadow-md"
         >
-          <div className="p-6 pb-0">
+          <div className={cn('p-6 pb-0', isCompact && 'p-4 pb-0')}>
             <Textarea
               onChange={(e) => setNoteDraft(e.target.value)}
               onKeyDown={(event) => {
@@ -66,10 +75,18 @@ export function NotesTab() {
               }}
               placeholder="Start typing your insight... (Cmd + Enter to save)"
               value={noteDraft}
-              className="min-h-[120px] resize-none border-none bg-transparent p-0 text-lg shadow-none focus-visible:ring-0 leading-relaxed placeholder:text-muted-foreground/50"
+              className={cn(
+                'min-h-[120px] resize-none border-none bg-transparent p-0 text-lg shadow-none focus-visible:ring-0 leading-relaxed placeholder:text-muted-foreground/50',
+                isCompact && 'text-base min-h-[100px]',
+              )}
             />
           </div>
-          <div className="mt-2 flex items-center justify-between border-t bg-muted/5 px-6 py-3 rounded-b-2xl">
+          <div
+            className={cn(
+              'mt-2 flex items-center justify-between border-t bg-muted/5 px-6 py-3 rounded-b-2xl',
+              isCompact && 'px-4 py-2',
+            )}
+          >
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 flex items-center gap-2">
               <Clock className="size-3" />
               Private Workspace Note
@@ -77,7 +94,10 @@ export function NotesTab() {
             <Button
               disabled={!noteDraft.trim() || actions.createNote.isPending}
               size="sm"
-              className="h-8 px-4 rounded-full font-semibold shadow-sm transition-transform active:scale-95"
+              className={cn(
+                'h-8 px-4 rounded-full font-semibold shadow-sm transition-transform active:scale-95',
+                isCompact && 'h-7 text-xs px-3',
+              )}
             >
               {actions.createNote.isPending ? (
                 <LoaderCircle className="size-3.5 animate-spin mr-2" />
@@ -92,7 +112,7 @@ export function NotesTab() {
 
       <div className="space-y-6">
         {notes.length === 0 ? (
-          <div className="flex flex-col items-center gap-4 py-24 text-center">
+          <div className={cn('flex flex-col items-center gap-4 py-24 text-center', isCompact && 'py-12')}>
             <div className="rounded-3xl bg-muted/30 p-8 ring-1 ring-border shadow-inner">
               <StickyNote className="size-10 text-muted-foreground/20" />
             </div>
@@ -106,7 +126,12 @@ export function NotesTab() {
             </div>
           </div>
         ) : (
-          <div className="columns-1 md:columns-2 gap-6 space-y-6">
+          <div
+            className={cn(
+              'columns-1 md:columns-2 gap-6 space-y-6',
+              isCompact && 'md:columns-1',
+            )}
+          >
             {notes.map((note) => (
               <article
                 key={note.id}
