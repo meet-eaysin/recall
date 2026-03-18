@@ -34,6 +34,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useSearchResults } from '../hooks';
+import { PageContainer } from '@/features/workspace/components/page-container';
 
 type ResultItem = DocumentPublicView | SemanticSearchResult;
 
@@ -128,8 +129,15 @@ export function SearchPage() {
   );
 
   return (
-    <div className="mt-4 space-y-4">
-      <Card>
+    <PageContainer className="space-y-8">
+      <header className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight">Search</h1>
+        <p className="text-muted-foreground">
+          Find exact matches or search by concept across your library.
+        </p>
+      </header>
+      <div className="space-y-4">
+        <Card>
         <CardHeader>
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="space-y-1">
@@ -293,9 +301,10 @@ export function SearchPage() {
                 </EmptyContent>
               </Empty>
             </Card>
-          ) : null}
-        </CardPanel>
-      </Card>
-    </div>
+            ) : null}
+          </CardPanel>
+        </Card>
+      </div>
+    </PageContainer>
   );
 }

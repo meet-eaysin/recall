@@ -51,6 +51,7 @@ import { cn } from '@/lib/utils';
 import { useDocuments } from '@/features/library/hooks';
 import { searchApi } from '../api';
 import { useSearchChat, useSearchChats } from '../hooks';
+import { PageContainer } from '@/features/workspace/components/page-container';
 
 type StreamingState = {
   answer: string;
@@ -485,9 +486,16 @@ export function AskAiPage() {
   }));
 
   return (
-    <div className="mt-4 space-y-4">
-      <Drawer
-        position="right"
+    <PageContainer className="space-y-8">
+      <header className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight">Ask AI</h1>
+        <p className="text-muted-foreground">
+          Start a conversation grounded in your document library.
+        </p>
+      </header>
+      <div className="space-y-4">
+        <Drawer
+          position="right"
         open={historyOpen}
         onOpenChange={setHistoryOpen}
       >
@@ -715,6 +723,7 @@ export function AskAiPage() {
           </div>
         </DrawerContent>
       </Drawer>
-    </div>
+      </div>
+    </PageContainer>
   );
 }

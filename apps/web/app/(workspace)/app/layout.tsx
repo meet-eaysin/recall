@@ -13,10 +13,15 @@ export default function WorkspaceLayout({ children }: { children: ReactNode }) {
       <ThreadStreamProvider>
         <SidebarProvider>
           <AppSidebar />
-          <SidebarInset>
-            <main>{children}</main>
-
-            <Dock />
+          <SidebarInset className="relative flex flex-col overflow-hidden bg-background">
+            <main className="flex-1 overflow-auto">
+              <div className="pb-24 flex min-h-full flex-col">
+                {children}
+              </div>
+            </main>
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50">
+              <Dock />
+            </div>
           </SidebarInset>
         </SidebarProvider>
       </ThreadStreamProvider>

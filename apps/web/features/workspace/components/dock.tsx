@@ -29,8 +29,8 @@ export function Dock() {
   const pathname = usePathname();
 
   return (
-    <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
-      <nav className="flex items-center gap-1 rounded-lg border bg-background p-1">
+    <div className="absolute bottom-6 left-1/2 z-50 -translate-x-1/2">
+      <nav className="flex items-center gap-1 rounded-full border border-border/50 bg-background/70 backdrop-blur-xl p-1.5 shadow-lg shadow-black/5 dark:shadow-black/20">
         {navItems.map((item) => {
           const isActive =
             pathname === item.href ||
