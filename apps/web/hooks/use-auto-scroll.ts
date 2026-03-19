@@ -56,20 +56,20 @@ export function useAutoScroll(
   }, []);
 
   useEffect(() => {
-    previousScrollTop.current = window.scrollY || document.documentElement.scrollTop;
+    previousScrollTop.current =
+      window.scrollY || document.documentElement.scrollTop;
   }, []);
 
   useEffect(() => {
     if (shouldAutoScroll) {
       scrollToBottom();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldAutoScroll, scrollToBottom, ...dependencies]);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('touchstart', handleTouchStart);

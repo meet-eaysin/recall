@@ -17,6 +17,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useSidebar } from '@/components/ui/sidebar';
 
 const navItems = [
   { name: 'Workspace', href: '/app', icon: LayoutDashboard },
@@ -27,6 +28,7 @@ const navItems = [
 
 export function Dock() {
   const pathname = usePathname();
+  const { toggleSidebar } = useSidebar();
 
   return (
     <div className="fixed bottom-6 left-1/2 z-100 w-max -translate-x-1/2 max-w-[calc(100vw-2rem)]">
@@ -64,9 +66,7 @@ export function Dock() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() =>
-                  window.dispatchEvent(new CustomEvent('recall:toggle-threads'))
-                }
+                onClick={toggleSidebar}
                 aria-label="History"
               />
             }
