@@ -243,7 +243,7 @@ export function ThreadView() {
   return (
     <PageContainer
       isFullHeight
-      className="px-0 py-0 md:px-0 lg:px-0"
+      className="px-0 py-0 pb-0 md:px-0 lg:px-0 md:pb-0 lg:pb-0 min-h-[calc(100svh-0.5rem)]"
       ref={scrollRef}
     >
       <div className="flex flex-col flex-1 h-full w-full min-h-0">

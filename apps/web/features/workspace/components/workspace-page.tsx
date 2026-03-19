@@ -234,7 +234,7 @@ function InlineChat() {
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
   return (
-    <PageContainer isFullHeight ref={scrollRef} className="px-0 py-0">
+    <PageContainer isFullHeight ref={scrollRef} className="px-0 py-0 pb-0 md:pb-0 lg:pb-0 min-h-[calc(100svh-0.5rem)]">
       <div className="flex flex-1 flex-col">
         {/* Header */}
         <div className="sticky top-0 z-20 w-full bg-background/80 backdrop-blur-md">

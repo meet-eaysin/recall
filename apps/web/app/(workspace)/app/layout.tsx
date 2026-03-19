@@ -22,7 +22,7 @@ export default async function WorkspaceLayout({
             <div className="relative flex min-h-svh w-full">
               <AppSidebar />
               <SidebarInset className="relative flex min-h-svh flex-1 flex-col bg-background md:pl-(--sidebar-width-icon)">
-                <main className="relative flex flex-1 flex-col pt-2 pb-24">
+                <main className="relative flex flex-1 flex-col pt-2">
                   {children}
                 </main>
               </SidebarInset>
