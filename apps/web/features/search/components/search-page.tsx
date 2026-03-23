@@ -11,7 +11,7 @@ import {
   Card,
   CardDescription,
   CardHeader,
-  CardPanel,
+  CardContent,
   CardTitle,
 } from '@/components/ui/card';
 import {
@@ -164,7 +164,7 @@ export function SearchPage() {
               </Tabs>
             </div>
           </CardHeader>
-          <CardPanel>
+          <CardContent>
             <form
               className="space-y-3"
               onSubmit={(event) => {
@@ -202,11 +202,11 @@ export function SearchPage() {
                 </FieldDescription>
               </Field>
             </form>
-          </CardPanel>
+          </CardContent>
         </Card>
 
         {error ? (
-          <Alert variant="error">
+          <Alert variant="destructive">
             <AlertTitle>Search failed</AlertTitle>
             <AlertDescription>{(error as Error).message}</AlertDescription>
           </Alert>
@@ -231,7 +231,7 @@ export function SearchPage() {
               ) : null}
             </div>
           </CardHeader>
-          <CardPanel>
+          <CardContent>
             {!submittedQuery ? (
               <Card className="border-dashed shadow-none">
                 <Empty className="py-10">
@@ -291,18 +291,17 @@ export function SearchPage() {
                     </EmptyDescription>
                   </EmptyHeader>
                   <EmptyContent>
-                    <Button
-                      render={<Link href="/app/search/ask" />}
-                      variant="outline"
-                    >
-                      <Bot className="size-4" />
-                      Open Ask AI
+                    <Button asChild variant="outline">
+                      <Link href="/app/search/ask">
+                        <Bot className="size-4" />
+                        Open Ask AI
+                      </Link>
                     </Button>
                   </EmptyContent>
                 </Empty>
               </Card>
             ) : null}
-          </CardPanel>
+          </CardContent>
         </Card>
       </div>
     </PageContainer>

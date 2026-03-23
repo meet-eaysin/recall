@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { DocumentDetailView } from '@/features/library/components/document-detail-view';
 import {
   Drawer,
-  DrawerPopup,
+  DrawerContent,
   DrawerHeader,
   DrawerTitle,
   DrawerClose,
@@ -234,7 +234,11 @@ function InlineChat() {
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
   return (
-    <PageContainer isFullHeight ref={scrollRef} className="px-0 py-0 pb-0 md:pb-0 lg:pb-0 min-h-[calc(100svh-0.5rem)]">
+    <PageContainer
+      isFullHeight
+      ref={scrollRef}
+      className="px-0 py-0 pb-0 md:pb-0 lg:pb-0 min-h-[calc(100svh-0.5rem)]"
+    >
       <div className="flex flex-1 flex-col">
         {/* Header */}
         <div className="sticky top-0 z-20 w-full bg-background/80 backdrop-blur-md">
@@ -282,30 +286,28 @@ function InlineChat() {
 
       {/* Source Preview Drawer */}
       <Drawer
-        position="right"
+        direction="right"
         open={!!previewId}
         onOpenChange={(open) => !open && setPreviewId(null)}
       >
-        <DrawerPopup className="h-full sm:max-w-2xl p-0">
+        <DrawerContent className="h-full sm:max-w-2xl p-0">
           <DrawerHeader className="p-4 border-b flex flex-row items-center justify-between">
             <DrawerTitle className="text-lg font-semibold">
               Document Preview
             </DrawerTitle>
-            <DrawerClose
-              render={
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <X className="size-4" />
-                  <span className="sr-only">Close</span>
-                </Button>
-              }
-            />
+            <DrawerClose asChild>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <X className="size-4" />
+                <span className="sr-only">Close</span>
+              </Button>
+            </DrawerClose>
           </DrawerHeader>
           <div className="flex-1 overflow-y-auto p-4">
             {previewId && (
               <DocumentDetailView id={previewId} isCompact={true} />
             )}
           </div>
-        </DrawerPopup>
+        </DrawerContent>
       </Drawer>
     </PageContainer>
   );

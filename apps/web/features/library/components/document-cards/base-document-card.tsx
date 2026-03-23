@@ -3,9 +3,13 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { Card, CardDescription, CardPanel } from '@/components/ui/card';
+import { Card, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import type { DocumentRow } from '@/features/library/types';
 import {
   getDocumentIcon,
@@ -43,7 +47,7 @@ export function BaseDocumentCard({
           </div>
         </div>
 
-        <CardPanel className="flex flex-1 flex-col gap-2.5 p-3">
+        <CardContent className="flex flex-1 flex-col gap-2.5 p-3">
           <div className="flex items-start gap-2">
             <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted/40 text-muted-foreground">
               <Icon className="size-4" />
@@ -54,9 +58,7 @@ export function BaseDocumentCard({
                 <span className="truncate text-[11px] font-medium tracking-[0.12em] text-muted-foreground">
                   {typeLabel}
                 </span>
-                <Badge variant={statusVariant} size="sm">
-                  {statusLabel}
-                </Badge>
+                <Badge variant={statusVariant}>{statusLabel}</Badge>
               </div>
               <CardDescription className="text-xs">
                 Updated{' '}
@@ -76,42 +78,40 @@ export function BaseDocumentCard({
           <div className="flex items-center justify-between gap-2 pt-0.5">
             <div className="flex min-w-0 items-center gap-1.5 overflow-hidden">
               {document.tags.slice(0, 1).map((tag) => (
-                <Badge variant="secondary" size="sm" key={tag}>
+                <Badge variant="secondary" key={tag}>
                   {tag}
                 </Badge>
               ))}
               {document.tags.length > 1 && (
                 <Popover>
-                  <PopoverTrigger
-                    render={
-                      <button
-                        type="button"
-                        className="text-xs text-muted-foreground transition-colors hover:text-foreground"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-                        }}
-                      >
-                        +{document.tags.length - 1}
-                      </button>
-                    }
-                  />
-                  <PopoverPopup
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }}
+                    >
+                      +{document.tags.length - 1}
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
                     align="start"
                     className="max-w-64 p-3"
-                    onClick={(event) => {
+                    onClick={(event: React.MouseEvent) => {
                       event.preventDefault();
                       event.stopPropagation();
                     }}
                   >
                     <div className="flex flex-wrap gap-1.5">
                       {document.tags.map((tag) => (
-                        <Badge key={tag} size="sm" variant="secondary">
+                        <Badge key={tag} variant="secondary">
                           {tag}
                         </Badge>
                       ))}
                     </div>
-                  </PopoverPopup>
+                  </PopoverContent>
                 </Popover>
               )}
             </div>
@@ -119,7 +119,7 @@ export function BaseDocumentCard({
               {hasTags ? `${document.tags.length} tags` : statusLabel}
             </span>
           </div>
-        </CardPanel>
+        </CardContent>
       </Card>
     </Link>
   );

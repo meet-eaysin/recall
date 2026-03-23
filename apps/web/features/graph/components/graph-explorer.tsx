@@ -22,7 +22,7 @@ import {
   Card,
   CardDescription,
   CardHeader,
-  CardPanel,
+  CardContent,
   CardTitle,
 } from '@/components/ui/card';
 import {
@@ -553,7 +553,7 @@ export function GraphExplorer() {
           </p>
         </header>
         <div className="mt-4">
-          <Alert variant="error">
+          <Alert variant="destructive">
             <AlertTitle>Failed to load graph</AlertTitle>
             <AlertDescription>{(error as Error).message}</AlertDescription>
           </Alert>
@@ -603,7 +603,7 @@ export function GraphExplorer() {
               </div>
             </div>
           </CardHeader>
-          <CardPanel className="space-y-3 px-5 pb-5 pt-0">
+          <CardContent className="space-y-3 px-5 pb-5 pt-0">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary">
                 {graph?.nodes.length ?? 0} nodes
@@ -663,7 +663,7 @@ export function GraphExplorer() {
                       max={20}
                       min={6}
                       step={0.5}
-                      value={labelThreshold}
+                      value={[labelThreshold]}
                       onValueChange={(value) =>
                         setLabelThreshold(
                           Array.isArray(value) ? (value[0] ?? 12) : value,
@@ -698,7 +698,7 @@ export function GraphExplorer() {
                 </Empty>
               )}
             </div>
-          </CardPanel>
+          </CardContent>
         </Card>
 
         <div className="space-y-4">
@@ -709,7 +709,7 @@ export function GraphExplorer() {
                 Search documents, then open a local neighborhood.
               </CardDescription>
             </CardHeader>
-            <CardPanel className="space-y-3 px-4 pb-4 pt-0">
+            <CardContent className="space-y-3 px-4 pb-4 pt-0">
               <InputGroup>
                 <InputGroupAddon>
                   <InputGroupText>
@@ -763,7 +763,7 @@ export function GraphExplorer() {
                   )}
                 </div>
               </ScrollArea>
-            </CardPanel>
+            </CardContent>
           </Card>
 
           <Card>
@@ -773,7 +773,7 @@ export function GraphExplorer() {
                 Inspect the selected node and related documents.
               </CardDescription>
             </CardHeader>
-            <CardPanel className="space-y-4 px-4 pb-4 pt-0">
+            <CardContent className="space-y-4 px-4 pb-4 pt-0">
               {selectedNode ? (
                 <>
                   <div className="space-y-2">
@@ -893,25 +893,22 @@ export function GraphExplorer() {
               )}
 
               {selectedNode?.documentId ? (
-                <Button
-                  className="w-full"
-                  render={
-                    <Link href={`/app/library/${selectedNode.documentId}`} />
-                  }
-                >
-                  Open document
+                <Button className="w-full" asChild>
+                  <Link href={`/app/library/${selectedNode.documentId}`}>
+                    Open document
+                  </Link>
                 </Button>
               ) : null}
 
               {subgraphError ? (
-                <Alert variant="error">
+                <Alert variant="destructive">
                   <AlertTitle>Subgraph failed</AlertTitle>
                   <AlertDescription>
                     {(subgraphError as Error).message}
                   </AlertDescription>
                 </Alert>
               ) : null}
-            </CardPanel>
+            </CardContent>
           </Card>
         </div>
       </div>

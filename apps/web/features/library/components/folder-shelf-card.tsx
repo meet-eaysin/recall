@@ -2,7 +2,7 @@ import {
   Card,
   CardDescription,
   CardHeader,
-  CardPanel,
+  CardContent,
   CardTitle,
 } from '@/components/ui/card';
 import type { FolderRow } from '../types';
@@ -61,14 +61,14 @@ export function FolderShelfCard({
             </div>
           </div>
         </CardHeader>
-        <CardPanel className="flex items-center justify-between px-3.5 pb-3.5 pt-0">
+        <CardContent className="flex items-center justify-between px-3.5 pb-3.5 pt-0">
           <span className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground">
             {folder ? 'Folder' : 'Library'}
           </span>
           <span className="text-xs text-muted-foreground">
             {active ? 'Viewing' : 'Open'}
           </span>
-        </CardPanel>
+        </CardContent>
       </Card>
     </button>
   );

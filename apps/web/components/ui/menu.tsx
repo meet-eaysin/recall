@@ -2,6 +2,7 @@
 
 import { Menu as MenuPrimitive } from '@base-ui/react/menu';
 import { ChevronRightIcon } from 'lucide-react';
+import { Slot } from 'radix-ui';
 import type * as React from 'react';
 import { cn } from '@/lib/utils';
 
@@ -15,8 +16,21 @@ export const MenuPortal: typeof MenuPrimitive.Portal = MenuPrimitive.Portal;
 export function MenuTrigger({
   className,
   children,
+  asChild = false,
   ...props
-}: MenuPrimitive.Trigger.Props): React.ReactElement {
+}: MenuPrimitive.Trigger.Props & { asChild?: boolean }): React.ReactElement {
+  if (asChild) {
+    return (
+      <Slot.Root
+        className={className as string | undefined}
+        data-slot="menu-trigger"
+        {...props}
+      >
+        {children}
+      </Slot.Root>
+    );
+  }
+
   return (
     <MenuPrimitive.Trigger
       className={className}
@@ -82,15 +96,17 @@ export function MenuItem({
   className,
   inset,
   variant = 'default',
+  asChild = false,
   ...props
 }: MenuPrimitive.Item.Props & {
   inset?: boolean;
   variant?: 'default' | 'destructive';
+  asChild?: boolean;
 }): React.ReactElement {
-  return (
+  const content = (
     <MenuPrimitive.Item
       className={cn(
-        "flex min-h-8 cursor-default select-none items-center gap-2 rounded-sm px-2 py-1 text-base text-foreground outline-none data-disabled:pointer-events-none data-highlighted:bg-accent data-inset:ps-8 data-[variant=destructive]:text-destructive-foreground data-highlighted:text-accent-foreground data-disabled:opacity-64 sm:min-h-7 sm:text-sm [&>svg:not([class*='opacity-'])]:opacity-80 [&>svg:not([class*='size-'])]:size-4.5 sm:[&>svg:not([class*='size-'])]:size-4 [&>svg]:pointer-events-none [&>svg]:-mx-0.5 [&>svg]:shrink-0",
+        "flex min-h-8 cursor-default select-none items-center gap-2 rounded-sm px-2 py-1 text-base text-foreground outline-none data-disabled:pointer-events-none data-highlighted:bg-accent data-inset:ps-8 data-[variant=destructive]:text-destructive-foreground data-highlighted:text-accent-foreground data-disabled:opacity-64 sm:min-h-7 sm:text-sm [&>svg:not([class*='opacity-'])]:opacity-80 [&>svg:not([class*='size-'])]:size-4.5 sm:[&>svg:not([class*='size-'])]:size-4 [&>svg]:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
         className,
       )}
       data-inset={inset}
@@ -99,6 +115,12 @@ export function MenuItem({
       {...props}
     />
   );
+
+  if (asChild) {
+    return <Slot.Root>{content}</Slot.Root>;
+  }
+
+  return content;
 }
 
 export function MenuCheckboxItem({

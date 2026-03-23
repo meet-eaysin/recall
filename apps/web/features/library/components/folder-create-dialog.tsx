@@ -3,10 +3,9 @@
 import * as React from 'react';
 import {
   Dialog,
+  DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogPanel,
-  DialogPopup,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
@@ -57,17 +56,16 @@ export function FolderCreateDialog({ trigger }: FolderCreateDialogProps) {
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
-      <DialogTrigger
-        render={trigger ?? <Button variant="outline">New Folder</Button>}
-      />
-      <DialogPopup className="max-w-md">
+      <DialogTrigger asChild>
+        {trigger ?? <Button variant="outline">New Folder</Button>}
+      </DialogTrigger>
+      <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Create Folder</DialogTitle>
           <DialogDescription>
             Add a folder to organize related documents.
           </DialogDescription>
         </DialogHeader>
-        <DialogPanel>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <Field>
               <FieldLabel htmlFor="folder-name">Name</FieldLabel>
@@ -125,8 +123,7 @@ export function FolderCreateDialog({ trigger }: FolderCreateDialogProps) {
               </Button>
             </div>
           </form>
-        </DialogPanel>
-      </DialogPopup>
+      </DialogContent>
     </Dialog>
   );
 }

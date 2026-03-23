@@ -70,13 +70,10 @@ export function DocumentDetailHeader({
       <div className={cn('min-w-0 space-y-3', isCompact && 'space-y-1.5')}>
         {!isCompact && (
           <div className="flex items-center gap-2 text-muted-foreground mb-1">
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="-ml-2 h-8 w-8"
-              render={<Link href="/app/library" />}
-            >
-              <ChevronLeft className="size-4" />
+            <Button variant="ghost" size="icon-sm" className="-ml-2 h-8 w-8">
+              <Link href="/app/library">
+                <ChevronLeft className="size-4" />
+              </Link>
             </Button>
             <span className="text-xs font-medium uppercase tracking-wider">
               Document Library
@@ -152,26 +149,18 @@ export function DocumentDetailHeader({
         </Select>
 
         <Menu>
-          <MenuTrigger
-            render={
-              <Button size="icon" variant="outline" className="h-9 w-9">
-                <MoreHorizontal className="size-4.5" />
-              </Button>
-            }
-          />
+          <MenuTrigger asChild>
+            <Button size="icon" variant="outline" className="h-9 w-9">
+              <MoreHorizontal className="size-4.5" />
+            </Button>
+          </MenuTrigger>
           <MenuPopup align="end" className="w-48">
             {document.sourceUrl && (
-              <MenuItem
-                render={
-                  <a
-                    href={document.sourceUrl}
-                    rel="noreferrer"
-                    target="_blank"
-                  />
-                }
-              >
-                <ArrowUpRight className="size-4" />
-                Open Original Source
+              <MenuItem asChild>
+                <a href={document.sourceUrl} rel="noreferrer" target="_blank">
+                  <ArrowUpRight className="size-4" />
+                  Open Original Source
+                </a>
               </MenuItem>
             )}
             <MenuSeparator />

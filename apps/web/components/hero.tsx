@@ -66,11 +66,13 @@ export function HeroSection() {
         </p>
 
         <div className="fade-in slide-in-from-bottom-10 flex w-fit animate-in items-center justify-center gap-3 fill-mode-backwards pt-2 delay-300 duration-500 ease-out">
-          <Button variant="outline" render={<a href="/auth/login" />}>
-            Sign In
+          <Button asChild variant="outline">
+            <a href="/auth/login">Sign In</a>
           </Button>
-          <Button render={<a href="/app" />}>
-            Get Started <ArrowRightIcon data-icon="inline-end" />
+          <Button asChild>
+            <a href="/app">
+              Get Started <ArrowRightIcon data-icon="inline-end" />
+            </a>
           </Button>
         </div>
       </div>

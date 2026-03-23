@@ -41,17 +41,17 @@ export function Dock() {
 
           return (
             <Tooltip key={item.name}>
-              <TooltipTrigger
-                render={
-                  <Button
-                    render={<Link href={item.href} />}
-                    variant={isActive ? 'secondary' : 'ghost'}
-                    size="icon"
-                    aria-current={isActive ? 'page' : undefined}
-                  />
-                }
-              >
-                <Icon className="size-5" />
+              <TooltipTrigger asChild>
+                <Button
+                  asChild
+                  variant={isActive ? 'secondary' : 'ghost'}
+                  size="icon"
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  <Link href={item.href}>
+                    <Icon className="size-5" />
+                  </Link>
+                </Button>
               </TooltipTrigger>
               <TooltipContent side="top">{item.name}</TooltipContent>
             </Tooltip>
@@ -61,33 +61,31 @@ export function Dock() {
         <div className="mx-1 h-6 w-px bg-border" />
 
         <Tooltip>
-          <TooltipTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleSidebar}
-                aria-label="History"
-              />
-            }
-          >
-            <History className="size-5" />
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+              aria-label="History"
+            >
+              <History className="size-5" />
+            </Button>
           </TooltipTrigger>
           <TooltipContent side="top">History (H)</TooltipContent>
         </Tooltip>
 
         <Tooltip>
-          <TooltipTrigger
-            render={
-              <Button
-                render={<Link href="/app/library/new" />}
-                variant="default"
-                size="icon"
-                aria-label="Add Quick"
-              />
-            }
-          >
-            <Plus className="size-5" />
+          <TooltipTrigger asChild>
+            <Button
+              asChild
+              variant="default"
+              size="icon"
+              aria-label="Add Quick"
+            >
+              <Link href="/app/library/new">
+                <Plus className="size-5" />
+              </Link>
+            </Button>
           </TooltipTrigger>
           <TooltipContent side="top">Add Quick (N)</TooltipContent>
         </Tooltip>

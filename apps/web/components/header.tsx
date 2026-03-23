@@ -45,21 +45,25 @@ export function Header() {
           <div>
             {navLinks.map((link) => (
               <Button
+                asChild
                 key={link.label}
                 size="sm"
                 variant="ghost"
-                render={<a href={link.href} />}
               >
-                {link.icon && <span className="mr-2">{link.icon}</span>}
-                {link.label}
+                <a href={link.href}>
+                  {link.icon && <span className="mr-2">{link.icon}</span>}
+                  {link.label}
+                </a>
               </Button>
             ))}
           </div>
-          <Button size="sm" variant="outline" render={<a href="/auth/login" />}>
-            Sign In
+          <Button asChild size="sm" variant="outline">
+            <a href="/auth/login">Sign In</a>
           </Button>
-          <Button size="sm" render={<a href="/app" />}>
-            <LayoutDashboardIcon data-icon="inline-start" /> Open App
+          <Button asChild size="sm">
+            <a href="/app">
+              <LayoutDashboardIcon data-icon="inline-start" /> Open App
+            </a>
           </Button>
         </div>
         <MobileNav />

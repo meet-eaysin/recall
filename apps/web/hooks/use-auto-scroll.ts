@@ -62,7 +62,7 @@ export function useAutoScroll(
     if (shouldAutoScroll) {
       scrollToBottom();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldAutoScroll, scrollToBottom, ...dependencies]);
 
   useEffect(() => {

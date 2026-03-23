@@ -207,14 +207,12 @@ export function LibraryFeed() {
 
           <div className="flex flex-wrap items-center gap-2">
             <Menu>
-              <MenuTrigger
-                render={
-                  <Button variant="outline">
-                    <Filter className="size-4" />
-                    Filters
-                  </Button>
-                }
-              />
+              <MenuTrigger asChild>
+              <Button variant="outline">
+                <Filter className="size-4" />
+                Filters
+              </Button>
+            </MenuTrigger>
               <MenuPopup align="start" className="w-56">
                 <MenuSub>
                   <MenuSubTrigger>

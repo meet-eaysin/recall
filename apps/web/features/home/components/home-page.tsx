@@ -4,12 +4,11 @@ import * as React from 'react';
 
 import {
   Card,
-  CardFrame,
-  CardFrameAction,
-  CardFrameDescription,
-  CardFrameHeader,
-  CardFrameTitle,
-  CardPanel,
+  CardAction,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardContent,
 } from '@/components/ui/card';
 import {
   Empty,
@@ -110,12 +109,11 @@ function ReviewRow({
             <div className="mt-0.5 flex items-center gap-2">
               <Badge
                 variant={getStatusBadgeVariant(item.status)}
-                size="sm"
                 className="font-bold uppercase tracking-wider"
               >
                 {getStatusLabel(item.status)}
               </Badge>
-              <Badge variant="outline" size="sm" className="opacity-70">
+              <Badge variant="outline" className="opacity-70">
                 {formatPriority(item.priorityScore)} intent
               </Badge>
             </div>
@@ -129,12 +127,12 @@ function ReviewRow({
 
       <div className="flex shrink-0 items-center gap-2">
         <Button
+          asChild
           size="xs"
           variant="secondary"
           className="font-bold opacity-0 group-hover:opacity-100 transition-opacity"
-          render={<Link href={`/app/library/${item.documentId}`} />}
         >
-          Review
+          <Link href={`/app/library/${item.documentId}`}>Review</Link>
         </Button>
         <Button
           size="icon-xs"
@@ -222,13 +220,8 @@ function RecentWorkRow({ document }: { document: DocumentRow }) {
       </div>
 
       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button
-          size="sm"
-          variant="secondary"
-          className="font-bold"
-          render={<Link href={`/app/library/${document.id}`} />}
-        >
-          View
+        <Button asChild size="sm" variant="secondary" className="font-bold">
+          <Link href={`/app/library/${document.id}`}>View</Link>
         </Button>
         <Button
           size="sm"
@@ -279,26 +272,24 @@ export function HomeContent() {
 
   return (
     <div className="space-y-8">
-      <CardFrame>
-        <CardFrameHeader>
+      <Card>
+        <CardHeader>
           <div className="flex items-center gap-2.5">
             <div className="flex size-7 items-center justify-center rounded-sm bg-primary/10 text-primary border">
               <BookOpenCheck className="size-4" />
             </div>
-            <CardFrameTitle className="text-sm font-bold">
-              Review queue
-            </CardFrameTitle>
+            <CardTitle className="text-sm font-bold">Review queue</CardTitle>
           </div>
-          <CardFrameDescription className="text-xs">
+          <CardDescription className="text-xs">
             High-priority knowledge synthesis required for today.
-          </CardFrameDescription>
-          <CardFrameAction>
-            <Badge variant="secondary" size="sm" className="font-bold">
+          </CardDescription>
+          <CardAction>
+            <Badge variant="secondary" className="font-bold">
               {reviewItems?.length ?? 0}
             </Badge>
-          </CardFrameAction>
-        </CardFrameHeader>
-        <CardPanel className="p-0">
+          </CardAction>
+        </CardHeader>
+        <CardContent className="p-0">
           {reviewLoading ? <SectionSkeleton rows={2} /> : null}
 
           {!reviewLoading && (reviewItems?.length ?? 0) === 0 ? (
@@ -332,34 +323,30 @@ export function HomeContent() {
               />
             ))}
           </div>
-        </CardPanel>
-      </CardFrame>
+        </CardContent>
+      </Card>
 
-      <CardFrame>
-        <CardFrameHeader>
+      <Card>
+        <CardHeader>
           <div className="flex items-center gap-2.5">
             <div className="flex size-7 items-center justify-center rounded-sm bg-blue-500/10 text-blue-500 border">
               <Clock3 className="size-4" />
             </div>
-            <CardFrameTitle className="text-sm font-bold">
-              Recent work
-            </CardFrameTitle>
+            <CardTitle className="text-sm font-bold">Recent work</CardTitle>
           </div>
-          <CardFrameDescription className="text-xs">
+          <CardDescription className="text-xs">
             Continuity for your latest research and annotations.
-          </CardFrameDescription>
-          <CardFrameAction>
-            <Button
-              variant="ghost"
-              size="xs"
-              render={<Link href="/app/library" />}
-            >
-              Library
-              <ArrowRight className="ml-1 size-3" />
+          </CardDescription>
+          <CardAction>
+            <Button asChild variant="ghost" size="xs">
+              <Link href="/app/library">
+                Library
+                <ArrowRight className="ml-1 size-3" />
+              </Link>
             </Button>
-          </CardFrameAction>
-        </CardFrameHeader>
-        <CardPanel className="p-0">
+          </CardAction>
+        </CardHeader>
+        <CardContent className="p-0">
           {docsLoading ? <SectionSkeleton rows={2} /> : null}
 
           {!docsLoading && documents.length === 0 ? (
@@ -383,33 +370,29 @@ export function HomeContent() {
               <RecentWorkRow key={document.id} document={document} />
             ))}
           </div>
-        </CardPanel>
-      </CardFrame>
+        </CardContent>
+      </Card>
 
-      <CardFrame>
-        <CardFrameHeader>
+      <Card>
+        <CardHeader>
           <div className="flex items-center gap-2.5">
             <div className="flex size-7 items-center justify-center rounded-sm bg-orange-500/10 text-orange-500 border">
               <Sparkles className="size-4" />
             </div>
-            <CardFrameTitle className="text-sm font-bold">
-              Recommended
-            </CardFrameTitle>
+            <CardTitle className="text-sm font-bold">Recommended</CardTitle>
           </div>
-          <CardFrameDescription className="text-xs">
+          <CardDescription className="text-xs">
             AI-driven serendipity based on your current knowledge graph.
-          </CardFrameDescription>
-          <CardFrameAction>
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              render={<Link href="/app/search" />}
-            >
-              <Search className="size-3.5" />
+          </CardDescription>
+          <CardAction>
+            <Button asChild variant="ghost" size="icon-xs">
+              <Link href="/app/search">
+                <Search className="size-3.5" />
+              </Link>
             </Button>
-          </CardFrameAction>
-        </CardFrameHeader>
-        <CardPanel className="p-0">
+          </CardAction>
+        </CardHeader>
+        <CardContent className="p-0">
           {recommendationLoading ? <SectionSkeleton rows={2} /> : null}
 
           {!recommendationLoading &&
@@ -433,31 +416,33 @@ export function HomeContent() {
             {recommendations?.ownedDocuments.slice(0, 4).map((document) => {
               const Icon = getDocumentIcon(document.type);
               return (
-                <Card
+                <Link
                   key={document.id}
-                  render={<Link href={`/app/library/${document.id}`} />}
-                  className="group flex flex-row items-center justify-between gap-4 p-4 hover:bg-accent/50"
+                  href={`/app/library/${document.id}`}
+                  className="block"
                 >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div className="flex size-8 items-center justify-center rounded-sm border bg-muted/40 text-muted-foreground group-hover:text-orange-500 transition-all">
-                      <Icon className="size-3.5" />
+                  <Card className="group flex flex-row items-center justify-between gap-4 p-4 hover:bg-accent/50">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex size-8 items-center justify-center rounded-sm border bg-muted/40 text-muted-foreground group-hover:text-orange-500 transition-all">
+                        <Icon className="size-3.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-bold tracking-tight text-foreground">
+                          {document.title}
+                        </p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+                          {document.tags[0] || 'Discovery'}
+                        </p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-bold tracking-tight text-foreground">
-                        {document.title}
-                      </p>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
-                        {document.tags[0] || 'Discovery'}
-                      </p>
-                    </div>
-                  </div>
-                  <Sparkles className="size-3.5 shrink-0 text-orange-500 opacity-0 transition-all group-hover:opacity-100" />
-                </Card>
+                    <Sparkles className="size-3.5 shrink-0 text-orange-500 opacity-0 transition-all group-hover:opacity-100" />
+                  </Card>
+                </Link>
               );
             })}
           </div>
-        </CardPanel>
-      </CardFrame>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -489,13 +474,11 @@ export function HomePage() {
             and continue your research threads.
           </p>
         </div>
-        <Button
-          variant="default"
-          size="default"
-          render={<Link href="/app/library/new" />}
-        >
-          <Plus className="mr-2 size-4" />
-          Add Document
+        <Button asChild variant="default" size="default">
+          <Link href="/app/library/new">
+            <Plus className="mr-2 size-4" />
+            Add Document
+          </Link>
         </Button>
       </header>
 

@@ -3,11 +3,11 @@
 import * as React from 'react';
 import {
   AlertDialog,
-  AlertDialogClose,
+  AlertDialogCancel,
+  AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogPopup,
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
@@ -18,7 +18,6 @@ type ConfirmationDialogProps = {
   children?: React.ReactNode;
   confirmLabel?: string;
   description: React.ReactNode;
-  footerVariant?: 'bare' | 'default';
   isPending?: boolean;
   confirmAction: () => void | Promise<void>;
   openChangeAction?: (open: boolean) => void;
@@ -33,7 +32,6 @@ export function ConfirmationDialog({
   children,
   confirmLabel = 'Confirm',
   description,
-  footerVariant = 'bare',
   isPending = false,
   confirmAction,
   openChangeAction,
@@ -60,17 +58,19 @@ export function ConfirmationDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      {trigger ? <AlertDialogTrigger render={trigger} /> : null}
-      <AlertDialogPopup>
+      {trigger ? (
+        <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
+      ) : null}
+      <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         {children}
-        <AlertDialogFooter variant={footerVariant}>
-          <AlertDialogClose render={<Button variant="ghost" />}>
+        <AlertDialogFooter>
+          <AlertDialogCancel variant="ghost">
             {cancelLabel}
-          </AlertDialogClose>
+          </AlertDialogCancel>
           <Button
             disabled={isPending}
             onClick={() => void handleConfirm()}
@@ -79,7 +79,7 @@ export function ConfirmationDialog({
             {confirmLabel}
           </Button>
         </AlertDialogFooter>
-      </AlertDialogPopup>
+      </AlertDialogContent>
     </AlertDialog>
   );
 }

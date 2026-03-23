@@ -6,11 +6,10 @@ import {
   DialogClose,
   DialogFooter,
   DialogTrigger,
-  DialogPopup,
+  DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogPanel,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from 'lucide-react';
@@ -22,36 +21,34 @@ export function AddDocumentDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button>
-            <PlusIcon aria-hidden="true" />
-            Add Document
-          </Button>
-        }
-      />
-      <DialogPopup className="max-w-3xl">
+      <DialogTrigger asChild>
+        <Button>
+          <PlusIcon aria-hidden="true" />
+          Add Document
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-3xl">
         <DialogHeader>
           <DialogTitle>Add to Library</DialogTitle>
           <DialogDescription>
             Save a new link, upload a PDF, or create a note.
           </DialogDescription>
         </DialogHeader>
-        <DialogPanel>
-          <AddDocumentForm
-            formId={formId}
-            hideActions
-            onSuccess={() => setOpen(false)}
-            onCancel={() => setOpen(false)}
-          />
-        </DialogPanel>
+        <AddDocumentForm
+          formId={formId}
+          hideActions
+          onSuccess={() => setOpen(false)}
+          onCancel={() => setOpen(false)}
+        />
         <DialogFooter>
-          <DialogClose render={<Button variant="ghost" />}>Cancel</DialogClose>
+          <DialogClose asChild>
+            <Button variant="ghost">Cancel</Button>
+          </DialogClose>
           <Button form={formId} type="submit">
             Add to Library
           </Button>
         </DialogFooter>
-      </DialogPopup>
+      </DialogContent>
     </Dialog>
   );
 }

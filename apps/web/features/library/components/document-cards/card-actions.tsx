@@ -46,22 +46,20 @@ export function CardActions({ document }: CardActionsProps) {
 
   return (
     <Menu>
-      <MenuTrigger
-        render={
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            className="text-muted-foreground hover:text-foreground"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            aria-label="Open document actions"
-          >
-            <MoreHorizontal className="size-4" />
-          </Button>
-        }
-      />
+      <MenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          className="text-muted-foreground hover:text-foreground"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          aria-label="Open document actions"
+        >
+          <MoreHorizontal className="size-4" />
+        </Button>
+      </MenuTrigger>
       <MenuPopup side="bottom" align="end">
         {document.sourceUrl && (
           <MenuItem onClick={handleOpenSource}>

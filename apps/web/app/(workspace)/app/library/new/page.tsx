@@ -4,7 +4,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardPanel,
+  CardContent,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { PageContainer } from '@/features/workspace/components/page-container';
@@ -30,7 +30,7 @@ export default function AppLibraryNewPage() {
               note. Type @ in the notes field to mention other documents.
             </CardDescription>
           </CardHeader>
-          <CardPanel className="space-y-4 px-5 pb-5 pt-0">
+          <CardContent className="space-y-4 px-5 pb-5 pt-0">
             {endpoints.length > 0 && (
               <div className="space-y-2">
                 <h3 className="text-sm font-semibold text-foreground">
@@ -53,7 +53,7 @@ export default function AppLibraryNewPage() {
             <div className="pt-4 border-t border-border/40">
               <AddDocumentForm />
             </div>
-          </CardPanel>
+          </CardContent>
         </Card>
       </div>
     </PageContainer>

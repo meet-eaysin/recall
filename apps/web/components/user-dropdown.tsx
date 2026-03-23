@@ -135,13 +135,17 @@ export function UserDropdown({ small }: UserDropdownProps) {
 
         {!isPlatformPages && (
           <>
-            <MenuItem render={<Link href="/app/settings" />}>
-              <UserIcon />
-              Profile
+            <MenuItem asChild>
+              <Link href="/app/settings">
+                <UserIcon />
+                Profile
+              </Link>
             </MenuItem>
-            <MenuItem render={<Link href="/app/settings" />}>
-              <SettingsIcon />
-              Settings
+            <MenuItem asChild>
+              <Link href="/app/settings">
+                <SettingsIcon />
+                Settings
+              </Link>
             </MenuItem>
             <div className="py-1">
               <ThemeToggle />

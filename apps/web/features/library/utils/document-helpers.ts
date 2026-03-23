@@ -24,19 +24,16 @@ type BadgeVariant =
   | 'default'
   | 'secondary'
   | 'outline'
-  | 'info'
-  | 'success'
-  | 'warning'
-  | 'error';
+  | 'destructive';
 
 const STATUS_BADGE_MAP: Record<DocumentStatus, BadgeVariant> = {
-  [DocumentStatus.TO_READ]: 'info',
-  [DocumentStatus.TO_WATCH]: 'info',
-  [DocumentStatus.IN_PROCESS]: 'warning',
+  [DocumentStatus.TO_READ]: 'secondary',
+  [DocumentStatus.TO_WATCH]: 'secondary',
+  [DocumentStatus.IN_PROCESS]: 'outline',
   [DocumentStatus.REVIEW]: 'secondary',
   [DocumentStatus.UPCOMING]: 'outline',
-  [DocumentStatus.COMPLETED]: 'success',
-  [DocumentStatus.PENDING_COMPLETION]: 'warning',
+  [DocumentStatus.COMPLETED]: 'default',
+  [DocumentStatus.PENDING_COMPLETION]: 'outline',
   [DocumentStatus.ARCHIVED]: 'secondary',
 };
 

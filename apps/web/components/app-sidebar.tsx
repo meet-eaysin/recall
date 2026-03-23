@@ -134,20 +134,22 @@ function SidebarChatList({ query }: { query: string }) {
   const renderChatItem = (chat: NonNullable<typeof chats>[number]) => (
     <SidebarMenuItem key={chat.id}>
       <SidebarMenuButton
-        render={<Link href={`/app/t/${chat.id}`} />}
+        asChild
         isActive={pathname.includes(chat.id)}
         tooltip={chat.title}
         className="h-auto py-2.5 transition-all duration-200 hover:bg-sidebar-accent/50 data-active:bg-sidebar-accent data-active:shadow-sm"
       >
-        <MessageSquareIcon className="size-4 shrink-0 transition-transform duration-200 group-hover/menu-button:scale-110" />
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <span className="truncate font-medium leading-none text-sidebar-foreground">
-            {chat.title}
-          </span>
-          <span className="line-clamp-1 text-xs text-muted-foreground/80 leading-tight">
-            {chat.lastMessagePreview || 'No preview available'}
-          </span>
-        </div>
+        <Link href={`/app/t/${chat.id}`}>
+          <MessageSquareIcon className="size-4 shrink-0 transition-transform duration-200 group-hover/menu-button:scale-110" />
+          <div className="flex min-w-0 flex-col gap-0.5">
+            <span className="truncate font-medium leading-none text-sidebar-foreground">
+              {chat.title}
+            </span>
+            <span className="line-clamp-1 text-xs text-muted-foreground/80 leading-tight">
+              {chat.lastMessagePreview || 'No preview available'}
+            </span>
+          </div>
+        </Link>
       </SidebarMenuButton>
 
       <div className="absolute right-1 top-1/2 flex -translate-y-1/2 items-center gap-0.5 opacity-0 transition-all duration-200 group-hover/menu-item:opacity-100 group-data-[collapsible=icon]:hidden">
@@ -186,15 +188,17 @@ function SidebarChatList({ query }: { query: string }) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              render={<Link href="/app" />}
+              asChild
               variant="outline"
               tooltip="New chat"
               className="group-data-[collapsible=icon]:justify-center"
             >
-              <PlusIcon />
-              <span className="group-data-[collapsible=icon]:hidden">
-                New chat
-              </span>
+              <Link href="/app">
+                <PlusIcon />
+                <span className="group-data-[collapsible=icon]:hidden">
+                  New chat
+                </span>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -208,7 +212,7 @@ function SidebarChatList({ query }: { query: string }) {
           <SidebarMenu>
             {Array.from({ length: 6 }).map((_, index) => (
               <SidebarMenuItem key={`chat-skeleton-${index}`}>
-                <SidebarMenuSkeleton showIcon index={index} />
+                <SidebarMenuSkeleton showIcon />
               </SidebarMenuItem>
             ))}
           </SidebarMenu>

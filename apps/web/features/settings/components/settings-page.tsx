@@ -11,8 +11,8 @@ import {
   Card,
   CardDescription,
   CardHeader,
-  CardPanel,
   CardTitle,
+  CardContent,
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ApiError } from '@/lib/api';
@@ -70,19 +70,19 @@ export function SettingsPage() {
       </header>
       <div className="mt-4 space-y-4">
         {userError ? (
-          <Alert variant="error">
+          <Alert variant="destructive">
             <AlertTitle>Settings unavailable</AlertTitle>
             <AlertDescription>{(userError as Error).message}</AlertDescription>
           </Alert>
         ) : null}
         {fatalLlmError ? (
-          <Alert variant="error">
+          <Alert variant="destructive">
             <AlertTitle>LLM status unavailable</AlertTitle>
             <AlertDescription>{fatalLlmError.message}</AlertDescription>
           </Alert>
         ) : null}
         {fatalNotionError ? (
-          <Alert variant="error">
+          <Alert variant="destructive">
             <AlertTitle>Notion status unavailable</AlertTitle>
             <AlertDescription>{fatalNotionError.message}</AlertDescription>
           </Alert>
@@ -97,7 +97,7 @@ export function SettingsPage() {
                 user.
               </CardDescription>
             </CardHeader>
-            <CardPanel className="space-y-4">
+            <CardContent className="space-y-4">
               {userLoading ? (
                 <>
                   <Skeleton className="h-20 w-full" />
@@ -148,7 +148,7 @@ export function SettingsPage() {
                   </div>
                 </>
               )}
-            </CardPanel>
+            </CardContent>
           </Card>
 
           <Card>
@@ -158,7 +158,7 @@ export function SettingsPage() {
                 A quick read of the settings that affect the rest of the app.
               </CardDescription>
             </CardHeader>
-            <CardPanel className="space-y-3">
+            <CardContent className="space-y-3">
               <div className="rounded-lg border px-4 py-3">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-medium text-foreground">
@@ -203,7 +203,7 @@ export function SettingsPage() {
                     : 'Connect a workspace when you want cross-system sync.'}
                 </p>
               </div>
-            </CardPanel>
+            </CardContent>
           </Card>
         </div>
 
@@ -217,14 +217,11 @@ export function SettingsPage() {
                 want to keep.
               </CardDescription>
             </CardHeader>
-            <CardPanel className="pt-0">
-              <Button
-                render={<Link href="/app/settings/security" />}
-                variant="outline"
-              >
-                Review sessions
+            <CardContent className="pt-0">
+              <Button asChild variant="outline">
+                <Link href="/app/settings/security">Review sessions</Link>
               </Button>
-            </CardPanel>
+            </CardContent>
           </Card>
 
           <Card>
@@ -236,14 +233,11 @@ export function SettingsPage() {
                 runtime.
               </CardDescription>
             </CardHeader>
-            <CardPanel className="pt-0">
-              <Button
-                render={<Link href="/app/settings/llm" />}
-                variant="outline"
-              >
-                Open LLM settings
+            <CardContent className="pt-0">
+              <Button asChild variant="outline">
+                <Link href="/app/settings/llm">Open LLM settings</Link>
               </Button>
-            </CardPanel>
+            </CardContent>
           </Card>
 
           <Card>
@@ -255,14 +249,11 @@ export function SettingsPage() {
                 when needed.
               </CardDescription>
             </CardHeader>
-            <CardPanel className="pt-0">
-              <Button
-                render={<Link href="/app/settings/notion" />}
-                variant="outline"
-              >
-                Open Notion settings
+            <CardContent className="pt-0">
+              <Button asChild variant="outline">
+                <Link href="/app/settings/notion">Open Notion settings</Link>
               </Button>
-            </CardPanel>
+            </CardContent>
           </Card>
         </div>
 
@@ -274,7 +265,7 @@ export function SettingsPage() {
               integrations the backend currently supports.
             </CardDescription>
           </CardHeader>
-          <CardPanel className="grid gap-3 md:grid-cols-3">
+          <CardContent className="grid gap-3 md:grid-cols-3">
             {[
               {
                 icon: UserCircle2,
@@ -300,7 +291,7 @@ export function SettingsPage() {
                 <p className="mt-2 text-xs text-muted-foreground">{text}</p>
               </div>
             ))}
-          </CardPanel>
+          </CardContent>
         </Card>
       </div>
     </PageContainer>

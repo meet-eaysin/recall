@@ -71,54 +71,52 @@ export function NavUser() {
     <SidebarMenu>
       <SidebarMenuItem>
         <Menu open={menuOpen} onOpenChange={setMenuOpen}>
-          <MenuTrigger
-            render={
-              <SidebarMenuButton
-                size="lg"
-                className={cn(
-                  'aria-expanded:bg-muted',
-                  isCollapsed && 'justify-center',
-                )}
-                disabled={isPending}
-                data-testid="user-dropdown-trigger-button"
-              />
-            }
-          >
-            <span className="relative shrink-0">
-              <Avatar className="size-8">
-                <AvatarImage src={user?.avatarUrl} alt="User avatar" />
-                <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <span
-                className="border-background absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-[1.5px] bg-green-500"
-                aria-label="Online"
-              />
-            </span>
-            {!isCollapsed && (
-              <span className="flex min-w-0 flex-1 items-center justify-between gap-2">
-                <span className="min-w-0">
-                  <span className="text-emphasis block truncate text-sm font-semibold leading-tight">
-                    {isPending ? 'Loading…' : (user?.name ?? 'Nameless User')}
-                  </span>
-                  <span className="text-subtle block truncate text-xs leading-tight">
-                    {user?.email || `@${user?.username ?? 'user'}`}
-                  </span>
-                </span>
-                {menuOpen ? (
-                  <ChevronUpIcon
-                    className="text-muted h-3.5 w-3.5 shrink-0 transition"
-                    aria-hidden="true"
-                  />
-                ) : (
-                  <ChevronDownIcon
-                    className="text-muted h-3.5 w-3.5 shrink-0 transition"
-                    aria-hidden="true"
-                  />
-                )}
+          <MenuTrigger asChild>
+            <SidebarMenuButton
+              size="lg"
+              className={cn(
+                'aria-expanded:bg-muted',
+                isCollapsed && 'justify-center',
+              )}
+              disabled={isPending}
+              data-testid="user-dropdown-trigger-button"
+            >
+              <span className="relative shrink-0">
+                <Avatar className="size-8">
+                  <AvatarImage src={user?.avatarUrl} alt="User avatar" />
+                  <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <span
+                  className="border-background absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-[1.5px] bg-green-500"
+                  aria-label="Online"
+                />
               </span>
-            )}
+              {!isCollapsed && (
+                <span className="flex min-w-0 flex-1 items-center justify-between gap-2">
+                  <span className="min-w-0">
+                    <span className="text-emphasis block truncate text-sm font-semibold leading-tight">
+                      {isPending ? 'Loading…' : (user?.name ?? 'Nameless User')}
+                    </span>
+                    <span className="text-subtle block truncate text-xs leading-tight">
+                      {user?.email || `@${user?.username ?? 'user'}`}
+                    </span>
+                  </span>
+                  {menuOpen ? (
+                    <ChevronUpIcon
+                      className="text-muted h-3.5 w-3.5 shrink-0 transition"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <ChevronDownIcon
+                      className="text-muted h-3.5 w-3.5 shrink-0 transition"
+                      aria-hidden="true"
+                    />
+                  )}
+                </span>
+              )}
+            </SidebarMenuButton>
           </MenuTrigger>
           <MenuPopup
             align="start"
@@ -146,13 +144,17 @@ export function NavUser() {
 
             {!isPlatformPages && (
               <>
-                <MenuItem render={<Link href="/app/settings" />}>
-                  <UserIcon />
-                  Profile
+                <MenuItem asChild>
+                  <Link href="/app/settings">
+                    <UserIcon />
+                    Profile
+                  </Link>
                 </MenuItem>
-                <MenuItem render={<Link href="/app/settings" />}>
-                  <SettingsIcon />
-                  Settings
+                <MenuItem asChild>
+                  <Link href="/app/settings">
+                    <SettingsIcon />
+                    Settings
+                  </Link>
                 </MenuItem>
                 <div className="py-1">
                   <ThemeToggle />

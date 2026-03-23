@@ -1,17 +1,13 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-import { Manrope, Sora } from 'next/font/google';
+import { Sora, Geist } from 'next/font/google';
 import '../styles/globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AnchoredToastProvider, ToastProvider } from '@/components/ui/toast';
 import { QueryProvider } from '@/providers/query-provider';
 import { cn } from '@/lib/utils';
 
-const manrope = Manrope({
-  subsets: ['latin'],
-  variable: '--font-sans',
-  display: 'swap',
-});
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 const sora = Sora({
   subsets: ['latin'],
@@ -40,9 +36,9 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn(
         'scroll-smooth font-sans',
-        manrope.variable,
         sora.variable,
         geistMono.variable,
+        geist.variable,
       )}
     >
       <body className="min-h-svh bg-background antialiased selection:bg-primary selection:text-primary-foreground">

@@ -14,7 +14,7 @@ import {
   Card,
   CardDescription,
   CardHeader,
-  CardPanel,
+  CardContent,
   CardTitle,
 } from '@/components/ui/card';
 import {
@@ -178,12 +178,10 @@ export function LlmSettingsPage() {
   return (
     <PageContainer className="space-y-8">
       <header className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          render={<Link href="/app/settings" />}
-        >
-          <ArrowLeft className="size-5" />
+        <Button asChild variant="ghost" size="icon">
+          <Link href="/app/settings">
+            <ArrowLeft className="size-5" />
+          </Link>
         </Button>
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">LLM Config</h1>
@@ -195,7 +193,7 @@ export function LlmSettingsPage() {
 
       <div className="mt-4 space-y-4">
         {error ? (
-          <Alert variant="error">
+          <Alert variant="destructive">
             <AlertTitle>Error loading configuration</AlertTitle>
             <AlertDescription>
               {error instanceof Error ? error.message : 'Unknown error'}
@@ -204,7 +202,9 @@ export function LlmSettingsPage() {
         ) : null}
 
         {feedback ? (
-          <Alert variant={feedback.tone === 'success' ? 'success' : 'error'}>
+          <Alert
+            variant={feedback.tone === 'success' ? 'default' : 'destructive'}
+          >
             <AlertTitle>
               {feedback.tone === 'success'
                 ? 'Update complete'
@@ -223,7 +223,7 @@ export function LlmSettingsPage() {
                   Configure which LLM provider to use for your requests.
                 </CardDescription>
               </CardHeader>
-              <CardPanel className="space-y-6">
+              <CardContent className="space-y-6">
                 <Field className="flex items-center justify-between gap-4 rounded-lg border bg-muted/20 px-4 py-3">
                   <div className="space-y-0.5">
                     <FieldLabel>Use system defaults</FieldLabel>
@@ -348,7 +348,7 @@ export function LlmSettingsPage() {
                     {testConfig.isPending ? 'Testing...' : 'Test connection'}
                   </Button>
                 </div>
-              </CardPanel>
+              </CardContent>
             </form>
           </Card>
 
@@ -360,7 +360,7 @@ export function LlmSettingsPage() {
                   Active AI runtime configuration.
                 </CardDescription>
               </CardHeader>
-              <CardPanel className="space-y-4">
+              <CardContent className="space-y-4">
                 <div className="rounded-lg border p-4">
                   <div className="flex items-center gap-3">
                     <div className="rounded-lg bg-primary/10 p-2 text-primary">
@@ -404,14 +404,14 @@ export function LlmSettingsPage() {
                     </div>
                   </div>
                 )}
-              </CardPanel>
+              </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
                 <CardTitle>Usage</CardTitle>
               </CardHeader>
-              <CardPanel className="space-y-3">
+              <CardContent className="space-y-3">
                 {[
                   {
                     icon: Bot,
@@ -439,7 +439,7 @@ export function LlmSettingsPage() {
                     </div>
                   </div>
                 ))}
-              </CardPanel>
+              </CardContent>
             </Card>
           </div>
         </div>

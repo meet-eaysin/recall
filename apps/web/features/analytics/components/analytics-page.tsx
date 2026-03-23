@@ -16,7 +16,7 @@ import {
   Card,
   CardDescription,
   CardHeader,
-  CardPanel,
+  CardContent,
   CardTitle,
 } from '@/components/ui/card';
 import {
@@ -167,9 +167,9 @@ function StatCard({
           </div>
         </div>
       </CardHeader>
-      <CardPanel className="pt-0 text-sm text-muted-foreground">
+      <CardContent className="pt-0 text-sm text-muted-foreground">
         {description}
-      </CardPanel>
+      </CardContent>
     </Card>
   );
 }
@@ -221,13 +221,13 @@ export function AnalyticsPage() {
       </header>
       <div className="mt-4 space-y-4">
         {statsError ? (
-          <Alert variant="error">
+          <Alert variant="destructive">
             <AlertTitle>Analytics unavailable</AlertTitle>
             <AlertDescription>{(statsError as Error).message}</AlertDescription>
           </Alert>
         ) : null}
         {heatmapError ? (
-          <Alert variant="error">
+          <Alert variant="destructive">
             <AlertTitle>Activity history unavailable</AlertTitle>
             <AlertDescription>
               {(heatmapError as Error).message}
@@ -278,7 +278,7 @@ export function AnalyticsPage() {
                 </Badge>
               </div>
             </CardHeader>
-            <CardPanel className="space-y-4">
+            <CardContent className="space-y-4">
               <Heatmap items={recentHeatmap} isLoading={heatmapLoading} />
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <span>Less</span>
@@ -295,7 +295,7 @@ export function AnalyticsPage() {
                 </div>
                 <span>More</span>
               </div>
-            </CardPanel>
+            </CardContent>
           </Card>
 
           <Card>
@@ -305,7 +305,7 @@ export function AnalyticsPage() {
                 What has been driving your recent activity volume.
               </CardDescription>
             </CardHeader>
-            <CardPanel className="space-y-3">
+            <CardContent className="space-y-3">
               {heatmapLoading ? (
                 <>
                   <Skeleton className="h-16 w-full" />
@@ -361,7 +361,7 @@ export function AnalyticsPage() {
                   ))}
                 </>
               )}
-            </CardPanel>
+            </CardContent>
           </Card>
         </div>
 
@@ -372,7 +372,7 @@ export function AnalyticsPage() {
               The strongest activity spikes in the current analysis window.
             </CardDescription>
           </CardHeader>
-          <CardPanel className="space-y-2">
+          <CardContent className="space-y-2">
             {heatmapLoading ? (
               <>
                 <Skeleton className="h-14 w-full" />
@@ -414,7 +414,7 @@ export function AnalyticsPage() {
                 <Badge variant="secondary">{item.count} actions</Badge>
               </div>
             ))}
-          </CardPanel>
+          </CardContent>
         </Card>
       </div>
     </PageContainer>

@@ -30,12 +30,14 @@ export function Footer() {
             {socialLinks.map((item, index) => (
               <Button
                 key={`social-${item.link}-${index}`}
+                asChild
                 size="icon-sm"
                 variant="ghost"
                 className="hover:text-primary transition-colors"
-                render={<Link href={item.link} target="_blank" />}
               >
-                {item.icon}
+                <Link href={item.link} target="_blank">
+                  {item.icon}
+                </Link>
               </Button>
             ))}
           </div>

@@ -34,11 +34,13 @@ export function PageBreadcrumbs({
             <BreadcrumbItem>
               {item.href ? (
                 <BreadcrumbLink
-                  render={<Link href={item.href} />}
+                  asChild
                   className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
-                  {item.icon}
-                  {item.label}
+                  <Link href={item.href}>
+                    {item.icon}
+                    {item.label}
+                  </Link>
                 </BreadcrumbLink>
               ) : (
                 <span className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-muted-foreground">

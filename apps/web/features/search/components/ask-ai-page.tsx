@@ -18,7 +18,7 @@ import {
   Card,
   CardDescription,
   CardHeader,
-  CardPanel,
+  CardContent,
   CardTitle,
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -495,7 +495,7 @@ export function AskAiPage() {
       </header>
       <div className="space-y-4">
         <Drawer
-          position="right"
+          direction="right"
           open={historyOpen}
           onOpenChange={setHistoryOpen}
         >
@@ -512,7 +512,7 @@ export function AskAiPage() {
                   </CardDescription>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <DrawerTrigger>
+                  <DrawerTrigger asChild>
                     <Button variant="outline">
                       <History className="size-4" />
                       Previous conversations
@@ -527,7 +527,7 @@ export function AskAiPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardPanel className="space-y-5">
+            <CardContent className="space-y-5">
               <Field>
                 <FieldLabel>Your question</FieldLabel>
                 <InputGroup data-align="block-end">
@@ -583,8 +583,10 @@ export function AskAiPage() {
                           : 'Search across your whole library'}
                       </p>
                     </div>
-                    <CollapsibleTrigger className="text-sm font-medium text-foreground">
-                      {scopeOpen ? 'Hide' : 'Adjust'}
+                    <CollapsibleTrigger asChild>
+                      <button className="text-sm font-medium text-foreground">
+                        {scopeOpen ? 'Hide' : 'Adjust'}
+                      </button>
                     </CollapsibleTrigger>
                   </div>
                   <CollapsibleContent>
@@ -599,7 +601,7 @@ export function AskAiPage() {
               </Collapsible>
 
               {streaming.error ? (
-                <Alert variant="error">
+                <Alert variant="destructive">
                   <AlertTitle>Request failed</AlertTitle>
                   <AlertDescription>{streaming.error}</AlertDescription>
                 </Alert>
@@ -707,7 +709,7 @@ export function AskAiPage() {
                   )}
                 </div>
               </ScrollArea>
-            </CardPanel>
+            </CardContent>
           </Card>
           <DrawerContent className="sm:max-w-md">
             <DrawerHeader>

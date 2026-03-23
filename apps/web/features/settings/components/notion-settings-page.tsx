@@ -18,7 +18,7 @@ import {
   Card,
   CardDescription,
   CardHeader,
-  CardPanel,
+  CardContent,
   CardTitle,
 } from '@/components/ui/card';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
@@ -177,12 +177,10 @@ export function NotionSettingsPage() {
   return (
     <PageContainer className="space-y-8">
       <header className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          render={<Link href="/app/settings" />}
-        >
-          <ArrowLeft className="size-5" />
+        <Button asChild variant="ghost" size="icon">
+          <Link href="/app/settings">
+            <ArrowLeft className="size-5" />
+          </Link>
         </Button>
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Notion</h1>
@@ -194,14 +192,16 @@ export function NotionSettingsPage() {
       </header>
       <div className="mt-4 space-y-4">
         {fatalError ? (
-          <Alert variant="error">
+          <Alert variant="destructive">
             <AlertTitle>Notion unavailable</AlertTitle>
             <AlertDescription>{fatalError.message}</AlertDescription>
           </Alert>
         ) : null}
 
         {feedback ? (
-          <Alert variant={feedback.tone === 'success' ? 'success' : 'error'}>
+          <Alert
+            variant={feedback.tone === 'success' ? 'default' : 'destructive'}
+          >
             <AlertTitle>
               {feedback.tone === 'success'
                 ? 'Update complete'
@@ -212,7 +212,7 @@ export function NotionSettingsPage() {
         ) : null}
 
         {syncSummary ? (
-          <Alert variant={syncSummary.failed > 0 ? 'warning' : 'success'}>
+          <Alert variant={syncSummary.failed > 0 ? 'destructive' : 'default'}>
             <AlertTitle>Last sync result</AlertTitle>
             <AlertDescription>
               <p>
@@ -239,7 +239,7 @@ export function NotionSettingsPage() {
                 workspace.
               </CardDescription>
             </CardHeader>
-            <CardPanel className="space-y-4">
+            <CardContent className="space-y-4">
               <Field>
                 <FieldLabel htmlFor="notion-access-token">
                   Access token
@@ -265,17 +265,17 @@ export function NotionSettingsPage() {
                   {connectNotion.isPending ? 'Connecting...' : 'Connect Notion'}
                 </Button>
               </div>
-            </CardPanel>
+            </CardContent>
           </Card>
         ) : null}
 
         {isLoading ? (
           <Card>
-            <CardPanel className="space-y-3">
+            <CardContent className="space-y-3">
               <Skeleton className="h-16 w-full" />
               <Skeleton className="h-16 w-full" />
               <Skeleton className="h-16 w-full" />
-            </CardPanel>
+            </CardContent>
           </Card>
         ) : null}
 
@@ -288,7 +288,7 @@ export function NotionSettingsPage() {
                   Tune the integration after the workspace is connected.
                 </CardDescription>
               </CardHeader>
-              <CardPanel className="space-y-4">
+              <CardContent className="space-y-4">
                 <Field>
                   <FieldLabel>Target database</FieldLabel>
                   <Select
@@ -387,14 +387,17 @@ export function NotionSettingsPage() {
                     title="Disconnect this Notion workspace?"
                     tone="destructive"
                     trigger={
-                      <Button variant="destructive-outline">
+                      <Button
+                        variant="outline"
+                        className="text-destructive border-destructive hover:bg-destructive/10"
+                      >
                         <Unplug className="size-4" />
                         Disconnect
                       </Button>
                     }
                   />
                 </div>
-              </CardPanel>
+              </CardContent>
             </Card>
 
             <div className="space-y-4">
@@ -405,7 +408,7 @@ export function NotionSettingsPage() {
                     Integration details currently stored in the backend.
                   </CardDescription>
                 </CardHeader>
-                <CardPanel className="space-y-3">
+                <CardContent className="space-y-3">
                   <div className="rounded-lg border px-4 py-3">
                     <p className="text-xs text-muted-foreground">
                       Workspace name
@@ -444,7 +447,7 @@ export function NotionSettingsPage() {
                         : 'No sync recorded yet'}
                     </p>
                   </div>
-                </CardPanel>
+                </CardContent>
               </Card>
 
               <Card>
@@ -454,7 +457,7 @@ export function NotionSettingsPage() {
                     Databases exposed by the connected Notion workspace.
                   </CardDescription>
                 </CardHeader>
-                <CardPanel className="space-y-2">
+                <CardContent className="space-y-2">
                   {databasesLoading ? (
                     <>
                       <Skeleton className="h-14 w-full" />
@@ -490,7 +493,7 @@ export function NotionSettingsPage() {
                       </p>
                     </div>
                   ))}
-                </CardPanel>
+                </CardContent>
               </Card>
             </div>
           </div>

@@ -4,5 +4,6 @@
     "typescript.enablePromptUseWorkspaceTsdk": true,
     "typescript.validate.enable": true,
     "typescript.tsserver.experimental.enableProjectDiagnostics": true,
-    "eslint.useFlatConfig": true
+    "eslint.useFlatConfig": true,
+    "editor.formatOnSave": true
 }

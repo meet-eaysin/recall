@@ -29,13 +29,11 @@ export default function LoginPage() {
   return (
     <div className="relative w-full md:h-screen md:overflow-hidden">
       <div className="relative mx-auto flex min-h-screen max-w-5xl flex-col justify-center px-8">
-        <Button
-          className="absolute top-4 left-4"
-          variant="ghost"
-          render={<Link href="/" />}
-        >
-          <ChevronLeftIcon data-icon="inline-start" />
-          Home
+        <Button className="absolute top-4 left-4" variant="ghost" asChild>
+          <Link href="/">
+            <ChevronLeftIcon data-icon="inline-start" />
+            Home
+          </Link>
         </Button>
 
         <div className="mx-auto space-y-4 sm:w-sm">
