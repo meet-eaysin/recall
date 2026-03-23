@@ -62,7 +62,7 @@ export function SettingsPage() {
   return (
     <PageContainer className="space-y-8">
       <header className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Settings</h1>
         <p className="text-muted-foreground">
           Manage your account, trusted sessions, and the integrations that power
           daily work.

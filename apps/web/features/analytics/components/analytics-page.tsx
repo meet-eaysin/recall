@@ -89,7 +89,7 @@ function Heatmap({
   return (
     <div className="overflow-x-auto">
       <div className="inline-flex min-w-full gap-3">
-        <div className="grid shrink-0 grid-rows-7 gap-1.5 pt-6 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+        <div className="grid shrink-0 grid-rows-7 gap-1.5 pt-6 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {Array.from({ length: 7 }).map((_, index) => (
             <div key={index} className="flex h-4 items-center">
               {items[index] &&
@@ -104,7 +104,7 @@ function Heatmap({
         <div className="flex gap-1.5">
           {weeks.map((week, weekIndex) => (
             <div key={weekIndex} className="space-y-1.5">
-              <div className="h-5 text-center text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+              <div className="h-5 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {week[0] ? format(parseISO(week[0].date), 'MMM d') : ''}
               </div>
               <div className="grid grid-rows-7 gap-1.5">
@@ -213,7 +213,7 @@ export function AnalyticsPage() {
   return (
     <PageContainer className="space-y-8">
       <header className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Analytics</h1>
         <p className="text-muted-foreground">
           Track consistency over time, see where your activity comes from, and
           spot your strongest learning rhythm.

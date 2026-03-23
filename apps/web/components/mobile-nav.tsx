@@ -30,10 +30,9 @@ export function MobileNav() {
           <PortalBackdrop />
           <div
             className={cn(
-              'data-[slot=open]:zoom-in-97 ease-out data-[slot=open]:animate-in',
-              'size-full p-4',
+              'size-full p-4 transition-opacity duration-150',
+              open ? 'opacity-100' : 'opacity-0',
             )}
-            data-slot={open ? 'open' : 'closed'}
           >
             <div className="grid gap-y-2">
               {navLinks.map((link) => (

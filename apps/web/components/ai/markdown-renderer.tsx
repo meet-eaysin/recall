@@ -145,7 +145,7 @@ const COMPONENTS = {
   h2: withClass('h2', 'font-semibold text-xl'),
   h3: withClass('h3', 'font-semibold text-lg'),
   h4: withClass('h4', 'font-semibold text-base'),
-  h5: withClass('h5', 'font-medium'),
+  h5: withClass('h5', 'font-semibold text-sm uppercase tracking-wider text-muted-foreground'),
   strong: withClass('strong', 'font-semibold'),
   a: withClass('a', 'text-primary underline underline-offset-2'),
   blockquote: withClass('blockquote', 'border-l-2 border-primary pl-4'),

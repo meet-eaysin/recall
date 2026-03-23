@@ -39,7 +39,7 @@ export default function LoginPage() {
         <div className="mx-auto space-y-4 sm:w-sm">
           <Logo className="h-5" />
           <div className="flex flex-col space-y-1">
-            <h1 className="font-bold text-2xl tracking-wide">
+            <h1 className="font-semibold text-2xl tracking-wide">
               Sign In or Join Now!
             </h1>
             <p className="text-base text-muted-foreground">

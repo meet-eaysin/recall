@@ -131,7 +131,7 @@ export function SearchPage() {
   return (
     <PageContainer className="space-y-8">
       <header className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight">Search</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Search</h1>
         <p className="text-muted-foreground">
           Find exact matches or search by concept across your library.
         </p>

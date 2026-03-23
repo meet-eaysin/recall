@@ -461,9 +461,8 @@ export function HomePage() {
       <header className="flex flex-col items-start justify-between gap-6 px-1 lg:flex-row lg:items-end">
         <div className="space-y-3">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-1 bg-primary rounded-full" />
             <h1
-              className="text-3xl font-black tracking-tighter sm:text-4xl"
+              className="text-3xl font-semibold tracking-tighter sm:text-4xl"
               suppressHydrationWarning
             >
               {greeting}.

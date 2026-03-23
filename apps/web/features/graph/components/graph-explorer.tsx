@@ -128,13 +128,13 @@ function getRelationColor(type: GraphRelationType) {
 function getNodeColor(type: GraphNodeType, isFocused: boolean) {
   switch (type) {
     case GraphNodeType.ROOT:
-      return '#0f172a';
+      return 'var(--graph-root)';
     case GraphNodeType.CONCEPT:
-      return '#8b5cf6';
+      return 'var(--graph-concept)';
     case GraphNodeType.DOCUMENT:
-      return isFocused ? '#2563eb' : '#94a3b8';
+      return isFocused ? 'var(--graph-doc-focused)' : 'var(--graph-document)';
     default:
-      return '#94a3b8';
+      return 'var(--graph-document)';
   }
 }
 
@@ -440,11 +440,11 @@ export function GraphExplorer() {
       return {
         ...data,
         color: isSelected
-          ? '#0f172a'
+          ? 'var(--graph-root)'
           : isHovered
-            ? '#2563eb'
+            ? 'var(--graph-doc-focused)'
             : isRelated
-              ? '#60a5fa'
+              ? 'var(--graph-concept)'
               : data.color,
         forceLabel: isDocument || isSelected || isHovered,
         highlighted: isSelected || isHovered,
@@ -474,7 +474,7 @@ export function GraphExplorer() {
 
       return {
         ...data,
-        color: isActive ? data.color : '#cbd5e1',
+        color: isActive ? data.color : 'var(--graph-edge)',
         hidden: false,
         size: isActive ? data.size + 0.5 : Math.max(1, data.size - 0.4),
         zIndex: isActive ? 1 : 0,

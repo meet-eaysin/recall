@@ -139,8 +139,8 @@ const headingClassNames = {
   2: 'text-xl font-semibold tracking-tight',
   3: 'text-lg font-semibold tracking-tight',
   4: 'text-base font-semibold',
-  5: 'text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground',
-  6: 'text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground',
+  5: 'text-sm font-semibold uppercase tracking-wider text-muted-foreground',
+  6: 'text-sm font-semibold uppercase tracking-wider text-muted-foreground',
 } as const;
 
 function Heading({

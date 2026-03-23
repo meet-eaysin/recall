@@ -87,7 +87,7 @@ function FeatureCard({
 function FeatureTitle({ className, ...props }: React.ComponentProps<'h3'>) {
   return (
     <h3
-      className={cn('font-medium text-foreground text-lg', className)}
+      className={cn('font-semibold text-foreground text-lg', className)}
       {...props}
     />
   );

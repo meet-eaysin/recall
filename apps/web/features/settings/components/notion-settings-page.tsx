@@ -183,7 +183,7 @@ export function NotionSettingsPage() {
           </Link>
         </Button>
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Notion</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">Notion</h1>
           <p className="text-muted-foreground">
             Connect a workspace, choose the target database, and control how
             synchronization should behave.

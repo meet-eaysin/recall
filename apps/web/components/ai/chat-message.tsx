@@ -31,9 +31,9 @@ const chatBubbleVariants = cva(
       },
       animation: {
         none: '',
-        slide: 'duration-300 animate-in fade-in-0',
-        scale: 'duration-300 animate-in fade-in-0 zoom-in-75',
-        fade: 'duration-500 animate-in fade-in-0',
+        slide: 'duration-300',
+        scale: 'duration-300',
+        fade: 'duration-500',
       },
     },
     compoundVariants: [
@@ -160,7 +160,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   content,
   createdAt,
   showTimeStamp = false,
-  animation = 'scale',
+  animation = 'none',
   actions,
   experimental_attachments,
   toolInvocations,
@@ -207,7 +207,6 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             dateTime={createdAt.toISOString()}
             className={cn(
               'mt-1 block px-1 text-xs opacity-50',
-              animation !== 'none' && 'duration-500 animate-in fade-in-0',
             )}
           >
             {formattedTime}
@@ -268,7 +267,6 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
                 dateTime={createdAt.toISOString()}
                 className={cn(
                   'mt-1 block px-1 text-xs opacity-50',
-                  animation !== 'none' && 'duration-500 animate-in fade-in-0',
                 )}
               >
                 {formattedTime}
@@ -336,7 +334,6 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
           dateTime={createdAt.toISOString()}
           className={cn(
             'mt-1 block px-1 text-xs opacity-50',
-            animation !== 'none' && 'duration-500 animate-in fade-in-0',
           )}
         >
           {formattedTime}

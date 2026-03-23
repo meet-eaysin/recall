@@ -184,7 +184,7 @@ export function LlmSettingsPage() {
           </Link>
         </Button>
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">LLM Config</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">LLM Config</h1>
           <p className="text-muted-foreground">
             Choose the provider and model defaults that power AI features.
           </p>
