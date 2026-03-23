@@ -4,12 +4,12 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { ExternalLink, Link2, Trash2, MoreHorizontal } from 'lucide-react';
 import {
-  Menu,
-  MenuTrigger,
-  MenuPopup,
-  MenuItem,
-  MenuSeparator,
-} from '@/components/ui/menu';
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import type { DocumentRow } from '../../types';
@@ -45,45 +45,47 @@ export function CardActions({ document }: CardActionsProps) {
   }
 
   return (
-    <Menu>
-      <MenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          className="text-muted-foreground hover:text-foreground"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-          aria-label="Open document actions"
-        >
-          <MoreHorizontal className="size-4" />
-        </Button>
-      </MenuTrigger>
-      <MenuPopup side="bottom" align="end">
-        {document.sourceUrl && (
-          <MenuItem onClick={handleOpenSource}>
-            <ExternalLink className="size-4" />
-            Open source
-          </MenuItem>
-        )}
-        <MenuItem onClick={handleCopyLink}>
-          <Link2 className="size-4" />
-          Copy link
-        </MenuItem>
-        <MenuSeparator />
-        <MenuItem
-          variant="destructive"
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            setDeleteOpen(true);
-          }}
-        >
-          <Trash2 className="size-4" />
-          Delete
-        </MenuItem>
-      </MenuPopup>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            className="text-muted-foreground hover:text-foreground"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            aria-label="Open document actions"
+          >
+            <MoreHorizontal className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent side="bottom" align="end">
+          {document.sourceUrl && (
+            <DropdownMenuItem onClick={handleOpenSource}>
+              <ExternalLink className="size-4" />
+              Open source
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem onClick={handleCopyLink}>
+            <Link2 className="size-4" />
+            Copy link
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setDeleteOpen(true);
+            }}
+          >
+            <Trash2 className="size-4" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       <ConfirmationDialog
         open={deleteOpen}
@@ -95,6 +97,6 @@ export function CardActions({ document }: CardActionsProps) {
         confirmLabel="Delete document"
         tone="destructive"
       />
-    </Menu>
+    </>
   );
 }

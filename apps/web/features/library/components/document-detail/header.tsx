@@ -15,12 +15,12 @@ import { DocumentStatus } from '@repo/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Menu,
-  MenuItem,
-  MenuPopup,
-  MenuSeparator,
-  MenuTrigger,
-} from '@/components/ui/menu';
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Select,
   SelectContent,
@@ -148,31 +148,31 @@ export function DocumentDetailHeader({
           </SelectContent>
         </Select>
 
-        <Menu>
-          <MenuTrigger asChild>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button size="icon" variant="outline" className="h-9 w-9">
               <MoreHorizontal className="size-4.5" />
             </Button>
-          </MenuTrigger>
-          <MenuPopup align="end" className="w-48">
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
             {document.sourceUrl && (
-              <MenuItem asChild>
+              <DropdownMenuItem asChild>
                 <a href={document.sourceUrl} rel="noreferrer" target="_blank">
                   <ArrowUpRight className="size-4" />
                   Open Original Source
                 </a>
-              </MenuItem>
+              </DropdownMenuItem>
             )}
-            <MenuSeparator />
-            <MenuItem
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
               onClick={() => setDeleteDocumentOpen(true)}
               variant="destructive"
             >
               <Trash2 className="size-4" />
               Delete Document
-            </MenuItem>
-          </MenuPopup>
-        </Menu>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <ConfirmationDialog

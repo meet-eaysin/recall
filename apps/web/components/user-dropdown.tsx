@@ -6,19 +6,19 @@ import {
   Settings as SettingsIcon,
   LogOut as LogOutIcon,
   ChevronDown as ChevronDownIcon,
-  ChevronUp as ChevronUpIcon,
 } from 'lucide-react';
 
 import {
-  Menu,
-  MenuItem,
-  MenuPopup,
-  MenuSeparator,
-  MenuTrigger,
-} from '@/components/ui/menu';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { ThemeToggle } from './theme-toggle';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -34,8 +34,6 @@ export function UserDropdown({ small }: UserDropdownProps) {
   const router = useRouter();
   const pathname = usePathname();
   const isPlatformPages = pathname?.startsWith('/app/settings/platform');
-
-  const [menuOpen, setMenuOpen] = useState(false);
 
   const user = useMemo(() => {
     if (!session?.user) return null;
@@ -67,8 +65,8 @@ export function UserDropdown({ small }: UserDropdownProps) {
     .slice(0, 2);
 
   return (
-    <Menu open={menuOpen} onOpenChange={setMenuOpen}>
-      <MenuTrigger
+    <DropdownMenu>
+      <DropdownMenuTrigger
         className={cn(
           'hover:bg-subtle data-[state=open]:bg-subtle group flex w-full items-center gap-2 rounded-md text-left outline-none transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background',
           small ? 'justify-center p-1.5' : 'px-2 py-1.5',
@@ -99,22 +97,15 @@ export function UserDropdown({ small }: UserDropdownProps) {
                 {user?.email || `@${user?.username ?? 'user'}`}
               </span>
             </span>
-            {menuOpen ? (
-              <ChevronUpIcon
-                className="text-muted h-3.5 w-3.5 shrink-0 transition"
-                aria-hidden="true"
-              />
-            ) : (
-              <ChevronDownIcon
-                className="text-muted h-3.5 w-3.5 shrink-0 transition"
-                aria-hidden="true"
-              />
-            )}
+            <ChevronDownIcon
+              className="text-muted h-3.5 w-3.5 shrink-0 transition"
+              aria-hidden="true"
+            />
           </span>
         )}
-      </MenuTrigger>
+      </DropdownMenuTrigger>
 
-      <MenuPopup align="start" sideOffset={8} className="w-64">
+      <DropdownMenuContent align="start" sideOffset={8} className="w-64">
         <div className="flex items-center gap-3 px-2 py-2">
           <Avatar className="size-9">
             <AvatarImage src={user?.avatarUrl} alt="User avatar" />
@@ -131,30 +122,30 @@ export function UserDropdown({ small }: UserDropdownProps) {
             </p>
           </div>
         </div>
-        <MenuSeparator />
+        <DropdownMenuSeparator />
 
         {!isPlatformPages && (
-          <>
-            <MenuItem asChild>
+          <DropdownMenuGroup>
+            <DropdownMenuItem asChild>
               <Link href="/app/settings">
                 <UserIcon />
                 Profile
               </Link>
-            </MenuItem>
-            <MenuItem asChild>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
               <Link href="/app/settings">
                 <SettingsIcon />
                 Settings
               </Link>
-            </MenuItem>
+            </DropdownMenuItem>
             <div className="py-1">
               <ThemeToggle />
             </div>
-            <MenuSeparator />
-          </>
+            <DropdownMenuSeparator />
+          </DropdownMenuGroup>
         )}
 
-        <MenuItem
+        <DropdownMenuItem
           variant="destructive"
           onClick={async () => {
             try {
@@ -168,8 +159,8 @@ export function UserDropdown({ small }: UserDropdownProps) {
         >
           <LogOutIcon />
           Sign Out
-        </MenuItem>
-      </MenuPopup>
-    </Menu>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

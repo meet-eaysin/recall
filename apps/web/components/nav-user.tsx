@@ -15,18 +15,18 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import {
-  Menu,
-  MenuItem,
-  MenuPopup,
-  MenuSeparator,
-  MenuTrigger,
-} from '@/components/ui/menu';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   User as UserIcon,
   Settings as SettingsIcon,
   LogOut as LogOutIcon,
   ChevronDown as ChevronDownIcon,
-  ChevronUp as ChevronUpIcon,
 } from 'lucide-react';
 
 export function NavUser() {
@@ -36,7 +36,6 @@ export function NavUser() {
   const pathname = usePathname();
   const isPlatformPages = pathname?.startsWith('/app/settings/platform');
   const { isMobile, state } = useSidebar();
-  const [menuOpen, setMenuOpen] = React.useState(false);
 
   const user = React.useMemo(() => {
     if (!session?.user) return null;
@@ -70,8 +69,8 @@ export function NavUser() {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <Menu open={menuOpen} onOpenChange={setMenuOpen}>
-          <MenuTrigger asChild>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
               className={cn(
@@ -103,22 +102,15 @@ export function NavUser() {
                       {user?.email || `@${user?.username ?? 'user'}`}
                     </span>
                   </span>
-                  {menuOpen ? (
-                    <ChevronUpIcon
-                      className="text-muted h-3.5 w-3.5 shrink-0 transition"
-                      aria-hidden="true"
-                    />
-                  ) : (
-                    <ChevronDownIcon
-                      className="text-muted h-3.5 w-3.5 shrink-0 transition"
-                      aria-hidden="true"
-                    />
-                  )}
+                  <ChevronDownIcon
+                    className="text-muted h-3.5 w-3.5 shrink-0 transition"
+                    aria-hidden="true"
+                  />
                 </span>
               )}
             </SidebarMenuButton>
-          </MenuTrigger>
-          <MenuPopup
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
             align="start"
             side={isMobile ? 'bottom' : 'right'}
             sideOffset={8}
@@ -140,30 +132,30 @@ export function NavUser() {
                 </p>
               </div>
             </div>
-            <MenuSeparator />
+            <DropdownMenuSeparator />
 
             {!isPlatformPages && (
-              <>
-                <MenuItem asChild>
+              <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
                   <Link href="/app/settings">
                     <UserIcon />
                     Profile
                   </Link>
-                </MenuItem>
-                <MenuItem asChild>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href="/app/settings">
                     <SettingsIcon />
                     Settings
                   </Link>
-                </MenuItem>
+                </DropdownMenuItem>
                 <div className="py-1">
                   <ThemeToggle />
                 </div>
-                <MenuSeparator />
-              </>
+                <DropdownMenuSeparator />
+              </DropdownMenuGroup>
             )}
 
-            <MenuItem
+            <DropdownMenuItem
               variant="destructive"
               onClick={async () => {
                 try {
@@ -177,9 +169,9 @@ export function NavUser() {
             >
               <LogOutIcon />
               Sign Out
-            </MenuItem>
-          </MenuPopup>
-        </Menu>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
   );
