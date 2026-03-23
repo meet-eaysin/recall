@@ -12,6 +12,13 @@ import {
   useSearchChats,
 } from '@/features/search/hooks';
 import { NavUser } from '@/components/nav-user';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Sidebar,
   SidebarContent,
@@ -34,6 +41,7 @@ import {
   ArchiveIcon,
   Trash2Icon,
   PlusIcon,
+  MoreHorizontal,
 } from 'lucide-react';
 import { ApplicationIcon } from './application-logo';
 
@@ -94,6 +102,10 @@ function SidebarChatList({ query }: { query: string }) {
   const pathname = usePathname();
   const archiveChat = useArchiveChat();
   const deleteChat = useDeleteChat();
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [chatToDelete, setChatToDelete] = React.useState<
+    NonNullable<typeof chats>[number] | null
+  >(null);
 
   const filteredChats = React.useMemo(() => {
     if (!chats) return [];
@@ -152,32 +164,36 @@ function SidebarChatList({ query }: { query: string }) {
         </Link>
       </SidebarMenuButton>
 
-      <div className="absolute right-1 top-1/2 flex -translate-y-1/2 items-center gap-0.5 opacity-0 transition-all duration-200 group-hover/menu-item:opacity-100 group-data-[collapsible=icon]:hidden">
-        <SidebarMenuAction
-          showOnHover
-          className="static size-7 hover:bg-sidebar-accent-foreground/10"
-          onClick={(event: React.MouseEvent) => {
-            event.preventDefault();
-            event.stopPropagation();
-            archiveChat.mutate({ id: chat.id, isArchived: true });
-          }}
-          aria-label={`Archive ${chat.title}`}
-        >
-          <ArchiveIcon className="size-3.5" />
-        </SidebarMenuAction>
-        <SidebarMenuAction
-          showOnHover
-          className="static size-7 hover:bg-destructive/10 hover:text-destructive"
-          onClick={(event: React.MouseEvent) => {
-            event.preventDefault();
-            event.stopPropagation();
-            deleteChat.mutate(chat.id);
-          }}
-          aria-label={`Delete ${chat.title}`}
-        >
-          <Trash2Icon className="size-3.5" />
-        </SidebarMenuAction>
-      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <SidebarMenuAction
+            className="data-[state=open]:opacity-100 transition-opacity"
+            aria-label={`Actions for ${chat.title}`}
+          >
+            <MoreHorizontal className="size-3.5" />
+          </SidebarMenuAction>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" side="right" className="w-48">
+          <DropdownMenuItem
+            onClick={() =>
+              archiveChat.mutate({ id: chat.id, isArchived: true })
+            }
+          >
+            <ArchiveIcon className="size-4" />
+            Archive Chat
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => {
+              setChatToDelete(chat);
+              setDeleteDialogOpen(true);
+            }}
+          >
+            <Trash2Icon className="size-4" />
+            Delete Chat
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </SidebarMenuItem>
   );
 
@@ -258,6 +274,21 @@ function SidebarChatList({ query }: { query: string }) {
           )}
         </>
       )}
+
+      <ConfirmationDialog
+        open={deleteDialogOpen}
+        openChangeAction={setDeleteDialogOpen}
+        confirmAction={() => {
+          if (chatToDelete) {
+            deleteChat.mutate(chatToDelete.id);
+          }
+        }}
+        isPending={deleteChat.isPending}
+        title="Delete conversation?"
+        description={`This will permanently delete "${chatToDelete?.title}" and its message history.`}
+        confirmLabel="Delete conversation"
+        tone="destructive"
+      />
     </>
   );
 }
