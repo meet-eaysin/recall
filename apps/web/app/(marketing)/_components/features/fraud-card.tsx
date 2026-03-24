@@ -1,23 +1,22 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { RxCross2 } from "react-icons/rx";
-import { GoDotFill } from "react-icons/go";
-import { TbCircleDotted } from "react-icons/tb";
-import { motion } from "motion/react";
-import type { Variants } from "motion/react";
+import { cn } from '@/lib/utils';
+import { useState } from 'react';
+import { GoDotFill, GoLink } from 'react-icons/go';
+import { TbNetwork } from 'react-icons/tb';
+import { motion } from 'motion/react';
+import type { Variants } from 'motion/react';
 
-type BlockedEmail = {
-  email: string;
-  time: string;
+type GraphNode = {
+  label: string;
+  status: string;
 };
 
 type FraudCardProps = {
-  blockedEmails: BlockedEmail[];
+  nodes: GraphNode[];
 };
 
-const FraudCard = ({ blockedEmails }: FraudCardProps) => {
+const FraudCard = ({ nodes }: FraudCardProps) => {
   const [hovered, setHovered] = useState(false);
 
   const parentvariant = {
@@ -38,13 +37,13 @@ const FraudCard = ({ blockedEmails }: FraudCardProps) => {
   const emailvariant = {
     open: {
       opacity: 1,
-      filter: "blur(0px)",
+      filter: 'blur(0px)',
       y: 0,
       transition: { duration: 0.3 },
     },
     close: {
       opacity: 0,
-      filter: "blur(10px)",
+      filter: 'blur(10px)',
       y: 5,
       transition: { duration: 0.3 },
     },
@@ -66,13 +65,13 @@ const FraudCard = ({ blockedEmails }: FraudCardProps) => {
   const timevariant = {
     open: {
       opacity: 1,
-      filter: "blur(0px)",
+      filter: 'blur(0px)',
       y: 0,
       transition: { duration: 0.3 },
     },
     close: {
       opacity: 0,
-      filter: "blur(5px)",
+      filter: 'blur(5px)',
       y: 10,
       transition: { duration: 0.3 },
     },
@@ -82,7 +81,7 @@ const FraudCard = ({ blockedEmails }: FraudCardProps) => {
     open: {
       rotate: 360,
       transition: {
-        ease: "linear",
+        ease: 'linear',
         duration: 2.5,
         repeat: Number.POSITIVE_INFINITY,
       },
@@ -90,7 +89,7 @@ const FraudCard = ({ blockedEmails }: FraudCardProps) => {
     close: {
       rotate: 0,
       transition: {
-        ease: "easeInOut",
+        ease: 'easeInOut',
         duration: 0.1,
         repeat: 0,
       },
@@ -103,22 +102,20 @@ const FraudCard = ({ blockedEmails }: FraudCardProps) => {
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
       variants={parentvariant}
-      animate={hovered ? "open" : "close"}
+      animate={hovered ? 'open' : 'close'}
       initial="close"
       className={cn(
-        "h-80 w-full",
-        "group overflow-hidden border shadow-md",
-        "clbeam-container relative flex flex-col items-center",
-        "rounded-md bg-neutral-50 text-white dark:bg-neutral-900",
+        'h-80 w-full',
+        'group overflow-hidden border shadow-md',
+        'clbeam-container relative flex flex-col items-center',
+        'rounded-md bg-neutral-50 text-white dark:bg-neutral-900',
       )}
     >
-      <div className={cn("flex flex-col gap-2 px-4 pt-4")}>
-        <h2 className="text-primary text-[14px] font-bold">
-          Isolated Workspaces
-        </h2>
+      <div className={cn('flex flex-col gap-2 px-4 pt-4')}>
+        <h2 className="text-primary text-[14px] font-bold">Knowledge Graph</h2>
         <p className="text-[11px] text-neutral-500 sm:text-xs">
-          Every byte of your knowledge is stored in a private, isolated
-          environment. No tracking, no cloud sync, no noise. Just your library.
+          Explore your personal knowledge graph. Recall automatically connects
+          your documents and ideas into a visualized, semantic network.
         </p>
       </div>
       <div className="relative flex h-full w-75 flex-col">
@@ -127,16 +124,16 @@ const FraudCard = ({ blockedEmails }: FraudCardProps) => {
             <div className="flex h-full w-full items-center justify-between gap-3 rounded-[4px] bg-neutral-100 p-3 dark:bg-neutral-800">
               <div className="flex items-center justify-center gap-4">
                 <motion.div variants={circlevariant} className="h-4 w-4">
-                  <TbCircleDotted className="text-primary h-full w-full" />
+                  <TbNetwork className="text-primary h-full w-full" />
                 </motion.div>
                 <p className="font-mono text-[10px] text-neutral-600 transition-all duration-300 group-hover:text-neutral-900 dark:text-neutral-400 dark:group-hover:text-neutral-100">
-                  Isolated data stream secured
+                  Semantic mapping active
                 </p>
               </div>
               <p className="text-[10px] text-neutral-500">
                 {new Date().toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
+                  hour: '2-digit',
+                  minute: '2-digit',
                   hour12: false,
                 })}
               </p>
@@ -173,7 +170,7 @@ const FraudCard = ({ blockedEmails }: FraudCardProps) => {
                 />
               </mask>
               <radialGradient id="clbeam-red-grad" fx="1">
-                <stop offset="0%" stopColor="#ef4444" />
+                <stop offset="0%" stopColor="var(--color-primary)" />
                 <stop offset="100%" stopColor="transparent" />
               </radialGradient>
             </defs>
@@ -181,17 +178,17 @@ const FraudCard = ({ blockedEmails }: FraudCardProps) => {
         </div>
         <div className="absolute inset-x-12 top-32.5 flex w-fit flex-col items-center justify-center">
           <div className="flex h-full w-full flex-col items-center justify-center gap-9">
-            {blockedEmails.map(({ email, time }) => (
-              <div key={email} className="flex h-full w-full justify-start">
+            {nodes.map(({ label, status }) => (
+              <div key={label} className="flex h-full w-full justify-start">
                 <div className="relative mt-1.5 mr-2 h-6 w-6">
                   <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/10 dark:bg-white/10">
                     <GoDotFill className="h-2.5 w-2.5 text-neutral-400 dark:text-neutral-500" />
                   </div>
                   <motion.div
                     variants={iconvariant}
-                    className="absolute inset-0 flex items-center justify-center rounded-full bg-red-500 p-1"
+                    className="absolute inset-0 flex items-center justify-center rounded-full bg-primary p-1"
                   >
-                    <RxCross2 className="h-4 w-4 text-neutral-100 dark:text-neutral-800" />
+                    <GoLink className="h-4 w-4 text-neutral-100 dark:text-neutral-800" />
                   </motion.div>
                 </div>
                 <div className="flex flex-col items-start justify-center gap-1 p-1">
@@ -199,13 +196,13 @@ const FraudCard = ({ blockedEmails }: FraudCardProps) => {
                     variants={emailvariant}
                     className="text-[10px] font-semibold text-neutral-800 sm:text-xs dark:text-neutral-200"
                   >
-                    {email}
+                    {label}
                   </motion.h2>
                   <motion.p
                     variants={timevariant}
                     className="font-mono text-[9px] text-neutral-500"
                   >
-                    Blocked {time}
+                    {status}
                   </motion.p>
                 </div>
               </div>

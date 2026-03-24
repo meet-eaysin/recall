@@ -59,10 +59,10 @@ const FeaturesBlock = () => {
           className="lg:col-span-1"
         >
           <FraudCard
-            blockedEmails={[
-              { email: 'user-isolation-v1', time: 'Active' },
-              { email: 'local-first-stream', time: 'Encrypted' },
-              { email: 'semantic-index-0', time: 'Verified' },
+            nodes={[
+              { label: 'Semantic Link', status: 'Connected' },
+              { label: 'Contextual Node', status: 'Mapped' },
+              { label: 'Entity Extraction', status: 'Indexed' },
             ]}
           />
         </motion.div>

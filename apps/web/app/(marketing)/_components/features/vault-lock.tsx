@@ -11,8 +11,8 @@ type VaultLockProps = {
 };
 
 const VaultLock = ({
-  cardTitle = "Secure Access",
-  cardDescription = "Encrypted access to your personal vault with seamless transitions and per-user encryption keys.",
+  cardTitle = "Document-First",
+  cardDescription = "See the original source, notes, tags, and summaries without exposing internal AI pipelines.",
 }: VaultLockProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
