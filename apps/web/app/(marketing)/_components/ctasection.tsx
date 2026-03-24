@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
-import { CarTaxiFront } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 const CtaSection = () => {
   return (
@@ -151,7 +151,9 @@ const CtaSection = () => {
           viewport={{ once: true }}
           className="pb-8"
         >
-          <CarTaxiFront />
+          <div className="mx-auto flex size-12 items-center justify-center rounded-2xl">
+            <Sparkles className="size-6" />
+          </div>
         </motion.div>
         <motion.h1
           initial={{
@@ -193,7 +195,7 @@ const CtaSection = () => {
           viewport={{ once: true }}
           className="mb-8 max-w-sm text-balance bg-linear-to-br from-white/70 via-white/70 to-white/30 bg-clip-text text-center text-[0.8rem] text-transparent sm:max-w-lg sm:text-[0.87rem] lg:text-[1rem]"
         >
-          Capture ideas, search documents, and connect dots with a 
+          Capture ideas, search documents, and connect dots with a
           privacy-first, AI-powered tool made for developers.
         </motion.p>
         <motion.div

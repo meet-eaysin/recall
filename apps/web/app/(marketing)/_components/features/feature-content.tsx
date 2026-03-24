@@ -25,7 +25,9 @@ const FeatureContent = () => {
         viewport={{ once: true }}
         className="mb-2"
       >
-        <FileSignature />
+        <div className="mx-auto flex size-12 items-center justify-center rounded-2xl">
+          <FileSignature className="size-6" />
+        </div>
       </motion.div>
       <motion.h1
         initial={{

@@ -1,8 +1,8 @@
-"use client";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { type ComponentProps } from "react";
+'use client';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { type ComponentProps } from 'react';
 
 type AnchorProps = ComponentProps<typeof Link> & {
   absolute?: boolean;
@@ -12,26 +12,26 @@ type AnchorProps = ComponentProps<typeof Link> & {
 
 export default function AnchorNav({
   absolute,
-  className = "",
+  className = '',
   disabled,
   children,
   ...props
 }: AnchorProps) {
   const path = usePathname();
   const isMatch = absolute
-    ? props.href.toString().split("/")[1] == path.split("/")[1]
+    ? props.href.toString().split('/')[1] == path.split('/')[1]
     : path === props.href;
 
   if (disabled)
     return (
-      <div className={cn(className, "cursor-not-allowed")}>{children}</div>
+      <div className={cn(className, 'cursor-not-allowed')}>{children}</div>
     );
   return (
     <Link
       className={cn(
         className,
-        "block text-neutral-400 duration-150 hover:text-white",
-        isMatch && "font-semibold text-white",
+        'block text-neutral-400 duration-150 hover:text-white',
+        isMatch && 'font-semibold text-white',
       )}
       {...props}
     >

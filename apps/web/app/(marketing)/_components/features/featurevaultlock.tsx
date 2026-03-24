@@ -187,13 +187,10 @@ const FeatureVaultLock = () => {
         </div>
       </motion.div>
       <div className="absolute bottom-4 left-0 w-full px-4">
-        <h3 className="text-sm font-semibold text-white">
-          Secure Knowledge
-        </h3>
+        <h3 className="text-sm font-semibold text-white">Secure Knowledge</h3>
         <p className="mt-2 text-xs text-neutral-400">
-          With Recall, your personal documents and notes are always
-          safeguarded. Your knowledge vault is protected and accessible 
-          only by you.
+          With Recall, your personal documents and notes are always safeguarded.
+          Your knowledge vault is protected and accessible only by you.
         </p>
       </div>
     </motion.div>

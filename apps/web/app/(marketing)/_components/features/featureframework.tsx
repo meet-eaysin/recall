@@ -14,9 +14,7 @@ const FeatureFramework = () => {
     >
       <FrameworkCard />
       <div className="px-4 pb-4">
-        <div className="text-sm font-semibold text-white">
-          Developer First
-        </div>
+        <div className="text-sm font-semibold text-white">Developer First</div>
         <div className="mt-2 text-xs text-neutral-400">
           Built on a robust stack of Postgres, Chroma, and Redis. Recall
           seamlessly integrates into your existing developer workflow.

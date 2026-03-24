@@ -110,7 +110,9 @@ const HeroSection = () => {
                 <div className="flex h-full w-full items-center justify-center bg-neutral-900/50 rounded-xl border border-neutral-800 border-dashed aspect-video">
                   <div className="flex flex-col items-center gap-3 text-neutral-500">
                     <RotateCcwSquare className="size-12 opacity-20" />
-                    <p className="text-sm font-medium opacity-50 uppercase tracking-widest">Workspace Preview</p>
+                    <p className="text-sm font-medium opacity-50 uppercase tracking-widest">
+                      Workspace Preview
+                    </p>
                   </div>
                 </div>
               </motion.div>

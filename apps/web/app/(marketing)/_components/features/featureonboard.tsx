@@ -14,8 +14,8 @@ const FeatureOnboard = () => {
           Private by Default
         </div>
         <div className="mt-2 text-xs text-neutral-400">
-          Everything is per-user with strict isolation. No collaboration,
-          no feeds, no noise. Just your knowledge.
+          Everything is per-user with strict isolation. No collaboration, no
+          feeds, no noise. Just your knowledge.
         </div>
       </div>
     </div>

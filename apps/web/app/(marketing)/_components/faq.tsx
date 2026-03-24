@@ -153,7 +153,9 @@ function FAQ() {
         className="container mx-auto px-4"
       >
         <motion.div className="mx-auto mb-12 max-w-7xl text-center">
-          <FileQuestion />
+          <div className="mx-auto flex size-12 items-center justify-center rounded-2xl">
+            <FileQuestion className="size-6" />
+          </div>
           <h2 className="mx-auto mb-2 mt-6 max-w-3xl text-balance bg-linear-to-br from-neutral-100 via-neutral-100 via-50% to-neutral-100/30 bg-clip-text py-2 text-center text-4xl font-medium leading-[1.1] tracking-tighter text-transparent md:text-5xl">
             Let&apos;s Answer Your Questions
           </h2>

@@ -131,10 +131,12 @@ const FeatureInsights = () => {
       </div>
       {/*insight card */}
       <div className="px-4 pb-4">
-        <div className="text-sm font-semibold text-white">Ask AI with Sources</div>
+        <div className="text-sm font-semibold text-white">
+          Ask AI with Sources
+        </div>
         <div className="mt-2 text-xs text-neutral-400">
-          Ask questions and get answers grounded in your library with 
-          citations. Explore connections across your knowledge base.
+          Ask questions and get answers grounded in your library with citations.
+          Explore connections across your knowledge base.
         </div>
       </div>
     </div>
