@@ -1,8 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { RotateCcwSquare } from 'lucide-react';
-import { IoIosTrendingUp } from 'react-icons/io';
+import { RotateCcwSquare, TrendingUp } from 'lucide-react';
 
 const InsightCard = () => {
   return (
@@ -22,7 +21,7 @@ const InsightCard = () => {
             <div className="flex items-end gap-2">
               <div className="flex items-center gap-1 text-[0.95rem] text-white">
                 <p>9234</p>
-                <IoIosTrendingUp className="text-sm text-green-600" />
+                <TrendingUp className="text-sm text-green-600" />
               </div>
             </div>
           </div>
@@ -33,7 +32,7 @@ const InsightCard = () => {
             <div className="flex items-end gap-2">
               <div className="flex items-center gap-1 text-[0.95rem] text-white">
                 <p>1037</p>
-                <IoIosTrendingUp className="text-sm text-green-600" />
+                <TrendingUp className="text-sm text-green-600" />
               </div>
             </div>
           </div>

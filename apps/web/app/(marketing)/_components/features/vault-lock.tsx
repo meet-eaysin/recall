@@ -2,8 +2,8 @@
 
 import { cn } from "@/lib/utils";
 import React, { useState } from "react";
-import { motion } from "motion/react";
-import type { Variants } from "motion/react";
+import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 
 type VaultLockProps = {
   cardTitle?: string;

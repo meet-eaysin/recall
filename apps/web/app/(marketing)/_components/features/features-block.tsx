@@ -7,7 +7,7 @@ import SecurityCard from './security-card';
 import FraudCard from './fraud-card';
 import BotDetection from './bot-detection';
 import VaultLock from './vault-lock';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 const FeaturesBlock = () => {
   return (
