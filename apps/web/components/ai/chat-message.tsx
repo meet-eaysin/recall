@@ -205,9 +205,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
         {showTimeStamp && createdAt ? (
           <time
             dateTime={createdAt.toISOString()}
-            className={cn(
-              'mt-1 block px-1 text-xs opacity-50',
-            )}
+            className={cn('mt-1 block px-1 text-xs opacity-50')}
           >
             {formattedTime}
           </time>
@@ -265,9 +263,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             {showTimeStamp && createdAt ? (
               <time
                 dateTime={createdAt.toISOString()}
-                className={cn(
-                  'mt-1 block px-1 text-xs opacity-50',
-                )}
+                className={cn('mt-1 block px-1 text-xs opacity-50')}
               >
                 {formattedTime}
               </time>
@@ -332,9 +328,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
       {showTimeStamp && createdAt ? (
         <time
           dateTime={createdAt.toISOString()}
-          className={cn(
-            'mt-1 block px-1 text-xs opacity-50',
-          )}
+          className={cn('mt-1 block px-1 text-xs opacity-50')}
         >
           {formattedTime}
         </time>

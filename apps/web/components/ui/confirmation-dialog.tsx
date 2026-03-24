@@ -68,9 +68,7 @@ export function ConfirmationDialog({
         </AlertDialogHeader>
         {children}
         <AlertDialogFooter>
-          <AlertDialogCancel variant="ghost">
-            {cancelLabel}
-          </AlertDialogCancel>
+          <AlertDialogCancel variant="ghost">{cancelLabel}</AlertDialogCancel>
           <Button
             disabled={isPending}
             onClick={() => void handleConfirm()}

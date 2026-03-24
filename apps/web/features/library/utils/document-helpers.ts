@@ -20,11 +20,7 @@ export function getDocumentIcon(type: DocumentType): LucideIcon {
   return DOCUMENT_ICON_MAP[type] ?? FileText;
 }
 
-type BadgeVariant =
-  | 'default'
-  | 'secondary'
-  | 'outline'
-  | 'destructive';
+type BadgeVariant = 'default' | 'secondary' | 'outline' | 'destructive';
 
 const STATUS_BADGE_MAP: Record<DocumentStatus, BadgeVariant> = {
   [DocumentStatus.TO_READ]: 'secondary',

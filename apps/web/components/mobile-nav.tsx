@@ -47,11 +47,7 @@ export function MobileNav() {
               ))}
             </div>
             <div className="mt-12 flex flex-col gap-2">
-              <Button
-                asChild
-                className="w-full"
-                variant="outline"
-              >
+              <Button asChild className="w-full" variant="outline">
                 <a href="/auth/login">Sign In</a>
               </Button>
               <Button asChild className="w-full">

@@ -42,11 +42,7 @@ interface BreadcrumbLinkProps extends React.ComponentProps<'a'> {
   asChild?: boolean;
 }
 
-function BreadcrumbLink({
-  asChild,
-  className,
-  ...props
-}: BreadcrumbLinkProps) {
+function BreadcrumbLink({ asChild, className, ...props }: BreadcrumbLinkProps) {
   const Comp = asChild ? Slot.Root : 'a';
 
   return (

@@ -15,7 +15,9 @@ export default function AppLibraryNewPage() {
   return (
     <PageContainer className="space-y-8">
       <header className="space-y-1">
-        <h1 className="text-3xl font-semibold tracking-tight">Add to Library</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Add to Library
+        </h1>
         <p className="text-muted-foreground">
           Save a new link or document to your knowledge base.
         </p>

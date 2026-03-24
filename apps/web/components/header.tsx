@@ -44,12 +44,7 @@ export function Header() {
         <div className="hidden items-center gap-2 md:flex">
           <div>
             {navLinks.map((link) => (
-              <Button
-                asChild
-                key={link.label}
-                size="sm"
-                variant="ghost"
-              >
+              <Button asChild key={link.label} size="sm" variant="ghost">
                 <a href={link.href}>
                   {link.icon && <span className="mr-2">{link.icon}</span>}
                   {link.label}

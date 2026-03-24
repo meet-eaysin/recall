@@ -57,11 +57,7 @@ function DocumentDetailContent({ isCompact }: { isCompact: boolean }) {
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                >
+                <Button asChild variant="outline" size="sm">
                   <Link href="/app/library">
                     <ChevronLeft className="size-4" />
                     Back to Library

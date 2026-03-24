@@ -20,7 +20,8 @@ const inputVariants = cva(
 );
 
 interface InputProps
-  extends Omit<React.ComponentProps<'input'>, 'size'>,
+  extends
+    Omit<React.ComponentProps<'input'>, 'size'>,
     Omit<VariantProps<typeof inputVariants>, 'size'> {
   nativeInput?: boolean;
   size?: 'sm' | 'default' | 'lg' | number;

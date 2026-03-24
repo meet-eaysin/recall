@@ -58,7 +58,8 @@ export function HeroSection() {
             'mx-auto max-w-2xl text-balance text-center text-lg text-muted-foreground sm:text-xl',
           )}
         >
-          The knowledge stack for deep researchers. MindStack unifies your links, PDFs, and notes into a semantic graph that grows with you.
+          The knowledge stack for deep researchers. MindStack unifies your
+          links, PDFs, and notes into a semantic graph that grows with you.
         </p>
 
         <div className="flex w-fit items-center justify-center gap-3 pt-2">
