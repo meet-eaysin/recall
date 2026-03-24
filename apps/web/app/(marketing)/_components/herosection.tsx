@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import Herobuttons from './hero-buttons';
-import TechStackSection from './techstacksection';
 import HeroBadge from './herobadge';
 
 const HeroSection = () => {
@@ -22,7 +21,7 @@ const HeroSection = () => {
           )}
         >
           <div className="flex lg:flex-2">
-            <div className="flex flex-col justify-center space-y-5 pl-6 lg:mx-auto lg:max-w-lg xl:pl-2">
+            <div className="flex flex-col justify-center space-y-5 pl-6 lg:mx-auto lg:max-w-4xl xl:pl-2">
               <HeroBadge />
               <motion.h1
                 initial={{
@@ -40,7 +39,7 @@ const HeroSection = () => {
                   ease: 'easeInOut',
                 }}
                 viewport={{ once: true }}
-                className="max-w-lg whitespace-pre-wrap text-balance font-sans text-4xl font-bold tracking-tight text-white md:max-w-2xl md:text-5xl"
+                className="max-w-lg whitespace-pre-wrap text-balance font-sans text-4xl font-bold tracking-tight text-white md:max-w-4xl md:text-5xl"
               >
                 Unlock Real Insights from Simple Stats
               </motion.h1>
@@ -87,7 +86,6 @@ const HeroSection = () => {
               >
                 <Herobuttons />
               </motion.div>
-              <TechStackSection />
             </div>
           </div>
           <div className="mx-auto mt-4 block max-w-7xl overflow-hidden lg:hidden">
