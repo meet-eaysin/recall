@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Brain, Sparkles, StickyNote, Zap } from 'lucide-react';
 import { DocumentType } from '@repo/types';
-import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
 import { useDocumentDetail } from '../context';
 import { SummaryTab } from './summary-tab';
 import { NotesTab } from './notes-tab';
@@ -24,11 +24,11 @@ export function DocumentDetailTabs({
   return (
     <Tabs defaultValue="summary">
       <TabsList>
-        <TabsTrigger value="summary">
+        <TabsTab value="summary">
           <Sparkles />
           Summary
-        </TabsTrigger>
-        <TabsTrigger value="notes">
+        </TabsTab>
+        <TabsTab value="notes">
           <StickyNote />
           Research Notes
           {notes.length > 0 && (
@@ -36,41 +36,38 @@ export function DocumentDetailTabs({
               {notes.length}
             </span>
           )}
-        </TabsTrigger>
+        </TabsTab>
         {isYoutubeDocument && (
-          <TabsTrigger value="transcript">
+          <TabsTab value="transcript">
             <Brain />
             Transcript
-          </TabsTrigger>
+          </TabsTab>
         )}
 
-        <TabsTrigger value="details">
+        <TabsTab value="details">
           <Zap />
           Details
-        </TabsTrigger>
+        </TabsTab>
       </TabsList>
 
       <div className="focus-visible:outline-none mt-3">
-        <TabsContent value="summary" className="focus-visible:outline-none">
+        <TabsPanel value="summary" className="focus-visible:outline-none">
           <SummaryTab isCompact={isCompact} />
-        </TabsContent>
+        </TabsPanel>
 
-        <TabsContent value="notes" className="focus-visible:outline-none">
+        <TabsPanel value="notes" className="focus-visible:outline-none">
           <NotesTab isCompact={isCompact} />
-        </TabsContent>
+        </TabsPanel>
 
         {isYoutubeDocument && (
-          <TabsContent
-            value="transcript"
-            className="focus-visible:outline-none"
-          >
+          <TabsPanel value="transcript" className="focus-visible:outline-none">
             <TranscriptTab isCompact={isCompact} />
-          </TabsContent>
+          </TabsPanel>
         )}
 
-        <TabsContent value="details" className="focus-visible:outline-none">
+        <TabsPanel value="details" className="focus-visible:outline-none">
           <DetailsTab isCompact={isCompact} />
-        </TabsContent>
+        </TabsPanel>
       </div>
     </Tabs>
   );

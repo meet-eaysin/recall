@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-import { Sora, Geist } from 'next/font/google';
+import { Manrope, Sora, Geist } from 'next/font/google';
 import '../styles/globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AnchoredToastProvider, ToastProvider } from '@/components/ui/toast';
 import { QueryProvider } from '@/providers/query-provider';
 import { cn } from '@/lib/utils';
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const sora = Sora({
   subsets: ['latin'],
@@ -35,11 +35,10 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       className={cn(
-        'scroll-smooth font-sans',
-        sora.variable,
-        geistMono.variable,
-        geist.variable,
-      )}
+              'scroll-smooth font-sans',
+              sora.variable,
+              geistMono.variable,
+            , "font-sans", geist.variable)}
     >
       <body className="min-h-svh bg-background antialiased selection:bg-primary selection:text-primary-foreground">
         <QueryProvider>

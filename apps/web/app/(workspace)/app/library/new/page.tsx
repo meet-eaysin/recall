@@ -4,7 +4,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardContent,
+  CardPanel,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { PageContainer } from '@/features/workspace/components/page-container';
@@ -13,11 +13,9 @@ export default function AppLibraryNewPage() {
   const endpoints = ['POST /documents'];
 
   return (
-    <PageContainer className="space-y-8">
+    <PageContainer className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <header className="space-y-1">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          Add to Library
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight">Add to Library</h1>
         <p className="text-muted-foreground">
           Save a new link or document to your knowledge base.
         </p>
@@ -32,7 +30,7 @@ export default function AppLibraryNewPage() {
               note. Type @ in the notes field to mention other documents.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4 px-5 pb-5 pt-0">
+          <CardPanel className="space-y-4 px-5 pb-5 pt-0">
             {endpoints.length > 0 && (
               <div className="space-y-2">
                 <h3 className="text-sm font-semibold text-foreground">
@@ -55,7 +53,7 @@ export default function AppLibraryNewPage() {
             <div className="pt-4 border-t border-border/40">
               <AddDocumentForm />
             </div>
-          </CardContent>
+          </CardPanel>
         </Card>
       </div>
     </PageContainer>

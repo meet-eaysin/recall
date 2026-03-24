@@ -37,19 +37,10 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-sans: Chakra Petch, ui-sans-serif, sans-serif, system-ui;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: IBM Plex Mono, ui-monospace, monospace;
-  --radius: 0.5rem;
-  
-  /* Graph Colors */
-  --graph-root: oklch(0.205 0 0);
-  --graph-concept: oklch(0.511 0.262 276.966);
-  --graph-document: oklch(0.556 0 0);
-  --graph-doc-focused: oklch(0.488 0.243 264.376);
-  --graph-edge: oklch(0.922 0 0);
-  --graph-edge-active: oklch(0.488 0.243 264.376);
-
+  --radius: 0.625rem;
   --shadow-x: 0;
   --shadow-y: 1px;
   --shadow-blur: 3px;
@@ -103,14 +94,24 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  
-  /* Graph Colors - Dark Mode Adjustments */
-  --graph-root: oklch(0.922 0 0);
-  --graph-concept: oklch(0.708 0.191 276.966);
-  --graph-document: oklch(0.708 0 0);
-  --graph-doc-focused: oklch(0.708 0.191 264.376);
-  --graph-edge: oklch(1 0 0 / 20%);
-  --graph-edge-active: oklch(0.708 0.191 264.376);
+  --font-sans: Chakra Petch, ui-sans-serif, sans-serif, system-ui;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: IBM Plex Mono, ui-monospace, monospace;
+  --radius: 0rem;
+  --shadow-x: 0;
+  --shadow-y: 1px;
+  --shadow-blur: 3px;
+  --shadow-spread: 0px;
+  --shadow-opacity: 0.1;
+  --shadow-color: oklch(0 0 0);
+  --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+  --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+  --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+  --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
+  --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
+  --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
+  --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
 }
 
 @theme inline {
@@ -183,4 +184,8 @@
   html {
     @apply font-sans;
   }
+}
+
+.backdrop-blur-xl {
+  @apply backdrop-blur-xl bg-background/70;
 }

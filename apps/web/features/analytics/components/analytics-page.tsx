@@ -16,7 +16,7 @@ import {
   Card,
   CardDescription,
   CardHeader,
-  CardContent,
+  CardPanel,
   CardTitle,
 } from '@/components/ui/card';
 import {
@@ -89,7 +89,7 @@ function Heatmap({
   return (
     <div className="overflow-x-auto">
       <div className="inline-flex min-w-full gap-3">
-        <div className="grid shrink-0 grid-rows-7 gap-1.5 pt-6 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="grid shrink-0 grid-rows-7 gap-1.5 pt-6 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
           {Array.from({ length: 7 }).map((_, index) => (
             <div key={index} className="flex h-4 items-center">
               {items[index] &&
@@ -104,7 +104,7 @@ function Heatmap({
         <div className="flex gap-1.5">
           {weeks.map((week, weekIndex) => (
             <div key={weekIndex} className="space-y-1.5">
-              <div className="h-5 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="h-5 text-center text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
                 {week[0] ? format(parseISO(week[0].date), 'MMM d') : ''}
               </div>
               <div className="grid grid-rows-7 gap-1.5">
@@ -167,9 +167,9 @@ function StatCard({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-0 text-sm text-muted-foreground">
+      <CardPanel className="pt-0 text-sm text-muted-foreground">
         {description}
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 }
@@ -213,7 +213,7 @@ export function AnalyticsPage() {
   return (
     <PageContainer className="space-y-8">
       <header className="space-y-1">
-        <h1 className="text-3xl font-semibold tracking-tight">Analytics</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
         <p className="text-muted-foreground">
           Track consistency over time, see where your activity comes from, and
           spot your strongest learning rhythm.
@@ -221,13 +221,13 @@ export function AnalyticsPage() {
       </header>
       <div className="mt-4 space-y-4">
         {statsError ? (
-          <Alert variant="destructive">
+          <Alert variant="error">
             <AlertTitle>Analytics unavailable</AlertTitle>
             <AlertDescription>{(statsError as Error).message}</AlertDescription>
           </Alert>
         ) : null}
         {heatmapError ? (
-          <Alert variant="destructive">
+          <Alert variant="error">
             <AlertTitle>Activity history unavailable</AlertTitle>
             <AlertDescription>
               {(heatmapError as Error).message}
@@ -278,7 +278,7 @@ export function AnalyticsPage() {
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardPanel className="space-y-4">
               <Heatmap items={recentHeatmap} isLoading={heatmapLoading} />
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <span>Less</span>
@@ -295,7 +295,7 @@ export function AnalyticsPage() {
                 </div>
                 <span>More</span>
               </div>
-            </CardContent>
+            </CardPanel>
           </Card>
 
           <Card>
@@ -305,7 +305,7 @@ export function AnalyticsPage() {
                 What has been driving your recent activity volume.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardPanel className="space-y-3">
               {heatmapLoading ? (
                 <>
                   <Skeleton className="h-16 w-full" />
@@ -361,7 +361,7 @@ export function AnalyticsPage() {
                   ))}
                 </>
               )}
-            </CardContent>
+            </CardPanel>
           </Card>
         </div>
 
@@ -372,7 +372,7 @@ export function AnalyticsPage() {
               The strongest activity spikes in the current analysis window.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardPanel className="space-y-2">
             {heatmapLoading ? (
               <>
                 <Skeleton className="h-14 w-full" />
@@ -414,7 +414,7 @@ export function AnalyticsPage() {
                 <Badge variant="secondary">{item.count} actions</Badge>
               </div>
             ))}
-          </CardContent>
+          </CardPanel>
         </Card>
       </div>
     </PageContainer>

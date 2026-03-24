@@ -15,7 +15,7 @@ import {
   Card,
   CardDescription,
   CardHeader,
-  CardContent,
+  CardPanel,
   CardTitle,
 } from '@/components/ui/card';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
@@ -55,10 +55,12 @@ export function SecurityPage() {
   return (
     <PageContainer className="space-y-8">
       <header className="flex items-center gap-4">
-        <Button asChild variant="ghost" size="icon">
-          <Link href="/app/settings">
-            <ArrowLeft className="size-5" />
-          </Link>
+        <Button
+          variant="ghost"
+          size="icon"
+          render={<Link href="/app/settings" />}
+        >
+          <ArrowLeft className="size-5" />
         </Button>
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Security</h1>
@@ -70,7 +72,7 @@ export function SecurityPage() {
       </header>
       <div className="mt-4 space-y-4">
         {error ? (
-          <Alert variant="destructive">
+          <Alert variant="error">
             <AlertTitle>Security data unavailable</AlertTitle>
             <AlertDescription>{(error as Error).message}</AlertDescription>
           </Alert>
@@ -84,19 +86,19 @@ export function SecurityPage() {
                 {currentSession?.session.id ? 'Protected' : 'Unavailable'}
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 text-sm text-muted-foreground">
+            <CardPanel className="pt-0 text-sm text-muted-foreground">
               The session you are using right now cannot be revoked from this
               page.
-            </CardContent>
+            </CardPanel>
           </Card>
           <Card>
             <CardHeader>
               <CardDescription>Active sessions</CardDescription>
               <CardTitle className="text-lg">{sessions?.length ?? 0}</CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 text-sm text-muted-foreground">
+            <CardPanel className="pt-0 text-sm text-muted-foreground">
               Each listed session currently holds a valid authenticated context.
-            </CardContent>
+            </CardPanel>
           </Card>
           <Card>
             <CardHeader>
@@ -107,9 +109,9 @@ export function SecurityPage() {
                 ).toString()}
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 text-sm text-muted-foreground">
+            <CardPanel className="pt-0 text-sm text-muted-foreground">
               Remove old devices when you no longer trust or need them.
-            </CardContent>
+            </CardPanel>
           </Card>
         </div>
 
@@ -121,7 +123,7 @@ export function SecurityPage() {
               non-current session.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardPanel className="space-y-3">
             {isLoading ? (
               <>
                 <Skeleton className="h-24 w-full" />
@@ -199,7 +201,7 @@ export function SecurityPage() {
                       title="Revoke this session?"
                       tone="destructive"
                       trigger={
-                        <Button size="sm" variant="destructive">
+                        <Button size="sm" variant="destructive-outline">
                           <Trash2 className="size-4" />
                           Revoke
                         </Button>
@@ -209,7 +211,7 @@ export function SecurityPage() {
                 </div>
               );
             })}
-          </CardContent>
+          </CardPanel>
         </Card>
       </div>
     </PageContainer>

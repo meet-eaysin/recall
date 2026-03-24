@@ -44,21 +44,22 @@ export function Header() {
         <div className="hidden items-center gap-2 md:flex">
           <div>
             {navLinks.map((link) => (
-              <Button asChild key={link.label} size="sm" variant="ghost">
-                <a href={link.href}>
-                  {link.icon && <span className="mr-2">{link.icon}</span>}
-                  {link.label}
-                </a>
+              <Button
+                key={link.label}
+                size="sm"
+                variant="ghost"
+                render={<a href={link.href} />}
+              >
+                {link.icon && <span className="mr-2">{link.icon}</span>}
+                {link.label}
               </Button>
             ))}
           </div>
-          <Button asChild size="sm" variant="outline">
-            <a href="/auth/login">Sign In</a>
+          <Button size="sm" variant="outline" render={<a href="/auth/login" />}>
+            Sign In
           </Button>
-          <Button asChild size="sm">
-            <a href="/app">
-              <LayoutDashboardIcon data-icon="inline-start" /> Open App
-            </a>
+          <Button size="sm" render={<a href="/app" />}>
+            <LayoutDashboardIcon data-icon="inline-start" /> Open App
           </Button>
         </div>
         <MobileNav />

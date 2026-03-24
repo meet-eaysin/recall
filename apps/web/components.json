@@ -22,8 +22,8 @@
   "menuColor": "default",
   "menuAccent": "subtle",
   "registries": {
+    "@coss": "https://coss.com/ui/r/{name}.json",
     "@efferd": "https://efferd.com/r/{style}/{name}.json",
-    "@magicui": "https://magicui.design/r/{name}",
-    "@shadcncraft": "https://shadcncraft.com/r/{name}"
+    "@magicui": "https://magicui.design/r/{name}"
   }
 }

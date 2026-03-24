@@ -22,7 +22,7 @@ import {
   Card,
   CardDescription,
   CardHeader,
-  CardContent,
+  CardPanel,
   CardTitle,
 } from '@/components/ui/card';
 import {
@@ -128,13 +128,13 @@ function getRelationColor(type: GraphRelationType) {
 function getNodeColor(type: GraphNodeType, isFocused: boolean) {
   switch (type) {
     case GraphNodeType.ROOT:
-      return 'var(--graph-root)';
+      return '#0f172a';
     case GraphNodeType.CONCEPT:
-      return 'var(--graph-concept)';
+      return '#8b5cf6';
     case GraphNodeType.DOCUMENT:
-      return isFocused ? 'var(--graph-doc-focused)' : 'var(--graph-document)';
+      return isFocused ? '#2563eb' : '#94a3b8';
     default:
-      return 'var(--graph-document)';
+      return '#94a3b8';
   }
 }
 
@@ -440,11 +440,11 @@ export function GraphExplorer() {
       return {
         ...data,
         color: isSelected
-          ? 'var(--graph-root)'
+          ? '#0f172a'
           : isHovered
-            ? 'var(--graph-doc-focused)'
+            ? '#2563eb'
             : isRelated
-              ? 'var(--graph-concept)'
+              ? '#60a5fa'
               : data.color,
         forceLabel: isDocument || isSelected || isHovered,
         highlighted: isSelected || isHovered,
@@ -474,7 +474,7 @@ export function GraphExplorer() {
 
       return {
         ...data,
-        color: isActive ? data.color : 'var(--graph-edge)',
+        color: isActive ? data.color : '#cbd5e1',
         hidden: false,
         size: isActive ? data.size + 0.5 : Math.max(1, data.size - 0.4),
         zIndex: isActive ? 1 : 0,
@@ -553,7 +553,7 @@ export function GraphExplorer() {
           </p>
         </header>
         <div className="mt-4">
-          <Alert variant="destructive">
+          <Alert variant="error">
             <AlertTitle>Failed to load graph</AlertTitle>
             <AlertDescription>{(error as Error).message}</AlertDescription>
           </Alert>
@@ -603,7 +603,7 @@ export function GraphExplorer() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="space-y-3 px-5 pb-5 pt-0">
+          <CardPanel className="space-y-3 px-5 pb-5 pt-0">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary">
                 {graph?.nodes.length ?? 0} nodes
@@ -663,7 +663,7 @@ export function GraphExplorer() {
                       max={20}
                       min={6}
                       step={0.5}
-                      value={[labelThreshold]}
+                      value={labelThreshold}
                       onValueChange={(value) =>
                         setLabelThreshold(
                           Array.isArray(value) ? (value[0] ?? 12) : value,
@@ -698,7 +698,7 @@ export function GraphExplorer() {
                 </Empty>
               )}
             </div>
-          </CardContent>
+          </CardPanel>
         </Card>
 
         <div className="space-y-4">
@@ -709,7 +709,7 @@ export function GraphExplorer() {
                 Search documents, then open a local neighborhood.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 px-4 pb-4 pt-0">
+            <CardPanel className="space-y-3 px-4 pb-4 pt-0">
               <InputGroup>
                 <InputGroupAddon>
                   <InputGroupText>
@@ -763,7 +763,7 @@ export function GraphExplorer() {
                   )}
                 </div>
               </ScrollArea>
-            </CardContent>
+            </CardPanel>
           </Card>
 
           <Card>
@@ -773,7 +773,7 @@ export function GraphExplorer() {
                 Inspect the selected node and related documents.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 px-4 pb-4 pt-0">
+            <CardPanel className="space-y-4 px-4 pb-4 pt-0">
               {selectedNode ? (
                 <>
                   <div className="space-y-2">
@@ -893,22 +893,25 @@ export function GraphExplorer() {
               )}
 
               {selectedNode?.documentId ? (
-                <Button className="w-full" asChild>
-                  <Link href={`/app/library/${selectedNode.documentId}`}>
-                    Open document
-                  </Link>
+                <Button
+                  className="w-full"
+                  render={
+                    <Link href={`/app/library/${selectedNode.documentId}`} />
+                  }
+                >
+                  Open document
                 </Button>
               ) : null}
 
               {subgraphError ? (
-                <Alert variant="destructive">
+                <Alert variant="error">
                   <AlertTitle>Subgraph failed</AlertTitle>
                   <AlertDescription>
                     {(subgraphError as Error).message}
                   </AlertDescription>
                 </Alert>
               ) : null}
-            </CardContent>
+            </CardPanel>
           </Card>
         </div>
       </div>

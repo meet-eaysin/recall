@@ -11,7 +11,7 @@ import {
   Card,
   CardDescription,
   CardHeader,
-  CardContent,
+  CardPanel,
   CardTitle,
 } from '@/components/ui/card';
 import {
@@ -131,7 +131,7 @@ export function SearchPage() {
   return (
     <PageContainer className="space-y-8">
       <header className="space-y-1">
-        <h1 className="text-3xl font-semibold tracking-tight">Search</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Search</h1>
         <p className="text-muted-foreground">
           Find exact matches or search by concept across your library.
         </p>
@@ -164,7 +164,7 @@ export function SearchPage() {
               </Tabs>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardPanel>
             <form
               className="space-y-3"
               onSubmit={(event) => {
@@ -202,11 +202,11 @@ export function SearchPage() {
                 </FieldDescription>
               </Field>
             </form>
-          </CardContent>
+          </CardPanel>
         </Card>
 
         {error ? (
-          <Alert variant="destructive">
+          <Alert variant="error">
             <AlertTitle>Search failed</AlertTitle>
             <AlertDescription>{(error as Error).message}</AlertDescription>
           </Alert>
@@ -231,7 +231,7 @@ export function SearchPage() {
               ) : null}
             </div>
           </CardHeader>
-          <CardContent>
+          <CardPanel>
             {!submittedQuery ? (
               <Card className="border-dashed shadow-none">
                 <Empty className="py-10">
@@ -291,17 +291,18 @@ export function SearchPage() {
                     </EmptyDescription>
                   </EmptyHeader>
                   <EmptyContent>
-                    <Button asChild variant="outline">
-                      <Link href="/app/search/ask">
-                        <Bot className="size-4" />
-                        Open Ask AI
-                      </Link>
+                    <Button
+                      render={<Link href="/app/search/ask" />}
+                      variant="outline"
+                    >
+                      <Bot className="size-4" />
+                      Open Ask AI
                     </Button>
                   </EmptyContent>
                 </Empty>
               </Card>
             ) : null}
-          </CardContent>
+          </CardPanel>
         </Card>
       </div>
     </PageContainer>

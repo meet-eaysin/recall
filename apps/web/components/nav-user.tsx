@@ -15,18 +15,18 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  Menu,
+  MenuItem,
+  MenuPopup,
+  MenuSeparator,
+  MenuTrigger,
+} from '@/components/ui/menu';
 import {
   User as UserIcon,
   Settings as SettingsIcon,
   LogOut as LogOutIcon,
   ChevronDown as ChevronDownIcon,
+  ChevronUp as ChevronUpIcon,
 } from 'lucide-react';
 
 export function NavUser() {
@@ -36,6 +36,7 @@ export function NavUser() {
   const pathname = usePathname();
   const isPlatformPages = pathname?.startsWith('/app/settings/platform');
   const { isMobile, state } = useSidebar();
+  const [menuOpen, setMenuOpen] = React.useState(false);
 
   const user = React.useMemo(() => {
     if (!session?.user) return null;
@@ -69,48 +70,57 @@ export function NavUser() {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className={cn(
-                'aria-expanded:bg-muted',
-                isCollapsed && 'justify-center',
-              )}
-              disabled={isPending}
-              data-testid="user-dropdown-trigger-button"
-            >
-              <span className="relative shrink-0">
-                <Avatar className="size-8">
-                  <AvatarImage src={user?.avatarUrl} alt="User avatar" />
-                  <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-                <span
-                  className="border-background absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-[1.5px] bg-green-500"
-                  aria-label="Online"
-                />
-              </span>
-              {!isCollapsed && (
-                <span className="flex min-w-0 flex-1 items-center justify-between gap-2">
-                  <span className="min-w-0">
-                    <span className="text-emphasis block truncate text-sm font-semibold leading-tight">
-                      {isPending ? 'Loading…' : (user?.name ?? 'Nameless User')}
-                    </span>
-                    <span className="text-subtle block truncate text-xs leading-tight">
-                      {user?.email || `@${user?.username ?? 'user'}`}
-                    </span>
+        <Menu open={menuOpen} onOpenChange={setMenuOpen}>
+          <MenuTrigger
+            render={
+              <SidebarMenuButton
+                size="lg"
+                className={cn(
+                  'aria-expanded:bg-muted',
+                  isCollapsed && 'justify-center',
+                )}
+                disabled={isPending}
+                data-testid="user-dropdown-trigger-button"
+              />
+            }
+          >
+            <span className="relative shrink-0">
+              <Avatar className="size-8">
+                <AvatarImage src={user?.avatarUrl} alt="User avatar" />
+                <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <span
+                className="border-background absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-[1.5px] bg-green-500"
+                aria-label="Online"
+              />
+            </span>
+            {!isCollapsed && (
+              <span className="flex min-w-0 flex-1 items-center justify-between gap-2">
+                <span className="min-w-0">
+                  <span className="text-emphasis block truncate text-sm font-semibold leading-tight">
+                    {isPending ? 'Loading…' : (user?.name ?? 'Nameless User')}
                   </span>
+                  <span className="text-subtle block truncate text-xs leading-tight">
+                    {user?.email || `@${user?.username ?? 'user'}`}
+                  </span>
+                </span>
+                {menuOpen ? (
+                  <ChevronUpIcon
+                    className="text-muted h-3.5 w-3.5 shrink-0 transition"
+                    aria-hidden="true"
+                  />
+                ) : (
                   <ChevronDownIcon
                     className="text-muted h-3.5 w-3.5 shrink-0 transition"
                     aria-hidden="true"
                   />
-                </span>
-              )}
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
+                )}
+              </span>
+            )}
+          </MenuTrigger>
+          <MenuPopup
             align="start"
             side={isMobile ? 'bottom' : 'right'}
             sideOffset={8}
@@ -132,30 +142,26 @@ export function NavUser() {
                 </p>
               </div>
             </div>
-            <DropdownMenuSeparator />
+            <MenuSeparator />
 
             {!isPlatformPages && (
-              <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
-                  <Link href="/app/settings">
-                    <UserIcon />
-                    Profile
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/app/settings">
-                    <SettingsIcon />
-                    Settings
-                  </Link>
-                </DropdownMenuItem>
+              <>
+                <MenuItem render={<Link href="/app/settings" />}>
+                  <UserIcon />
+                  Profile
+                </MenuItem>
+                <MenuItem render={<Link href="/app/settings" />}>
+                  <SettingsIcon />
+                  Settings
+                </MenuItem>
                 <div className="py-1">
                   <ThemeToggle />
                 </div>
-                <DropdownMenuSeparator />
-              </DropdownMenuGroup>
+                <MenuSeparator />
+              </>
             )}
 
-            <DropdownMenuItem
+            <MenuItem
               variant="destructive"
               onClick={async () => {
                 try {
@@ -169,9 +175,9 @@ export function NavUser() {
             >
               <LogOutIcon />
               Sign Out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </MenuItem>
+          </MenuPopup>
+        </Menu>
       </SidebarMenuItem>
     </SidebarMenu>
   );

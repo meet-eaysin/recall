@@ -30,28 +30,33 @@ export function MobileNav() {
           <PortalBackdrop />
           <div
             className={cn(
-              'size-full p-4 transition-opacity duration-150',
-              open ? 'opacity-100' : 'opacity-0',
+              'data-[slot=open]:zoom-in-97 ease-out data-[slot=open]:animate-in',
+              'size-full p-4',
             )}
+            data-slot={open ? 'open' : 'closed'}
           >
             <div className="grid gap-y-2">
               {navLinks.map((link) => (
                 <Button
-                  asChild
                   className="justify-start"
                   key={link.label}
                   variant="ghost"
+                  render={<a href={link.href} />}
                 >
-                  <a href={link.href}>{link.label}</a>
+                  {link.label}
                 </Button>
               ))}
             </div>
             <div className="mt-12 flex flex-col gap-2">
-              <Button asChild className="w-full" variant="outline">
-                <a href="/auth/login">Sign In</a>
+              <Button
+                className="w-full"
+                variant="outline"
+                render={<a href="/auth/login" />}
+              >
+                Sign In
               </Button>
-              <Button asChild className="w-full">
-                <a href="/app">Open App</a>
+              <Button className="w-full" render={<a href="/app" />}>
+                Open App
               </Button>
             </div>
           </div>

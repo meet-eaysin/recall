@@ -14,17 +14,17 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  Menu,
+  MenuItem,
+  MenuPopup,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuSeparator,
+  MenuSub,
+  MenuSubPopup,
+  MenuSubTrigger,
+  MenuTrigger,
+} from '@/components/ui/menu';
 import {
   Pagination,
   PaginationContent,
@@ -206,42 +206,42 @@ export function LibraryFeed() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <Filter className="size-4" />
-                  Filters
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>
+            <Menu>
+              <MenuTrigger
+                render={
+                  <Button variant="outline">
+                    <Filter className="size-4" />
+                    Filters
+                  </Button>
+                }
+              />
+              <MenuPopup align="start" className="w-56">
+                <MenuSub>
+                  <MenuSubTrigger>
                     Type: {type ? getTypeLabel(type) : 'All Types'}
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent className="w-48">
-                    <DropdownMenuRadioGroup
+                  </MenuSubTrigger>
+                  <MenuSubPopup className="w-48">
+                    <MenuRadioGroup
                       onValueChange={(value) =>
                         setType(value === ALL ? null : (value as DocumentType))
                       }
                       value={type ?? ALL}
                     >
-                      <DropdownMenuRadioItem value={ALL}>
-                        All Types
-                      </DropdownMenuRadioItem>
+                      <MenuRadioItem value={ALL}>All Types</MenuRadioItem>
                       {Object.values(DocumentType).map((item) => (
-                        <DropdownMenuRadioItem key={item} value={item}>
+                        <MenuRadioItem key={item} value={item}>
                           {getTypeLabel(item)}
-                        </DropdownMenuRadioItem>
+                        </MenuRadioItem>
                       ))}
-                    </DropdownMenuRadioGroup>
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>
+                    </MenuRadioGroup>
+                  </MenuSubPopup>
+                </MenuSub>
+                <MenuSub>
+                  <MenuSubTrigger>
                     Status: {status ? getStatusLabel(status) : 'All Statuses'}
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent className="w-52">
-                    <DropdownMenuRadioGroup
+                  </MenuSubTrigger>
+                  <MenuSubPopup className="w-52">
+                    <MenuRadioGroup
                       onValueChange={(value) =>
                         setStatus(
                           value === ALL ? null : (value as DocumentStatus),
@@ -249,24 +249,22 @@ export function LibraryFeed() {
                       }
                       value={status ?? ALL}
                     >
-                      <DropdownMenuRadioItem value={ALL}>
-                        All Statuses
-                      </DropdownMenuRadioItem>
+                      <MenuRadioItem value={ALL}>All Statuses</MenuRadioItem>
                       {Object.values(DocumentStatus).map((item) => (
-                        <DropdownMenuRadioItem key={item} value={item}>
+                        <MenuRadioItem key={item} value={item}>
                           {getStatusLabel(item)}
-                        </DropdownMenuRadioItem>
+                        </MenuRadioItem>
                       ))}
-                    </DropdownMenuRadioGroup>
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={clearFilters}>
+                    </MenuRadioGroup>
+                  </MenuSubPopup>
+                </MenuSub>
+                <MenuSeparator />
+                <MenuItem onClick={clearFilters}>
                   <X className="size-4" />
                   Clear Filters
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </MenuItem>
+              </MenuPopup>
+            </Menu>
           </div>
         </div>
         {items.length === 0 ? (

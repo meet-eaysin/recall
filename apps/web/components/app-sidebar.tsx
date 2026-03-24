@@ -12,13 +12,6 @@ import {
   useSearchChats,
 } from '@/features/search/hooks';
 import { NavUser } from '@/components/nav-user';
-import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   Sidebar,
   SidebarContent,
@@ -41,7 +34,6 @@ import {
   ArchiveIcon,
   Trash2Icon,
   PlusIcon,
-  MoreHorizontal,
 } from 'lucide-react';
 import { ApplicationIcon } from './application-logo';
 
@@ -102,10 +94,6 @@ function SidebarChatList({ query }: { query: string }) {
   const pathname = usePathname();
   const archiveChat = useArchiveChat();
   const deleteChat = useDeleteChat();
-  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const [chatToDelete, setChatToDelete] = React.useState<
-    NonNullable<typeof chats>[number] | null
-  >(null);
 
   const filteredChats = React.useMemo(() => {
     if (!chats) return [];
@@ -146,54 +134,48 @@ function SidebarChatList({ query }: { query: string }) {
   const renderChatItem = (chat: NonNullable<typeof chats>[number]) => (
     <SidebarMenuItem key={chat.id}>
       <SidebarMenuButton
-        asChild
+        render={<Link href={`/app/t/${chat.id}`} />}
         isActive={pathname.includes(chat.id)}
         tooltip={chat.title}
         className="h-auto py-2.5 transition-all duration-200 hover:bg-sidebar-accent/50 data-active:bg-sidebar-accent data-active:shadow-sm"
       >
-        <Link href={`/app/t/${chat.id}`}>
-          <MessageSquareIcon className="size-4 shrink-0 transition-transform duration-200 group-hover/menu-button:scale-110" />
-          <div className="flex min-w-0 flex-col gap-0.5">
-            <span className="truncate font-medium leading-none text-sidebar-foreground">
-              {chat.title}
-            </span>
-            <span className="line-clamp-1 text-xs text-muted-foreground/80 leading-tight">
-              {chat.lastMessagePreview || 'No preview available'}
-            </span>
-          </div>
-        </Link>
+        <MessageSquareIcon className="size-4 shrink-0 transition-transform duration-200 group-hover/menu-button:scale-110" />
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <span className="truncate font-medium leading-none text-sidebar-foreground">
+            {chat.title}
+          </span>
+          <span className="line-clamp-1 text-xs text-muted-foreground/80 leading-tight">
+            {chat.lastMessagePreview || 'No preview available'}
+          </span>
+        </div>
       </SidebarMenuButton>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <SidebarMenuAction
-            className="data-[state=open]:opacity-100 transition-opacity"
-            aria-label={`Actions for ${chat.title}`}
-          >
-            <MoreHorizontal className="size-3.5" />
-          </SidebarMenuAction>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" side="right" className="w-48">
-          <DropdownMenuItem
-            onClick={() =>
-              archiveChat.mutate({ id: chat.id, isArchived: true })
-            }
-          >
-            <ArchiveIcon className="size-4" />
-            Archive Chat
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            variant="destructive"
-            onClick={() => {
-              setChatToDelete(chat);
-              setDeleteDialogOpen(true);
-            }}
-          >
-            <Trash2Icon className="size-4" />
-            Delete Chat
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="absolute right-1 top-1/2 flex -translate-y-1/2 items-center gap-0.5 opacity-0 transition-all duration-200 group-hover/menu-item:opacity-100 group-data-[collapsible=icon]:hidden">
+        <SidebarMenuAction
+          showOnHover
+          className="static size-7 hover:bg-sidebar-accent-foreground/10"
+          onClick={(event: React.MouseEvent) => {
+            event.preventDefault();
+            event.stopPropagation();
+            archiveChat.mutate({ id: chat.id, isArchived: true });
+          }}
+          aria-label={`Archive ${chat.title}`}
+        >
+          <ArchiveIcon className="size-3.5" />
+        </SidebarMenuAction>
+        <SidebarMenuAction
+          showOnHover
+          className="static size-7 hover:bg-destructive/10 hover:text-destructive"
+          onClick={(event: React.MouseEvent) => {
+            event.preventDefault();
+            event.stopPropagation();
+            deleteChat.mutate(chat.id);
+          }}
+          aria-label={`Delete ${chat.title}`}
+        >
+          <Trash2Icon className="size-3.5" />
+        </SidebarMenuAction>
+      </div>
     </SidebarMenuItem>
   );
 
@@ -204,17 +186,15 @@ function SidebarChatList({ query }: { query: string }) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              asChild
+              render={<Link href="/app" />}
               variant="outline"
               tooltip="New chat"
               className="group-data-[collapsible=icon]:justify-center"
             >
-              <Link href="/app">
-                <PlusIcon />
-                <span className="group-data-[collapsible=icon]:hidden">
-                  New chat
-                </span>
-              </Link>
+              <PlusIcon />
+              <span className="group-data-[collapsible=icon]:hidden">
+                New chat
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -228,10 +208,7 @@ function SidebarChatList({ query }: { query: string }) {
           <SidebarMenu>
             {Array.from({ length: 6 }).map((_, index) => (
               <SidebarMenuItem key={`chat-skeleton-${index}`}>
-                <SidebarMenuSkeleton
-                  showIcon
-                  width={['75%', '85%', '65%', '80%', '70%', '90%'][index % 6]}
-                />
+                <SidebarMenuSkeleton showIcon index={index} />
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
@@ -274,21 +251,6 @@ function SidebarChatList({ query }: { query: string }) {
           )}
         </>
       )}
-
-      <ConfirmationDialog
-        open={deleteDialogOpen}
-        openChangeAction={setDeleteDialogOpen}
-        confirmAction={() => {
-          if (chatToDelete) {
-            deleteChat.mutate(chatToDelete.id);
-          }
-        }}
-        isPending={deleteChat.isPending}
-        title="Delete conversation?"
-        description={`This will permanently delete "${chatToDelete?.title}" and its message history.`}
-        confirmLabel="Delete conversation"
-        tone="destructive"
-      />
     </>
   );
 }

@@ -27,7 +27,8 @@ export function HeroSection() {
         </div>
         <a
           className={cn(
-            'group mx-auto flex w-fit items-center gap-3 rounded-sm border bg-card p-1 shadow transition-colors duration-200',
+            'group mx-auto flex w-fit items-center gap-3 rounded-sm border bg-card p-1 shadow',
+            'fade-in slide-in-from-bottom-10 animate-in fill-mode-backwards transition-all delay-500 duration-500 ease-out',
           )}
           href="#features"
         >
@@ -47,29 +48,29 @@ export function HeroSection() {
 
         <h1
           className={cn(
-            'max-w-3xl text-balance text-center text-5xl font-semibold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl',
+            'max-w-2xl text-balance text-center text-3xl text-foreground md:text-5xl lg:text-6xl',
+            'fade-in slide-in-from-bottom-10 animate-in fill-mode-backwards delay-100 duration-500 ease-out',
           )}
         >
-          Your mind, <br /> synchronized.
+          Build your personal knowledge graph with AI
         </h1>
 
         <p
           className={cn(
-            'mx-auto max-w-2xl text-balance text-center text-lg text-muted-foreground sm:text-xl',
+            'text-center text-muted-foreground text-sm tracking-wider sm:text-lg',
+            'fade-in slide-in-from-bottom-10 animate-in fill-mode-backwards delay-200 duration-500 ease-out',
           )}
         >
-          The knowledge stack for deep researchers. MindStack unifies your
-          links, PDFs, and notes into a semantic graph that grows with you.
+          Recall turns your docs, links, and PDFs into a private brain you can
+          search, explore, and ask.
         </p>
 
-        <div className="flex w-fit items-center justify-center gap-3 pt-2">
-          <Button asChild variant="outline">
-            <a href="/auth/login">Sign In</a>
+        <div className="fade-in slide-in-from-bottom-10 flex w-fit animate-in items-center justify-center gap-3 fill-mode-backwards pt-2 delay-300 duration-500 ease-out">
+          <Button variant="outline" render={<a href="/auth/login" />}>
+            Sign In
           </Button>
-          <Button asChild>
-            <a href="/app">
-              Get Started <ArrowRightIcon data-icon="inline-end" />
-            </a>
+          <Button render={<a href="/app" />}>
+            Get Started <ArrowRightIcon data-icon="inline-end" />
           </Button>
         </div>
       </div>

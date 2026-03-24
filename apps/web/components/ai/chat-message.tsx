@@ -31,9 +31,9 @@ const chatBubbleVariants = cva(
       },
       animation: {
         none: '',
-        slide: 'duration-300',
-        scale: 'duration-300',
-        fade: 'duration-500',
+        slide: 'duration-300 animate-in fade-in-0',
+        scale: 'duration-300 animate-in fade-in-0 zoom-in-75',
+        fade: 'duration-500 animate-in fade-in-0',
       },
     },
     compoundVariants: [
@@ -160,7 +160,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   content,
   createdAt,
   showTimeStamp = false,
-  animation = 'none',
+  animation = 'scale',
   actions,
   experimental_attachments,
   toolInvocations,
@@ -205,7 +205,10 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
         {showTimeStamp && createdAt ? (
           <time
             dateTime={createdAt.toISOString()}
-            className={cn('mt-1 block px-1 text-xs opacity-50')}
+            className={cn(
+              'mt-1 block px-1 text-xs opacity-50',
+              animation !== 'none' && 'duration-500 animate-in fade-in-0',
+            )}
           >
             {formattedTime}
           </time>
@@ -263,7 +266,10 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             {showTimeStamp && createdAt ? (
               <time
                 dateTime={createdAt.toISOString()}
-                className={cn('mt-1 block px-1 text-xs opacity-50')}
+                className={cn(
+                  'mt-1 block px-1 text-xs opacity-50',
+                  animation !== 'none' && 'duration-500 animate-in fade-in-0',
+                )}
               >
                 {formattedTime}
               </time>
@@ -328,7 +334,10 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
       {showTimeStamp && createdAt ? (
         <time
           dateTime={createdAt.toISOString()}
-          className={cn('mt-1 block px-1 text-xs opacity-50')}
+          className={cn(
+            'mt-1 block px-1 text-xs opacity-50',
+            animation !== 'none' && 'duration-500 animate-in fade-in-0',
+          )}
         >
           {formattedTime}
         </time>
@@ -354,11 +363,13 @@ const ReasoningBlock = ({ part }: { part: ReasoningPart }) => {
         className="group w-full overflow-hidden rounded-lg border bg-muted/50"
       >
         <div className="flex items-center p-2">
-          <CollapsibleTrigger asChild>
-            <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-              <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90" />
-              <span>Thinking</span>
-            </button>
+          <CollapsibleTrigger
+            render={
+              <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground" />
+            }
+          >
+            <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90" />
+            <span>Thinking</span>
           </CollapsibleTrigger>
         </div>
         <CollapsibleContent>
@@ -369,10 +380,7 @@ const ReasoningBlock = ({ part }: { part: ReasoningPart }) => {
               open: { height: 'auto', opacity: 1 },
               closed: { height: 0, opacity: 0 },
             }}
-            transition={{
-              duCardContentration: 0.3,
-              ease: [0.04, 0.62, 0.23, 0.98],
-            }}
+            transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
             className="border-t"
           >
             <div className="p-2">

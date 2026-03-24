@@ -15,12 +15,12 @@ import { DocumentStatus } from '@repo/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  Menu,
+  MenuItem,
+  MenuPopup,
+  MenuSeparator,
+  MenuTrigger,
+} from '@/components/ui/menu';
 import {
   Select,
   SelectContent,
@@ -70,10 +70,13 @@ export function DocumentDetailHeader({
       <div className={cn('min-w-0 space-y-3', isCompact && 'space-y-1.5')}>
         {!isCompact && (
           <div className="flex items-center gap-2 text-muted-foreground mb-1">
-            <Button variant="ghost" size="icon-sm" className="-ml-2 h-8 w-8">
-              <Link href="/app/library">
-                <ChevronLeft className="size-4" />
-              </Link>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="-ml-2 h-8 w-8"
+              render={<Link href="/app/library" />}
+            >
+              <ChevronLeft className="size-4" />
             </Button>
             <span className="text-xs font-medium uppercase tracking-wider">
               Document Library
@@ -148,31 +151,39 @@ export function DocumentDetailHeader({
           </SelectContent>
         </Select>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="icon" variant="outline" className="h-9 w-9">
-              <MoreHorizontal className="size-4.5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
+        <Menu>
+          <MenuTrigger
+            render={
+              <Button size="icon" variant="outline" className="h-9 w-9">
+                <MoreHorizontal className="size-4.5" />
+              </Button>
+            }
+          />
+          <MenuPopup align="end" className="w-48">
             {document.sourceUrl && (
-              <DropdownMenuItem asChild>
-                <a href={document.sourceUrl} rel="noreferrer" target="_blank">
-                  <ArrowUpRight className="size-4" />
-                  Open Original Source
-                </a>
-              </DropdownMenuItem>
+              <MenuItem
+                render={
+                  <a
+                    href={document.sourceUrl}
+                    rel="noreferrer"
+                    target="_blank"
+                  />
+                }
+              >
+                <ArrowUpRight className="size-4" />
+                Open Original Source
+              </MenuItem>
             )}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
+            <MenuSeparator />
+            <MenuItem
               onClick={() => setDeleteDocumentOpen(true)}
               variant="destructive"
             >
               <Trash2 className="size-4" />
               Delete Document
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </MenuItem>
+          </MenuPopup>
+        </Menu>
       </div>
 
       <ConfirmationDialog

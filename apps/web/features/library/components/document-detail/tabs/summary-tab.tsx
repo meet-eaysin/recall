@@ -49,14 +49,16 @@ export function SummaryTab({ isCompact = false }: { isCompact?: boolean }) {
                 AI-Generated Insights
               </h3>
               <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 rounded-full text-muted-foreground/40 hover:text-primary hover:bg-primary/5 transition-colors"
-                  >
-                    <Info className="size-3.5" />
-                  </Button>
+                <PopoverTrigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 rounded-full text-muted-foreground/40 hover:text-primary hover:bg-primary/5 transition-colors"
+                    />
+                  }
+                >
+                  <Info className="size-3.5" />
                 </PopoverTrigger>
                 <PopoverContent
                   side="right"

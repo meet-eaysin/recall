@@ -14,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { DocumentDetailView } from '@/features/library/components/document-detail-view';
 import {
   Drawer,
-  DrawerContent,
+  DrawerPopup,
   DrawerHeader,
   DrawerTitle,
   DrawerClose,
@@ -290,11 +290,11 @@ export function ThreadView() {
       </div>
 
       <Drawer
-        direction="right"
+        position="right"
         open={!!previewId}
         onOpenChange={(open) => !open && setPreviewId(null)}
       >
-        <DrawerContent className="h-full sm:max-w-2xl p-0">
+        <DrawerPopup className="h-full sm:max-w-2xl p-0">
           <DrawerHeader className="flex-row items-center justify-between border-b px-6 py-4">
             <div className="flex items-center gap-3">
               <DrawerTitle className="text-xs font-semibold text-muted-foreground/80">
@@ -309,16 +309,18 @@ export function ThreadView() {
                 Open Full Page
               </Button>
             </div>
-            <DrawerClose asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 rounded-full"
-              >
-                <X className="size-4" />
-                <span className="sr-only">Close</span>
-              </Button>
-            </DrawerClose>
+            <DrawerClose
+              render={
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 rounded-full"
+                >
+                  <X className="size-4" />
+                  <span className="sr-only">Close</span>
+                </Button>
+              }
+            />
           </DrawerHeader>
           <div className="flex-1 overflow-hidden">
             <ScrollArea className="h-full">
@@ -329,7 +331,7 @@ export function ThreadView() {
               </div>
             </ScrollArea>
           </div>
-        </DrawerContent>
+        </DrawerPopup>
       </Drawer>
     </PageContainer>
   );
