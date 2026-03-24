@@ -15,7 +15,7 @@ const Herobuttons = () => {
         <TextGlitch text={'Get Started'} />
       </Link>
       <Link
-        href="/docs"
+        href="/app/library"
         className="group flex w-full items-center gap-2 text-nowrap rounded-sm bg-black/70 py-[10px] pl-3 pr-2 text-[0.9rem] text-sm text-neutral-200 transition-all duration-300 hover:bg-neutral-900/80 hover:text-white"
       >
         See How It Works

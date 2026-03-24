@@ -38,10 +38,10 @@ const Footer = () => {
               Features
             </Link>
             <Link
-              href="/docs"
+              href="/app/settings"
               className="text-neutral-500 transition-colors hover:text-neutral-300"
             >
-              Documentation
+              Settings
             </Link>
             <Link
               href="/changelog"
@@ -117,10 +117,16 @@ const Footer = () => {
               About
             </Link>
             <Link
-              href="/blog"
+              href="/app/analytics"
               className="text-neutral-500 transition-colors hover:text-neutral-300"
             >
-              Blog
+              Analytics
+            </Link>
+            <Link
+              href="/app/graph"
+              className="text-neutral-500 transition-colors hover:text-neutral-300"
+            >
+              Graph
             </Link>
             <Link
               href="/contact"
