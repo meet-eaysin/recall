@@ -1,8 +1,7 @@
 'use client';
 import Link from 'next/link';
 import React from 'react';
-import { CiHeart } from 'react-icons/ci';
-import { RotateCcwSquare } from 'lucide-react';
+import { RotateCcwSquare, Twitter, Github, Linkedin, MessageCircle } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -21,56 +20,72 @@ const Footer = () => {
             © {new Date().getFullYear()} Recall. All rights reserved.
           </p>
         </div>
-        <div className="mt-10 grid grid-cols-3 items-start gap-10 md:mt-0">
-          <div className="mt-4 flex flex-col justify-center space-y-4">
-            <Link href="/app">
-              <p className="text-neutral-300/60 hover:text-neutral-300/80">
-                Workspace
-              </p>
+        <div className="mt-10 grid grid-cols-2 gap-10 md:mt-0 md:grid-cols-4">
+          <div className="flex flex-col space-y-4">
+            <h4 className="text-sm font-semibold text-white">Product</h4>
+            <Link href="#features" className="text-neutral-500 transition-colors hover:text-neutral-300">
+              Features
             </Link>
-            <Link href="/docs">
-              <p className="text-neutral-300/60 hover:text-neutral-300/80">
-                Documentation
-              </p>
+            <Link href="/docs" className="text-neutral-500 transition-colors hover:text-neutral-300">
+              Documentation
             </Link>
-          </div>
-          <div className="mt-4 flex flex-col justify-center space-y-4">
-            <Link href="https://x.com/AmanShakya0018" target="_blank">
-              <p className="text-neutral-300/60 hover:text-neutral-300/80">
-                Twitter
-              </p>
+            <Link href="/changelog" className="text-neutral-500 transition-colors hover:text-neutral-300">
+              Changelog
             </Link>
-            <Link href="https://www.github.com/amanshakya0018/" target="_blank">
-              <p className="text-neutral-300/60 hover:text-neutral-300/80">
-                Github
-              </p>
+            <Link href="/status" className="text-neutral-500 transition-colors hover:text-neutral-300">
+              Status
             </Link>
           </div>
-          <div className="mt-4 flex flex-col justify-center space-y-4">
-            <p className="text-neutral-300/60 hover:text-neutral-300/80">
-              <Link href="/termsofservice" target="_blank">
-                Terms of Service
-              </Link>
-            </p>
-            <p className="text-neutral-300/60 hover:text-neutral-300/80">
-              <Link href="/privacypolicy" target="_blank">
-                Privacy Policy
-              </Link>
-            </p>
+          <div className="flex flex-col space-y-4">
+            <h4 className="text-sm font-semibold text-white">Community</h4>
+            <Link href="https://github.com/amanshakya0018/" target="_blank" className="flex items-center gap-2 text-neutral-500 transition-colors hover:text-neutral-300">
+              <Github size={14} /> GitHub
+            </Link>
+            <Link href="https://discord.gg/recall" target="_blank" className="flex items-center gap-2 text-neutral-500 transition-colors hover:text-neutral-300">
+              <MessageCircle size={14} /> Discord
+            </Link>
+            <Link href="https://x.com/AmanShakya0018" target="_blank" className="flex items-center gap-2 text-neutral-500 transition-colors hover:text-neutral-300">
+              <Twitter size={14} /> Twitter (X)
+            </Link>
+            <Link href="https://linkedin.com/in/amanshakya" target="_blank" className="flex items-center gap-2 text-neutral-500 transition-colors hover:text-neutral-300">
+              <Linkedin size={14} /> LinkedIn
+            </Link>
+          </div>
+          <div className="flex flex-col space-y-4">
+            <h4 className="text-sm font-semibold text-white">Legal</h4>
+            <Link href="/termsofservice" className="text-neutral-500 transition-colors hover:text-neutral-300">
+              Terms of Service
+            </Link>
+            <Link href="/privacypolicy" className="text-neutral-500 transition-colors hover:text-neutral-300">
+              Privacy Policy
+            </Link>
+            <Link href="/cookies" className="text-neutral-500 transition-colors hover:text-neutral-300">
+              Cookie Policy
+            </Link>
+          </div>
+          <div className="flex flex-col space-y-4">
+            <h4 className="text-sm font-semibold text-white">Company</h4>
+            <Link href="/about" className="text-neutral-500 transition-colors hover:text-neutral-300">
+              About
+            </Link>
+            <Link href="/blog" className="text-neutral-500 transition-colors hover:text-neutral-300">
+              Blog
+            </Link>
+            <Link href="/contact" className="text-neutral-500 transition-colors hover:text-neutral-300">
+              Contact
+            </Link>
           </div>
         </div>
       </div>
-      <p className="-mb-6 mt-12 w-full text-center text-sm text-neutral-300">
-        Made with{' '}
-        <CiHeart className="inline-block h-5 w-5 pb-0.5 align-middle text-neutral-300" />{' '}
-        by{' '}
+      <p className="-mb-6 mt-16 w-full text-center text-xs text-neutral-500 pt-8 border-t border-white/5">
+        Handcrafted by{' '}
         <a
           href="https://amanshakya.in"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-neutral-500 hover:underline"
+          className="text-neutral-400 hover:text-white transition-colors"
         >
-          this guy
+          Aman Shakya
         </a>
       </p>
     </div>
