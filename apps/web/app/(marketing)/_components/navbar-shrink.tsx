@@ -1,16 +1,14 @@
 'use client';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, RotateCcwSquare } from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import SignInButton from './SignInButoon';
 import AnchorNav from './anchor-nav';
 
 export const navItems = [
   { name: 'Home', href: '/' },
-  { name: 'Dashboard', href: '/dashboard/sites' },
-  { name: 'Documentation', href: '/docs' },
+  { name: 'Features', href: '#features' },
 ];
 
 const Navbar = () => {
@@ -40,17 +38,13 @@ const Navbar = () => {
         >
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-1 lg:gap-0">
             <div className="flex w-full justify-between lg:w-auto">
-              <Link href="/" className="flex items-center">
-                <Image
-                  width={500}
-                  height={500}
-                  src={'/logo.png'}
-                  alt="Statsio"
-                  quality={100}
-                  priority={true}
-                  className="mt-1 h-10 w-10 shrink-0 rounded-xl object-cover"
-                />
-                <h3 className="text-xl font-bold text-white">Statsio</h3>
+              <Link href="/" className="flex items-center gap-2">
+                <div className="flex aspect-square size-9 items-center justify-center rounded-xl bg-linear-to-br from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/20">
+                  <RotateCcwSquare className="size-5" />
+                </div>
+                <h3 className="text-xl font-bold text-white tracking-tight">
+                  Recall
+                </h3>
               </Link>
 
               <button

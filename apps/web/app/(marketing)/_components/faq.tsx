@@ -112,34 +112,34 @@ function FAQItem({ question, answer }: FAQItemProps) {
 function FAQ() {
   const faqs: Omit<FAQItemProps, 'index'>[] = [
     {
-      question: 'What is Statsio?',
+      question: 'What is Recall?',
       answer:
-        'Statsio is a minimal, privacy-friendly analytics tool built for developers. It helps you track page views, unique visitors, countries, browsers, and device types without complexity.',
+        'Recall is a personal knowledge engine built for developers. It helps you capture, search, and connect ideas using AI-powered insights, keeping your library organized and accessible.',
     },
     {
-      question: 'Can I export my analytics data?',
+      question: 'Is my data private?',
       answer:
-        'Yes! Statsio allows you to easily export your analytics data in CSV format, so you can analyze or share insights anytime you need.',
+        'Yes! Recall is built with privacy-first principles. Your data is isolated per-user, and we use a local-first approach where possible to ensure your knowledge stays your own.',
     },
     {
-      question: 'What kind of data does Statsio track?',
+      question: 'What can I store in Recall?',
       answer:
-        'Statsio tracks page views, unique visitors, referrers, countries, operating systems, device types (mobile or desktop) and browsers. It’s built to give you just the insights you actually need.',
+        'You can store anything from technical documentation and research papers to personal notes and bookmarks. Recall automatically indexes and connects them in your knowledge graph.',
     },
     {
-      question: 'Is Statsio free to use?',
+      question: 'Is Recall free to use?',
       answer:
-        'Yes! Statsio is completely free and open-source, making it accessible to developers who need simple and transparent analytics without added cost.',
+        'Yes! Recall is open-source and free to use. You can even self-host it for full control over your infrastructure and data.',
     },
     {
-      question: 'Can I self-host Statsio?',
+      question: 'How does the AI work?',
       answer:
-        'Yes, Statsio is open-source and can be self-hosted for full control. You can also contribute to the project or extend it as needed.',
+        'Recall uses advanced RAG (Retrieval-Augmented Generation) to ground AI answers in your personal library. This means you get citations and sources for every answer.',
     },
     {
-      question: 'Which frameworks does Statsio support?',
+      question: 'Can I self-host Recall?',
       answer:
-        "Statsio works with any website or frontend framework. Simply add the tracking script and you're ready to go.",
+        'Yes, Recall is designed to be easily deployable using Docker. You can host it on your own server or use our managed version for convenience.',
     },
   ];
 

@@ -172,7 +172,7 @@ const CtaSection = () => {
           viewport={{ once: true }}
           className="mx-auto max-w-3xl text-balance bg-linear-to-br from-neutral-100 via-neutral-100 via-50% to-neutral-100/30 bg-clip-text pb-3 pt-1 text-center text-5xl font-medium leading-[1.1] tracking-tighter text-transparent md:text-[4.2rem]"
         >
-          Lightweight Analytics Built For Simplicity
+          Open Source Knowledge Engine Built For Developers
         </motion.h1>
         <motion.p
           initial={{
@@ -193,8 +193,8 @@ const CtaSection = () => {
           viewport={{ once: true }}
           className="mb-8 max-w-sm text-balance bg-linear-to-br from-white/70 via-white/70 to-white/30 bg-clip-text text-center text-[0.8rem] text-transparent sm:max-w-lg sm:text-[0.87rem] lg:text-[1rem]"
         >
-          Track page views and visitors in real-time with a lightweight,
-          privacy-first tool made for developers.
+          Capture ideas, search documents, and connect dots with a 
+          privacy-first, AI-powered tool made for developers.
         </motion.p>
         <motion.div
           initial={{
@@ -215,7 +215,7 @@ const CtaSection = () => {
           viewport={{ once: true }}
         >
           <Link
-            href={'/dashboard/sites'}
+            href={'/app'}
             className="group mt-6 flex items-center justify-center gap-2 rounded-xl border border-neutral-600 bg-neutral-950 px-5 py-3 text-sm font-semibold text-white shadow-[inset_0px_0px_7px_1px_#535353] transition-all duration-300 hover:bg-neutral-800/50 md:text-[1rem]"
           >
             {/* Get Started */}

@@ -188,12 +188,12 @@ const FeatureVaultLock = () => {
       </motion.div>
       <div className="absolute bottom-4 left-0 w-full px-4">
         <h3 className="text-sm font-semibold text-white">
-          Secure Your Insights
+          Secure Knowledge
         </h3>
         <p className="mt-2 text-xs text-neutral-400">
-          With Statsio, your valuable analytics are always safeguarded. Your
-          data vault is protected and effortlessly accessible only when you need
-          it.
+          With Recall, your personal documents and notes are always
+          safeguarded. Your knowledge vault is protected and accessible 
+          only by you.
         </p>
       </div>
     </motion.div>

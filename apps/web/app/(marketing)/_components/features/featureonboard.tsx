@@ -11,11 +11,11 @@ const FeatureOnboard = () => {
       <OnboardCard />
       <div>
         <div className="text-sm font-semibold text-white">
-          Effortless Onboarding
+          Private by Default
         </div>
         <div className="mt-2 text-xs text-neutral-400">
-          Visualize every step of setup with real-time feedback - crafted for
-          clarity and trust.
+          Everything is per-user with strict isolation. No collaboration,
+          no feeds, no noise. Just your knowledge.
         </div>
       </div>
     </div>

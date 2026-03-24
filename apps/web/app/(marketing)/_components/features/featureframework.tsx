@@ -15,11 +15,11 @@ const FeatureFramework = () => {
       <FrameworkCard />
       <div className="px-4 pb-4">
         <div className="text-sm font-semibold text-white">
-          Framework Agnostic
+          Developer First
         </div>
         <div className="mt-2 text-xs text-neutral-400">
-          Seamlessly integrate with any tech stack, whether it&apos;s Next.js,
-          React, HTML, or anything else. Statsio works everywhere.
+          Built on a robust stack of Postgres, Chroma, and Redis. Recall
+          seamlessly integrates into your existing developer workflow.
         </div>
       </div>
     </div>

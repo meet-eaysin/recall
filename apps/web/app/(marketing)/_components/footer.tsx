@@ -1,8 +1,8 @@
 'use client';
 import Link from 'next/link';
 import React from 'react';
-import Image from 'next/image';
 import { CiHeart } from 'react-icons/ci';
+import { RotateCcwSquare } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -10,28 +10,22 @@ const Footer = () => {
       <div className="mx-auto flex max-w-7xl flex-col items-start justify-between px-4 text-sm text-neutral-400 sm:flex-row">
         <div>
           <div className="mb-2 flex">
-            <Link href="/" className="flex items-center">
-              <Image
-                width={500}
-                height={500}
-                src={'/logo.png'}
-                alt="logo.png"
-                quality={100}
-                priority={true}
-                className="h-10 w-10 shrink-0 rounded-full object-cover"
-              />
-              <span className="text-lg font-medium text-white">Statsio</span>
+            <Link href="/" className="flex items-center gap-2">
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-linear-to-br from-neutral-800 to-neutral-900 text-white border border-neutral-700">
+                <RotateCcwSquare className="size-4" />
+              </div>
+              <span className="text-lg font-bold text-white tracking-tight">Recall</span>
             </Link>
           </div>
-          <p className="ml-3 text-sm text-neutral-400">
-            © {new Date().getFullYear()} Statsio. All rights reserved.
+          <p className="mt-2 text-sm text-neutral-500">
+            © {new Date().getFullYear()} Recall. All rights reserved.
           </p>
         </div>
         <div className="mt-10 grid grid-cols-3 items-start gap-10 md:mt-0">
           <div className="mt-4 flex flex-col justify-center space-y-4">
-            <Link href="/dashboard/sites">
+            <Link href="/app">
               <p className="text-neutral-300/60 hover:text-neutral-300/80">
-                Dashboard
+                Workspace
               </p>
             </Link>
             <Link href="/docs">

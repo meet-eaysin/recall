@@ -66,7 +66,7 @@ const HeroBadge = () => {
           <div className="absolute left-1/2 top-1/2 flex h-1 w-1 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-blue-400"></div>
         </div>
         <span className="bg-clip-text text-xs font-medium text-zinc-300">
-          Blazingly fast analytics
+          Open Source Knowledge Engine
         </span>
       </motion.div>
       <style>

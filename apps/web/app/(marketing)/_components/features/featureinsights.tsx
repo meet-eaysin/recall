@@ -23,7 +23,7 @@ const FeatureInsights = () => {
           <div className="flex h-full w-full flex-col justify-between gap-2">
             <div className="flex flex-col items-start gap-1.5">
               <div className="flex items-center text-sm text-neutral-400">
-                Page Views
+                Documents
               </div>
               <div className="flex items-end gap-2">
                 <div className="flex items-center gap-1 text-[0.95rem] text-white">
@@ -34,7 +34,7 @@ const FeatureInsights = () => {
             </div>
             <div className="flex flex-col items-start gap-1.5">
               <div className="flex items-center text-sm text-neutral-400">
-                Visitors
+                Insights
               </div>
               <div className="flex items-end gap-2">
                 <div className="flex items-center gap-1 text-[0.95rem] text-white">
@@ -48,14 +48,14 @@ const FeatureInsights = () => {
         <div className="absolute left-[31.6rem] top-[4.4rem] h-50 w-[20.3rem] rotate-2 rounded-t-md bg-linear-to-br from-neutral-800/40 to-neutral-900/80 transition-all duration-300 group-hover:top-[3.4rem]">
           <div className="flex h-full w-full flex-col gap-2.5">
             <div className="flex w-full items-center px-3 pt-2 text-sm text-neutral-400">
-              Countries
+              Sources
             </div>
             <div className="flex w-full flex-1 flex-col gap-1 px-3">
               <div className="relative h-[36px] w-full rounded-md px-2 py-2">
                 <div className="absolute inset-x-0 top-0 h-full w-full rounded-md bg-neutral-800" />
                 <div className="absolute left-2 flex items-center gap-1.5 text-sm text-neutral-100">
                   <RotateCcwSquare className="mt-1" />
-                  <p>India</p>
+                  <p>Arxiv Paper</p>
                 </div>
                 <p className="absolute right-2 text-sm text-neutral-300">53%</p>
               </div>
@@ -63,7 +63,7 @@ const FeatureInsights = () => {
                 <div className="absolute inset-x-0 top-0 h-full w-[54%] rounded-md bg-neutral-800" />
                 <div className="absolute left-2 flex items-center gap-1.5 text-sm text-neutral-100">
                   <RotateCcwSquare className="mt-1" />
-                  <p>United States</p>
+                  <p>GitHub Repo</p>
                 </div>
                 <p className="absolute right-2 text-sm text-neutral-300">27%</p>
               </div>
@@ -71,7 +71,7 @@ const FeatureInsights = () => {
                 <div className="absolute inset-x-0 top-0 h-full w-[26%] rounded-md bg-neutral-800" />
                 <div className="absolute left-2 flex items-center gap-1.5 text-sm text-neutral-100">
                   <RotateCcwSquare className="mt-1" />
-                  <p>Canada</p>
+                  <p>Notion Page</p>
                 </div>
                 <p className="absolute right-2 text-sm text-neutral-300">12%</p>
               </div>
@@ -79,7 +79,7 @@ const FeatureInsights = () => {
                 <div className="absolute inset-x-0 top-0 h-full w-[10%] rounded-md bg-neutral-800" />
                 <div className="absolute left-2 flex items-center gap-1.5 text-sm text-neutral-100">
                   <RotateCcwSquare className="mt-1" />
-                  <p>Japan</p>
+                  <p>PDF Doc</p>
                 </div>
                 <p className="absolute right-2 text-sm text-neutral-300">6%</p>
               </div>
@@ -89,7 +89,7 @@ const FeatureInsights = () => {
         <div className="absolute bottom-0 left-40 h-50 w-88 rounded-t-md bg-neutral-900 shadow-xl shadow-black">
           <div className="flex h-full w-full flex-col gap-2.5">
             <div className="flex w-full items-center px-3 pt-2 text-sm text-neutral-400">
-              Referrers
+              Connections
             </div>
             <div className="flex w-full flex-1 flex-col gap-1 px-3">
               <div className="relative h-[36px] w-full rounded-md px-2 py-2">
@@ -131,10 +131,10 @@ const FeatureInsights = () => {
       </div>
       {/*insight card */}
       <div className="px-4 pb-4">
-        <div className="text-sm font-semibold text-white">Visitor Insights</div>
+        <div className="text-sm font-semibold text-white">Ask AI with Sources</div>
         <div className="mt-2 text-xs text-neutral-400">
-          Track where your visitors come from with real-time data on referrers,
-          countries, devices, browsers, and operating systems.
+          Ask questions and get answers grounded in your library with 
+          citations. Explore connections across your knowledge base.
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import { motion } from 'motion/react';
-import Image from 'next/image';
+import { RotateCcwSquare } from 'lucide-react';
 import Herobuttons from './hero-buttons';
 import HeroBadge from './herobadge';
 
@@ -41,7 +41,7 @@ const HeroSection = () => {
                 viewport={{ once: true }}
                 className="max-w-lg whitespace-pre-wrap text-balance font-sans text-4xl font-bold tracking-tight text-white md:max-w-4xl md:text-5xl"
               >
-                Unlock Real Insights from Simple Stats
+                Unlock Your Personal Knowledge Engine
               </motion.h1>
               <motion.p
                 initial={{
@@ -62,8 +62,8 @@ const HeroSection = () => {
                 viewport={{ once: true }}
                 className="max-w-sm text-balance text-[0.95rem] text-neutral-400 sm:max-w-lg md:text-[1.1rem] lg:max-w-md"
               >
-                Track page views and visitors with Statsio, a minimal analytics
-                tool for developers who prefer simplicity.
+                Recall is an open-source tool for developers to capture, search,
+                and connect ideas with AI-powered insights.
               </motion.p>
               <motion.div
                 initial={{
@@ -107,15 +107,12 @@ const HeroSection = () => {
                 viewport={{ once: true }}
                 className="relative skew-x-[.10rad] p-6"
               >
-                <Image
-                  className="rounded-xl shadow-lg shadow-black"
-                  src="/forge-analytics.png"
-                  alt="hero section"
-                  width={2000}
-                  height={2000}
-                  priority
-                  quality={100}
-                />
+                <div className="flex h-full w-full items-center justify-center bg-neutral-900/50 rounded-xl border border-neutral-800 border-dashed aspect-video">
+                  <div className="flex flex-col items-center gap-3 text-neutral-500">
+                    <RotateCcwSquare className="size-12 opacity-20" />
+                    <p className="text-sm font-medium opacity-50 uppercase tracking-widest">Workspace Preview</p>
+                  </div>
+                </div>
               </motion.div>
             </div>
           </div>
