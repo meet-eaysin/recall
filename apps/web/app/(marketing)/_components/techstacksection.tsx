@@ -1,10 +1,7 @@
 'use client';
 
-import { FaReact } from 'react-icons/fa6';
-import { RiNextjsFill } from 'react-icons/ri';
-import { BiLogoPostgresql } from 'react-icons/bi';
-import { SiPrisma, SiTailwindcss, SiTypescript } from 'react-icons/si';
-import { motion } from 'motion/react';
+import { Database, Code2, Wind, Atom, Triangle, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const TechStackSection = () => {
   return (
@@ -29,22 +26,22 @@ const TechStackSection = () => {
     >
       <p className="text-sm text-neutral-400 md:text-[1rem]">Built with</p>
       <div>
-        <RiNextjsFill className="size-5 md:size-6" />
+        <Triangle className="size-5 md:size-6" />
       </div>
       <div>
-        <BiLogoPostgresql className="size-5 md:size-6" />
+        <Database className="size-5 md:size-6" />
       </div>
       <div>
-        <SiPrisma className="size-4 md:size-5" />
+        <Zap className="size-4 md:size-5" />
       </div>
       <div>
-        <FaReact className="size-4 md:size-5" />
+        <Atom className="size-4 md:size-5" />
       </div>
       <div>
-        <SiTypescript className="size-4 md:size-5" />
+        <Code2 className="size-4 md:size-5" />
       </div>
       <div>
-        <SiTailwindcss className="size-4 md:size-5" />
+        <Wind className="size-4 md:size-5" />
       </div>
     </motion.div>
   );

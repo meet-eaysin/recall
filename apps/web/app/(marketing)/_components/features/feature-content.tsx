@@ -1,6 +1,6 @@
 'use client';
 import { FileSignature } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import React from 'react';
 
 const FeatureContent = () => {

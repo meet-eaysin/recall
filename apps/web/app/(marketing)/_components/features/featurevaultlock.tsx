@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { motion, type Variants } from 'motion/react';
+import { motion, type Variants } from 'framer-motion';
 import React, { useState } from 'react';
 
 const FeatureVaultLock = () => {

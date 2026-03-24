@@ -2,10 +2,9 @@
 
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
-import { GoDotFill, GoLink } from 'react-icons/go';
-import { TbNetwork } from 'react-icons/tb';
-import { motion } from 'motion/react';
-import type { Variants } from 'motion/react';
+import { Dot, Link, Network } from 'lucide-react';
+import { motion } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 
 type GraphNode = {
   label: string;
@@ -124,7 +123,7 @@ const FraudCard = ({ nodes }: FraudCardProps) => {
             <div className="flex h-full w-full items-center justify-between gap-3 rounded-[4px] bg-neutral-100 p-3 dark:bg-neutral-800">
               <div className="flex items-center justify-center gap-4">
                 <motion.div variants={circlevariant} className="h-4 w-4">
-                  <TbNetwork className="text-primary h-full w-full" />
+                  <Network className="text-primary h-full w-full" />
                 </motion.div>
                 <p className="font-mono text-[10px] text-neutral-600 transition-all duration-300 group-hover:text-neutral-900 dark:text-neutral-400 dark:group-hover:text-neutral-100">
                   Semantic mapping active
@@ -182,13 +181,13 @@ const FraudCard = ({ nodes }: FraudCardProps) => {
               <div key={label} className="flex h-full w-full justify-start">
                 <div className="relative mt-1.5 mr-2 h-6 w-6">
                   <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/10 dark:bg-white/10">
-                    <GoDotFill className="h-2.5 w-2.5 text-neutral-400 dark:text-neutral-500" />
+                    <Dot className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />
                   </div>
                   <motion.div
                     variants={iconvariant}
                     className="absolute inset-0 flex items-center justify-center rounded-full bg-primary p-1"
                   >
-                    <GoLink className="h-4 w-4 text-neutral-100 dark:text-neutral-800" />
+                    <Link className="h-3 w-3 text-neutral-100 dark:text-neutral-800" />
                   </motion.div>
                 </div>
                 <div className="flex flex-col items-start justify-center gap-1 p-1">

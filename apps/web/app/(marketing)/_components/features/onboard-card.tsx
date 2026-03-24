@@ -1,10 +1,9 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { IoMdCheckmark } from 'react-icons/io';
-import { LuLoader } from 'react-icons/lu';
+import { Check, Loader2 } from 'lucide-react';
 
 interface OnboardCardProps {
   duration?: number;
@@ -41,26 +40,26 @@ const OnboardCard = ({
         'mt-4 flex flex-col items-center justify-center gap-1 p-1',
       )}
     >
-      <div className="flex w-full max-w-[250px] scale-[0.9] flex-col justify-center gap-2 rounded-md border border-neutral-800 bg-gradient-to-br from-neutral-800 to-neutral-950 py-2 pl-3 pr-16 opacity-80">
+      <div className="flex w-full max-w-[250px] scale-[0.9] flex-col justify-center gap-2 rounded-md border border-neutral-800 bg-linear-to-br from-neutral-800 to-neutral-950 py-2 pl-3 pr-16 opacity-80">
         <div className="flex items-center justify-start gap-2 text-xs text-white">
           <div>
-            <LuLoader />
+            <Loader2 className="size-3" />
           </div>
           <div>{step3}</div>
         </div>
         <div
-          className={`ml-5 h-1.5 w-[100%] overflow-hidden rounded-full bg-neutral-700`}
+          className={`ml-5 h-1.5 w-full overflow-hidden rounded-full bg-neutral-700`}
         ></div>
       </div>
-      <div className="flex w-full max-w-[250px] flex-col justify-center gap-2 rounded-md border border-neutral-800 bg-gradient-to-br from-neutral-800 to-neutral-950 py-2 pl-3 pr-16">
+      <div className="flex w-full max-w-[250px] flex-col justify-center gap-2 rounded-md border border-neutral-800 bg-linear-to-br from-neutral-800 to-neutral-950 py-2 pl-3 pr-16">
         <div className="flex items-center justify-start gap-1.5 text-xs text-white">
           <div className="animate-spin">
-            <LuLoader />
+            <Loader2 className="size-3" />
           </div>
           <div>{step2}</div>
         </div>
         <div
-          className={`ml-5 h-1.5 w-[100%] overflow-hidden rounded-full bg-neutral-700`}
+          className={`ml-5 h-1.5 w-full overflow-hidden rounded-full bg-neutral-700`}
         >
           <motion.div
             key={animateKey}
@@ -71,24 +70,24 @@ const OnboardCard = ({
           />
         </div>
       </div>
-      <div className="flex w-full max-w-[250px] scale-[0.9] flex-col justify-center gap-2 rounded-md border border-neutral-800 bg-gradient-to-br from-neutral-800 to-neutral-950 py-2 pl-3 pr-16 opacity-80">
+      <div className="flex w-full max-w-[250px] scale-[0.9] flex-col justify-center gap-2 rounded-md border border-neutral-800 bg-linear-to-br from-neutral-800 to-neutral-950 py-2 pl-3 pr-16 opacity-80">
         <div className="flex items-center justify-start text-xs text-white">
           <div className="relative">
             <svg width="20" height="20">
               <circle cx="10" cy="10" r="5" fill="#06b6d4" />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center text-neutral-900">
-              <IoMdCheckmark className="size-2" />
+              <Check className="size-2" />
             </div>
           </div>
           <div>{step1}</div>
         </div>
         <div
-          className={`ml-5 h-1.5 w-[100%] overflow-hidden rounded-full bg-cyan-500`}
+          className={`ml-5 h-1.5 w-full overflow-hidden rounded-full bg-cyan-500`}
         ></div>
       </div>
-      <div className="absolute top-0 h-[40%] w-full [background-image:linear-gradient(to_bottom,rgba(10,10,10,1)_20%,transparent_100%)]" />
-      <div className="absolute bottom-0 h-[40%] w-full [background-image:linear-gradient(to_top,rgba(10,10,10,1)_20%,transparent_100%)]" />
+      <div className="absolute top-0 h-[40%] w-full bg-[linear-gradient(to_bottom,rgba(10,10,10,1)_20%,transparent_100%)]" />
+      <div className="absolute bottom-0 h-[40%] w-full bg-[linear-gradient(to_top,rgba(10,10,10,1)_20%,transparent_100%)]" />
     </div>
   );
 };

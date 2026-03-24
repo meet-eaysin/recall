@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { motion } from "motion/react";
-import { IoMdCheckmark } from "react-icons/io";
+import { Check } from "lucide-react";
+import { motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 
 type SecurityCardProps = {
@@ -165,7 +165,7 @@ const CheckCircle = () => {
           delay: 2.4,
         }}
       >
-        <IoMdCheckmark className="size-2" />
+        <Check className="size-2" />
       </motion.div>
     </div>
   );
