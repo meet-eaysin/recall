@@ -2,68 +2,71 @@
 
 import React from 'react';
 import FeatureContent from './feature-content';
-import FeatureFramework from './featureframework';
-import FeatureOnboard from './featureonboard';
-import FeatureVaultlock from './featurevaultlock';
-import FeatureInsights from './featureinsights';
+import FrameworkAgnostic from './framework-agnostic';
+import SecurityCard from './security-card';
+import FraudCard from './fraud-card';
+import BotDetection from './bot-detection';
+import VaultLock from './vault-lock';
 import { motion } from 'motion/react';
 
 const FeaturesBlock = () => {
   return (
     <div className="mx-auto flex min-h-screen max-w-7xl flex-col items-center gap-4 px-2 py-12 lg:pb-24 lg:pt-36">
       <FeatureContent />
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: 5,
-          filter: 'blur(10px)',
-        }}
-        whileInView={{
-          opacity: 1,
-          y: 0,
-          filter: 'blur(0px)',
-        }}
-        transition={{
-          duration: 0.3,
-          delay: 0.2,
-          ease: 'easeInOut',
-        }}
-        viewport={{ once: true }}
-        className="grid w-full grid-cols-1 gap-4 md:grid-cols-3"
-      >
-        <div className="col-span-1 md:col-span-2">
-          <FeatureFramework />
-        </div>
-        <div className="col-span-1 md:col-span-1">
-          <FeatureOnboard />
-        </div>
-      </motion.div>
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: 5,
-          filter: 'blur(10px)',
-        }}
-        whileInView={{
-          opacity: 1,
-          y: 0,
-          filter: 'blur(0px)',
-        }}
-        transition={{
-          duration: 0.3,
-          delay: 0.2,
-          ease: 'easeInOut',
-        }}
-        viewport={{ once: true }}
-        className="grid w-full grid-cols-1 gap-4 md:grid-cols-3"
-      >
-        <div className="col-span-1 md:col-span-1">
-          <FeatureVaultlock />
-        </div>
-        <div className="col-span-1 md:col-span-2">
-          <FeatureInsights />
-        </div>
-      </motion.div>
+      <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-3">
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          viewport={{ once: true }}
+          className="lg:col-span-2"
+        >
+          <FrameworkAgnostic />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="lg:col-span-1"
+        >
+          <SecurityCard />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+          viewport={{ once: true }}
+          className="lg:col-span-1"
+        >
+          <VaultLock />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.4 }}
+          viewport={{ once: true }}
+          className="lg:col-span-1"
+        >
+          <BotDetection />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.5 }}
+          viewport={{ once: true }}
+          className="lg:col-span-1"
+        >
+          <FraudCard
+            blockedEmails={[
+              { email: 'user-isolation-v1', time: 'Active' },
+              { email: 'local-first-stream', time: 'Encrypted' },
+              { email: 'semantic-index-0', time: 'Verified' },
+            ]}
+          />
+        </motion.div>
+      </div>
     </div>
   );
 };
