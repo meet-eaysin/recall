@@ -132,14 +132,14 @@ const Footer = () => {
         </div>
       </div>
       <p className="-mb-6 mt-16 w-full text-center text-xs text-neutral-500 pt-8 border-t border-white/5">
-        Handcrafted by{' '}
+        Recall by{' '}
         <a
-          href="https://amanshakya.in"
+          href="https://meet-eaysin.vercel.app/"
           target="_blank"
           rel="noopener noreferrer"
           className="text-neutral-400 hover:text-white transition-colors"
         >
-          Aman Shakya
+          Eaysin Arafat
         </a>
       </p>
     </div>

@@ -39,7 +39,7 @@ const Navbar = () => {
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-1 lg:gap-0">
             <div className="flex w-full justify-between lg:w-auto">
               <Link href="/" className="flex items-center gap-2">
-                <div className="flex aspect-square size-9 items-center justify-center rounded-xl bg-linear-to-br from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/20">
+                <div className="flex aspect-square size-9 items-center justify-center rounded-xl bg-background text-white shadow-lg shadow-blue-500/20">
                   <RotateCcwSquare className="size-5" />
                 </div>
                 <h3 className="text-xl font-bold text-white tracking-tight">
