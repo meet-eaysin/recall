@@ -1,24 +1,21 @@
-import { Header } from '@/components/header';
-import { HeroSection } from '@/components/hero';
-import { FeatureSection } from '@/components/feature-section';
-import { Footer } from '@/components/footer';
-import { cn } from '@/lib/utils';
+import HeroSection from './_components/herosection';
+import FAQ from './_components/faq';
+import Navbar from './_components/navbar-shrink';
+import Footer from './_components/footer';
+import CtaSection from './_components/ctasection';
+import FeaturesBlock from './_components/features/features-block';
 
-export default function LandingPage() {
+const LandingPage = () => {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden px-4 supports-[overflow:clip]:overflow-clip">
-      <Header />
-      <main
-        className={cn(
-          'relative mx-auto max-w-6xl grow',
-          'before:absolute before:-inset-y-14 before:-left-px before:w-px before:bg-border',
-          'after:absolute after:-inset-y-14 after:-right-px after:w-px after:bg-border',
-        )}
-      >
-        <HeroSection />
-        <FeatureSection />
-        <Footer />
-      </main>
+    <div className="bg-black">
+      <Navbar />
+      <HeroSection />
+      <FeaturesBlock />
+      <FAQ />
+      <CtaSection />
+      <Footer />
     </div>
   );
-}
+};
+
+export default LandingPage;

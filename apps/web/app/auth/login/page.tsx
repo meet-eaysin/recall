@@ -43,7 +43,7 @@ export default function LoginPage() {
               Sign In or Join Now!
             </h1>
             <p className="text-base text-muted-foreground">
-              login or create your efferd account.
+              login or create your Recall account.
             </p>
           </div>
           <div className="space-y-2">
