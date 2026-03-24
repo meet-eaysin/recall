@@ -6,6 +6,8 @@ import {
   getDefaultClassNames,
   type DayButton,
   type Locale,
+  type RootProps,
+  type ChevronProps,
 } from 'react-day-picker';
 
 import { cn } from '@/lib/utils';
@@ -138,7 +140,7 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Root: ({ className, rootRef, ...props }) => {
+        Root: ({ className, rootRef, ...props }: RootProps) => {
           return (
             <div
               data-slot="calendar"
@@ -148,7 +150,7 @@ function Calendar({
             />
           );
         },
-        Chevron: ({ className, orientation, ...props }) => {
+        Chevron: ({ className, orientation, ...props }: ChevronProps) => {
           if (orientation === 'left') {
             return (
               <ChevronLeftIcon className={cn('size-4', className)} {...props} />
