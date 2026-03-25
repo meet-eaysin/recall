@@ -27,6 +27,7 @@ import {
   type ColorMode,
   type OnNodesChange,
   type OnEdgesChange,
+  Panel,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -35,26 +36,15 @@ import {
   GitBranch,
   Loader2,
   RefreshCcw,
-  Search,
+  ExternalLink,
+  Network,
   SunMedium,
   Moon,
-  ExternalLink,
-  X,
-  Layers,
-  Network,
-  Info,
 } from 'lucide-react';
 import { GraphNodeType, GraphRelationType } from '@repo/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import {
   Empty,
   EmptyDescription,
@@ -62,21 +52,21 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-  InputGroupText,
-} from '@/components/ui/input-group';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import {
   useDocumentSubgraph,
   useFullGraph,
   useRebuildDocumentGraph,
 } from '../hooks';
-import type { FullGraphData, GraphNodeRow } from '../types';
+import type { FullGraphData } from '../types';
 import { PageContainer } from '@/features/workspace/components/page-container';
 
 type KGNodeData = {
@@ -216,19 +206,19 @@ function buildFlowData(
   return { nodes, edges };
 }
 
-function AllSidesHandles({ size = 6 }: { size?: number }) {
-  const style: React.CSSProperties = {
-    width: size,
-    height: size,
-    background: 'transparent',
-    border: 'none',
-  };
+function KGHandles() {
   return (
     <>
-      <Handle type="source" position={Position.Top} style={style} />
-      <Handle type="source" position={Position.Right} style={style} />
-      <Handle type="source" position={Position.Bottom} style={style} />
-      <Handle type="source" position={Position.Left} style={style} />
+      <Handle
+        type="target"
+        position={Position.Top}
+        className="opacity-0 w-1 h-1"
+      />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        className="opacity-0 w-1 h-1"
+      />
     </>
   );
 }
@@ -259,7 +249,7 @@ function RootNode({ data, selected }: NodeProps<KGNode>) {
         {d.label}
       </span>
 
-      <AllSidesHandles size={4} />
+      <KGHandles />
     </div>
   );
 }
@@ -303,7 +293,7 @@ function DocumentNode({ data, selected }: NodeProps<KGNode>) {
         {d.label}
       </p>
 
-      <AllSidesHandles size={5} />
+      <KGHandles />
     </div>
   );
 }
@@ -335,7 +325,7 @@ function ConceptNode({ data, selected }: NodeProps<KGNode>) {
         {d.label}
       </p>
 
-      <AllSidesHandles size={4} />
+      <KGHandles />
     </div>
   );
 }
@@ -346,8 +336,6 @@ function KGEdge({
   sourceY,
   targetX,
   targetY,
-  sourcePosition,
-  targetPosition,
   data,
   selected,
   markerEnd,
@@ -355,14 +343,33 @@ function KGEdge({
   const d = data as KGEdgeData;
   const color = getRelationColor(d.relationType);
 
+  const dx = targetX - sourceX;
+  const dy = targetY - sourceY;
+  const sourcePos =
+    Math.abs(dx) > Math.abs(dy)
+      ? dx > 0
+        ? Position.Right
+        : Position.Left
+      : dy > 0
+        ? Position.Bottom
+        : Position.Top;
+  const targetPos =
+    sourcePos === Position.Right
+      ? Position.Left
+      : sourcePos === Position.Left
+        ? Position.Right
+        : sourcePos === Position.Top
+          ? Position.Bottom
+          : Position.Top;
+
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
-    sourcePosition,
+    sourcePosition: sourcePos,
     targetX,
     targetY,
-    targetPosition,
-    curvature: 0.35,
+    targetPosition: targetPos,
+    curvature: 0.25,
   });
 
   return (
@@ -419,6 +426,7 @@ type InnerFlowProps = {
   selectedNodeId: string | null;
   onSelectNode: (id: string | null) => void;
   colorMode: ColorMode;
+  children?: React.ReactNode;
 };
 
 function InnerFlow({
@@ -427,6 +435,7 @@ function InnerFlow({
   selectedNodeId,
   onSelectNode,
   colorMode,
+  children,
 }: InnerFlowProps) {
   const { fitView } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState<KGNode>([]);
@@ -496,10 +505,12 @@ function InnerFlow({
         className="opacity-30"
       />
       <Controls
+        position="bottom-right"
         showInteractive={false}
-        className="rounded-xl border border-border bg-card shadow-none"
+        className="rounded-xl border border-border bg-card shadow-none mb-4 mr-4"
       />
       <MiniMap
+        position="bottom-right"
         nodeColor={miniMapNodeColor}
         maskColor={
           colorMode === 'dark' ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.55)'
@@ -508,12 +519,12 @@ function InnerFlow({
         zoomable
         className="rounded-xl border border-border bg-card shadow-none"
       />
+      {children}
     </ReactFlow>
   );
 }
 
 export function GraphExplorer() {
-  const [search, setSearch] = React.useState('');
   const [selectedNodeId, setSelectedNodeId] = React.useState<string | null>(
     null,
   );
@@ -573,23 +584,10 @@ export function GraphExplorer() {
     return graph.nodes.filter((n) => ids.has(n.id));
   }, [graph, selectedNodeId]);
 
-  const filteredDocumentNodes = React.useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return (fullGraph?.nodes ?? [])
-      .filter((n) => n.type === GraphNodeType.DOCUMENT)
-      .filter((n) => (q ? n.label.toLowerCase().includes(q) : true))
-      .sort((a, b) => a.label.localeCompare(b.label));
-  }, [fullGraph?.nodes, search]);
-
   const handleSelectNode = React.useCallback(
     (id: string | null) => setSelectedNodeId(id),
     [],
   );
-
-  const handleFocusDocument = React.useCallback((node: GraphNodeRow) => {
-    setSelectedNodeId(node.id);
-    if (node.documentId) setFocusedDocumentId(node.documentId);
-  }, []);
 
   const handleClearFocus = React.useCallback(() => {
     setFocusedDocumentId(null);
@@ -627,345 +625,265 @@ export function GraphExplorer() {
         </Button>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[1fr_22rem]">
-        <Card className="overflow-hidden">
-          <CardHeader className="px-5 py-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <CardTitle>Document network</CardTitle>
-                <CardDescription>
-                  Drag to pan · Scroll to zoom · Click a node to inspect
-                </CardDescription>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="secondary" className="gap-1">
-                  <Network className="size-3" />
-                  {graph?.nodes.length ?? 0} nodes
-                </Badge>
-                <Badge variant="secondary">
-                  {graph?.edges.length ?? 0} edges
-                </Badge>
-                {focusedDocumentId && <Badge variant="outline">Subgraph</Badge>}
-                {(isLoading || subgraphLoading) && (
-                  <Badge variant="outline" className="gap-1">
-                    <Loader2 className="size-3 animate-spin" />
-                    Loading
+      <div className="pt-2 h-[calc(100vh-150px)] min-h-[500px]">
+        <div className="relative h-full w-full overflow-hidden rounded-xl border bg-muted/10 shadow-sm flex flex-col">
+          {isLoading ? (
+            <div className="grid h-full place-items-center">
+              <Loader2 className="size-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : graph && graph.nodes.length > 0 ? (
+            <ReactFlowProvider>
+              <InnerFlow
+                graph={graph}
+                focusedDocumentId={focusedDocumentId}
+                selectedNodeId={selectedNodeId}
+                onSelectNode={handleSelectNode}
+                colorMode={colorMode}
+              >
+                <Panel position="bottom-left" className="m-4">
+                  <div className="flex flex-col rounded-xl border border-border/40 bg-background/80 shadow-lg backdrop-blur-md supports-backdrop-filter:bg-background/60 overflow-hidden divide-y divide-border/30">
+                    <div className="flex flex-wrap items-center gap-4 px-4 py-2.5">
+                      <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                        <Network className="size-3.5" />
+                        {graph?.nodes.length ?? 0} nodes
+                        <span className="text-border/50 mx-1">•</span>
+                        {graph?.edges.length ?? 0} edges
+                        
+                        {(isLoading || subgraphLoading) && (
+                          <>
+                            <span className="text-border/50 mx-1">•</span>
+                            <div className="flex items-center gap-1.5 text-primary">
+                              <Loader2 className="size-3 animate-spin" />
+                              Loading...
+                            </div>
+                          </>
+                        )}
+                      </div>
+                      
+                      {focusedDocumentId && (
+                        <div className="flex items-center gap-3">
+                          <span className="text-[10px] font-semibold uppercase tracking-wider text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full">
+                            Subgraph Active
+                          </span>
+                          <Button
+                            variant="link"
+                            size="sm"
+                            onClick={handleClearFocus}
+                            className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
+                          >
+                            Clear focus
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-2.5 bg-muted/30">
+                      <div className="flex items-center gap-3">
+                        {[
+                          { label: 'Root', color: '#a78bfa' },
+                          { label: 'Document', color: '#60a5fa' },
+                          { label: 'Focused', color: '#38bdf8' },
+                          { label: 'Concept', color: '#2dd4bf' },
+                        ].map(({ label, color }) => (
+                          <div key={label} className="flex items-center gap-1.5">
+                            <div
+                              className="size-2 rounded-full shadow-sm"
+                              style={{ backgroundColor: color }}
+                            />
+                            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">{label}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="hidden xl:block h-3 w-px bg-border/40" />
+                      <div className="flex items-center gap-3">
+                        {Object.entries(RELATION_META).map(
+                          ([type, { color, label }]) => (
+                            <div key={type} className="flex items-center gap-1.5">
+                              <div
+                                className="w-4 rounded-full brightness-90 shadow-sm"
+                                style={{ backgroundColor: color, height: '2px' }}
+                              />
+                              <span className="text-[11px] font-medium text-muted-foreground tracking-tight">
+                                {label}
+                              </span>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </Panel>
+              </InnerFlow>
+            </ReactFlowProvider>
+          ) : (
+            <Empty className="h-full rounded-none border-0">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <BrainCircuit className="size-4" />
+                </EmptyMedia>
+                <EmptyTitle>No graph yet</EmptyTitle>
+                <EmptyDescription>
+                  Ingest documents or rebuild a graph to see relationships.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          )}
+        </div>
+      </div>
+
+      <Sheet
+        open={!!selectedNodeId && !!selectedNode}
+        onOpenChange={(open) => {
+          if (!open) setSelectedNodeId(null);
+        }}
+      >
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto outline-none">
+          <SheetHeader className="mb-6 space-y-1">
+            <SheetTitle>Node Selection</SheetTitle>
+            <SheetDescription>
+              Inspect the selected node and its relationships.
+            </SheetDescription>
+          </SheetHeader>
+
+          {selectedNode && (
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  <Badge variant="secondary" className="capitalize">
+                    {selectedNode.type}
                   </Badge>
+                  <Badge variant="outline">
+                    {selectedEdges.length} connections
+                  </Badge>
+                </div>
+                <h3 className="text-xl font-semibold leading-snug text-foreground">
+                  {selectedNode.label}
+                </h3>
+                {selectedNode.documentId && (
+                  <p className="truncate font-mono text-[11px] text-muted-foreground">
+                    {selectedNode.documentId}
+                  </p>
                 )}
-                {focusedDocumentId && (
+              </div>
+
+              {selectedNode.documentId && (
+                <div className="flex flex-wrap gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handleClearFocus}
+                    className="flex-1"
+                    onClick={() =>
+                      setFocusedDocumentId(selectedNode.documentId ?? null)
+                    }
                   >
-                    <GitBranch className="size-3.5" />
-                    Full graph
+                    <GitBranch className="size-3.5 mr-2" />
+                    Focus subgraph
                   </Button>
-                )}
-              </div>
-            </div>
-          </CardHeader>
-
-          <CardContent className="space-y-3 px-5 pb-5 pt-0">
-            <div className="relative overflow-hidden rounded-xl border bg-muted/20 h-[62vh] min-h-[420px] xl:h-[66vh]">
-              {isLoading ? (
-                <div className="grid h-full place-items-center">
-                  <Loader2 className="size-7 animate-spin text-muted-foreground" />
-                </div>
-              ) : graph && graph.nodes.length > 0 ? (
-                <ReactFlowProvider>
-                  <InnerFlow
-                    graph={graph}
-                    focusedDocumentId={focusedDocumentId}
-                    selectedNodeId={selectedNodeId}
-                    onSelectNode={handleSelectNode}
-                    colorMode={colorMode}
-                  />
-                </ReactFlowProvider>
-              ) : (
-                <Empty className="h-full rounded-none border-0">
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <BrainCircuit className="size-4" />
-                    </EmptyMedia>
-                    <EmptyTitle>No graph yet</EmptyTitle>
-                    <EmptyDescription>
-                      Ingest documents or rebuild a graph to see relationships.
-                    </EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              )}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
-              {[
-                { label: 'Root', color: '#a78bfa' },
-                { label: 'Document', color: '#60a5fa' },
-                { label: 'Focused', color: '#38bdf8' },
-                { label: 'Concept', color: '#2dd4bf' },
-              ].map(({ label, color }) => (
-                <div key={label} className="flex items-center gap-1.5">
-                  <div
-                    className="size-2.5 rounded-full"
-                    style={{ backgroundColor: color }}
-                  />
-                  <span className="text-xs text-muted-foreground">{label}</span>
-                </div>
-              ))}
-              <div className="hidden xl:block h-3 w-px bg-border" aria-hidden />
-              {Object.entries(RELATION_META).map(([type, { color, label }]) => (
-                <div key={type} className="flex items-center gap-1.5">
-                  <div
-                    className="h-px w-5 rounded"
-                    style={{ backgroundColor: color, height: 2 }}
-                  />
-                  <span className="text-xs text-muted-foreground">{label}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="space-y-4">
-          <Card>
-            <CardHeader className="px-4 py-4">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Layers className="size-4 text-muted-foreground" />
-                Focus documents
-              </CardTitle>
-              <CardDescription>
-                Click a document to view its local neighborhood.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 px-4 pb-4 pt-0">
-              <InputGroup>
-                <InputGroupAddon>
-                  <InputGroupText>
-                    <Search className="size-4 text-muted-foreground" />
-                  </InputGroupText>
-                </InputGroupAddon>
-                <InputGroupInput
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search documents…"
-                />
-              </InputGroup>
-
-              <ScrollArea className="h-60 rounded-lg border bg-muted/10">
-                <div className="space-y-0.5 p-1.5">
-                  {filteredDocumentNodes.length > 0 ? (
-                    filteredDocumentNodes.map((node) => {
-                      const isFocused = node.documentId === focusedDocumentId;
-                      const isSelected = node.id === selectedNodeId;
-                      return (
-                        <button
-                          key={node.id}
-                          type="button"
-                          onClick={() => handleFocusDocument(node)}
-                          className={cn(
-                            'w-full rounded-lg px-3 py-2 text-left transition-colors hover:bg-accent',
-                            (isFocused || isSelected) &&
-                              'bg-accent ring-1 ring-primary/25',
-                          )}
-                        >
-                          <div className="flex items-center justify-between gap-1">
-                            <p className="line-clamp-1 text-sm font-medium text-foreground">
-                              {node.label}
-                            </p>
-                            {isFocused && (
-                              <Badge
-                                variant="secondary"
-                                className="shrink-0 text-[10px]"
-                              >
-                                focused
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            {isFocused ? 'Subgraph active' : 'Open local graph'}
-                          </p>
-                        </button>
-                      );
-                    })
-                  ) : (
-                    <p className="px-3 py-4 text-center text-sm text-muted-foreground">
-                      No documents match your search.
-                    </p>
-                  )}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="px-4 py-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base">Selection</CardTitle>
-                {selectedNodeId && (
                   <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    onClick={() => setSelectedNodeId(null)}
-                    title="Clear selection"
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    disabled={rebuildMutation.isPending}
+                    onClick={() =>
+                      void rebuildMutation.mutateAsync(
+                        selectedNode.documentId ?? '',
+                      )
+                    }
                   >
-                    <X className="size-3.5" />
-                  </Button>
-                )}
-              </div>
-              {!selectedNodeId && (
-                <CardDescription>
-                  Click a node in the graph to inspect it.
-                </CardDescription>
-              )}
-            </CardHeader>
-
-            <CardContent className="px-4 pb-4 pt-0">
-              {selectedNode ? (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap gap-1.5">
-                      <Badge variant="secondary" className="capitalize">
-                        {selectedNode.type}
-                      </Badge>
-                      <Badge variant="outline">
-                        {selectedEdges.length} connections
-                      </Badge>
-                    </div>
-                    <p className="text-sm font-semibold leading-snug text-foreground">
-                      {selectedNode.label}
-                    </p>
-                    {selectedNode.documentId && (
-                      <p className="truncate font-mono text-[11px] text-muted-foreground">
-                        {selectedNode.documentId}
-                      </p>
+                    {rebuildMutation.isPending ? (
+                      <Loader2 className="size-3.5 animate-spin mr-2" />
+                    ) : (
+                      <RefreshCcw className="size-3.5 mr-2" />
                     )}
-                  </div>
-
-                  {selectedNode.documentId && (
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          setFocusedDocumentId(selectedNode.documentId ?? null)
-                        }
-                      >
-                        <GitBranch className="size-3.5" />
-                        Focus subgraph
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={rebuildMutation.isPending}
-                        onClick={() =>
-                          void rebuildMutation.mutateAsync(
-                            selectedNode.documentId ?? '',
-                          )
-                        }
-                      >
-                        {rebuildMutation.isPending ? (
-                          <Loader2 className="size-3.5 animate-spin" />
-                        ) : (
-                          <RefreshCcw className="size-3.5" />
-                        )}
-                        Rebuild
-                      </Button>
-                    </div>
-                  )}
-
-                  <Separator />
-
-                  {connectedNodes.length > 0 && (
-                    <div className="space-y-1.5">
-                      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                        Connected nodes
-                      </p>
-                      <div className="space-y-1">
-                        {connectedNodes.map((n) => (
-                          <button
-                            key={n.id}
-                            type="button"
-                            onClick={() => setSelectedNodeId(n.id)}
-                            className="w-full rounded-lg border px-3 py-1.5 text-left transition-colors hover:bg-accent"
-                          >
-                            <p className="text-sm font-medium text-foreground">
-                              {n.label}
-                            </p>
-                            <p className="text-xs capitalize text-muted-foreground">
-                              {n.type}
-                            </p>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {selectedEdges.length > 0 && (
-                    <>
-                      <Separator />
-                      <div className="space-y-1.5">
-                        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                          Relationships
-                        </p>
-                        <div className="space-y-1">
-                          {selectedEdges.map((edge) => (
-                            <div
-                              key={edge.id}
-                              className="flex items-center justify-between rounded-lg border px-3 py-1.5"
-                            >
-                              <div className="flex items-center gap-2 min-w-0">
-                                <div
-                                  className="size-2 shrink-0 rounded-full"
-                                  style={{
-                                    backgroundColor: getRelationColor(
-                                      edge.relationType,
-                                    ),
-                                  }}
-                                />
-                                <p className="truncate text-sm text-foreground">
-                                  {getRelationLabel(edge.relationType)}
-                                </p>
-                              </div>
-                              <span className="ml-2 shrink-0 text-xs tabular-nums text-muted-foreground">
-                                {edge.weight.toFixed(2)}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {selectedNode.documentId && (
-                    <Button className="w-full" asChild>
-                      <Link href={`/app/library/${selectedNode.documentId}`}>
-                        <ExternalLink className="size-4" />
-                        Open document
-                      </Link>
-                    </Button>
-                  )}
-
-                  {subgraphError && (
-                    <Alert variant="destructive">
-                      <AlertTitle>Subgraph error</AlertTitle>
-                      <AlertDescription>
-                        {(subgraphError as Error).message}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-2 py-6 text-center">
-                  <Info className="size-8 text-muted-foreground/40" />
-                  <p className="text-sm text-muted-foreground">
-                    Select a node to inspect its details and relationships.
-                  </p>
+                    Rebuild graph
+                  </Button>
                 </div>
               )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+
+              {selectedNode.documentId && (
+                <Button className="w-full" asChild>
+                  <Link href={`/app/library/${selectedNode.documentId}`}>
+                    <ExternalLink className="size-4 mr-2" />
+                    Open Document Detail
+                  </Link>
+                </Button>
+              )}
+
+              {subgraphError && (
+                <Alert variant="destructive">
+                  <AlertTitle>Subgraph error</AlertTitle>
+                  <AlertDescription>
+                    {(subgraphError as Error).message}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <Separator />
+
+              {connectedNodes.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                    Connected nodes
+                  </p>
+                  <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-2">
+                    {connectedNodes.map((n) => (
+                      <button
+                        key={n.id}
+                        type="button"
+                        onClick={() => setSelectedNodeId(n.id)}
+                        className="w-full flex items-center justify-between rounded-lg border bg-card px-3 py-2 text-left transition-colors hover:border-primary/40 hover:bg-accent"
+                      >
+                        <p className="text-sm font-medium text-foreground truncate pr-2">
+                          {n.label}
+                        </p>
+                        <Badge
+                          variant="secondary"
+                          className="capitalize shrink-0 text-[10px] px-1.5 py-0 h-4"
+                        >
+                          {n.type}
+                        </Badge>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedEdges.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                    Relationships
+                  </p>
+                  <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-2">
+                    {selectedEdges.map((edge) => (
+                      <div
+                        key={edge.id}
+                        className="flex items-center justify-between rounded-lg border bg-card px-3 py-2"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div
+                            className="size-2 shrink-0 rounded-full"
+                            style={{
+                              backgroundColor: getRelationColor(
+                                edge.relationType,
+                              ),
+                            }}
+                          />
+                          <p className="truncate text-sm text-foreground">
+                            {getRelationLabel(edge.relationType)}
+                          </p>
+                        </div>
+                        <span className="ml-2 shrink-0 text-xs font-mono text-muted-foreground">
+                          {edge.weight.toFixed(2)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
     </PageContainer>
   );
 }
