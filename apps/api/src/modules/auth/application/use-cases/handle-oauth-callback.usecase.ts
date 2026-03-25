@@ -7,6 +7,8 @@ import { IExternalIdentityRepository } from '../../domain/repositories/external-
 import { OAuthProviderService } from '../../infrastructure/oauth/oauth-provider.service';
 import { RefreshSessionService } from '../../domain/services/refresh-session.service';
 
+import { LegalService } from '../../../legal/application/legal.service';
+
 @Injectable()
 export class HandleOAuthCallbackUseCase {
   constructor(
@@ -15,6 +17,7 @@ export class HandleOAuthCallbackUseCase {
     private readonly oAuthProviderService: OAuthProviderService,
     private readonly tokenService: TokenService,
     private readonly refreshSessionService: RefreshSessionService,
+    private readonly legalService: LegalService,
   ) {}
 
   async execute(input: {
@@ -77,6 +80,16 @@ export class HandleOAuthCallbackUseCase {
       userAgent: input.request.headers['user-agent'],
       ipAddress: this.getIpAddress(input.request),
     });
+
+    await this.legalService.acceptConsent(
+      internalUser.id,
+      {
+        types: ['privacy', 'cookie'],
+        version: this.legalService.getCurrentVersion(),
+      },
+      this.getIpAddress(input.request) ?? 'unknown',
+      input.request.headers['user-agent'] ?? 'unknown',
+    );
 
     return { user: authenticatedUser, tokens };
   }

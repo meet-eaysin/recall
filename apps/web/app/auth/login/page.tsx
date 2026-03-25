@@ -1,28 +1,24 @@
 'use client';
 
-import type React from 'react';
+import { useState } from 'react';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ChevronLeftIcon } from 'lucide-react';
-// import { useDevLogin } from '@/features/auth/hooks';
-// import { isDevAuthEnabled } from '@/lib/dev-auth';
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+} from '@/components/ui/field';
 import { authApi } from '@/features/auth/api';
 import Link from 'next/link';
 
 export default function LoginPage() {
-  // const devLogin = useDevLogin();
-  // const devAuthEnabled = isDevAuthEnabled();
-
-  // const handleDevLogin = async (event: React.FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   if (!devAuthEnabled) return;
-  //   const form = new FormData(event.currentTarget);
-  //   const email = String(form.get('email') ?? '').trim();
-  //   await devLogin.mutateAsync({ email: email || undefined });
-  //   window.location.href = '/app';
-  // };
+  const [accepted, setAccepted] = useState(false);
 
   const handleOAuthLogin = (provider: 'google' | 'github') => {
+    if (!accepted) return;
     window.location.href = authApi.buildOAuthUrl(provider);
   };
 
@@ -39,47 +35,63 @@ export default function LoginPage() {
         <div className="mx-auto space-y-4 sm:w-sm">
           <Logo className="h-5" />
           <div className="flex flex-col space-y-1">
-            <h1 className="font-semibold text-2xl tracking-wide">
+            <h1 className="font-semibold text-2xl tracking-wide text-white">
               Sign In or Join Now!
             </h1>
             <p className="text-base text-muted-foreground">
               login or create your Recall account.
             </p>
           </div>
-          <div className="space-y-2">
-            <Button
-              className="w-full"
-              type="button"
-              onClick={() => handleOAuthLogin('google')}
-            >
-              <GoogleIcon data-icon="inline-start" />
-              Continue with Google
-            </Button>
-            <Button
-              className="w-full"
-              type="button"
-              onClick={() => handleOAuthLogin('google')}
-            >
-              <GithubIcon data-icon="inline-start" />
-              Continue with GitHub
-            </Button>
+
+          <div className="space-y-6 pt-4">
+            <Field orientation="horizontal" className="rounded-lg border border-border/40 p-3 transition-colors hover:bg-neutral-900/40">
+              <Checkbox 
+                id="legal-consent" 
+                checked={accepted}
+                onCheckedChange={(checked) => setAccepted(checked === true)}
+              />
+              <FieldContent>
+                <FieldLabel htmlFor="legal-consent" className="cursor-pointer select-none">
+                  Legal Agreement
+                </FieldLabel>
+                <FieldDescription>
+                  I agree to the{' '}
+                  <Link href="/privacy-policy" className="font-medium underline underline-offset-4 hover:text-white transition-colors">
+                    Privacy Policy
+                  </Link>
+                  {' '}and{' '}
+                  <Link href="/cookie-policy" className="font-medium underline underline-offset-4 hover:text-white transition-colors">
+                    Cookie Policy
+                  </Link>.
+                </FieldDescription>
+              </FieldContent>
+            </Field>
+
+            <div className="space-y-2">
+              <Button
+                className="w-full h-11"
+                type="button"
+                disabled={!accepted}
+                onClick={() => handleOAuthLogin('google')}
+              >
+                <GoogleIcon className="mr-2 h-4 w-4" />
+                Continue with Google
+              </Button>
+              <Button
+                className="w-full h-11"
+                variant="outline"
+                type="button"
+                disabled={!accepted}
+                onClick={() => handleOAuthLogin('github')}
+              >
+                <GithubIcon className="mr-2 h-4 w-4" />
+                Continue with GitHub
+              </Button>
+            </div>
           </div>
-          <p className="mt-8 text-muted-foreground text-sm">
-            By clicking continue, you agree to our{' '}
-            <a
-              className="underline underline-offset-4 hover:text-primary"
-              href="#"
-            >
-              Terms of Service
-            </a>{' '}
-            and{' '}
-            <a
-              className="underline underline-offset-4 hover:text-primary"
-              href="#"
-            >
-              Privacy Policy
-            </a>
-            .
+
+          <p className="mt-8 text-center text-xs text-muted-foreground">
+            By clicking continue, you confirm you&apos;re 13 or older.
           </p>
         </div>
       </div>

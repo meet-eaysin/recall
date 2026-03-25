@@ -20,9 +20,14 @@ import { IExternalIdentityRepository } from './domain/repositories/external-iden
 import { IRefreshSessionRepository } from './domain/repositories/refresh-session.repository';
 import { MongooseExternalIdentityRepository } from './infrastructure/persistence/mongoose-external-identity.repository';
 import { MongooseRefreshSessionRepository } from './infrastructure/persistence/mongoose-refresh-session.repository';
+import { LegalModule } from '../legal/legal.module';
 
 @Module({
-  imports: [forwardRef(() => UsersModule), PassportModule],
+  imports: [
+    forwardRef(() => UsersModule),
+    forwardRef(() => LegalModule),
+    PassportModule,
+  ],
   controllers: [AuthController],
   providers: [
     GetSessionUseCase,

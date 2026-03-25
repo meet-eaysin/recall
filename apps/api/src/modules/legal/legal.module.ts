@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { LegalController } from './infrastructure/legal.controller';
 import { LegalService } from './application/legal.service';
 import { AuthModule } from '../auth/auth.module';
@@ -8,7 +8,7 @@ import { MongooseLegalRepository } from './infrastructure/persistence/mongoose-l
 
 @Module({
   imports: [
-    AuthModule,
+    forwardRef(() => AuthModule),
     UsersModule,
   ],
   controllers: [LegalController],

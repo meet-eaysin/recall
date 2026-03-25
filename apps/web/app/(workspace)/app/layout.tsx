@@ -10,7 +10,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { ConsentProvider } from '@/providers/consent-provider';
 
 export default async function WorkspaceLayout({
   children,
@@ -21,30 +20,28 @@ export default async function WorkspaceLayout({
   const defaultOpen = cookieStore.get('sidebar_state')?.value !== 'false';
 
   return (
-    <ConsentProvider>
-      <TooltipProvider>
-        <ThreadStreamProvider>
-          <SidebarProvider defaultOpen={defaultOpen}>
-            <div className="relative flex min-h-svh w-full overflow-hidden bg-background">
-              <AppSidebar />
-              <SidebarInset className="relative flex min-h-svh flex-1 flex-col overflow-hidden">
-                {/* Mobile Header */}
-                <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 md:hidden">
-                  <LogoIcon className="size-8" />
-                  <div className="flex-1 font-bold text-sm tracking-tight">
-                    Recall
-                  </div>
-                  <SidebarTrigger />
-                </header>
-                <main className="relative flex flex-1 flex-col overflow-hidden">
-                  {children}
-                </main>
-              </SidebarInset>
-            </div>
-            <Dock />
-          </SidebarProvider>
-        </ThreadStreamProvider>
-      </TooltipProvider>
-    </ConsentProvider>
+    <TooltipProvider>
+      <ThreadStreamProvider>
+        <SidebarProvider defaultOpen={defaultOpen}>
+          <div className="relative flex min-h-svh w-full overflow-hidden bg-background">
+            <AppSidebar />
+            <SidebarInset className="relative flex min-h-svh flex-1 flex-col overflow-hidden">
+              {/* Mobile Header */}
+              <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 md:hidden">
+                <LogoIcon className="size-8" />
+                <div className="flex-1 font-bold text-sm tracking-tight">
+                  Recall
+                </div>
+                <SidebarTrigger />
+              </header>
+              <main className="relative flex flex-1 flex-col overflow-hidden">
+                {children}
+              </main>
+            </SidebarInset>
+          </div>
+          <Dock />
+        </SidebarProvider>
+      </ThreadStreamProvider>
+    </TooltipProvider>
   );
 }
