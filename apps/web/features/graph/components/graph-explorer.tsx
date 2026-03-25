@@ -27,7 +27,6 @@ import {
   type ColorMode,
   type OnNodesChange,
   type OnEdgesChange,
-  Panel,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -38,13 +37,15 @@ import {
   RefreshCcw,
   ExternalLink,
   Network,
-  SunMedium,
-  Moon,
+  X,
+  Layers,
+  Sparkles,
 } from 'lucide-react';
 import { GraphNodeType, GraphRelationType } from '@repo/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
   Empty,
   EmptyDescription,
@@ -60,6 +61,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import {
   useDocumentSubgraph,
@@ -86,34 +88,26 @@ type KGEdgeData = {
 
 type KGEdge = Edge<KGEdgeData>;
 
-const RELATION_META: Record<
-  GraphRelationType,
-  { color: string; label: string }
-> = {
-  [GraphRelationType.ROOT_CONNECTION]: {
-    color: '#94a3b8',
-    label: 'Root connection',
-  },
-  [GraphRelationType.SEMANTIC_SIMILARITY]: {
-    color: '#2dd4bf',
-    label: 'Semantic similarity',
-  },
-  [GraphRelationType.SHARED_TAGS]: {
-    color: '#60a5fa',
-    label: 'Shared tags',
-  },
-  [GraphRelationType.TOPICAL]: {
-    color: '#a78bfa',
-    label: 'Topical',
-  },
+const EDGE_COLORS: Record<GraphRelationType, string> = {
+  [GraphRelationType.ROOT_CONNECTION]: '#94a3b8',
+  [GraphRelationType.SEMANTIC_SIMILARITY]: '#2dd4bf',
+  [GraphRelationType.SHARED_TAGS]: '#60a5fa',
+  [GraphRelationType.TOPICAL]: '#a78bfa',
 };
 
-function getRelationColor(type: GraphRelationType) {
-  return RELATION_META[type]?.color ?? '#94a3b8';
+const RELATION_LABELS: Record<GraphRelationType, string> = {
+  [GraphRelationType.ROOT_CONNECTION]: 'Root connection',
+  [GraphRelationType.SEMANTIC_SIMILARITY]: 'Semantic similarity',
+  [GraphRelationType.SHARED_TAGS]: 'Shared tags',
+  [GraphRelationType.TOPICAL]: 'Topical',
+};
+
+function getEdgeColor(type: GraphRelationType): string {
+  return EDGE_COLORS[type] ?? '#94a3b8';
 }
 
-function getRelationLabel(type: GraphRelationType) {
-  return RELATION_META[type]?.label ?? type;
+function getRelationLabel(type: GraphRelationType): string {
+  return RELATION_LABELS[type] ?? String(type);
 }
 
 function radialLayout(graph: FullGraphData) {
@@ -124,13 +118,13 @@ function radialLayout(graph: FullGraphData) {
   const rootNode = graph.nodes.find((n) => n.id === rootId);
   if (rootNode) positions.push({ id: rootNode.id, x: 0, y: 0 });
 
-  const count = others.length;
-  const rings = Math.ceil(count / 8);
+  let remaining = others.length;
   let placed = 0;
+  let ring = 0;
 
-  for (let ring = 0; ring < rings; ring++) {
-    const capacity = Math.min(count - placed, 6 + ring * 5);
-    const radius = 240 + ring * 200;
+  while (remaining > 0) {
+    const capacity = Math.min(remaining, 6 + ring * 6);
+    const radius = 260 + ring * 220;
     for (let i = 0; i < capacity; i++) {
       const node = others[placed + i];
       if (!node) continue;
@@ -142,6 +136,8 @@ function radialLayout(graph: FullGraphData) {
       });
     }
     placed += capacity;
+    remaining -= capacity;
+    ring++;
   }
 
   return positions;
@@ -190,18 +186,22 @@ function buildFlowData(
     };
   });
 
-  const edges: KGEdge[] = graph.edges.map((e) => ({
-    id: e.id,
-    source: e.fromNodeId,
-    target: e.toNodeId,
-    type: 'kgEdge',
-    data: { relationType: e.relationType, weight: e.weight },
-    style: {
-      stroke: getRelationColor(e.relationType),
-      strokeWidth: Math.max(1, e.weight * 2.5),
-    },
-    animated: e.relationType === GraphRelationType.SEMANTIC_SIMILARITY,
-  }));
+  const edges: KGEdge[] = graph.edges.map((e) => {
+    const color = getEdgeColor(e.relationType);
+    return {
+      id: e.id,
+      source: e.fromNodeId,
+      target: e.toNodeId,
+      type: 'kgEdge',
+      data: { relationType: e.relationType, weight: e.weight },
+      style: {
+        stroke: color,
+        strokeWidth: Math.max(1.5, e.weight * 3),
+        strokeOpacity: 0.7,
+      },
+      animated: e.relationType === GraphRelationType.SEMANTIC_SIMILARITY,
+    };
+  });
 
   return { nodes, edges };
 }
@@ -212,12 +212,12 @@ function KGHandles() {
       <Handle
         type="target"
         position={Position.Top}
-        className="opacity-0 w-1 h-1"
+        style={{ opacity: 0, width: 4, height: 4 }}
       />
       <Handle
         type="source"
         position={Position.Bottom}
-        className="opacity-0 w-1 h-1"
+        style={{ opacity: 0, width: 4, height: 4 }}
       />
     </>
   );
@@ -226,29 +226,28 @@ function KGHandles() {
 function RootNode({ data, selected }: NodeProps<KGNode>) {
   const d = data as KGNodeData;
   return (
-    <div className="relative flex flex-col items-center gap-1.5">
-      <NodeToolbar isVisible={selected} position={Position.Top} offset={12}>
-        <div className="flex items-center gap-1.5 rounded-lg border bg-popover px-2.5 py-1 text-xs font-medium text-popover-foreground shadow-md">
-          <BrainCircuit className="size-3 text-violet-500" />
+    <div className="flex flex-col items-center gap-2">
+      <NodeToolbar isVisible={selected} position={Position.Top} offset={14}>
+        <div className="flex items-center gap-1.5 rounded-lg border bg-popover/95 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-popover-foreground shadow-lg">
+          <BrainCircuit className="size-3 text-primary" />
           Knowledge Root · {d.connectionCount} links
         </div>
       </NodeToolbar>
 
       <div
         className={cn(
-          'flex h-16 w-16 items-center justify-center rounded-full border-2 shadow-lg transition-all duration-150',
+          'flex h-14 w-14 items-center justify-center rounded-full border-2 shadow-md transition-all duration-200',
           selected
-            ? 'border-violet-400 bg-violet-500 shadow-violet-400/40 scale-110'
-            : 'border-violet-300/70 bg-violet-500/90 hover:scale-105 hover:border-violet-400',
+            ? 'border-primary bg-primary scale-110 shadow-lg'
+            : 'border-primary/50 bg-primary/90 hover:scale-105 hover:border-primary',
         )}
       >
-        <BrainCircuit className="size-7 text-white" />
+        <BrainCircuit className="size-6 text-primary-foreground" />
       </div>
 
-      <span className="max-w-[120px] truncate text-center text-[10px] font-semibold text-muted-foreground">
+      <span className="max-w-[120px] truncate text-center text-[9px] font-bold tracking-widest text-muted-foreground">
         {d.label}
       </span>
-
       <KGHandles />
     </div>
   );
@@ -259,40 +258,41 @@ function DocumentNode({ data, selected }: NodeProps<KGNode>) {
   return (
     <div
       className={cn(
-        'relative min-w-[130px] max-w-[165px] rounded-xl border bg-card px-3 py-2.5 shadow-sm transition-all duration-150',
+        'relative min-w-[130px] max-w-[168px] rounded-xl border bg-card px-3 py-2.5 shadow-sm transition-all duration-200',
         d.isFocused
-          ? 'border-sky-400/70 ring-2 ring-sky-400/20'
+          ? 'border-primary/60 ring-2 ring-primary/20 shadow-md'
           : selected
-            ? 'border-primary/60 ring-2 ring-primary/15 scale-[1.04]'
-            : 'border-border hover:border-border/80 hover:scale-[1.02] hover:shadow-md',
+            ? 'border-border shadow-md scale-[1.04]'
+            : 'border-border/60 hover:border-border hover:shadow-md hover:scale-[1.02]',
       )}
     >
       <NodeToolbar isVisible={selected} position={Position.Top} offset={8}>
-        <div className="flex items-center gap-1.5 rounded-lg border bg-popover px-2.5 py-1 text-xs text-popover-foreground shadow-md">
+        <div className="flex items-center gap-1.5 rounded-lg border bg-popover/95 backdrop-blur-sm px-2.5 py-1 text-xs text-popover-foreground shadow-lg">
           {d.connectionCount} connections
           {d.documentId && (
-            <span className="rounded bg-sky-100 px-1.5 text-sky-700 dark:bg-sky-900 dark:text-sky-300">
+            <Badge variant="secondary" className="h-4 px-1.5 text-[9px]">
               doc
-            </span>
+            </Badge>
           )}
         </div>
       </NodeToolbar>
 
-      <div className="mb-1 flex items-center gap-1.5">
+      <div className="mb-1.5 flex items-center gap-1.5">
         <div
-          className={cn(
-            'size-2 shrink-0 rounded-full',
-            d.isFocused ? 'bg-sky-400' : 'bg-blue-400',
-          )}
+          className="size-1.5 shrink-0 rounded-full"
+          style={{
+            backgroundColor: d.isFocused
+              ? EDGE_COLORS[GraphRelationType.TOPICAL]
+              : EDGE_COLORS[GraphRelationType.SHARED_TAGS],
+          }}
         />
-        <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <span className="text-[9px] font-bold text-muted-foreground">
           Document
         </span>
       </div>
       <p className="line-clamp-2 text-xs font-semibold leading-snug text-foreground">
         {d.label}
       </p>
-
       <KGHandles />
     </div>
   );
@@ -303,28 +303,35 @@ function ConceptNode({ data, selected }: NodeProps<KGNode>) {
   return (
     <div
       className={cn(
-        'relative min-w-[100px] max-w-[140px] rounded-lg border bg-card px-2.5 py-1.5 shadow-sm transition-all duration-150',
+        'relative min-w-[100px] max-w-[145px] rounded-lg border bg-card/80 px-2.5 py-2 shadow-sm transition-all duration-200',
         selected
-          ? 'border-teal-400/60 ring-2 ring-teal-400/20 scale-[1.04]'
-          : 'border-teal-300/50 hover:border-teal-400/60 hover:scale-[1.02]',
+          ? 'border-teal-500/50 ring-1 ring-teal-500/20 scale-[1.04] shadow-md'
+          : 'border-border/50 hover:border-border hover:scale-[1.02]',
       )}
     >
       <NodeToolbar isVisible={selected} position={Position.Top} offset={8}>
-        <div className="rounded-lg border bg-popover px-2.5 py-1 text-xs text-popover-foreground shadow-md">
+        <div className="rounded-lg border bg-popover/95 backdrop-blur-sm px-2.5 py-1 text-xs text-popover-foreground shadow-lg">
           Concept · {d.connectionCount} connections
         </div>
       </NodeToolbar>
 
       <div className="mb-0.5 flex items-center gap-1">
-        <div className="size-1.5 shrink-0 rounded-full bg-teal-500" />
-        <span className="text-[9px] font-semibold uppercase tracking-wider text-teal-600 dark:text-teal-400">
+        <div
+          className="size-1.5 shrink-0 rounded-full"
+          style={{
+            backgroundColor: EDGE_COLORS[GraphRelationType.SEMANTIC_SIMILARITY],
+          }}
+        />
+        <span
+          className="text-[9px] font-bold uppercase tracking-widest"
+          style={{ color: EDGE_COLORS[GraphRelationType.SEMANTIC_SIMILARITY] }}
+        >
           Concept
         </span>
       </div>
       <p className="line-clamp-2 text-[11px] font-medium leading-snug text-foreground">
         {d.label}
       </p>
-
       <KGHandles />
     </div>
   );
@@ -341,7 +348,8 @@ function KGEdge({
   markerEnd,
 }: EdgeProps<KGEdge>) {
   const d = data as KGEdgeData;
-  const color = getRelationColor(d.relationType);
+  const color = getEdgeColor(d.relationType);
+  const baseWidth = Math.max(1.5, d.weight * 3);
 
   const dx = targetX - sourceX;
   const dy = targetY - sourceY;
@@ -369,7 +377,7 @@ function KGEdge({
     targetX,
     targetY,
     targetPosition: targetPos,
-    curvature: 0.25,
+    curvature: 0.2,
   });
 
   return (
@@ -380,10 +388,8 @@ function KGEdge({
         markerEnd={markerEnd}
         style={{
           stroke: color,
-          strokeWidth: selected
-            ? Math.max(2, d.weight * 4)
-            : Math.max(1, d.weight * 2),
-          strokeOpacity: selected ? 1 : 0.6,
+          strokeWidth: selected ? baseWidth * 1.8 : baseWidth,
+          strokeOpacity: selected ? 1 : 0.65,
           transition: 'stroke-width 0.15s ease, stroke-opacity 0.15s ease',
         }}
       />
@@ -392,16 +398,14 @@ function KGEdge({
           <div
             className="pointer-events-none absolute"
             style={{
-              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+              transform: `translate(-50%,-50%) translate(${labelX}px,${labelY}px)`,
             }}
           >
             <div
-              className="rounded-full px-2.5 py-0.5 text-[10px] font-semibold text-white shadow-sm"
+              className="rounded-full px-2.5 py-0.5 text-[10px] font-semibold text-white shadow-md"
               style={{ backgroundColor: color }}
             >
-              {getRelationLabel(d.relationType)}
-              {' · '}
-              {d.weight.toFixed(2)}
+              {getRelationLabel(d.relationType)} · {d.weight.toFixed(2)}
             </div>
           </div>
         </EdgeLabelRenderer>
@@ -416,9 +420,7 @@ const nodeTypes = {
   conceptNode: ConceptNode,
 } as const;
 
-const edgeTypes = {
-  kgEdge: KGEdge,
-} as const;
+const edgeTypes = { kgEdge: KGEdge } as const;
 
 type InnerFlowProps = {
   graph: FullGraphData | null;
@@ -426,7 +428,6 @@ type InnerFlowProps = {
   selectedNodeId: string | null;
   onSelectNode: (id: string | null) => void;
   colorMode: ColorMode;
-  children?: React.ReactNode;
 };
 
 function InnerFlow({
@@ -435,7 +436,6 @@ function InnerFlow({
   selectedNodeId,
   onSelectNode,
   colorMode,
-  children,
 }: InnerFlowProps) {
   const { fitView } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState<KGNode>([]);
@@ -450,9 +450,7 @@ function InnerFlow({
     const { nodes: n, edges: e } = buildFlowData(graph, focusedDocumentId);
     setNodes(n);
     setEdges(e);
-    requestAnimationFrame(() => {
-      fitView({ padding: 0.2, duration: 500 });
-    });
+    requestAnimationFrame(() => fitView({ padding: 0.15, duration: 600 }));
   }, [graph, focusedDocumentId, setNodes, setEdges, fitView]);
 
   React.useEffect(() => {
@@ -474,11 +472,13 @@ function InnerFlow({
     const d = node.data as KGNodeData;
     switch (d.nodeType) {
       case GraphNodeType.ROOT:
-        return '#a78bfa';
+        return EDGE_COLORS[GraphRelationType.TOPICAL];
       case GraphNodeType.CONCEPT:
-        return '#2dd4bf';
+        return EDGE_COLORS[GraphRelationType.SEMANTIC_SIMILARITY];
       default:
-        return d.isFocused ? '#38bdf8' : '#60a5fa';
+        return d.isFocused
+          ? EDGE_COLORS[GraphRelationType.TOPICAL]
+          : EDGE_COLORS[GraphRelationType.SHARED_TAGS];
     }
   }, []);
 
@@ -493,34 +493,54 @@ function InnerFlow({
       colorMode={colorMode}
       connectionMode={ConnectionMode.Loose}
       fitView
-      minZoom={0.1}
+      minZoom={0.05}
       maxZoom={3}
       deleteKeyCode={null}
       proOptions={{ hideAttribution: true }}
     >
       <Background
         variant={BackgroundVariant.Dots}
-        gap={20}
-        size={1}
-        className="opacity-30"
+        gap={22}
+        size={1.2}
+        className="opacity-[0.15]"
       />
       <Controls
         position="bottom-right"
         showInteractive={false}
-        className="rounded-xl border border-border bg-card shadow-none mb-4 mr-4"
+        className="rounded-xl! border! border-border! bg-card! shadow-none! mb-4! mr-4!"
       />
       <MiniMap
-        position="bottom-right"
+        position="bottom-left"
         nodeColor={miniMapNodeColor}
         maskColor={
           colorMode === 'dark' ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.55)'
         }
         pannable
         zoomable
-        className="rounded-xl border border-border bg-card shadow-none"
+        style={{ width: 148, height: 96 }}
+        className="rounded-xl! border! border-border! bg-card! shadow-none! mb-4! ml-4!"
       />
-      {children}
     </ReactFlow>
+  );
+}
+
+function StatPill({
+  icon: Icon,
+  value,
+  label,
+}: {
+  icon: React.ElementType;
+  value: number;
+  label: string;
+}) {
+  return (
+    <div className="flex items-center gap-2 rounded-lg border border-border/50 bg-card px-2 py-1 shadow-sm">
+      <Icon className="size-3 text-muted-foreground" />
+      <span className="text-xs font-semibold tabular-nums text-foreground">
+        {value.toLocaleString()}
+      </span>
+      <span className="text-xs text-muted-foreground">{label}</span>
+    </div>
   );
 }
 
@@ -594,11 +614,13 @@ export function GraphExplorer() {
     if (fullGraph?.rootNodeId) setSelectedNodeId(fullGraph.rootNodeId);
   }, [fullGraph?.rootNodeId]);
 
+  const hasGraph = (graph?.nodes?.length ?? 0) > 0;
+
   if (error) {
     return (
-      <PageContainer className="space-y-6">
+      <PageContainer>
         <GraphHeader />
-        <Alert variant="destructive">
+        <Alert variant="destructive" className="mt-6">
           <AlertTitle>Failed to load graph</AlertTitle>
           <AlertDescription>{(error as Error).message}</AlertDescription>
         </Alert>
@@ -607,31 +629,57 @@ export function GraphExplorer() {
   }
 
   return (
-    <PageContainer className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
+    <>
+      <PageContainer className="flex h-screen flex-col gap-4 overflow-hidden py-5">
         <GraphHeader />
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setColorMode((m) => (m === 'dark' ? 'light' : 'dark'))}
-          title="Toggle graph theme"
-          className="shrink-0"
-        >
-          {colorMode === 'dark' ? (
-            <SunMedium className="size-4" />
-          ) : (
-            <Moon className="size-4" />
-          )}
-        </Button>
-      </div>
 
-      <div className="pt-2 h-[calc(100vh-150px)] min-h-[500px]">
-        <div className="relative h-full w-full overflow-hidden rounded-xl border bg-muted/10 shadow-sm flex flex-col">
+        {hasGraph && (
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <StatPill
+              icon={Network}
+              value={graph?.nodes.length ?? 0}
+              label="nodes"
+            />
+            <StatPill
+              icon={GitBranch}
+              value={graph?.edges.length ?? 0}
+              label="edges"
+            />
+
+            {(isLoading || subgraphLoading) && (
+              <div className="flex items-center gap-1.5 rounded-lg border border-border/50 bg-card px-3 py-1.5 shadow-sm">
+                <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">Updating…</span>
+              </div>
+            )}
+
+            {focusedDocumentId && (
+              <div className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-1.5">
+                <Sparkles className="size-3.5 text-primary" />
+                <span className="text-xs font-medium text-primary">
+                  Subgraph active
+                </span>
+                <button
+                  onClick={handleClearFocus}
+                  className="ml-0.5 rounded text-muted-foreground transition-colors hover:text-foreground"
+                  aria-label="Clear subgraph focus"
+                >
+                  <X className="size-3" />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        <Card className="relative min-h-0 p-0 flex-1 overflow-hidden border-border/50 shadow-sm">
           {isLoading ? (
-            <div className="grid h-full place-items-center">
-              <Loader2 className="size-8 animate-spin text-muted-foreground" />
+            <div className="grid h-full place-items-center bg-muted/5">
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="size-8 animate-spin text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">Building graph…</p>
+              </div>
             </div>
-          ) : graph && graph.nodes.length > 0 ? (
+          ) : hasGraph ? (
             <ReactFlowProvider>
               <InnerFlow
                 graph={graph}
@@ -639,97 +687,93 @@ export function GraphExplorer() {
                 selectedNodeId={selectedNodeId}
                 onSelectNode={handleSelectNode}
                 colorMode={colorMode}
-              >
-                <Panel position="bottom-left" className="m-4">
-                  <div className="flex flex-col rounded-xl border border-border/40 bg-background/80 shadow-lg backdrop-blur-md supports-backdrop-filter:bg-background/60 overflow-hidden divide-y divide-border/30">
-                    <div className="flex flex-wrap items-center gap-4 px-4 py-2.5">
-                      <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                        <Network className="size-3.5" />
-                        {graph?.nodes.length ?? 0} nodes
-                        <span className="text-border/50 mx-1">•</span>
-                        {graph?.edges.length ?? 0} edges
-                        
-                        {(isLoading || subgraphLoading) && (
-                          <>
-                            <span className="text-border/50 mx-1">•</span>
-                            <div className="flex items-center gap-1.5 text-primary">
-                              <Loader2 className="size-3 animate-spin" />
-                              Loading...
-                            </div>
-                          </>
-                        )}
-                      </div>
-                      
-                      {focusedDocumentId && (
-                        <div className="flex items-center gap-3">
-                          <span className="text-[10px] font-semibold uppercase tracking-wider text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full">
-                            Subgraph Active
-                          </span>
-                          <Button
-                            variant="link"
-                            size="sm"
-                            onClick={handleClearFocus}
-                            className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
-                          >
-                            Clear focus
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-2.5 bg-muted/30">
-                      <div className="flex items-center gap-3">
-                        {[
-                          { label: 'Root', color: '#a78bfa' },
-                          { label: 'Document', color: '#60a5fa' },
-                          { label: 'Focused', color: '#38bdf8' },
-                          { label: 'Concept', color: '#2dd4bf' },
-                        ].map(({ label, color }) => (
-                          <div key={label} className="flex items-center gap-1.5">
-                            <div
-                              className="size-2 rounded-full shadow-sm"
-                              style={{ backgroundColor: color }}
-                            />
-                            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">{label}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="hidden xl:block h-3 w-px bg-border/40" />
-                      <div className="flex items-center gap-3">
-                        {Object.entries(RELATION_META).map(
-                          ([type, { color, label }]) => (
-                            <div key={type} className="flex items-center gap-1.5">
-                              <div
-                                className="w-4 rounded-full brightness-90 shadow-sm"
-                                style={{ backgroundColor: color, height: '2px' }}
-                              />
-                              <span className="text-[11px] font-medium text-muted-foreground tracking-tight">
-                                {label}
-                              </span>
-                            </div>
-                          ),
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </Panel>
-              </InnerFlow>
+              />
             </ReactFlowProvider>
           ) : (
-            <Empty className="h-full rounded-none border-0">
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <BrainCircuit className="size-4" />
-                </EmptyMedia>
-                <EmptyTitle>No graph yet</EmptyTitle>
-                <EmptyDescription>
-                  Ingest documents or rebuild a graph to see relationships.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
+            <div className="grid h-full place-items-center bg-muted/5">
+              <Empty>
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <BrainCircuit className="size-4" />
+                  </EmptyMedia>
+                  <EmptyTitle>No graph yet</EmptyTitle>
+                  <EmptyDescription>
+                    Ingest documents or rebuild a graph to see relationships.
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            </div>
           )}
-        </div>
-      </div>
+        </Card>
+
+        {hasGraph && (
+          <div className="flex shrink-0 items-center justify-between gap-6 pt-3">
+            {/* Nodes */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+                <Layers className="size-3.5" />
+                Nodes
+              </div>
+
+              <div className="flex items-center gap-3">
+                {[
+                  {
+                    label: 'Root',
+                    color: EDGE_COLORS[GraphRelationType.TOPICAL],
+                  },
+                  {
+                    label: 'Document',
+                    color: EDGE_COLORS[GraphRelationType.SHARED_TAGS],
+                  },
+                  {
+                    label: 'Focused',
+                    color: EDGE_COLORS[GraphRelationType.TOPICAL],
+                    opacity: 0.5,
+                  },
+                  {
+                    label: 'Concept',
+                    color: EDGE_COLORS[GraphRelationType.SEMANTIC_SIMILARITY],
+                  },
+                ].map(({ label, color, opacity }) => (
+                  <div key={label} className="flex items-center gap-1.5">
+                    <span
+                      className="size-2 rounded-full"
+                      style={{ backgroundColor: color, opacity: opacity ?? 1 }}
+                    />
+                    <span className="text-[11px] text-muted-foreground">
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Edges */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+                <GitBranch className="size-3.5" />
+                Edges
+              </div>
+
+              <div className="flex items-center gap-3">
+                {(
+                  Object.entries(EDGE_COLORS) as [GraphRelationType, string][]
+                ).map(([type, color]) => (
+                  <div key={type} className="flex items-center gap-1.5">
+                    <span
+                      className="h-[2px] w-4 rounded-full"
+                      style={{ backgroundColor: color }}
+                    />
+                    <span className="text-[11px] text-muted-foreground">
+                      {getRelationLabel(type)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </PageContainer>
 
       <Sheet
         open={!!selectedNodeId && !!selectedNode}
@@ -737,165 +781,167 @@ export function GraphExplorer() {
           if (!open) setSelectedNodeId(null);
         }}
       >
-        <SheetContent className="w-full sm:max-w-md overflow-y-auto outline-none">
-          <SheetHeader className="mb-6 space-y-1">
-            <SheetTitle>Node Selection</SheetTitle>
-            <SheetDescription>
-              Inspect the selected node and its relationships.
+        <SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-[400px]">
+          <SheetHeader className="border-b border-border/60 px-6 py-5">
+            <SheetTitle className="text-base">Node detail</SheetTitle>
+            <SheetDescription className="text-xs">
+              Inspect relationships and navigate the graph.
             </SheetDescription>
           </SheetHeader>
 
           {selectedNode && (
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex flex-wrap gap-1.5 mb-2">
-                  <Badge variant="secondary" className="capitalize">
-                    {selectedNode.type}
-                  </Badge>
-                  <Badge variant="outline">
-                    {selectedEdges.length} connections
-                  </Badge>
+            <ScrollArea className="flex-1 px-6 py-5">
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <div className="flex flex-wrap gap-1.5">
+                    <Badge variant="secondary" className="capitalize text-xs">
+                      {selectedNode.type}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      {selectedEdges.length} connections
+                    </Badge>
+                  </div>
+                  <h3 className="text-lg font-semibold leading-snug text-foreground">
+                    {selectedNode.label}
+                  </h3>
+                  {selectedNode.documentId && (
+                    <p className="rounded-md bg-muted/60 px-2 py-1 font-mono text-[10px] text-muted-foreground">
+                      {selectedNode.documentId}
+                    </p>
+                  )}
                 </div>
-                <h3 className="text-xl font-semibold leading-snug text-foreground">
-                  {selectedNode.label}
-                </h3>
+
                 {selectedNode.documentId && (
-                  <p className="truncate font-mono text-[11px] text-muted-foreground">
-                    {selectedNode.documentId}
-                  </p>
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setFocusedDocumentId(selectedNode.documentId ?? null)
+                        }
+                      >
+                        <GitBranch className="mr-1.5 size-3.5" />
+                        Subgraph
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={rebuildMutation.isPending}
+                        onClick={() =>
+                          void rebuildMutation.mutateAsync(
+                            selectedNode.documentId ?? '',
+                          )
+                        }
+                      >
+                        {rebuildMutation.isPending ? (
+                          <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+                        ) : (
+                          <RefreshCcw className="mr-1.5 size-3.5" />
+                        )}
+                        Rebuild
+                      </Button>
+                    </div>
+                    <Button className="w-full" size="sm" asChild>
+                      <Link href={`/app/library/${selectedNode.documentId}`}>
+                        <ExternalLink className="mr-1.5 size-3.5" />
+                        Open document
+                      </Link>
+                    </Button>
+                  </div>
+                )}
+
+                {subgraphError && (
+                  <Alert variant="destructive">
+                    <AlertTitle>Subgraph error</AlertTitle>
+                    <AlertDescription>
+                      {(subgraphError as Error).message}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                <Separator />
+
+                {connectedNodes.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Connected nodes ({connectedNodes.length})
+                    </p>
+                    <div className="space-y-1">
+                      {connectedNodes.map((n) => (
+                        <button
+                          key={n.id}
+                          type="button"
+                          onClick={() => setSelectedNodeId(n.id)}
+                          className="flex w-full items-center justify-between rounded-lg border border-border/50 bg-card px-3 py-2 text-left transition-colors hover:border-primary/30 hover:bg-accent/60"
+                        >
+                          <p className="truncate pr-2 text-sm font-medium text-foreground">
+                            {n.label}
+                          </p>
+                          <Badge
+                            variant="secondary"
+                            className="h-4 shrink-0 px-1.5 text-[9px] capitalize"
+                          >
+                            {n.type}
+                          </Badge>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {selectedEdges.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Relationships
+                    </p>
+                    <div className="space-y-1">
+                      {selectedEdges.map((edge) => (
+                        <div
+                          key={edge.id}
+                          className="flex items-center justify-between rounded-lg border border-border/50 bg-card px-3 py-2"
+                        >
+                          <div className="flex min-w-0 items-center gap-2">
+                            <div
+                              className="size-2 shrink-0 rounded-full"
+                              style={{
+                                backgroundColor: getEdgeColor(
+                                  edge.relationType,
+                                ),
+                              }}
+                            />
+                            <p className="truncate text-sm text-foreground">
+                              {getRelationLabel(edge.relationType)}
+                            </p>
+                          </div>
+                          <span className="ml-2 shrink-0 font-mono text-xs tabular-nums text-muted-foreground">
+                            {edge.weight.toFixed(2)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
-
-              {selectedNode.documentId && (
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                    onClick={() =>
-                      setFocusedDocumentId(selectedNode.documentId ?? null)
-                    }
-                  >
-                    <GitBranch className="size-3.5 mr-2" />
-                    Focus subgraph
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                    disabled={rebuildMutation.isPending}
-                    onClick={() =>
-                      void rebuildMutation.mutateAsync(
-                        selectedNode.documentId ?? '',
-                      )
-                    }
-                  >
-                    {rebuildMutation.isPending ? (
-                      <Loader2 className="size-3.5 animate-spin mr-2" />
-                    ) : (
-                      <RefreshCcw className="size-3.5 mr-2" />
-                    )}
-                    Rebuild graph
-                  </Button>
-                </div>
-              )}
-
-              {selectedNode.documentId && (
-                <Button className="w-full" asChild>
-                  <Link href={`/app/library/${selectedNode.documentId}`}>
-                    <ExternalLink className="size-4 mr-2" />
-                    Open Document Detail
-                  </Link>
-                </Button>
-              )}
-
-              {subgraphError && (
-                <Alert variant="destructive">
-                  <AlertTitle>Subgraph error</AlertTitle>
-                  <AlertDescription>
-                    {(subgraphError as Error).message}
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              <Separator />
-
-              {connectedNodes.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                    Connected nodes
-                  </p>
-                  <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-2">
-                    {connectedNodes.map((n) => (
-                      <button
-                        key={n.id}
-                        type="button"
-                        onClick={() => setSelectedNodeId(n.id)}
-                        className="w-full flex items-center justify-between rounded-lg border bg-card px-3 py-2 text-left transition-colors hover:border-primary/40 hover:bg-accent"
-                      >
-                        <p className="text-sm font-medium text-foreground truncate pr-2">
-                          {n.label}
-                        </p>
-                        <Badge
-                          variant="secondary"
-                          className="capitalize shrink-0 text-[10px] px-1.5 py-0 h-4"
-                        >
-                          {n.type}
-                        </Badge>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {selectedEdges.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                    Relationships
-                  </p>
-                  <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-2">
-                    {selectedEdges.map((edge) => (
-                      <div
-                        key={edge.id}
-                        className="flex items-center justify-between rounded-lg border bg-card px-3 py-2"
-                      >
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div
-                            className="size-2 shrink-0 rounded-full"
-                            style={{
-                              backgroundColor: getRelationColor(
-                                edge.relationType,
-                              ),
-                            }}
-                          />
-                          <p className="truncate text-sm text-foreground">
-                            {getRelationLabel(edge.relationType)}
-                          </p>
-                        </div>
-                        <span className="ml-2 shrink-0 text-xs font-mono text-muted-foreground">
-                          {edge.weight.toFixed(2)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            </ScrollArea>
           )}
         </SheetContent>
       </Sheet>
-    </PageContainer>
+    </>
   );
 }
 
 function GraphHeader() {
   return (
-    <header className="space-y-1">
-      <h1 className="text-2xl font-bold tracking-tight">Knowledge Graph</h1>
-      <p className="text-sm text-muted-foreground">
-        Explore semantic relationships and document connections across your
-        workspace.
-      </p>
-    </header>
+    <div className="flex shrink-0 items-center justify-between gap-4">
+      <div>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">
+          Knowledge Graph
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Explore semantic relationships and document connections.
+        </p>
+      </div>
+    </div>
   );
 }
