@@ -26,9 +26,9 @@ interface HighlightedPre extends React.HTMLAttributes<HTMLPreElement> {
 
 const HighlightedPre = React.memo(
   ({ children, language, ...props }: HighlightedPre) => {
-    const [tokens, setTokens] = React.useState<
-      Array<Array<{ content: string; htmlStyle?: string | Record<string, string> }>> | null
-    >(null);
+    const [tokens, setTokens] = React.useState<Array<
+      Array<{ content: string; htmlStyle?: string | Record<string, string> }>
+    > | null>(null);
     const [isSupported, setIsSupported] = React.useState(true);
 
     React.useEffect(() => {

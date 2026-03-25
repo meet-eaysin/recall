@@ -8,6 +8,7 @@ import { UserPublicViewDto } from './dtos/user.response.dto';
 import { ListUserSessionsUseCase } from '../application/use-cases/list-user-sessions.usecase';
 import { RevokeUserSessionUseCase } from '../application/use-cases/revoke-user-session.usecase';
 import { UpdateUserUseCase } from '../application/use-cases/update-user.usecase';
+import { DeleteAccountUseCase } from '../application/use-cases/delete-account.usecase';
 import { UpdateUserDto } from './dtos/user.dto';
 import { UserSessionViewDto } from './dtos/user-session.response.dto';
 
@@ -20,6 +21,7 @@ export class UsersController {
     private readonly listUserSessionsUseCase: ListUserSessionsUseCase,
     private readonly revokeUserSessionUseCase: RevokeUserSessionUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
+    private readonly deleteAccountUseCase: DeleteAccountUseCase,
   ) {}
 
   @Get('me')
@@ -38,11 +40,20 @@ export class UsersController {
     summary: 'Update current user profile',
   })
   @ApiSuccessResponse(UserPublicViewDto)
-  updateMe(
-    @User('userId') userId: string,
-    @Body() dto: UpdateUserDto,
-  ) {
+  updateMe(@User('userId') userId: string, @Body() dto: UpdateUserDto) {
     return this.updateUserUseCase.execute(userId, dto);
+  }
+
+  @Delete('me')
+  @ApiOperation({
+    summary: 'Delete current user account permanently',
+    description:
+      'Deletes all user data including documents, configurations, and sessions.',
+  })
+  @ApiSuccessResponse(undefined, 'Account deleted successfully')
+  async deleteMe(@User('userId') userId: string) {
+    await this.deleteAccountUseCase.execute(userId);
+    return { success: true };
   }
 
   @Get('me/sessions')

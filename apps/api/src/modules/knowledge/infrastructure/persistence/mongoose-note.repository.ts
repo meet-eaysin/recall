@@ -66,6 +66,10 @@ export class MongooseNoteRepository extends INoteRepository {
     return result.deletedCount > 0;
   }
 
+  async deleteAllByUserId(userId: string): Promise<void> {
+    await NoteModel.deleteMany({ userId }).exec();
+  }
+
   private toEntity(doc: INoteDocument): NoteEntity {
     return NoteEntity.create({
       id: doc.id,

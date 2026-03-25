@@ -16,7 +16,8 @@ export function useAutoScroll(dependencies: readonly unknown[]) {
 
     // Don't scroll if we're already essentially at the bottom
     const { scrollTop, scrollHeight, clientHeight } = el;
-    const isAlreadyAtBottom = Math.abs(scrollHeight - scrollTop - clientHeight) < 2;
+    const isAlreadyAtBottom =
+      Math.abs(scrollHeight - scrollTop - clientHeight) < 2;
     if (isAlreadyAtBottom && isAutoScrollRef.current) return;
 
     if (rafId.current !== null) cancelAnimationFrame(rafId.current);
@@ -31,7 +32,9 @@ export function useAutoScroll(dependencies: readonly unknown[]) {
     if (!el) return;
 
     const { scrollTop, scrollHeight, clientHeight } = el;
-    const distanceFromBottom = Math.abs(scrollHeight - scrollTop - clientHeight);
+    const distanceFromBottom = Math.abs(
+      scrollHeight - scrollTop - clientHeight,
+    );
 
     const isScrollingUp =
       previousScrollTop.current !== null
@@ -54,7 +57,9 @@ export function useAutoScroll(dependencies: readonly unknown[]) {
 
     // Only update state (and re-render) when button visibility actually changes
     const shouldShowButton = !isAutoScrollRef.current;
-    setShowScrollButton((prev) => (prev !== shouldShowButton ? shouldShowButton : prev));
+    setShowScrollButton((prev) =>
+      prev !== shouldShowButton ? shouldShowButton : prev,
+    );
 
     previousScrollTop.current = scrollTop;
   }, []);

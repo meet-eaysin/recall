@@ -7,10 +7,7 @@ import { UpdateUserDto } from '../../interface/dtos/user.dto';
 export class UpdateUserUseCase {
   constructor(private readonly userRepository: IUserRepository) {}
 
-  async execute(
-    userId: string,
-    dto: UpdateUserDto,
-  ): Promise<UserPublicView> {
+  async execute(userId: string, dto: UpdateUserDto): Promise<UserPublicView> {
     const user = await this.userRepository.findById(userId);
 
     if (!user) {

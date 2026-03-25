@@ -18,4 +18,5 @@ export abstract class IFolderRepository {
   ): Promise<FolderEntity | null>;
   abstract delete(id: string, userId: string): Promise<boolean>;
   abstract countDocuments(folderId: string, userId: string): Promise<number>;
+  abstract deleteAllByUserId(userId: string): Promise<void>;
 }

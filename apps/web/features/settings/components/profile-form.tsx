@@ -6,7 +6,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Field, FieldDescription, FieldLabel, FieldError } from '@/components/ui/field';
+import {
+  Field,
+  FieldDescription,
+  FieldLabel,
+  FieldError,
+} from '@/components/ui/field';
 import { useCurrentUser } from '../hooks';
 import { settingsApi } from '../api';
 import { toast } from 'sonner';
@@ -51,9 +56,7 @@ export function ProfileForm() {
       <Field>
         <FieldLabel>Name</FieldLabel>
         <Input placeholder="Your name" {...form.register('name')} />
-        <FieldDescription>
-          This is your public display name.
-        </FieldDescription>
+        <FieldDescription>This is your public display name.</FieldDescription>
         {form.formState.errors.name && (
           <FieldError>{form.formState.errors.name.message}</FieldError>
         )}
@@ -72,17 +75,22 @@ export function ProfileForm() {
 
       <Field>
         <FieldLabel>Avatar URL</FieldLabel>
-        <Input placeholder="https://example.com/avatar.png" {...form.register('avatarUrl')} />
-        <FieldDescription>
-          Link to your profile picture.
-        </FieldDescription>
+        <Input
+          placeholder="https://example.com/avatar.png"
+          {...form.register('avatarUrl')}
+        />
+        <FieldDescription>Link to your profile picture.</FieldDescription>
         {form.formState.errors.avatarUrl && (
           <FieldError>{form.formState.errors.avatarUrl.message}</FieldError>
         )}
       </Field>
 
       <div className="flex justify-end pt-4 border-t border-border/40">
-        <Button type="submit" disabled={isSubmitting} className="rounded-lg shadow-sm px-8">
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="rounded-lg shadow-sm px-8"
+        >
           {isSubmitting ? 'Saving...' : 'Save changes'}
         </Button>
       </div>

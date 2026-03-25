@@ -90,8 +90,11 @@ export class MongooseUserRepository implements IUserRepository {
     ).exec();
 
     if (!doc) throw new Error('User not found');
-
     return this.toEntity(doc);
+  }
+
+  async delete(id: string): Promise<void> {
+    await UserModel.deleteOne({ _id: id }).exec();
   }
 
   private toEntity(doc: IUserDocument): UserEntity {

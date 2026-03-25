@@ -24,4 +24,5 @@ export abstract class IUserRepository {
     id: string,
     input: Partial<Omit<UpsertIdentityUserInput, 'authId'>>,
   ): Promise<UserEntity>;
+  abstract delete(id: string): Promise<void>;
 }

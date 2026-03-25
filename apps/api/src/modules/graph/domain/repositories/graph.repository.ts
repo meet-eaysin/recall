@@ -43,4 +43,5 @@ export abstract class IGraphRepository {
     userId: string,
   ): Promise<void>;
   abstract hasPathToRoot(nodeId: string, userId: string): Promise<boolean>;
+  abstract deleteAllByUserId(userId: string): Promise<void>;
 }

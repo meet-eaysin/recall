@@ -52,4 +52,5 @@ export const settingsApi = {
       API_ENDPOINTS.LLM_SETTINGS.TEST,
       { body },
     ),
+  deleteAccount: () => apiDelete<{ success: boolean }>(API_ENDPOINTS.USERS.ME),
 };

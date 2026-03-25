@@ -92,6 +92,10 @@ export class MongooseFolderRepository extends IFolderRepository {
     }).exec();
   }
 
+  async deleteAllByUserId(userId: string): Promise<void> {
+    await FolderModel.deleteMany({ userId }).exec();
+  }
+
   private toEntity(doc: IFolderDocument): FolderEntity {
     return FolderEntity.create({
       id: doc.id,

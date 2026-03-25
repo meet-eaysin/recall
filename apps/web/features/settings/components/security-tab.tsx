@@ -3,7 +3,13 @@
 import { LaptopMinimal, Smartphone, Trash2, ShieldCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRevokeUserSession, useUserSessions } from '../hooks';
@@ -11,7 +17,11 @@ import { useRevokeUserSession, useUserSessions } from '../hooks';
 function getDeviceIcon(userAgent: string | null) {
   if (!userAgent) return LaptopMinimal;
   const value = userAgent.toLowerCase();
-  if (value.includes('iphone') || value.includes('android') || value.includes('mobile')) {
+  if (
+    value.includes('iphone') ||
+    value.includes('android') ||
+    value.includes('mobile')
+  ) {
     return Smartphone;
   }
   return LaptopMinimal;
@@ -51,10 +61,18 @@ export function SecurityTab() {
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="font-semibold truncate">{session.userAgent || 'Unknown device'}</p>
-                          {session.current && <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">Current</Badge>}
+                          <p className="font-semibold truncate">
+                            {session.userAgent || 'Unknown device'}
+                          </p>
+                          {session.current && (
+                            <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
+                              Current
+                            </Badge>
+                          )}
                         </div>
-                        <p className="text-xs text-muted-foreground tabular-nums">IP: {session.ipAddress || 'Unknown'}</p>
+                        <p className="text-xs text-muted-foreground tabular-nums">
+                          IP: {session.ipAddress || 'Unknown'}
+                        </p>
                       </div>
                     </div>
 
@@ -62,14 +80,21 @@ export function SecurityTab() {
                       <ConfirmationDialog
                         confirmLabel="Revoke session"
                         description="This device will be logged out immediately."
-                        isPending={revokeSession.isPending && revokeSession.variables === session.sessionId}
+                        isPending={
+                          revokeSession.isPending &&
+                          revokeSession.variables === session.sessionId
+                        }
                         confirmAction={async () => {
                           await revokeSession.mutateAsync(session.sessionId);
                         }}
                         title="Revoke session?"
                         tone="destructive"
                         trigger={
-                          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive hover:bg-destructive/10">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                          >
                             <Trash2 className="size-4" />
                           </Button>
                         }

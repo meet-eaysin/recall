@@ -197,7 +197,9 @@ export function Chat({
   );
 
   return (
-    <ChatContainer className={cn('flex flex-col flex-1 min-h-0 overflow-hidden', className)}>
+    <ChatContainer
+      className={cn('flex flex-col flex-1 min-h-0 overflow-hidden', className)}
+    >
       {isEmpty && append && suggestions ? (
         <PromptSuggestions
           label="Try these prompts ✨"
@@ -251,25 +253,20 @@ export function ChatMessages({
 }: React.PropsWithChildren<{
   messages: Message[];
 }>) {
-  const {
-    containerRef,
-    scrollToBottom,
-    showScrollButton,
-  } = useAutoScroll([messages]);
+  const { containerRef, scrollToBottom, showScrollButton } = useAutoScroll([
+    messages,
+  ]);
 
   return (
-    <div
-      className="relative flex-1 min-h-0 overflow-y-auto"
-      ref={containerRef}
-    >
+    <div className="relative flex-1 min-h-0 overflow-y-auto" ref={containerRef}>
       <div className="max-w-4xl mx-auto w-full px-4 md:px-8 pb-4 pt-2">
         {children}
       </div>
 
       <div
         className={cn(
-          "sticky bottom-4 flex justify-center z-20 pointer-events-none transition-opacity duration-200",
-          showScrollButton ? "opacity-100" : "opacity-0"
+          'sticky bottom-4 flex justify-center z-20 pointer-events-none transition-opacity duration-200',
+          showScrollButton ? 'opacity-100' : 'opacity-0',
         )}
       >
         <Button

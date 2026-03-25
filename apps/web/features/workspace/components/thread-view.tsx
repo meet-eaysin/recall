@@ -269,4 +269,3 @@ export function ThreadView() {
     </PageContainer>
   );
 }
-

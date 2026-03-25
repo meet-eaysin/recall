@@ -139,3 +139,15 @@ export function useDisconnectNotion() {
     },
   });
 }
+
+export function useDeleteAccount() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: settingsApi.deleteAccount,
+    onSuccess: () => {
+      queryClient.clear();
+      window.location.href = '/login';
+    },
+  });
+}

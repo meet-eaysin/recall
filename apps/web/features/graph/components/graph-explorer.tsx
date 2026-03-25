@@ -790,7 +790,10 @@ export function GraphExplorer() {
         }}
         modal={false}
       >
-        <SheetContent overlay={false} className="flex w-full flex-col gap-0 p-0 sm:max-w-[400px]">
+        <SheetContent
+          overlay={false}
+          className="flex w-full flex-col gap-0 p-0 sm:max-w-[400px]"
+        >
           <SheetHeader className="border-b border-border/60 px-6 py-5">
             <SheetTitle className="text-base">Node detail</SheetTitle>
             <SheetDescription className="text-xs">

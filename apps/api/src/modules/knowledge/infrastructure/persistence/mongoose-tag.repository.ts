@@ -67,6 +67,10 @@ export class MongooseTagRepository extends ITagRepository {
     return result.deletedCount > 0;
   }
 
+  async deleteAllByUserId(userId: string): Promise<void> {
+    await TagModel.deleteMany({ userId }).exec();
+  }
+
   private toEntity(doc: ITagDocument): TagEntity {
     return TagEntity.create({
       id: doc.id,

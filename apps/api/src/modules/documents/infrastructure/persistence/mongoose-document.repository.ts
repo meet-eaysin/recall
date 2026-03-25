@@ -158,6 +158,10 @@ export class MongooseDocumentRepository extends IDocumentRepository {
     ).exec();
   }
 
+  async deleteAllByUserId(userId: string): Promise<void> {
+    await DocumentModel.deleteMany({ userId }).exec();
+  }
+
   private toEntity(doc: IDocument): DocumentEntity {
     return DocumentEntity.create({
       id: doc._id.toString(),

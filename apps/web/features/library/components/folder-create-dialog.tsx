@@ -74,31 +74,34 @@ export function FolderCreateDialog({ trigger }: FolderCreateDialogProps) {
     FOLDER_COLORS[0];
 
   const onFormSubmit = (values: FormValues) => {
-    mutation.mutate({
-      name: values.name,
-      color: values.color.toLowerCase(),
-    }, {
-      onSuccess: () => {
-        form.reset();
-        setOpen(false);
-        toast.success('Folder created', {
-          description: `"${values.name}" is now ready.`,
-        });
+    mutation.mutate(
+      {
+        name: values.name,
+        color: values.color.toLowerCase(),
       },
-      onError: (error) => {
-        if (error instanceof ApiError && error.details?.length) {
-          error.details.forEach((detail) => {
-            const field = detail.field as keyof FormValues;
-            if (field === 'name' || field === 'color') {
-              form.setError(field, {
-                type: 'server',
-                message: detail.messages[0],
-              });
-            }
+      {
+        onSuccess: () => {
+          form.reset();
+          setOpen(false);
+          toast.success('Folder created', {
+            description: `"${values.name}" is now ready.`,
           });
-        }
-      }
-    });
+        },
+        onError: (error) => {
+          if (error instanceof ApiError && error.details?.length) {
+            error.details.forEach((detail) => {
+              const field = detail.field as keyof FormValues;
+              if (field === 'name' || field === 'color') {
+                form.setError(field, {
+                  type: 'server',
+                  message: detail.messages[0],
+                });
+              }
+            });
+          }
+        },
+      },
+    );
   };
 
   return (
@@ -132,7 +135,10 @@ export function FolderCreateDialog({ trigger }: FolderCreateDialogProps) {
               <div className="space-y-6 px-6 py-5">
                 {/* Name */}
                 <Field>
-                  <FieldLabel htmlFor="folder-name" className="text-sm font-medium">
+                  <FieldLabel
+                    htmlFor="folder-name"
+                    className="text-sm font-medium"
+                  >
                     Folder name
                   </FieldLabel>
                   <Input
@@ -143,19 +149,28 @@ export function FolderCreateDialog({ trigger }: FolderCreateDialogProps) {
                     autoFocus
                     className={cn(
                       'h-10 transition-all focus:bg-background',
-                      form.formState.errors.name ? 'border-destructive/50 focus-visible:ring-destructive/20' : 'bg-muted/5'
+                      form.formState.errors.name
+                        ? 'border-destructive/50 focus-visible:ring-destructive/20'
+                        : 'bg-muted/5',
                     )}
                   />
                   {form.formState.errors.name && (
-                    <FieldError>{form.formState.errors.name.message}</FieldError>
+                    <FieldError>
+                      {form.formState.errors.name.message}
+                    </FieldError>
                   )}
                 </Field>
 
                 {/* Color */}
                 <Field className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <FieldLabel className="text-sm font-medium">Color</FieldLabel>
-                    <Badge variant="secondary" className="font-normal capitalize text-[10px] h-5">
+                    <FieldLabel className="text-sm font-medium">
+                      Color
+                    </FieldLabel>
+                    <Badge
+                      variant="secondary"
+                      className="font-normal capitalize text-[10px] h-5"
+                    >
                       {selectedColor.label}
                     </Badge>
                   </div>
@@ -194,7 +209,10 @@ export function FolderCreateDialog({ trigger }: FolderCreateDialogProps) {
                                   )}
                                 </button>
                               </TooltipTrigger>
-                              <TooltipContent side="bottom" className="text-[10px] px-2 py-1">
+                              <TooltipContent
+                                side="bottom"
+                                className="text-[10px] px-2 py-1"
+                              >
                                 {c.label}
                               </TooltipContent>
                             </Tooltip>
@@ -209,11 +227,13 @@ export function FolderCreateDialog({ trigger }: FolderCreateDialogProps) {
                 </Field>
 
                 {/* Mutation-level Error (Non-field specific) */}
-                {mutation.error && !form.formState.errors.name && !form.formState.errors.color && (
-                  <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
-                    {mutation.error.message}
-                  </p>
-                )}
+                {mutation.error &&
+                  !form.formState.errors.name &&
+                  !form.formState.errors.color && (
+                    <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+                      {mutation.error.message}
+                    </p>
+                  )}
               </div>
 
               <Separator />
