@@ -61,6 +61,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import {
@@ -673,10 +674,17 @@ export function GraphExplorer() {
 
         <Card className="relative min-h-0 p-0 flex-1 overflow-hidden border-border/50 shadow-sm">
           {isLoading ? (
-            <div className="grid h-full place-items-center bg-muted/5">
-              <div className="flex flex-col items-center gap-3">
-                <Loader2 className="size-8 animate-spin text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">Building graph…</p>
+            <div className="relative h-full w-full p-4">
+              <Skeleton className="absolute inset-4 rounded-xl opacity-30" />
+              {/* Mock MiniMap */}
+              <div className="absolute bottom-8 left-8">
+                <Skeleton className="h-24 w-[148px] rounded-xl opacity-50" />
+              </div>
+              {/* Mock Controls */}
+              <div className="absolute bottom-8 right-8 flex flex-col gap-2">
+                <Skeleton className="size-8 rounded-lg opacity-50" />
+                <Skeleton className="size-8 rounded-lg opacity-50" />
+                <Skeleton className="size-8 rounded-lg opacity-50" />
               </div>
             </div>
           ) : hasGraph ? (
@@ -780,8 +788,9 @@ export function GraphExplorer() {
         onOpenChange={(open) => {
           if (!open) setSelectedNodeId(null);
         }}
+        modal={false}
       >
-        <SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-[400px]">
+        <SheetContent overlay={false} className="flex w-full flex-col gap-0 p-0 sm:max-w-[400px]">
           <SheetHeader className="border-b border-border/60 px-6 py-5">
             <SheetTitle className="text-base">Node detail</SheetTitle>
             <SheetDescription className="text-xs">
