@@ -223,7 +223,7 @@ export function Chat({
       ) : null}
 
       <ChatForm
-        className="shrink-0 z-10 mx-auto w-full max-w-4xl px-4 md:px-8 pb-20 pt-3"
+        className="shrink-0 z-10 mx-auto w-full max-w-4xl px-4 md:px-8 pb-24 pt-3"
         isPending={isGenerating || isTyping}
         handleSubmit={handleSubmit}
       >
@@ -254,7 +254,7 @@ export function ChatMessages({
   const {
     containerRef,
     scrollToBottom,
-    shouldAutoScroll,
+    showScrollButton,
   } = useAutoScroll([messages]);
 
   return (
@@ -266,18 +266,21 @@ export function ChatMessages({
         {children}
       </div>
 
-      {!shouldAutoScroll && (
-        <div className="sticky bottom-4 flex justify-center z-20 pointer-events-none">
-          <Button
-            onClick={scrollToBottom}
-            className="h-8 w-8 rounded-full shadow-lg bg-background/80 backdrop-blur border pointer-events-auto"
-            size="icon"
-            variant="ghost"
-          >
-            <ArrowDown className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
+      <div
+        className={cn(
+          "sticky bottom-4 flex justify-center z-20 pointer-events-none transition-opacity duration-200",
+          showScrollButton ? "opacity-100" : "opacity-0"
+        )}
+      >
+        <Button
+          onClick={scrollToBottom}
+          className="h-8 w-8 rounded-full shadow-lg bg-background/80 backdrop-blur border pointer-events-auto"
+          size="icon"
+          variant="ghost"
+        >
+          <ArrowDown className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 }

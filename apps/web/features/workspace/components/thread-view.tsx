@@ -3,14 +3,13 @@
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, ExternalLink, X } from 'lucide-react';
+import { ExternalLink, X } from 'lucide-react';
 
 import { useSearchChat } from '@/features/search/hooks';
 import { searchApi } from '@/features/search/api';
 import { QUERY_KEYS } from '@/lib/query-keys';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Skeleton } from '@/components/ui/skeleton';
 import { DocumentDetailView } from '@/features/library/components/document-detail-view';
 import {
   Drawer,
@@ -19,7 +18,6 @@ import {
   DrawerTitle,
   DrawerClose,
 } from '@/components/ui/drawer';
-import { formatDistanceToNow } from 'date-fns';
 import { useThreadStream } from './thread-stream-context';
 import { Chat } from '@/components/ai/chat';
 import type { Message } from '@/components/ai/chat-message';
@@ -225,14 +223,29 @@ export function ThreadView() {
 
   if (isLoading && !hasOmniStream) {
     return (
-      <PageContainer>
-        <div className="space-y-8">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="space-y-4">
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-24 w-full" />
+      <PageContainer
+        isFullHeight
+        className="absolute inset-0 px-0 py-0 overflow-hidden"
+      >
+        <div className="flex flex-col h-full bg-background animate-pulse">
+          {/* Skeleton Messages */}
+          <div className="flex-1 space-y-8 p-4 md:p-8 overflow-hidden">
+            <div className="max-w-4xl mx-auto space-y-8">
+              <div className="flex flex-col gap-3">
+                <div className="h-4 w-3/4 rounded-full bg-muted/60" />
+                <div className="h-4 w-1/2 rounded-full bg-muted/40" />
+              </div>
+              <div className="flex flex-col items-end gap-3">
+                <div className="h-4 w-2/3 rounded-full bg-muted/60" />
+                <div className="h-4 w-1/3 rounded-full bg-muted/40" />
+              </div>
+              <div className="flex flex-col gap-3">
+                <div className="h-4 w-5/6 rounded-full bg-muted/60" />
+                <div className="h-4 w-1/2 rounded-full bg-muted/40" />
+                <div className="h-4 w-2/3 rounded-full bg-muted/20" />
+              </div>
             </div>
-          ))}
+          </div>
         </div>
       </PageContainer>
     );
@@ -241,36 +254,9 @@ export function ThreadView() {
   return (
     <PageContainer
       isFullHeight
-      className="absolute inset-0 px-0 py-0 pb-0 md:px-0 lg:px-0 md:pb-0 lg:pb-0 overflow-hidden"
+      className="absolute inset-0 px-0 py-0! pb-0 md:px-0 lg:px-0 md:pb-0 lg:pb-0 overflow-hidden"
     >
       <div className="flex flex-col h-full w-full min-h-0 overflow-hidden">
-        {/* Header */}
-        <div className="shrink-0 w-full bg-background border-b border-border/40">
-          <div className="max-w-4xl mx-auto px-4 md:px-8">
-            <header className="flex items-center gap-4 py-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => router.push('/app')}
-                className="shrink-0"
-              >
-                <ArrowLeft className="size-4" />
-              </Button>
-              <div className="min-w-0">
-                <h1 className="text-xl font-bold tracking-tight truncate">
-                  {conversation?.title || omniStream?.question || 'New Thread'}
-                </h1>
-                {conversation && (
-                  <p className="text-xs text-muted-foreground">
-                    Started{' '}
-                    {formatDistanceToNow(new Date(conversation.createdAt))} ago
-                  </p>
-                )}
-              </div>
-            </header>
-          </div>
-        </div>
-
         {/* Messages and Input */}
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           <Chat

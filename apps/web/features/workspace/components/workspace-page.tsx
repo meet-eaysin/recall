@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { OmniBox } from './omni-box';
 import { HomeContent } from '@/features/home/components/home-page';
 import { useThreadStream } from './thread-stream-context';
@@ -18,7 +18,6 @@ import {
   DrawerTitle,
   DrawerClose,
 } from '@/components/ui/drawer';
-import { formatDistanceToNow } from 'date-fns';
 import { Chat } from '@/components/ai/chat';
 import type { Message } from '@/components/ai/chat-message';
 import { PageContainer } from './page-container';
@@ -45,6 +44,30 @@ export function WorkspacePage() {
   );
 }
 
+function InlineChatSkeleton() {
+  return (
+    <PageContainer isFullHeight className="absolute inset-0 px-0 py-0 overflow-hidden">
+      <div className="flex flex-col h-full bg-background animate-pulse">
+        {/* Skeleton Messages */}
+        <div className="flex-1 space-y-8 p-4 md:p-8 overflow-hidden">
+          <div className="max-w-4xl mx-auto space-y-8">
+            <div className="flex flex-col gap-4">
+              <div className="h-4 w-3/4 rounded bg-muted/60" />
+              <div className="h-4 w-1/2 rounded bg-muted/40" />
+            </div>
+            <div className="flex flex-col items-end gap-4">
+              <div className="h-4 w-2/3 rounded bg-muted/60" />
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="h-20 w-full rounded bg-muted/40" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </PageContainer>
+  );
+}
+
 function InlineChat() {
   const queryClient = useQueryClient();
   const threadStream = useThreadStream();
@@ -61,11 +84,6 @@ function InlineChat() {
   const [error, setError] = React.useState<string | null>(null);
 
   const { data: conversation } = useSearchChat(conversationId);
-
-  const goBack = () => {
-    threadStream.clearStream();
-    window.history.replaceState(null, '', '/app');
-  };
 
   const submitFollowUp = async () => {
     const trimmed = question.trim();
@@ -148,6 +166,7 @@ function InlineChat() {
 
   // Build the message list
   const persistedMessages = conversation?.messages ?? [];
+
   const showInitialStream =
     activeStream &&
     (activeStream.isStreaming ||
@@ -231,6 +250,10 @@ function InlineChat() {
     error,
   ]);
 
+  if (!conversation && !activeStream) {
+    return <InlineChatSkeleton />;
+  }
+
 
   return (
     <PageContainer
@@ -238,35 +261,6 @@ function InlineChat() {
       className="absolute inset-0 px-0 py-0 pb-0 md:pb-0 lg:pb-0 overflow-hidden"
     >
       <div className="flex h-full flex-col min-h-0 overflow-hidden">
-        {/* Header */}
-        <div className="shrink-0 w-full bg-background border-b border-border/40">
-          <div className="max-w-4xl mx-auto px-4 md:px-8">
-            <header className="flex items-center gap-4 py-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={goBack}
-                className="shrink-0"
-              >
-                <ArrowLeft className="size-4" />
-              </Button>
-              <div className="min-w-0">
-                <h1 className="text-lg font-bold tracking-tight truncate">
-                  {conversation?.title ||
-                    activeStream?.question ||
-                    'New Thread'}
-                </h1>
-                {conversation && (
-                  <p className="text-xs text-muted-foreground">
-                    Started{' '}
-                    {formatDistanceToNow(new Date(conversation.createdAt))} ago
-                  </p>
-                )}
-              </div>
-            </header>
-          </div>
-        </div>
-
         {/* Messages and Input */}
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           <Chat
