@@ -17,9 +17,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  DialogClose,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from '@/components/ui/field';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { MentionTextarea } from '@/features/library/components/mention-textarea';
 import { DocumentType } from '@repo/types';
-import { cn } from '@/lib/utils';
 import { libraryApi } from '../api';
 import { useFolders } from '../hooks';
 import {
@@ -97,37 +110,10 @@ const TYPE_ITEMS = [
   },
 ] as const;
 
-// ─── Field label component ────────────────────────────────────────────────────
-
-function Label({
-  htmlFor,
-  children,
-  optional,
-}: {
-  htmlFor?: string;
-  children: React.ReactNode;
-  optional?: boolean;
-}) {
-  return (
-    <label
-      htmlFor={htmlFor}
-      className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-widest text-muted-foreground mb-1.5"
-    >
-      {children}
-      {optional && (
-        <span className="text-[10px] normal-case tracking-normal font-normal text-muted-foreground/50">
-          optional
-        </span>
-      )}
-    </label>
-  );
-}
-
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface AddDocumentFormProps {
   formId?: string;
-  hideActions?: boolean;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
@@ -136,7 +122,6 @@ interface AddDocumentFormProps {
 
 export function AddDocumentForm({
   formId,
-  hideActions = false,
   onSuccess,
   onCancel,
 }: AddDocumentFormProps) {
@@ -235,169 +220,174 @@ export function AddDocumentForm({
   return (
     <Form
       id={formId}
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-0"
       onSubmit={form.handleSubmit((v) => mutation.mutate(v))}
     >
-      {/* ── Type ── */}
-      <div>
-        <Label>Type</Label>
-        <Controller
-          name="type"
-          control={form.control}
-          render={({ field }) => (
-            <div className="flex flex-wrap gap-1.5">
-              {TYPE_ITEMS.map(({ label, value, icon: Icon }) => {
-                const active = field.value === value;
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => handleTypeSelect(value, field.onChange)}
-                    className={cn(
-                      'inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5',
-                      'text-[13px] font-medium leading-none',
-                      'outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
-                      'transition-[border-color,background-color,color] duration-100',
-                      active
-                        ? 'border-primary/60 bg-primary/8 text-primary'
-                        : 'border-border/60 bg-background text-muted-foreground hover:border-border hover:text-foreground hover:bg-accent/50',
-                    )}
-                  >
-                    <Icon className="size-3.5 shrink-0" aria-hidden />
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        />
-      </div>
+      <DialogHeader>
+        <DialogTitle>Add to library</DialogTitle>
+        <DialogDescription>
+          Save a link, PDF, image, or write a note to your knowledge base.
+        </DialogDescription>
+      </DialogHeader>
 
-      {/* ── Source URL (hidden for Note) ── */}
-      {selectedType !== DocumentType.TEXT && (
-        <div>
-          <Label htmlFor="add-doc-source">Source URL</Label>
-          <Input
-            id="add-doc-source"
-            type="url"
-            placeholder={currentItem?.placeholder}
-            aria-invalid={sourceError ? 'true' : undefined}
-            className="h-9 text-sm"
-            {...form.register('source', trimOnBlur('source'))}
-          />
-          {sourceError && (
-            <p className="mt-1.5 text-xs text-destructive">
-              {sourceError.message}
-            </p>
-          )}
-        </div>
-      )}
-
-      {/* ── Title + Folder ── */}
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label htmlFor="add-doc-title">Title</Label>
-          <Input
-            id="add-doc-title"
-            placeholder="e.g. Next.js 15 Release Notes"
-            aria-invalid={titleError ? 'true' : undefined}
-            className="h-9 text-sm"
-            {...form.register('title', trimOnBlur('title'))}
-          />
-          {titleError && (
-            <p className="mt-1.5 text-xs text-destructive">
-              {titleError.message}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <Label htmlFor="add-doc-folder" optional>
-            Folder
-          </Label>
+      <FieldGroup className="py-4">
+        {/* ── Type Selector ── */}
+        <Field>
+          <FieldLabel className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
+            Type
+          </FieldLabel>
           <Controller
-            name="folderId"
+            name="type"
             control={form.control}
             render={({ field }) => (
-              <Select
-                value={field.value ?? 'none'}
-                onValueChange={(v) =>
-                  field.onChange(v === 'none' ? undefined : v)
-                }
+              <ToggleGroup
+                type="single"
+                variant="outline"
+                className="flex flex-wrap gap-2 w-full justify-start"
+                value={field.value}
+                onValueChange={(val) => {
+                  if (val) handleTypeSelect(val as DocumentType, field.onChange);
+                }}
               >
-                <SelectTrigger id="add-doc-folder" className="h-9 text-sm">
-                  <SelectValue>{selectedFolderName}</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No folder</SelectItem>
-                  {folders.map((folder) => (
-                    <SelectItem key={folder.id} value={folder.id}>
-                      {folder.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {TYPE_ITEMS.map(({ label, value, icon: Icon }) => (
+                  <ToggleGroupItem
+                    key={value}
+                    value={value}
+                    className="flex items-center gap-2 px-3 h-9 rounded-md border-border/50 text-xs font-medium data-[state=on]:bg-primary/5 data-[state=on]:text-primary data-[state=on]:border-primary/30"
+                  >
+                    <Icon className="size-3.5" />
+                    {label}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
             )}
           />
-        </div>
-      </div>
+        </Field>
 
-      {/* ── Notes ── */}
-      <div>
-        <Label htmlFor="add-doc-notes" optional>
-          Notes
-        </Label>
-        <Controller
-          name="notes"
-          control={form.control}
-          render={({ field }) => (
-            <MentionTextarea
-              {...field}
-              id="add-doc-notes"
-              aria-invalid={notesError ? 'true' : undefined}
-              placeholder="Type @ to mention documents or add context…"
-              className="min-h-[72px] resize-none text-sm"
-              value={field.value ?? ''}
+        {/* ── Source URL (hidden for Note) ── */}
+        {selectedType !== DocumentType.TEXT && (
+          <Field>
+            <FieldLabel
+              className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80"
+              htmlFor="add-doc-source"
+            >
+              Source URL
+            </FieldLabel>
+            <Input
+              id="add-doc-source"
+              type="url"
+              placeholder={currentItem?.placeholder}
+              aria-invalid={sourceError ? 'true' : undefined}
+              className="h-10 text-sm"
+              {...form.register('source', trimOnBlur('source'))}
             />
-          )}
-        />
-        {notesError && (
-          <p className="mt-1.5 text-xs text-destructive">
-            {notesError.message}
-          </p>
-        )}
-      </div>
-
-      {/* ── Mutation-level error ── */}
-      {mutation.error &&
-        !(
-          mutation.error instanceof ApiError && mutation.error.details?.length
-        ) && (
-          <p className="text-xs text-destructive">{mutation.error.message}</p>
+            {sourceError && <FieldError>{sourceError.message}</FieldError>}
+          </Field>
         )}
 
-      {/* ── Inline actions (when parent dialog is not handling them) ── */}
-      {!hideActions && (
-        <div className="flex justify-end gap-2 pt-1">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 text-xs"
-            onClick={onCancel}
+        {/* ── Title + Folder ── */}
+        <div className="grid grid-cols-2 gap-4">
+          <Field>
+            <FieldLabel
+              className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80"
+              htmlFor="add-doc-title"
+            >
+              Title
+            </FieldLabel>
+            <Input
+              id="add-doc-title"
+              placeholder="e.g. Next.js 15 Release Notes"
+              aria-invalid={titleError ? 'true' : undefined}
+              className="h-10 text-sm"
+              {...form.register('title', trimOnBlur('title'))}
+            />
+            {titleError && <FieldError>{titleError.message}</FieldError>}
+          </Field>
+
+          <Field>
+            <FieldLabel
+              className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80"
+              htmlFor="add-doc-folder"
+            >
+              Folder
+            </FieldLabel>
+            <Controller
+              name="folderId"
+              control={form.control}
+              render={({ field }) => (
+                <Select
+                  value={field.value ?? 'none'}
+                  onValueChange={(v) =>
+                    field.onChange(v === 'none' ? undefined : v)
+                  }
+                >
+                  <SelectTrigger
+                    id="add-doc-folder"
+                    className="h-10 text-sm"
+                  >
+                    <SelectValue>{selectedFolderName}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No folder</SelectItem>
+                    {folders.map((folder) => (
+                      <SelectItem key={folder.id} value={folder.id}>
+                        {folder.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </Field>
+        </div>
+
+        {/* ── Notes ── */}
+        <Field>
+          <FieldLabel
+            className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80"
+            htmlFor="add-doc-notes"
           >
+            Brief Summary
+          </FieldLabel>
+          <Controller
+            name="notes"
+            control={form.control}
+            render={({ field }) => (
+              <MentionTextarea
+                {...field}
+                id="add-doc-notes"
+                aria-invalid={notesError ? 'true' : undefined}
+                placeholder="Type @ to mention documents or add context…"
+                className="min-h-[80px] resize-none text-sm p-3 focus:bg-background"
+                value={field.value ?? ''}
+              />
+            )}
+          />
+          {notesError && <FieldError>{notesError.message}</FieldError>}
+        </Field>
+
+        {/* ── Mutation-level error ── */}
+        {mutation.error &&
+          !(
+            mutation.error instanceof ApiError && mutation.error.details?.length
+          ) && <FieldError>{mutation.error.message}</FieldError>}
+      </FieldGroup>
+
+      <DialogFooter>
+        <DialogClose asChild>
+          <Button variant="outline" size="sm" onClick={onCancel}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            size="sm"
-            className="h-8 text-xs"
-            disabled={!canSubmit}
-          >
-            {mutation.isPending ? 'Adding…' : 'Add to library'}
-          </Button>
-        </div>
-      )}
+        </DialogClose>
+        <Button
+          type="submit"
+          size="sm"
+          disabled={!canSubmit}
+          className="min-w-[100px]"
+        >
+          {mutation.isPending ? 'Adding…' : 'Add to library'}
+        </Button>
+      </DialogFooter>
     </Form>
   );
 }
