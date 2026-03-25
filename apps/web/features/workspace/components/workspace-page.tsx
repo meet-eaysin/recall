@@ -2,22 +2,14 @@
 
 import * as React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { X } from 'lucide-react';
 import { OmniBox } from './omni-box';
 import { HomeContent } from '@/features/home/components/home-page';
 import { useThreadStream } from './thread-stream-context';
 import { useSearchChat } from '@/features/search/hooks';
 import { searchApi } from '@/features/search/api';
 import { QUERY_KEYS } from '@/lib/query-keys';
-import { Button } from '@/components/ui/button';
 import { DocumentDetailView } from '@/features/library/components/document-detail-view';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerClose,
-} from '@/components/ui/drawer';
+import { ResizableDocumentPreview } from './resizable-document-preview';
 import { Chat } from '@/components/ai/chat';
 import type { Message } from '@/components/ai/chat-message';
 import { PageContainer } from './page-container';
@@ -46,7 +38,10 @@ export function WorkspacePage() {
 
 function InlineChatSkeleton() {
   return (
-    <PageContainer isFullHeight className="absolute inset-0 px-0 py-0 overflow-hidden">
+    <PageContainer
+      isFullHeight
+      className="absolute inset-0 px-0 py-0 overflow-hidden"
+    >
       <div className="flex flex-col h-full bg-background animate-pulse">
         {/* Skeleton Messages */}
         <div className="flex-1 space-y-8 p-4 md:p-8 overflow-hidden">
@@ -254,52 +249,33 @@ function InlineChat() {
     return <InlineChatSkeleton />;
   }
 
-
   return (
     <PageContainer
       isFullHeight
-      className="absolute inset-0 px-0 py-0 pb-0 md:pb-0 lg:pb-0 overflow-hidden"
+      className="absolute inset-0 px-0 py-0! pb-0 md:pb-0 lg:pb-0 overflow-hidden"
     >
-      <div className="flex h-full flex-col min-h-0 overflow-hidden">
-        {/* Messages and Input */}
-        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-          <Chat
-            messages={messages}
-            input={question}
-            handleInputChange={handleInputChange}
-            handleSubmit={handleSubmit}
-            isGenerating={isStreaming || !!activeStream?.isStreaming}
-            onSourceClick={setPreviewId}
-            stop={stopGeneration}
-          />
-        </div>
+      {/* Main Chat Area */}
+      <div className="flex flex-col h-full min-h-0 overflow-hidden w-full">
+        <Chat
+          messages={messages}
+          input={question}
+          handleInputChange={handleInputChange}
+          handleSubmit={handleSubmit}
+          isGenerating={isStreaming || !!activeStream?.isStreaming}
+          onSourceClick={setPreviewId}
+          stop={stopGeneration}
+        />
       </div>
 
-      {/* Source Preview Drawer */}
-      <Drawer
-        direction="right"
-        open={!!previewId}
-        onOpenChange={(open) => !open && setPreviewId(null)}
+      {/* Document Preview Overlay */}
+      <ResizableDocumentPreview
+        isOpen={!!previewId}
+        onClose={() => setPreviewId(null)}
       >
-        <DrawerContent className="h-full sm:max-w-2xl p-0">
-          <DrawerHeader className="p-4 border-b flex flex-row items-center justify-between">
-            <DrawerTitle className="text-lg font-semibold">
-              Document Preview
-            </DrawerTitle>
-            <DrawerClose asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <X className="size-4" />
-                <span className="sr-only">Close</span>
-              </Button>
-            </DrawerClose>
-          </DrawerHeader>
-          <div className="flex-1 overflow-y-auto p-4">
-            {previewId && (
-              <DocumentDetailView id={previewId} isCompact={true} />
-            )}
-          </div>
-        </DrawerContent>
-      </Drawer>
+        {previewId ? (
+          <DocumentDetailView id={previewId} isCompact={true} />
+        ) : null}
+      </ResizableDocumentPreview>
     </PageContainer>
   );
 }

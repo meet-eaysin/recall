@@ -1,23 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
-import { ExternalLink, X } from 'lucide-react';
-
+import { useParams } from 'next/navigation';
 import { useSearchChat } from '@/features/search/hooks';
 import { searchApi } from '@/features/search/api';
 import { QUERY_KEYS } from '@/lib/query-keys';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { useQueryClient } from '@tanstack/react-query';
 import { DocumentDetailView } from '@/features/library/components/document-detail-view';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerClose,
-} from '@/components/ui/drawer';
+import { ResizableDocumentPreview } from './resizable-document-preview';
 import { useThreadStream } from './thread-stream-context';
 import { Chat } from '@/components/ai/chat';
 import type { Message } from '@/components/ai/chat-message';
@@ -25,7 +15,6 @@ import { PageContainer } from './page-container';
 
 export function ThreadView() {
   const params = useParams();
-  const router = useRouter();
   const queryClient = useQueryClient();
   const threadStream = useThreadStream();
   const threadId = typeof params.threadId === 'string' ? params.threadId : null;
@@ -256,63 +245,28 @@ export function ThreadView() {
       isFullHeight
       className="absolute inset-0 px-0 py-0! pb-0 md:px-0 lg:px-0 md:pb-0 lg:pb-0 overflow-hidden"
     >
-      <div className="flex flex-col h-full w-full min-h-0 overflow-hidden">
-        {/* Messages and Input */}
-        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-          <Chat
-            messages={messages}
-            input={question}
-            handleInputChange={handleInputChange}
-            handleSubmit={handleSubmit}
-            isGenerating={isStreaming || !!omniStream?.isStreaming}
-            onSourceClick={setPreviewId}
-            stop={stopGeneration}
-          />
-        </div>
+      {/* Main Chat Area */}
+      <div className="flex flex-col h-full min-h-0 overflow-hidden w-full">
+        <Chat
+          messages={messages}
+          input={question}
+          handleInputChange={handleInputChange}
+          handleSubmit={handleSubmit}
+          isGenerating={isStreaming || !!omniStream?.isStreaming}
+          onSourceClick={setPreviewId}
+          stop={stopGeneration}
+        />
       </div>
 
-      <Drawer
-        direction="right"
-        open={!!previewId}
-        onOpenChange={(open) => !open && setPreviewId(null)}
+      <ResizableDocumentPreview
+        isOpen={!!previewId}
+        onClose={() => setPreviewId(null)}
       >
-        <DrawerContent className="h-full sm:max-w-2xl p-0">
-          <DrawerHeader className="flex-row items-center justify-between border-b px-6 py-4">
-            <div className="flex items-center gap-3">
-              <DrawerTitle className="text-xs font-semibold text-muted-foreground/80">
-                Document Preview
-              </DrawerTitle>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => router.push(`/app/library/${previewId}`)}
-              >
-                <ExternalLink className="size-3" />
-                Open Full Page
-              </Button>
-            </div>
-            <DrawerClose asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 rounded-full"
-              >
-                <X className="size-4" />
-                <span className="sr-only">Close</span>
-              </Button>
-            </DrawerClose>
-          </DrawerHeader>
-          <div className="flex-1 overflow-hidden">
-            <ScrollArea className="h-full">
-              <div className="p-0">
-                {previewId && (
-                  <DocumentDetailView id={previewId} isCompact={true} />
-                )}
-              </div>
-            </ScrollArea>
-          </div>
-        </DrawerContent>
-      </Drawer>
+        {previewId ? (
+          <DocumentDetailView id={previewId} isCompact={true} />
+        ) : null}
+      </ResizableDocumentPreview>
     </PageContainer>
   );
 }
+
