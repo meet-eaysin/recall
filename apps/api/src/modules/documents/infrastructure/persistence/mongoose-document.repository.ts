@@ -41,7 +41,9 @@ export class MongooseDocumentRepository extends IDocumentRepository {
 
     if (filters.status) query.status = filters.status;
     if (filters.type) query.type = filters.type;
-    if (filters.folderIds?.length) {
+    if (filters.unassigned) {
+      query.folderId = { $exists: false };
+    } else if (filters.folderIds?.length) {
       query.folderId = {
         $in: filters.folderIds.map((id: string) => new Types.ObjectId(id)),
       };

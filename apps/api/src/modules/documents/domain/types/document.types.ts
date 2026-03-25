@@ -8,6 +8,7 @@ export interface DocFilters {
   status?: DocumentStatus | undefined;
   type?: DocumentType | undefined;
   folderIds?: string[] | undefined;
+  unassigned?: boolean | undefined;
   tagIds?: string[] | undefined;
   q?: string | undefined;
   page: number;

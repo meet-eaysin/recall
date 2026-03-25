@@ -41,13 +41,13 @@ export function BaseDocumentCard({
       className="group block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       <Card className="flex h-full flex-col overflow-hidden border transition-colors duration-150 group-hover:border-border">
-        <div className="border-b bg-muted/10 p-2">
-          <div className="aspect-[16/8.6] overflow-hidden rounded-lg bg-muted/20">
+        <div className="border-b bg-muted/10 p-1.5">
+          <div className="aspect-16/6 overflow-hidden rounded-lg bg-muted/20">
             <DocumentPreviewSurface compact document={document} />
           </div>
         </div>
 
-        <CardContent className="flex flex-1 flex-col gap-2.5 p-3">
+        <CardContent className="flex flex-1 flex-col gap-2 p-2.5">
           <div className="flex items-start gap-2">
             <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted/40 text-muted-foreground">
               <Icon className="size-4" />

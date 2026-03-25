@@ -20,20 +20,24 @@ import { Input } from '@/components/ui/input';
 import { useCreateFolder } from '../hooks';
 
 const FOLDER_COLORS = [
-  { label: 'Blue', value: '#2563eb' },
-  { label: 'Green', value: '#16a34a' },
-  { label: 'Amber', value: '#d97706' },
-  { label: 'Rose', value: '#e11d48' },
-  { label: 'Violet', value: '#7c3aed' },
-  { label: 'Slate', value: '#475569' },
-] as const;
+  '#3b82f6', // Blue
+  '#6366f1', // Indigo
+  '#a855f7', // Purple
+  '#ec4899', // Pink
+  '#ef4444', // Red
+  '#f59e0b', // Amber
+  '#22c55e', // Green
+  '#10b981', // Emerald
+  '#06b6d4', // Cyan
+  '#64748b', // Slate
+];
 
 interface FolderCreateDialogProps {
   trigger?: React.ReactElement;
 }
 
 export function FolderCreateDialog({ trigger }: FolderCreateDialogProps) {
-  const [color, setColor] = React.useState<string>(FOLDER_COLORS[0].value);
+  const [color, setColor] = React.useState<string>(FOLDER_COLORS[0]!);
   const [name, setName] = React.useState('');
   const [open, setOpen] = React.useState(false);
   const mutation = useCreateFolder();
@@ -50,7 +54,7 @@ export function FolderCreateDialog({ trigger }: FolderCreateDialogProps) {
     });
 
     setName('');
-    setColor(FOLDER_COLORS[0].value);
+    setColor(FOLDER_COLORS[0]!);
     setOpen(false);
   }
 
@@ -66,7 +70,7 @@ export function FolderCreateDialog({ trigger }: FolderCreateDialogProps) {
             Add a folder to organize related documents.
           </DialogDescription>
         </DialogHeader>
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <Field>
             <FieldLabel htmlFor="folder-name">Name</FieldLabel>
             <Input
@@ -80,28 +84,19 @@ export function FolderCreateDialog({ trigger }: FolderCreateDialogProps) {
 
           <Field>
             <FieldLabel>Color</FieldLabel>
-            <div className="flex flex-wrap gap-2">
-              {FOLDER_COLORS.map((option) => {
-                const isActive = color === option.value;
-
-                return (
-                  <Button
-                    aria-pressed={isActive}
-                    className="gap-2"
-                    key={option.value}
-                    onClick={() => setColor(option.value)}
-                    type="button"
-                    variant={isActive ? 'default' : 'outline'}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="size-3 rounded-full"
-                      style={{ backgroundColor: option.value }}
-                    />
-                    {option.label}
-                  </Button>
-                );
-              })}
+            <div className="flex flex-wrap gap-2 pt-1">
+              {FOLDER_COLORS.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  className={[
+                    'size-8 rounded-full border-2 transition-all hover:scale-110',
+                    color === c ? 'border-primary ring-2 ring-primary/20' : 'border-transparent',
+                  ].join(' ')}
+                  style={{ backgroundColor: c }}
+                  onClick={() => setColor(c)}
+                />
+              ))}
             </div>
             <FieldDescription>Select a folder color.</FieldDescription>
           </Field>

@@ -9,6 +9,7 @@ import {
   Min,
   Max,
   IsInt,
+  IsBoolean,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -149,6 +150,12 @@ export class ListDocumentsDto {
   @IsString({ each: true })
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   tagIds?: string[];
+
+  @ApiPropertyOptional({ description: 'Filter to unassigned documents only' })
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true' || value === true)
+  unassigned?: boolean;
 
   @ApiPropertyOptional({ description: 'Search term for title or content' })
   @IsString()
