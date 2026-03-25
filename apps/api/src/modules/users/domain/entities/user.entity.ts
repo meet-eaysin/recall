@@ -6,6 +6,11 @@ export interface UserEntityProps {
   name: string;
   avatarUrl?: string;
   authId: string;
+  privacyPolicyAcceptedAt?: Date | null;
+  cookiePolicyAcceptedAt?: Date | null;
+  consentVersion?: string | null;
+  consentIp?: string | null;
+  consentUserAgent?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -19,6 +24,26 @@ export class UserEntity {
 
   get authId(): string {
     return this.props.authId;
+  }
+
+  get privacyPolicyAcceptedAt(): Date | null | undefined {
+    return this.props.privacyPolicyAcceptedAt;
+  }
+
+  get cookiePolicyAcceptedAt(): Date | null | undefined {
+    return this.props.cookiePolicyAcceptedAt;
+  }
+
+  get consentVersion(): string | null | undefined {
+    return this.props.consentVersion;
+  }
+
+  get consentIp(): string | null | undefined {
+    return this.props.consentIp;
+  }
+
+  get consentUserAgent(): string | null | undefined {
+    return this.props.consentUserAgent;
   }
 
   toPublicView(): UserPublicView {

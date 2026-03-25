@@ -73,4 +73,10 @@ export const API_ENDPOINTS = {
     document: (id: string) => `/graph/document/${id}`,
     rebuild: (id: string) => `/graph/rebuild/${id}`,
   },
+  LEGAL: {
+    PRIVACY_POLICY: '/legal/privacy-policy',
+    COOKIE_POLICY: '/legal/cookie-policy',
+    ACCEPT: '/legal/accept',
+    CONSENT_STATUS: '/legal/consent-status',
+  },
 } as const;

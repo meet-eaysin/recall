@@ -1,7 +1,7 @@
 import { Document } from 'mongoose';
-import { LLMUserSettings } from '@repo/types';
+import { LLMUserSettings, UserConsent } from '@repo/types';
 
-export interface IUser {
+export interface IUser extends UserConsent {
   email: string;
   name: string;
   avatarUrl?: string;

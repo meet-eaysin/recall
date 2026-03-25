@@ -19,6 +19,8 @@ import { ReviewModule } from './modules/review/review.module';
 import { SearchModule } from './modules/search/search.module';
 import { QueueModule } from './modules/queue/queue.module';
 import { UsersModule } from './modules/users/users.module';
+import { LegalModule } from './modules/legal/legal.module';
+import { ConsentGuard } from './shared/guards/consent.guard';
 import { HealthController } from './modules/health/health.controller';
 import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
 
@@ -48,6 +50,7 @@ import { CacheModule } from '@repo/cache';
     ReviewModule,
     SearchModule,
     UsersModule,
+    LegalModule,
   ],
   controllers: [HealthController],
   providers: [
@@ -61,6 +64,10 @@ import { CacheModule } from '@repo/cache';
         env.NODE_ENV === 'development' && env.DEV_AUTH_ENABLED
           ? DevUserGuard
           : JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ConsentGuard,
     },
     {
       provide: APP_FILTER,

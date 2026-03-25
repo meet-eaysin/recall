@@ -104,6 +104,11 @@ export class MongooseUserRepository implements IUserRepository {
       name: doc.name,
       avatarUrl: doc.avatarUrl,
       authId: doc.authId,
+      privacyPolicyAcceptedAt: doc.privacyPolicyAcceptedAt,
+      cookiePolicyAcceptedAt: doc.cookiePolicyAcceptedAt,
+      consentVersion: doc.consentVersion,
+      consentIp: doc.consentIp,
+      consentUserAgent: doc.consentUserAgent,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
