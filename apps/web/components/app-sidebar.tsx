@@ -33,6 +33,7 @@ import {
   SidebarMenuSkeleton,
   SidebarInput,
   SidebarRail,
+  SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
 import {
@@ -44,6 +45,7 @@ import {
   MoreHorizontal,
 } from 'lucide-react';
 import { ApplicationIcon } from './application-logo';
+import { cn } from '@/lib/utils';
 
 function SidebarSearch({
   value,
@@ -296,11 +298,26 @@ function SidebarChatList({ query }: { query: string }) {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [searchFocusKey, setSearchFocusKey] = React.useState(0);
+  const { state } = useSidebar();
+  const isCollapsed = state === 'collapsed';
 
   return (
     <Sidebar variant="sidebar" collapsible="icon" {...props}>
-      <SidebarHeader className="pb-2">
-        <ApplicationIcon />
+      <SidebarHeader className="pb-2 overflow-hidden">
+        <div className="flex items-center justify-between gap-1 h-12 group-data-[collapsible=icon]:justify-center">
+          <div
+            className="flex-1 overflow-hidden transition-all duration-500 data-[collapsed=true]:w-0 data-[collapsed=true]:opacity-0"
+            data-collapsed={isCollapsed}
+          >
+            <ApplicationIcon expanded={!isCollapsed} />
+          </div>
+          <SidebarTrigger
+            className={cn(
+              'shrink-0 transition-transform duration-300',
+              isCollapsed && 'size-9 hover:bg-sidebar-accent',
+            )}
+          />
+        </div>
       </SidebarHeader>
       <SidebarContent className="gap-0">
         <SidebarSearch
