@@ -93,7 +93,7 @@ function ReviewRow({
   const Icon = getDocumentIcon(item.type);
 
   return (
-    <Card className="group relative flex items-start justify-between gap-4 p-4 transition-all hover:bg-accent/50">
+    <div className="group relative flex items-start justify-between gap-4 p-4 border-b last:border-0 transition-all hover:bg-muted/50">
       <div className="min-w-0 flex-1 space-y-1">
         <div className="flex items-center gap-3">
           <div className="flex size-8 items-center justify-center rounded-sm border bg-muted/40 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-all">
@@ -106,14 +106,15 @@ function ReviewRow({
             >
               {item.title}
             </Link>
-            <div className="mt-0.5 flex items-center gap-2">
+            <div className="mt-0.5 flex flex-wrap items-center gap-2">
               <Badge
                 variant={getStatusBadgeVariant(item.status)}
-                className="font-bold uppercase tracking-wider"
+                className="font-medium tracking-wider"
+                size={'sm'}
               >
                 {getStatusLabel(item.status)}
               </Badge>
-              <Badge variant="outline" className="opacity-70">
+              <Badge variant="outline" className="opacity-70 font-medium">
                 {formatPriority(item.priorityScore)} intent
               </Badge>
             </div>
@@ -130,7 +131,7 @@ function ReviewRow({
           asChild
           size="xs"
           variant="secondary"
-          className="font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+          className="font-semibold opacity-0 group-hover:opacity-100 transition-opacity"
         >
           <Link href={`/app/library/${item.documentId}`}>Review</Link>
         </Button>
@@ -148,7 +149,7 @@ function ReviewRow({
           )}
         </Button>
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -161,21 +162,21 @@ function RecentWorkRow({ document }: { document: DocumentRow }) {
   const isDeleting = deleteMutation.isPending;
 
   return (
-    <Card className="group flex flex-row items-center justify-between gap-4 p-4 hover:bg-accent/40 transition-colors">
+    <div className="group flex flex-row items-center justify-between gap-4 p-4 border-b last:border-0 hover:bg-muted/30 transition-colors">
       <div className="flex min-w-0 items-center gap-4">
-        <div className="flex size-9 items-center justify-center rounded-md border bg-muted/30 text-muted-foreground group-hover:bg-blue-500/10 group-hover:text-blue-500 transition-colors">
+        <div className="flex size-9 items-center justify-center rounded-md border bg-muted/30 text-muted-foreground group-hover:bg-primary/5 group-hover:text-primary transition-colors">
           <Icon className="size-4" />
         </div>
         <div className="min-w-0 flex flex-col gap-0.5">
           <Link
             href={`/app/library/${document.id}`}
-            className="truncate text-sm font-bold tracking-tight text-foreground/90 hover:text-blue-500 transition-colors"
+            className="truncate text-sm font-semibold tracking-tight text-foreground/90 hover:text-primary transition-colors"
           >
             {document.title}
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1.5 outline-none focus-visible:ring-2 focus-visible:ring-blue-500/20 rounded py-0.5 px-1 -ml-1 hover:bg-muted/50 transition-colors group/trigger">
+              <DropdownMenuTrigger className="flex items-center gap-1.5 outline-none focus-visible:ring-2 focus-visible:ring-primary/20 rounded py-0.5 px-1 -ml-1 hover:bg-muted/50 transition-colors group/trigger">
                 <div
                   className={cn(
                     'size-1.5 rounded-full shrink-0',
@@ -183,10 +184,10 @@ function RecentWorkRow({ document }: { document: DocumentRow }) {
                       ? 'bg-green-500'
                       : document.status === DocumentStatus.IN_PROCESS
                         ? 'bg-amber-500'
-                        : 'bg-blue-500',
+                        : 'bg-primary/60',
                   )}
                 />
-                <span className="text-xs font-bold text-muted-foreground/64 group-hover/trigger:text-muted-foreground transition-colors">
+                <span className="text-xs font-medium text-muted-foreground/64 group-hover/trigger:text-muted-foreground transition-colors">
                   {getStatusLabel(document.status)}
                 </span>
                 <ChevronDown className="size-3 text-muted-foreground/32 group-hover/trigger:text-muted-foreground transition-colors" />
@@ -202,7 +203,7 @@ function RecentWorkRow({ document }: { document: DocumentRow }) {
                         e.stopPropagation();
                         void updateMutation.mutateAsync({ status });
                       }}
-                      className="flex items-center gap-3 text-xs"
+                      className="flex items-center gap-3 text-xs font-medium"
                     >
                       <ItemIcon className="size-3.5 opacity-64" />
                       {getStatusLabel(status)}
@@ -211,7 +212,7 @@ function RecentWorkRow({ document }: { document: DocumentRow }) {
                 })}
               </DropdownMenuContent>
             </DropdownMenu>
-            <span className="text-xs font-medium text-muted-foreground/32 flex items-center gap-1">
+            <span className="text-xs font-medium text-muted-foreground/40 flex items-center gap-1">
               <Clock3 className="size-3" />
               {format(new Date(document.updatedAt || Date.now()), 'MMM d')}
             </span>
@@ -220,13 +221,13 @@ function RecentWorkRow({ document }: { document: DocumentRow }) {
       </div>
 
       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button asChild size="sm" variant="secondary" className="font-bold">
+        <Button asChild size="sm" variant="secondary" className="font-semibold">
           <Link href={`/app/library/${document.id}`}>View</Link>
         </Button>
         <Button
           size="sm"
           variant="ghost"
-          className="font-bold text-muted-foreground/50 hover:text-destructive transition-colors"
+          className="font-medium text-muted-foreground/60 hover:text-destructive transition-colors"
           disabled={isDeleting}
           onClick={(e) => {
             e.stopPropagation();
@@ -236,7 +237,7 @@ function RecentWorkRow({ document }: { document: DocumentRow }) {
           {isDeleting ? <Spinner className="size-4" /> : 'Dismiss'}
         </Button>
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -275,16 +276,18 @@ export function HomeContent() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2.5">
-            <div className="flex size-7 items-center justify-center rounded-sm bg-primary/10 text-primary border">
+            <div className="flex size-7 items-center justify-center rounded-sm bg-primary/10 text-primary border border-primary/20">
               <BookOpenCheck className="size-4" />
             </div>
-            <CardTitle className="text-sm font-bold">Review queue</CardTitle>
+            <CardTitle className="text-sm font-semibold">
+              Review queue
+            </CardTitle>
           </div>
           <CardDescription className="text-xs">
             High-priority knowledge synthesis required for today.
           </CardDescription>
           <CardAction>
-            <Badge variant="secondary" className="font-bold">
+            <Badge variant="secondary" size={'sm'} className="font-semibold">
               {reviewItems?.length ?? 0}
             </Badge>
           </CardAction>
@@ -329,10 +332,10 @@ export function HomeContent() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2.5">
-            <div className="flex size-7 items-center justify-center rounded-sm bg-blue-500/10 text-blue-500 border">
+            <div className="flex size-7 items-center justify-center rounded-sm bg-primary/10 text-primary border border-primary/20">
               <Clock3 className="size-4" />
             </div>
-            <CardTitle className="text-sm font-bold">Recent work</CardTitle>
+            <CardTitle className="text-sm font-semibold">Recent work</CardTitle>
           </div>
           <CardDescription className="text-xs">
             Continuity for your latest research and annotations.
@@ -355,7 +358,7 @@ export function HomeContent() {
                 <EmptyHeader>
                   <EmptyMedia
                     variant="icon"
-                    className="bg-blue-500/5 text-blue-500/30"
+                    className="bg-primary/5 text-primary/30"
                   >
                     <CalendarDays className="size-6" />
                   </EmptyMedia>
@@ -376,10 +379,10 @@ export function HomeContent() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2.5">
-            <div className="flex size-7 items-center justify-center rounded-sm bg-orange-500/10 text-orange-500 border">
+            <div className="flex size-7 items-center justify-center rounded-sm bg-primary/10 text-primary border border-primary/20">
               <Sparkles className="size-4" />
             </div>
-            <CardTitle className="text-sm font-bold">Recommended</CardTitle>
+            <CardTitle className="text-sm font-semibold">Recommended</CardTitle>
           </div>
           <CardDescription className="text-xs">
             AI-driven serendipity based on your current knowledge graph.
@@ -402,7 +405,7 @@ export function HomeContent() {
                 <EmptyContent>
                   <EmptyMedia
                     variant="icon"
-                    className="bg-orange-500/5 text-orange-500/30"
+                    className="bg-primary/5 text-primary/30"
                   >
                     <Plus className="size-6" />
                   </EmptyMedia>
@@ -419,24 +422,24 @@ export function HomeContent() {
                 <Link
                   key={document.id}
                   href={`/app/library/${document.id}`}
-                  className="block"
+                  className="block group"
                 >
-                  <Card className="group flex flex-row items-center justify-between gap-4 p-4 hover:bg-accent/50">
+                  <div className="flex flex-row items-center justify-between gap-4 p-4 border-b last:border-0 hover:bg-muted/30 transition-colors">
                     <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex size-8 items-center justify-center rounded-sm border bg-muted/40 text-muted-foreground group-hover:text-orange-500 transition-all">
+                      <div className="flex size-8 items-center justify-center rounded-sm border bg-muted/40 text-muted-foreground group-hover:text-primary group-hover:bg-primary/5 transition-all">
                         <Icon className="size-3.5" />
                       </div>
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-bold tracking-tight text-foreground">
+                        <p className="truncate text-sm font-semibold tracking-tight text-foreground">
                           {document.title}
                         </p>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+                        <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground/60">
                           {document.tags[0] || 'Discovery'}
                         </p>
                       </div>
                     </div>
-                    <Sparkles className="size-3.5 shrink-0 text-orange-500 opacity-0 transition-all group-hover:opacity-100" />
-                  </Card>
+                    <Sparkles className="size-3.5 shrink-0 text-muted-foreground/40 opacity-0 transition-all group-hover:opacity-100 group-hover:text-primary" />
+                  </div>
                 </Link>
               );
             })}

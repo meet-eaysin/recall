@@ -4,7 +4,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { Dock } from '@/features/workspace/components/dock';
 import { ThreadStreamProvider } from '@/features/workspace/components/thread-stream-context';
 import { AppSidebar } from '@/components/app-sidebar';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 
 export default async function WorkspaceLayout({
   children,
@@ -21,8 +21,11 @@ export default async function WorkspaceLayout({
           <>
             <div className="relative flex min-h-svh w-full">
               <AppSidebar />
-              <SidebarInset className="relative flex min-h-svh flex-1 flex-col bg-background md:pl-(--sidebar-width-icon)">
-                <main className="relative flex flex-1 flex-col pt-2">
+              <SidebarInset className="relative flex min-h-svh flex-1 flex-col bg-background">
+                <div className="pointer-events-none sticky top-0 z-50 flex h-14 w-full items-center px-4 md:px-6">
+                  <SidebarTrigger className="pointer-events-auto -ml-1" />
+                </div>
+                <main className="relative flex flex-1 flex-col -mt-14">
                   {children}
                 </main>
               </SidebarInset>

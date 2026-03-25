@@ -149,12 +149,12 @@ function SidebarChatList({ query }: { query: string }) {
         asChild
         isActive={pathname.includes(chat.id)}
         tooltip={chat.title}
-        className="h-auto py-2.5 transition-all duration-200 hover:bg-sidebar-accent/50 data-active:bg-sidebar-accent data-active:shadow-sm"
+        className="h-auto py-2.5 items-start transition-all duration-200 hover:bg-sidebar-accent/50 data-active:bg-sidebar-accent data-active:shadow-sm"
       >
         <Link href={`/app/t/${chat.id}`}>
-          <MessageSquareIcon className="size-4 shrink-0 transition-transform duration-200 group-hover/menu-button:scale-110" />
-          <div className="flex min-w-0 flex-col gap-0.5">
-            <span className="truncate font-medium leading-none text-sidebar-foreground">
+          <MessageSquareIcon className="size-4 shrink-0 mt-0.5 transition-transform duration-200 group-hover/menu-button:scale-110" />
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <span className="truncate font-semibold text-sidebar-foreground">
               {chat.title}
             </span>
             <span className="line-clamp-1 text-xs text-muted-foreground/80 leading-tight">
