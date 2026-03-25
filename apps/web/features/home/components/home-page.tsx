@@ -296,7 +296,7 @@ export function HomeContent() {
           {reviewLoading ? <SectionSkeleton rows={2} /> : null}
 
           {!reviewLoading && (reviewItems?.length ?? 0) === 0 ? (
-            <Card className="p-8">
+            <div className="p-8">
               <Empty className="py-8">
                 <EmptyHeader>
                   <EmptyMedia
@@ -308,7 +308,7 @@ export function HomeContent() {
                   <EmptyTitle>Fully Synchronized</EmptyTitle>
                 </EmptyHeader>
               </Empty>
-            </Card>
+            </div>
           ) : null}
 
           <div className="flex flex-col">
@@ -353,7 +353,7 @@ export function HomeContent() {
           {docsLoading ? <SectionSkeleton rows={2} /> : null}
 
           {!docsLoading && documents.length === 0 ? (
-            <Card className="p-8">
+            <div className="p-8">
               <Empty className="py-6">
                 <EmptyHeader>
                   <EmptyMedia
@@ -365,7 +365,7 @@ export function HomeContent() {
                   <EmptyTitle>No history yet</EmptyTitle>
                 </EmptyHeader>
               </Empty>
-            </Card>
+            </div>
           ) : null}
 
           <div className="flex flex-col">
@@ -400,7 +400,7 @@ export function HomeContent() {
 
           {!recommendationLoading &&
           (recommendations?.ownedDocuments.length ?? 0) === 0 ? (
-            <Card className="p-8">
+            <div className="p-8">
               <Empty className="py-6">
                 <EmptyContent>
                   <EmptyMedia
@@ -412,7 +412,7 @@ export function HomeContent() {
                   <EmptyTitle>Building Context</EmptyTitle>
                 </EmptyContent>
               </Empty>
-            </Card>
+            </div>
           ) : null}
 
           <div className="flex flex-col">
