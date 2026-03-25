@@ -214,8 +214,11 @@ export function useUpdateFolder(id: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: { name?: string; color?: string; description?: string }) =>
-      libraryApi.updateFolder(id, payload),
+    mutationFn: (payload: {
+      name?: string;
+      color?: string;
+      description?: string;
+    }) => libraryApi.updateFolder(id, payload),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.LIBRARY.folders(),

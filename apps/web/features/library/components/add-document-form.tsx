@@ -246,7 +246,8 @@ export function AddDocumentForm({
                 className="flex flex-wrap gap-2 w-full justify-start"
                 value={field.value}
                 onValueChange={(val) => {
-                  if (val) handleTypeSelect(val as DocumentType, field.onChange);
+                  if (val)
+                    handleTypeSelect(val as DocumentType, field.onChange);
                 }}
               >
                 {TYPE_ITEMS.map(({ label, value, icon: Icon }) => (
@@ -321,10 +322,7 @@ export function AddDocumentForm({
                     field.onChange(v === 'none' ? undefined : v)
                   }
                 >
-                  <SelectTrigger
-                    id="add-doc-folder"
-                    className="h-10 text-sm"
-                  >
+                  <SelectTrigger id="add-doc-folder" className="h-10 text-sm">
                     <SelectValue>{selectedFolderName}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>

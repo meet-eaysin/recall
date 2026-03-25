@@ -4,7 +4,11 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { Dock } from '@/features/workspace/components/dock';
 import { ThreadStreamProvider } from '@/features/workspace/components/thread-stream-context';
 import { AppSidebar } from '@/components/app-sidebar';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@/components/ui/sidebar';
 
 export default async function WorkspaceLayout({
   children,

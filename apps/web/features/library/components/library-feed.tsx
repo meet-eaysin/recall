@@ -101,7 +101,10 @@ export function LibraryFeed() {
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="flex flex-col overflow-hidden rounded-xl border bg-card">
+            <div
+              key={i}
+              className="flex flex-col overflow-hidden rounded-xl border bg-card"
+            >
               <div className="border-b bg-muted/10 p-1.5">
                 <Skeleton className="aspect-16/6 w-full rounded-lg" />
               </div>
@@ -227,7 +230,8 @@ export function LibraryFeed() {
           </div>
         </div>
 
-        {items.length === 0 && (!activeFolderId ? folders.length === 0 : true) ? (
+        {items.length === 0 &&
+        (!activeFolderId ? folders.length === 0 : true) ? (
           <Card className="border-dashed">
             <Empty>
               <EmptyHeader>
@@ -250,7 +254,9 @@ export function LibraryFeed() {
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-3 auto-rows-max sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {/* INTERLEAVED GRID: Folders First (only at root without filters) */}
-              {!activeFolderId && !status && !type &&
+              {!activeFolderId &&
+                !status &&
+                !type &&
                 folders.map((folder) => (
                   <FolderShelfCard
                     key={folder.id}
@@ -261,9 +267,8 @@ export function LibraryFeed() {
                       setPage(1);
                     }}
                   />
-                ))
-              }
-              
+                ))}
+
               {/* Documents */}
               {items.map((doc) => (
                 <DocumentCard key={doc.id} document={doc} />

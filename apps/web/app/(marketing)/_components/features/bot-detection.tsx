@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
 
 type BotDetectionProps = {
   cardTitle?: string;
@@ -10,20 +10,20 @@ type BotDetectionProps = {
 };
 
 const positions = [
-  { top: "80px", left: "34px" },
-  { top: "161px", left: "90px" },
-  { top: "120px", left: "230px" },
-  { top: "203px", left: "165px" },
-  { top: "100px", left: "120px" },
-  { top: "164px", left: "15px" },
-  { top: "238px", left: "61px" },
-  { top: "180px", left: "237px" },
-  { top: "53px", left: "204px" },
+  { top: '80px', left: '34px' },
+  { top: '161px', left: '90px' },
+  { top: '120px', left: '230px' },
+  { top: '203px', left: '165px' },
+  { top: '100px', left: '120px' },
+  { top: '164px', left: '15px' },
+  { top: '238px', left: '61px' },
+  { top: '180px', left: '237px' },
+  { top: '53px', left: '204px' },
 ];
 
 const BotDetection = ({
-  cardTitle = "Intelligent Discovery",
-  cardDescription = "Ask complex questions and get grounded answers. Our AI scans your entire library to find the exact source for everything.",
+  cardTitle = 'Intelligent Discovery',
+  cardDescription = 'Ask complex questions and get grounded answers. Our AI scans your entire library to find the exact source for everything.',
 }: BotDetectionProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -41,9 +41,9 @@ const BotDetection = ({
   return (
     <div
       className={cn(
-        "relative overflow-hidden",
-        "h-80 w-full",
-        "rounded-md border border-neutral-800 bg-black",
+        'relative overflow-hidden',
+        'h-80 w-full',
+        'rounded-md border border-neutral-800 bg-black',
       )}
     >
       <div className="absolute left-1/2 h-full max-w-75 min-w-75 -translate-x-1/2">
@@ -52,7 +52,7 @@ const BotDetection = ({
             className="pointer-events-none absolute bottom-5 left-37 h-62.5 w-62.5 origin-bottom-left"
             style={{
               background:
-                "radial-gradient(circle at 0% 100%, rgba(255, 255, 255, 0.3) 5%, transparent 60%)",
+                'radial-gradient(circle at 0% 100%, rgba(255, 255, 255, 0.3) 5%, transparent 60%)',
             }}
             initial={{ opacity: 0.7, rotate: -55 }}
             animate={{
@@ -62,7 +62,7 @@ const BotDetection = ({
             transition={{
               duration: 18,
               repeat: Infinity,
-              ease: "easeInOut",
+              ease: 'easeInOut',
             }}
           />
 
@@ -91,7 +91,7 @@ const BotDetection = ({
             className="absolute flex h-[6.5px] w-[6.5px] -translate-x-[0.5px] -translate-y-[0.5px] items-center justify-center rounded-[1px] border-t border-red-400 bg-red-500 shadow-[0_0_10px_4px_rgba(239,68,68,0.9)]"
             style={positions[currentIndex]}
             transition={{
-              type: "spring",
+              type: 'spring',
               stiffness: 300,
               damping: 70,
             }}
@@ -103,7 +103,7 @@ const BotDetection = ({
               animate={{ scale: 1.7, opacity: [0.7, 1, 0] }}
               transition={{
                 duration: 1.2,
-                ease: "easeOut",
+                ease: 'easeOut',
                 delay: 1.3,
               }}
             />
@@ -117,7 +117,7 @@ const BotDetection = ({
               }}
               transition={{
                 duration: 1,
-                ease: "easeInOut",
+                ease: 'easeInOut',
                 delay: 1.3,
               }}
               className="absolute -top-1.5 -left-1.5 h-[300%] w-[270%] scale-[1.3] rounded-full border border-red-500 shadow-[0_0_20px_4px_rgba(239,68,68,0.6)]"

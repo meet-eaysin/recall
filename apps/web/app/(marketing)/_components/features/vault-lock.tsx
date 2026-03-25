@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import type { Variants } from "framer-motion";
+import { cn } from '@/lib/utils';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 
 type VaultLockProps = {
   cardTitle?: string;
@@ -11,48 +11,48 @@ type VaultLockProps = {
 };
 
 const VaultLock = ({
-  cardTitle = "Document-First",
-  cardDescription = "See the original source, notes, tags, and summaries without exposing internal AI pipelines.",
+  cardTitle = 'Document-First',
+  cardDescription = 'See the original source, notes, tags, and summaries without exposing internal AI pipelines.',
 }: VaultLockProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const vaultVariant: Variants = {
     open: {
-      transform: "translateY(-20px)",
+      transform: 'translateY(-20px)',
       transition: {
         duration: 0.3,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
     close: {
-      transform: "translateY(0px)",
+      transform: 'translateY(0px)',
       transition: {
         duration: 0.3,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
   };
 
   const inputVariant: Variants = {
     open: {
-      transform: "translateY(-12px)",
+      transform: 'translateY(-12px)',
       transition: {
         duration: 0.3,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
     close: {
-      transform: "translateY(0px)",
+      transform: 'translateY(0px)',
       transition: {
         duration: 0.3,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
   };
 
   const shineVariant: Variants = {
     open: {
-      transform: "translateX(-50%) translateY(0%) rotate(45deg)",
+      transform: 'translateX(-50%) translateY(0%) rotate(45deg)',
       scale: 1.2,
       transition: {
         duration: 0.6,
@@ -61,7 +61,7 @@ const VaultLock = ({
       },
     },
     close: {
-      transform: "translateX(-125%) translateY(-60%) rotate(45deg)",
+      transform: 'translateX(-125%) translateY(-60%) rotate(45deg)',
       scale: 1,
       transition: {
         duration: 0.4,
@@ -72,7 +72,7 @@ const VaultLock = ({
 
   const lockVariant: Variants = {
     open: {
-      transform: "rotate(90deg)",
+      transform: 'rotate(90deg)',
       transition: {
         duration: 0.6,
         ease: [0.65, 0, 0.35, 1],
@@ -80,7 +80,7 @@ const VaultLock = ({
       },
     },
     close: {
-      transform: "rotate(0deg)",
+      transform: 'rotate(0deg)',
       transition: {
         duration: 0.4,
         ease: [0.65, 0, 0.35, 1],
@@ -91,22 +91,22 @@ const VaultLock = ({
   const codeVariant: Variants = {
     open: (index: number) => ({
       opacity: 1,
-      filter: "blur(0px)",
+      filter: 'blur(0px)',
       scale: 1,
       transition: {
         duration: 0.5,
         delay: 0.3 + index * 0.15,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     }),
     close: {
       opacity: 0,
-      filter: "blur(10px)",
+      filter: 'blur(10px)',
       scale: 1.02,
       transition: {
         duration: 0.2,
         delay: 0,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
   };
@@ -116,30 +116,30 @@ const VaultLock = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       initial="close"
-      animate={isHovered ? "open" : "close"}
+      animate={isHovered ? 'open' : 'close'}
       className={cn(
-        "group relative",
-        "h-80 w-full",
-        "rounded-md border border-neutral-800 bg-neutral-900",
+        'group relative',
+        'h-80 w-full',
+        'rounded-md border border-neutral-800 bg-neutral-900',
       )}
     >
       <motion.div
         variants={vaultVariant}
         className={cn(
-          "absolute inset-x-0 mx-auto",
-          "top-20 h-32 w-[95%] max-w-[20rem] p-6",
-          "border-t border-neutral-700/70 bg-linear-to-b from-neutral-800 to-neutral-900 text-white shadow-lg",
+          'absolute inset-x-0 mx-auto',
+          'top-20 h-32 w-[95%] max-w-[20rem] p-6',
+          'border-t border-neutral-700/70 bg-linear-to-b from-neutral-800 to-neutral-900 text-white shadow-lg',
         )}
         style={{
           clipPath:
-            "polygon(30px 0%, calc(100% - 30px) 0%, 100% 30px, 100% 100%, 0% 100%, 0% 30px)",
+            'polygon(30px 0%, calc(100% - 30px) 0%, 100% 30px, 100% 100%, 0% 100%, 0% 30px)',
         }}
       />
       <motion.div
         variants={vaultVariant}
         className={cn(
-          "absolute inset-x-0 mx-auto",
-          "top-10 flex h-18 w-18 items-center justify-center overflow-hidden rounded-full bg-neutral-950 p-1",
+          'absolute inset-x-0 mx-auto',
+          'top-10 flex h-18 w-18 items-center justify-center overflow-hidden rounded-full bg-neutral-950 p-1',
         )}
       >
         <motion.div
@@ -175,15 +175,15 @@ const VaultLock = ({
       <motion.div
         variants={inputVariant}
         className={cn(
-          "absolute inset-x-0 mx-auto",
-          "top-33.75 flex w-[95%] max-w-60 items-center justify-between",
-          "rounded-md border border-neutral-900 bg-neutral-800/90 p-2",
-          "drop-shadow-[0_2px_5px_rgba(15,15,15,0.50)] transition-all duration-300",
-          "group-hover:border-cyan-500 group-hover:[box-shadow:inset_0_0_5px_#06b6d4] group-hover:filter-[drop-shadow(0_0_2px_#06b6d4)]",
+          'absolute inset-x-0 mx-auto',
+          'top-33.75 flex w-[95%] max-w-60 items-center justify-between',
+          'rounded-md border border-neutral-900 bg-neutral-800/90 p-2',
+          'drop-shadow-[0_2px_5px_rgba(15,15,15,0.50)] transition-all duration-300',
+          'group-hover:border-cyan-500 group-hover:[box-shadow:inset_0_0_5px_#06b6d4] group-hover:filter-[drop-shadow(0_0_2px_#06b6d4)]',
         )}
       >
         <div className="ml-2 text-xs text-cyan-500 group-hover:filter-[drop-shadow(0_0_4px_#000)]">
-          {"••••••••••".split("").map((char, index) => (
+          {'••••••••••'.split('').map((char, index) => (
             <motion.span
               key={`char-${index}`}
               className="mr-1 inline-block font-[350]"

@@ -161,7 +161,9 @@ export function FolderActions({ folder }: FolderActionsProps) {
                     type="button"
                     className={[
                       'size-8 rounded-full border-2 transition-all hover:scale-110',
-                      color === c ? 'border-primary ring-2 ring-primary/20' : 'border-transparent',
+                      color === c
+                        ? 'border-primary ring-2 ring-primary/20'
+                        : 'border-transparent',
                     ].join(' ')}
                     style={{ backgroundColor: c }}
                     onClick={() => setColor(c)}
@@ -186,8 +188,8 @@ export function FolderActions({ folder }: FolderActionsProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the folder &quot;{folder.name}&quot;. Any
-              documents inside will be moved to the root library.
+              This will permanently delete the folder &quot;{folder.name}&quot;.
+              Any documents inside will be moved to the root library.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

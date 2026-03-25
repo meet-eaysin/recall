@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
-import type { SVGProps } from "react";
+import { cn } from '@/lib/utils';
+import { useState, useEffect } from 'react';
+import type { SVGProps } from 'react';
 
 type FrameworkAgnosticProps = {
   cardTitle?: string;
@@ -10,16 +10,16 @@ type FrameworkAgnosticProps = {
 };
 
 const FrameworkAgnostic = ({
-  cardTitle = "Personal Knowledge Stack",
-  cardDescription = "Built with Postgres, Chroma, and Redis. Recall is optimized for local-first performance and developer-centric workflows.",
+  cardTitle = 'Personal Knowledge Stack',
+  cardDescription = 'Built with Postgres, Chroma, and Redis. Recall is optimized for local-first performance and developer-centric workflows.',
 }: FrameworkAgnosticProps) => {
   return (
     <div
       className={cn(
-        "relative",
-        "flex flex-col justify-between",
-        "h-80 space-y-4",
-        "rounded-md border border-neutral-800/50 bg-neutral-950",
+        'relative',
+        'flex flex-col justify-between',
+        'h-80 space-y-4',
+        'rounded-md border border-neutral-800/50 bg-neutral-950',
       )}
     >
       <FrameworkCard />
@@ -34,14 +34,14 @@ const FrameworkAgnostic = ({
 export default FrameworkAgnostic;
 
 const FrameworkCard = () => {
-  const [nextJsTransform, setNextJsTransform] = useState("none");
-  const [reactTransform, setReactTransform] = useState("none");
-  const [htmlTransform, setHtmlTransform] = useState("none");
+  const [nextJsTransform, setNextJsTransform] = useState('none');
+  const [reactTransform, setReactTransform] = useState('none');
+  const [htmlTransform, setHtmlTransform] = useState('none');
 
   useEffect(() => {
     const cycleAnimations = async () => {
-      const upStyle = "translateY(-3.71px) rotateX(10.71deg) translateZ(20px)";
-      const downStyle = "none";
+      const upStyle = 'translateY(-3.71px) rotateX(10.71deg) translateZ(20px)';
+      const downStyle = 'none';
 
       const transitionDuration = 1100;
 
@@ -76,18 +76,18 @@ const FrameworkCard = () => {
   }, []);
 
   const cardClasses =
-    "flex aspect-square items-center justify-center rounded-md border border-neutral-800 bg-linear-to-b from-neutral-700 to-neutral-900 p-4" +
-    "[@media(min-width:320px)]:h-20 [@media(min-width:500px)]:h-36 " +
-    "transition-transform duration-1000 ease-out will-change-transform";
+    'flex aspect-square items-center justify-center rounded-md border border-neutral-800 bg-linear-to-b from-neutral-700 to-neutral-900 p-4' +
+    '[@media(min-width:320px)]:h-20 [@media(min-width:500px)]:h-36 ' +
+    'transition-transform duration-1000 ease-out will-change-transform';
 
   return (
     <>
       <div
         className={cn(
-          "",
-          "relative",
-          "flex flex-col items-center justify-center gap-1",
-          "h-58 w-full",
+          '',
+          'relative',
+          'flex flex-col items-center justify-center gap-1',
+          'h-58 w-full',
         )}
       >
         <div className="absolute flex h-full w-full items-center justify-center">
@@ -120,7 +120,7 @@ const FrameworkCard = () => {
                   />
                 </mask>
                 <radialGradient id="framework-blue-grad" fx="1">
-                  <stop offset="0%" stopColor={"#3b82f6"} />
+                  <stop offset="0%" stopColor={'#3b82f6'} />
                   <stop offset="100%" stopColor="transparent" />
                 </radialGradient>
               </defs>
@@ -129,8 +129,8 @@ const FrameworkCard = () => {
         </div>
         <div
           className={cn(
-            "flex items-center justify-center gap-4",
-            "perspective-[1000px] transform-3d",
+            'flex items-center justify-center gap-4',
+            'perspective-[1000px] transform-3d',
           )}
         >
           <div className={cardClasses} style={{ transform: reactTransform }}>
@@ -162,7 +162,7 @@ const NextjsIcon = (props: SVGProps<SVGSVGElement>) => (
     <mask
       id="mask0_408_139"
       style={{
-        maskType: "alpha",
+        maskType: 'alpha',
       }}
       maskUnits="userSpaceOnUse"
       x={0}
