@@ -35,10 +35,7 @@ export function SummaryTab({ isCompact = false }: { isCompact?: boolean }) {
 
   return (
     <div
-      className={cn(
-        'max-w-5xl mx-auto space-y-6 pb-20',
-        isCompact && 'max-w-none pb-10',
-      )}
+      className={cn('mx-auto space-y-6 pb-20', isCompact && 'max-w-none pb-10')}
     >
       <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -113,34 +110,31 @@ export function SummaryTab({ isCompact = false }: { isCompact?: boolean }) {
           </div>
         </div>
 
-        <div className="relative group">
+        <div className="relative group mt-8">
           {document.summary ? (
-            <div className="relative rounded-2xl border bg-card p-8 shadow-sm transition-all hover:shadow-md hover:border-primary/10">
-              <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:opacity-40 transition-opacity">
-                <Sparkles className="size-6 text-primary" />
-              </div>
-              <div className="max-w-none text-foreground/90 font-serif-subtle">
+            <div className="relative overflow-hidden rounded-sm border bg-card p-6 md:p-8 shadow-sm transition-all duration-300 hover:shadow-md">
+              <div className="relative z-10 max-w-none text-foreground/90 text-sm md:text-base leading-relaxed prose prose-sm md:prose-base prose-neutral dark:prose-invert">
                 <MarkdownRenderer>{document.summary}</MarkdownRenderer>
               </div>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-6 rounded-2xl border border-dashed bg-muted/30 py-20 text-center transition-colors hover:bg-muted/50">
-              <div className="rounded-2xl bg-primary/5 p-5 ring-1 ring-primary/10">
-                <Sparkles className="size-10 text-primary/40" />
+              <div className="rounded-xl bg-background p-4 ring-1 ring-border shadow-sm">
+                <Sparkles className="size-8 text-muted-foreground" />
               </div>
               <div className="space-y-2">
                 <h4 className="text-lg font-semibold text-foreground/90">
                   Ready to distill this content?
                 </h4>
                 <p className="text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">
-                  Our AI will analyze the entire document to provide you with
-                  key takeaways and core arguments.
+                  Our intelligence engine will analyze the entire document to
+                  synthesize key takeaways and core arguments in seconds.
                 </p>
               </div>
               <Button
                 onClick={() => actions.generateSummary.mutate(id)}
                 variant="outline"
-                className="h-10 px-6 rounded-full font-medium"
+                className="h-10 px-6 rounded-md font-medium"
               >
                 Begin Analysis
               </Button>

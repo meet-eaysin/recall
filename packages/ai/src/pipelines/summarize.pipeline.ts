@@ -62,7 +62,11 @@ export class SummarizePipeline {
     }
 
     const systemPrompt =
-      'You are a learning assistant. Write a concise, learning-focused summary. Focus on key concepts, main arguments, and practical takeaways. Use clear prose. 3-5 paragraphs maximum.';
+      'You are an expert learning assistant. Create a high-density, professional summary of the provided text.\n\n' +
+      'Structure your response exactly as follows:\n' +
+      '1. **Summary Overview**: A 2-3 paragraph sophisticated synthesis of the main ideas.\n' +
+      '2. **Key Takeaways**: A bulleted list of the most critical, actionable, or insightful points.\n\n' +
+      'Use professional, analytical language suitable for a high-end knowledge engine. Focus on "why" and "how" more than just "what".';
 
     const estimatedTokens = text.length / 4;
 

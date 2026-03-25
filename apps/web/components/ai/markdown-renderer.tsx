@@ -25,28 +25,60 @@ interface HighlightedPre extends React.HTMLAttributes<HTMLPreElement> {
 }
 
 const HighlightedPre = React.memo(
-  async ({ children, language, ...props }: HighlightedPre) => {
-    const { codeToTokens, bundledLanguages } = await import('shiki');
+  ({ children, language, ...props }: HighlightedPre) => {
+    const [tokens, setTokens] = React.useState<
+      Array<Array<{ content: string; htmlStyle?: string | Record<string, string> }>> | null
+    >(null);
+    const [isSupported, setIsSupported] = React.useState(true);
 
-    if (!(language in bundledLanguages)) {
+    React.useEffect(() => {
+      let isMounted = true;
+
+      async function highlight() {
+        try {
+          const { codeToTokens, bundledLanguages } = await import('shiki');
+
+          if (!(language in bundledLanguages)) {
+            if (isMounted) setIsSupported(false);
+            return;
+          }
+
+          const { tokens: newTokens } = await codeToTokens(children, {
+            lang: language as keyof typeof bundledLanguages,
+            defaultColor: false,
+            themes: {
+              light: 'github-light',
+              dark: 'github-dark',
+            },
+          });
+
+          if (isMounted) {
+            setTokens(newTokens);
+            setIsSupported(true);
+          }
+        } catch (error) {
+          console.error('Syntax highlighting failed:', error);
+          if (isMounted) setIsSupported(false);
+        }
+      }
+
+      highlight();
+
+      return () => {
+        isMounted = false;
+      };
+    }, [children, language]);
+
+    if (!isSupported || !tokens) {
       return <pre {...props}>{children}</pre>;
     }
-
-    const { tokens } = await codeToTokens(children, {
-      lang: language as keyof typeof bundledLanguages,
-      defaultColor: false,
-      themes: {
-        light: 'github-light',
-        dark: 'github-dark',
-      },
-    });
 
     return (
       <pre {...props}>
         <code>
           {tokens.map((line, lineIndex) => (
-            <>
-              <span key={lineIndex}>
+            <React.Fragment key={lineIndex}>
+              <span>
                 {line.map((token, tokenIndex) => {
                   const style =
                     typeof token.htmlStyle === 'string'
@@ -65,7 +97,7 @@ const HighlightedPre = React.memo(
                 })}
               </span>
               {lineIndex !== tokens.length - 1 && '\n'}
-            </>
+            </React.Fragment>
           ))}
         </code>
       </pre>
