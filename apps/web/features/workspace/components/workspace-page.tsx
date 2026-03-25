@@ -231,17 +231,15 @@ function InlineChat() {
     error,
   ]);
 
-  const scrollRef = React.useRef<HTMLDivElement>(null);
 
   return (
     <PageContainer
       isFullHeight
-      ref={scrollRef}
-      className="px-0 py-0 pb-0 md:pb-0 lg:pb-0 min-h-[calc(100svh-0.5rem)]"
+      className="absolute inset-0 px-0 py-0 pb-0 md:pb-0 lg:pb-0 overflow-hidden"
     >
-      <div className="flex flex-1 flex-col">
+      <div className="flex h-full flex-col min-h-0 overflow-hidden">
         {/* Header */}
-        <div className="sticky top-0 z-20 w-full bg-background/80 backdrop-blur-md">
+        <div className="shrink-0 w-full bg-background border-b border-border/40">
           <div className="max-w-4xl mx-auto px-4 md:px-8">
             <header className="flex items-center gap-4 py-4">
               <Button
@@ -269,8 +267,8 @@ function InlineChat() {
           </div>
         </div>
 
-        {/* Messages and Input replacing manual blocks */}
-        <div className="flex-1 flex flex-col">
+        {/* Messages and Input */}
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           <Chat
             messages={messages}
             input={question}
@@ -279,7 +277,6 @@ function InlineChat() {
             isGenerating={isStreaming || !!activeStream?.isStreaming}
             onSourceClick={setPreviewId}
             stop={stopGeneration}
-            scrollRef={scrollRef}
           />
         </div>
       </div>

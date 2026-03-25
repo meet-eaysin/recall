@@ -223,8 +223,6 @@ export function ThreadView() {
     setIsStreaming(false);
   };
 
-  const scrollRef = React.useRef<HTMLDivElement>(null);
-
   if (isLoading && !hasOmniStream) {
     return (
       <PageContainer>
@@ -243,14 +241,13 @@ export function ThreadView() {
   return (
     <PageContainer
       isFullHeight
-      className="px-0 py-0 pb-0 md:px-0 lg:px-0 md:pb-0 lg:pb-0 min-h-[calc(100svh-0.5rem)]"
-      ref={scrollRef}
+      className="absolute inset-0 px-0 py-0 pb-0 md:px-0 lg:px-0 md:pb-0 lg:pb-0 overflow-hidden"
     >
-      <div className="flex flex-col flex-1 h-full w-full min-h-0">
+      <div className="flex flex-col h-full w-full min-h-0 overflow-hidden">
         {/* Header */}
-        <div className="sticky top-0 z-20 w-full bg-background/80 backdrop-blur-md">
+        <div className="shrink-0 w-full bg-background border-b border-border/40">
           <div className="max-w-4xl mx-auto px-4 md:px-8">
-            <header className="flex items-center gap-4 py-4">
+            <header className="flex items-center gap-4 py-3">
               <Button
                 variant="ghost"
                 size="icon"
@@ -274,8 +271,8 @@ export function ThreadView() {
           </div>
         </div>
 
-        {/* Messages and Input replacing manual blocks */}
-        <div className="flex-1 flex flex-col">
+        {/* Messages and Input */}
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           <Chat
             messages={messages}
             input={question}
@@ -284,7 +281,6 @@ export function ThreadView() {
             isGenerating={isStreaming || !!omniStream?.isStreaming}
             onSourceClick={setPreviewId}
             stop={stopGeneration}
-            scrollRef={scrollRef}
           />
         </div>
       </div>

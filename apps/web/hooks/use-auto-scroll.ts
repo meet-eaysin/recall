@@ -3,36 +3,31 @@ import React, { useEffect, useRef, useState } from 'react';
 const ACTIVATION_THRESHOLD = 50;
 const MIN_SCROLL_UP_THRESHOLD = 10;
 
-export function useAutoScroll(
-  dependencies: React.DependencyList,
-  externalRef?: React.RefObject<HTMLDivElement | null>,
-) {
-  const internalRef = useRef<HTMLDivElement | null>(null);
-  const containerRef = externalRef || internalRef;
+export function useAutoScroll(dependencies: React.DependencyList) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const previousScrollTop = useRef<number | null>(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
   const scrollToBottom = React.useCallback(() => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'auto',
+    const el = containerRef.current;
+    if (!el) return;
+    requestAnimationFrame(() => {
+      el.scrollTop = el.scrollHeight;
     });
   }, []);
 
   const handleScroll = React.useCallback(() => {
-    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    const scrollHeight = document.documentElement.scrollHeight;
-    const clientHeight = document.documentElement.clientHeight;
+    const el = containerRef.current;
+    if (!el) return;
 
-    const distanceFromBottom = Math.abs(
-      scrollHeight - scrollTop - clientHeight,
-    );
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    const distanceFromBottom = Math.abs(scrollHeight - scrollTop - clientHeight);
 
-    const isScrollingUp = previousScrollTop.current
+    const isScrollingUp = previousScrollTop.current !== null
       ? scrollTop < previousScrollTop.current
       : false;
 
-    const scrollUpDistance = previousScrollTop.current
+    const scrollUpDistance = previousScrollTop.current !== null
       ? previousScrollTop.current - scrollTop
       : 0;
 
@@ -54,8 +49,10 @@ export function useAutoScroll(
   }, []);
 
   useEffect(() => {
-    previousScrollTop.current =
-      window.scrollY || document.documentElement.scrollTop;
+    const el = containerRef.current;
+    if (el) {
+      previousScrollTop.current = el.scrollTop;
+    }
   }, []);
 
   useEffect(() => {
@@ -66,20 +63,21 @@ export function useAutoScroll(
   }, [shouldAutoScroll, scrollToBottom, ...dependencies]);
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    const el = containerRef.current;
+    if (!el) return;
+
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    el.addEventListener('touchstart', handleTouchStart, { passive: true });
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('touchstart', handleTouchStart);
+      el.removeEventListener('scroll', handleScroll);
+      el.removeEventListener('touchstart', handleTouchStart);
     };
   }, [handleScroll, handleTouchStart]);
 
   return {
     containerRef,
     scrollToBottom,
-    handleScroll: undefined,
     shouldAutoScroll,
-    handleTouchStart: undefined,
   };
 }
