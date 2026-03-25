@@ -74,11 +74,15 @@ export function useCreateFolder() {
 
   return useMutation({
     mutationFn: libraryApi.createFolder,
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.LIBRARY.folders(),
-      });
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LIBRARY.ROOT });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.LIBRARY.folders(),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.LIBRARY.ROOT,
+        }),
+      ]);
     },
   });
 }

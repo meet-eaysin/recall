@@ -11,6 +11,11 @@ export abstract class IFolderRepository {
     userId: string,
     data: Partial<FolderEntity['props']>,
   ): Promise<FolderEntity | null>;
+  abstract findByName(
+    name: string,
+    userId: string,
+    parentId?: string | null,
+  ): Promise<FolderEntity | null>;
   abstract delete(id: string, userId: string): Promise<boolean>;
   abstract countDocuments(folderId: string, userId: string): Promise<number>;
 }
