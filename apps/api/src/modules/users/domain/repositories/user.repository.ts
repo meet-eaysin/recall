@@ -20,4 +20,8 @@ export abstract class IUserRepository {
   abstract upsertFromIdentity(
     input: UpsertIdentityUserInput,
   ): Promise<UserEntity>;
+  abstract update(
+    id: string,
+    input: Partial<Omit<UpsertIdentityUserInput, 'authId'>>,
+  ): Promise<UserEntity>;
 }

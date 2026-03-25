@@ -35,6 +35,8 @@ export const settingsApi = {
   getUser: () => apiGet<UserPublicView>(API_ENDPOINTS.USERS.ME),
   getUserSessions: () =>
     apiGet<UserSessionView[]>(API_ENDPOINTS.USERS.SESSIONS),
+  updateUser: (body: Partial<UserPublicView>) =>
+    apiPatch<UserPublicView>(API_ENDPOINTS.USERS.ME, { body }),
   revokeUserSession: (sessionId: string) =>
     apiDelete<{ success: boolean }>(API_ENDPOINTS.USERS.session(sessionId)),
   updateLLMConfig: (body: UpdateLLMConfigRequest) =>

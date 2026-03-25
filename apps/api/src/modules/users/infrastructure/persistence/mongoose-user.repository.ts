@@ -79,6 +79,21 @@ export class MongooseUserRepository implements IUserRepository {
     return this.toEntity(doc);
   }
 
+  async update(
+    id: string,
+    input: Partial<Omit<UpsertIdentityUserInput, 'authId'>>,
+  ): Promise<UserEntity> {
+    const doc = await UserModel.findByIdAndUpdate(
+      id,
+      { $set: input },
+      { new: true },
+    ).exec();
+
+    if (!doc) throw new Error('User not found');
+
+    return this.toEntity(doc);
+  }
+
   private toEntity(doc: IUserDocument): UserEntity {
     return new UserEntity({
       id: doc.id,

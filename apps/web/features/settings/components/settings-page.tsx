@@ -1,299 +1,126 @@
 'use client';
 
 import { useMemo } from 'react';
-import Link from 'next/link';
 import { Bot, ShieldCheck, UserCircle2, Workflow } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ApiError } from '@/lib/api';
-import {
-  useCurrentSession,
-  useCurrentUser,
-  useLLMConfig,
-  useNotionConfig,
-  useUserSessions,
-} from '../hooks';
-
-function isNotConfigured(error: unknown) {
-  return error instanceof ApiError && error.status === 404;
-}
-
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageContainer } from '@/features/workspace/components/page-container';
+import { ProfileForm } from './profile-form';
+import { SecurityTab } from './security-tab';
+import { LlmTab } from './llm-tab';
+import { NotionTab } from './notion-tab';
+import { useCurrentUser, useUserSessions, useLLMConfig, useNotionConfig } from '../hooks';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export function SettingsPage() {
-  const {
-    data: user,
-    error: userError,
-    isLoading: userLoading,
-  } = useCurrentUser();
-  const { data: session } = useCurrentSession();
+  const { data: user } = useCurrentUser();
   const { data: sessions } = useUserSessions();
-  const { data: llmConfig, error: llmError } = useLLMConfig();
-  const { data: notionConfig, error: notionError } = useNotionConfig();
+  const { data: llmConfig } = useLLMConfig();
+  const { data: notionConfig } = useNotionConfig();
 
   const activeConfig = useMemo(() => {
     if (!llmConfig?.configs?.length) return null;
-    if (llmConfig.activeConfigId) {
-      return (
-        llmConfig.configs.find((c) => c.id === llmConfig.activeConfigId) ||
-        llmConfig.configs[0]
-      );
-    }
-    return llmConfig.configs[0];
+    return llmConfig.configs.find((c) => c.id === llmConfig.activeConfigId) || llmConfig.configs[0];
   }, [llmConfig]);
 
-  const fatalLlmError =
-    llmError && !isNotConfigured(llmError) ? (llmError as Error) : null;
-  const fatalNotionError =
-    notionError && !isNotConfigured(notionError)
-      ? (notionError as Error)
-      : null;
-
   return (
-    <PageContainer className="space-y-8">
-      <header className="space-y-1">
-        <h1 className="text-3xl font-semibold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your account, trusted sessions, and the integrations that power
-          daily work.
+    <PageContainer className="max-w-6xl mx-auto space-y-8 py-10">
+      <div className="space-y-2">
+        <h1 className="text-4xl font-bold tracking-tight text-foreground">Settings</h1>
+        <p className="text-lg text-muted-foreground">
+          Manage your account preferences, security settings, and AI integrations.
         </p>
-      </header>
-      <div className="mt-4 space-y-4">
-        {userError ? (
-          <Alert variant="destructive">
-            <AlertTitle>Settings unavailable</AlertTitle>
-            <AlertDescription>{(userError as Error).message}</AlertDescription>
-          </Alert>
-        ) : null}
-        {fatalLlmError ? (
-          <Alert variant="destructive">
-            <AlertTitle>LLM status unavailable</AlertTitle>
-            <AlertDescription>{fatalLlmError.message}</AlertDescription>
-          </Alert>
-        ) : null}
-        {fatalNotionError ? (
-          <Alert variant="destructive">
-            <AlertTitle>Notion status unavailable</AlertTitle>
-            <AlertDescription>{fatalNotionError.message}</AlertDescription>
-          </Alert>
-        ) : null}
-
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]">
-          <Card>
-            <CardHeader>
-              <CardTitle>Account</CardTitle>
-              <CardDescription>
-                Identity and session details from the current authenticated
-                user.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {userLoading ? (
-                <>
-                  <Skeleton className="h-20 w-full" />
-                  <Skeleton className="h-24 w-full" />
-                </>
-              ) : (
-                <>
-                  <div className="flex flex-wrap items-center gap-4 rounded-lg border px-4 py-4">
-                    <Avatar className="size-14">
-                      <AvatarImage
-                        alt={user?.name || user?.email || 'User'}
-                        src={user?.avatarUrl ?? undefined}
-                      />
-                      <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                        {(user?.name || user?.email || 'U')
-                          .slice(0, 2)
-                          .toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-base font-semibold text-foreground">
-                        {user?.name || 'Unnamed user'}
-                      </p>
-                      <p className="truncate text-sm text-muted-foreground">
-                        {user?.email || 'No email available'}
-                      </p>
-                    </div>
-                    <Badge variant="secondary">Active account</Badge>
-                  </div>
-
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-lg border px-4 py-3">
-                      <p className="text-xs text-muted-foreground">
-                        Current session
-                      </p>
-                      <p className="mt-1 break-all text-sm font-medium text-foreground">
-                        {session?.session.id || 'Unavailable'}
-                      </p>
-                    </div>
-                    <div className="rounded-lg border px-4 py-3">
-                      <p className="text-xs text-muted-foreground">
-                        Other active sessions
-                      </p>
-                      <p className="mt-1 text-sm font-medium text-foreground">
-                        {Math.max((sessions?.length ?? 1) - 1, 0)}
-                      </p>
-                    </div>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick status</CardTitle>
-              <CardDescription>
-                A quick read of the settings that affect the rest of the app.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="rounded-lg border px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-medium text-foreground">
-                    Security
-                  </p>
-                  <Badge variant="secondary">
-                    {sessions?.length ?? 0} session
-                    {(sessions?.length ?? 0) === 1 ? '' : 's'}
-                  </Badge>
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Review devices and revoke any session you no longer trust.
-                </p>
-              </div>
-
-              <div className="rounded-lg border px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-medium text-foreground">
-                    LLM config
-                  </p>
-                  <Badge variant={activeConfig ? 'secondary' : 'outline'}>
-                    {activeConfig ? activeConfig.providerId : 'Not configured'}
-                  </Badge>
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {activeConfig
-                    ? `${activeConfig.modelId} is ready for AI features.`
-                    : 'Save a provider and model set to enable AI-powered features.'}
-                </p>
-              </div>
-
-              <div className="rounded-lg border px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-medium text-foreground">Notion</p>
-                  <Badge variant={notionConfig ? 'secondary' : 'outline'}>
-                    {notionConfig ? 'Connected' : 'Disconnected'}
-                  </Badge>
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {notionConfig
-                    ? notionConfig.workspaceName || notionConfig.workspaceId
-                    : 'Connect a workspace when you want cross-system sync.'}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid gap-4 lg:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <ShieldCheck className="size-5 text-muted-foreground" />
-              <CardTitle className="text-base">Security</CardTitle>
-              <CardDescription>
-                Manage active sessions and remove device access you no longer
-                want to keep.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <Button asChild variant="outline">
-                <Link href="/app/settings/security">Review sessions</Link>
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <Bot className="size-5 text-muted-foreground" />
-              <CardTitle className="text-base">LLM Config</CardTitle>
-              <CardDescription>
-                Set provider credentials, model defaults, and validate the AI
-                runtime.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <Button asChild variant="outline">
-                <Link href="/app/settings/llm">Open LLM settings</Link>
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <Workflow className="size-5 text-muted-foreground" />
-              <CardTitle className="text-base">Notion</CardTitle>
-              <CardDescription>
-                Connect a workspace, choose a target database, and trigger sync
-                when needed.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <Button asChild variant="outline">
-                <Link href="/app/settings/notion">Open Notion settings</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>What this area controls</CardTitle>
-            <CardDescription>
-              Settings are intentionally focused on account trust and the
-              integrations the backend currently supports.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-3 md:grid-cols-3">
-            {[
-              {
-                icon: UserCircle2,
-                title: 'Account context',
-                text: 'Identity, current session, and access context.',
-              },
-              {
-                icon: ShieldCheck,
-                title: 'Session trust',
-                text: 'Session visibility and selective revoke support.',
-              },
-              {
-                icon: Bot,
-                title: 'Connected systems',
-                text: 'AI provider setup and Notion workspace sync.',
-              },
-            ].map(({ icon: Icon, title, text }) => (
-              <div key={title} className="rounded-lg border px-4 py-3">
-                <div className="flex items-center gap-2">
-                  <Icon className="size-4 text-muted-foreground" />
-                  <p className="text-sm font-medium text-foreground">{title}</p>
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground">{text}</p>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
       </div>
+
+      <Tabs defaultValue="account" orientation="vertical" className="flex flex-col md:flex-row gap-8 min-h-[600px]">
+        <TabsList className="flex flex-col h-auto bg-transparent p-0 gap-1 min-w-[240px] items-stretch justify-start border-r pr-6 border-border/40">
+          <TabsTrigger 
+            value="account" 
+            className="justify-start gap-3 px-4 py-3 h-auto data-[state=active]:bg-primary/5 data-[state=active]:text-primary transition-all rounded-xl border border-transparent hover:border-border/50"
+          >
+            <UserCircle2 className="size-5" />
+            <div className="flex flex-col items-start transition-none">
+              <span className="font-semibold">Account</span>
+              <span className="text-xs text-muted-foreground font-normal">Personal information & profile</span>
+            </div>
+          </TabsTrigger>
+          
+          <TabsTrigger 
+            value="security" 
+            className="justify-start gap-3 px-4 py-3 h-auto data-[state=active]:bg-primary/5 data-[state=active]:text-primary transition-all rounded-xl border border-transparent hover:border-border/50"
+          >
+            <ShieldCheck className="size-5" />
+            <div className="flex flex-col items-start transition-none">
+              <span className="font-semibold">Security</span>
+              <span className="text-xs text-muted-foreground font-normal">Active sessions & protection</span>
+            </div>
+            {sessions && sessions.length > 1 && (
+              <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 h-4.5">{sessions.length}</Badge>
+            )}
+          </TabsTrigger>
+
+          <TabsTrigger 
+            value="ai" 
+            className="justify-start gap-3 px-4 py-3 h-auto data-[state=active]:bg-primary/5 data-[state=active]:text-primary transition-all rounded-xl border border-transparent hover:border-border/50"
+          >
+            <Bot className="size-5" />
+            <div className="flex flex-col items-start transition-none">
+              <span className="font-semibold">AI Console</span>
+              <span className="text-xs text-muted-foreground font-normal">LLM providers & models</span>
+            </div>
+            {activeConfig && <Badge variant="outline" className="ml-auto text-[10px] px-1.5 h-4.5">{activeConfig.providerId}</Badge>}
+          </TabsTrigger>
+
+          <TabsTrigger 
+            value="integrations" 
+            className="justify-start gap-3 px-4 py-3 h-auto data-[state=active]:bg-primary/5 data-[state=active]:text-primary transition-all rounded-xl border border-transparent hover:border-border/50"
+          >
+            <Workflow className="size-5" />
+            <div className="flex flex-col items-start transition-none">
+              <span className="font-semibold">Integrations</span>
+              <span className="text-xs text-muted-foreground font-normal">Connect third-party apps</span>
+            </div>
+            {notionConfig && <Badge variant="outline" className="ml-auto text-[10px] px-1.5 h-4.5">Notion</Badge>}
+          </TabsTrigger>
+        </TabsList>
+
+        <div className="flex-1 space-y-6">
+          <TabsContent value="account" className="m-0 space-y-6 animate-in fade-in slide-in-from-right-2 duration-300">
+            <Card className="border-border/60 shadow-sm overflow-hidden">
+              <CardHeader className="bg-muted/30 pb-8">
+                <div className="flex items-center gap-6">
+                  <Avatar className="size-20 border-4 border-background shadow-lg">
+                    <AvatarImage src={user?.avatarUrl || undefined} />
+                    <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold">
+                      {(user?.name || user?.email || 'U').slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="space-y-1">
+                    <CardTitle className="text-2xl">{user?.name || 'Unnamed user'}</CardTitle>
+                    <CardDescription className="text-base text-muted-foreground">{user?.email}</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-8">
+                <ProfileForm />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="security" className="m-0 animate-in fade-in slide-in-from-right-2 duration-300">
+            <SecurityTab />
+          </TabsContent>
+
+          <TabsContent value="ai" className="m-0 animate-in fade-in slide-in-from-right-2 duration-300">
+            <LlmTab />
+          </TabsContent>
+
+          <TabsContent value="integrations" className="m-0 animate-in fade-in slide-in-from-right-2 duration-300">
+            <NotionTab />
+          </TabsContent>
+        </div>
+      </Tabs>
     </PageContainer>
   );
 }

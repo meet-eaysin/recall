@@ -8,6 +8,7 @@ import { IUserRepository } from './domain/repositories/user.repository';
 import { MongooseUserRepository } from './infrastructure/persistence/mongoose-user.repository';
 import { ListUserSessionsUseCase } from './application/use-cases/list-user-sessions.usecase';
 import { RevokeUserSessionUseCase } from './application/use-cases/revoke-user-session.usecase';
+import { UpdateUserUseCase } from './application/use-cases/update-user.usecase';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
@@ -19,6 +20,7 @@ import { AuthModule } from '../auth/auth.module';
     UpsertUserFromIdentityUseCase,
     ListUserSessionsUseCase,
     RevokeUserSessionUseCase,
+    UpdateUserUseCase,
     {
       provide: IUserRepository,
       useClass: MongooseUserRepository,
@@ -31,6 +33,7 @@ import { AuthModule } from '../auth/auth.module';
     IUserRepository,
     ListUserSessionsUseCase,
     RevokeUserSessionUseCase,
+    UpdateUserUseCase,
   ],
 })
 export class UsersModule {}
