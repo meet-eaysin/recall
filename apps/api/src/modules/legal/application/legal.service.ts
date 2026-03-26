@@ -17,7 +17,7 @@ import type {
   IConsentRecordDocument,
 } from '@repo/db';
 import { IConsentRepository } from '../domain/repositories/consent.repository';
-import { isString, isMap } from 'src/shared/utils/type-guards.util';
+import { isString, isMap } from '../../../shared/utils/type-guards.util';
 
 @Injectable()
 export class LegalService implements OnApplicationBootstrap {
