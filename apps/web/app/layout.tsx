@@ -4,6 +4,7 @@ import { Sora, Geist } from 'next/font/google';
 import '../styles/globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AnchoredToastProvider, ToastProvider } from '@/components/ui/toast';
+import { Toaster } from '@/components/ui/sonner';
 import { QueryProvider } from '@/providers/query-provider';
 import { cn } from '@/lib/utils';
 
@@ -49,6 +50,7 @@ export default function RootLayout({
             <AnchoredToastProvider>
               <ThemeProvider>
                 <ConsentProvider>{children}</ConsentProvider>
+                <Toaster />
               </ThemeProvider>
             </AnchoredToastProvider>
           </ToastProvider>

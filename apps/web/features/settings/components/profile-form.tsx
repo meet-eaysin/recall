@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -36,6 +36,16 @@ export function ProfileForm() {
       avatarUrl: user?.avatarUrl || '',
     },
   });
+
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        name: user.name || '',
+        email: user.email || '',
+        avatarUrl: user.avatarUrl || '',
+      });
+    }
+  }, [user, form]);
 
   async function onSubmit(data: ProfileFormValues) {
     setIsSubmitting(true);
@@ -88,7 +98,7 @@ export function ProfileForm() {
       <div className="flex justify-end pt-4 border-t border-border/40">
         <Button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !form.formState.isDirty}
           className="rounded-lg shadow-sm px-8"
         >
           {isSubmitting ? 'Saving...' : 'Save changes'}
