@@ -50,8 +50,7 @@ export const API_ENDPOINTS = {
     REFRESH: '/auth/refresh',
     LOGOUT: '/auth/logout',
     LOGOUT_ALL: '/auth/logout-all',
-    GOOGLE: '/auth/google',
-    GITHUB: '/auth/github',
+    OAUTH_URL: (provider: 'google' | 'github') => `/auth/${provider}`,
   },
   USERS: {
     ME: '/users/me',

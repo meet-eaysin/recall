@@ -2,8 +2,9 @@ import { Body, Controller, Get, Post, Req, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LegalService } from '../application/legal.service';
 import { User } from '../../../shared/decorators/user.decorator';
-import { Request } from 'express';
-import { AcceptConsentDto, ConsentStatus, LegalDocument } from '@repo/types';
+import type { Request } from 'express';
+import type { AcceptConsentDto, ConsentStatus, LegalDocument } from '@repo/types';
+
 import { Public } from '../../../shared/decorators/public.decorator';
 
 @ApiTags('Legal')
