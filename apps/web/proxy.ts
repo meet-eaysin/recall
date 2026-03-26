@@ -14,7 +14,7 @@ export function proxy(request: NextRequest) {
     pathname.startsWith(prefix),
   );
 
-  const isAuthOrLanding = pathname === '/' || pathname.startsWith('/auth/');
+  const isAuthOrLanding = pathname.startsWith('/auth/');
 
   if (isProtectedPath) {
     if (!isAuthenticated) {
@@ -32,3 +32,5 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
+
+export default proxy;

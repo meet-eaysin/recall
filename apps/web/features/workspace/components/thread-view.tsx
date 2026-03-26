@@ -39,7 +39,6 @@ export function ThreadView() {
 
   const { data: conversation, isLoading } = useSearchChat(threadId);
 
-  // Check if there's an active stream from OmniBox for this thread
   const omniStream = threadStream.activeStream;
   const hasOmniStream =
     omniStream !== null &&
@@ -48,8 +47,6 @@ export function ThreadView() {
       omniStream.answer.length > 0 ||
       !!omniStream.error);
 
-  // Clear the omni stream once the conversation data has been fetched
-  // and the stream is complete
   React.useEffect(() => {
     if (
       omniStream &&
@@ -144,7 +141,6 @@ export function ThreadView() {
   const messages: Message[] = React.useMemo(() => {
     const list: Message[] = [];
 
-    // 1. Add persisted messages
     if (conversation?.messages) {
       conversation.messages.forEach((msg) => {
         list.push({
@@ -165,7 +161,6 @@ export function ThreadView() {
       });
     }
 
-    // 2. Add omni stream if active (initial query) and not already persisted
     if (showOmniStream && omniStream) {
       list.push({
         id: 'omni-user',
@@ -182,7 +177,6 @@ export function ThreadView() {
       }
     }
 
-    // 3. Add followUp stream
     if (showFollowUpStream || error) {
       if (streamingQuestion) {
         list.push({
@@ -228,7 +222,6 @@ export function ThreadView() {
         className="absolute inset-0 px-0 py-0 overflow-hidden"
       >
         <div className="flex flex-col h-full bg-background animate-pulse">
-          {/* Skeleton Messages */}
           <div className="flex-1 space-y-8 p-4 md:p-8 overflow-hidden">
             <div className="max-w-4xl mx-auto space-y-8">
               <div className="flex flex-col gap-3">

@@ -3,8 +3,10 @@ import { Menu, RotateCcwSquare, X } from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useAuthSession } from '@/features/auth/hooks';
 import SignInButton from './signIn-butoon';
 import AnchorNav from './anchor-nav';
+import { Button } from '@/components/ui/button';
 
 export const navItems = [
   { name: 'Home', href: '/' },
@@ -14,6 +16,7 @@ export const navItems = [
 const Navbar = () => {
   const [menuState, setMenuState] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { status } = useAuthSession();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -79,14 +82,40 @@ const Navbar = () => {
                       {item.name}
                     </AnchorNav>
                   ))}
+                  {status === 'authenticated' && (
+                    <li className="pt-2">
+                      <Button>
+                        <Link
+                          href="/app"
+                          className="text-emphasis font-medium transition-colors hover:text-white"
+                          onClick={() => setMenuState(false)}
+                        >
+                          Go App
+                        </Link>
+                      </Button>
+                    </li>
+                  )}
                 </ul>
               </div>
               <div
                 className={cn(
-                  'flex flex-col items-center space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit w-full',
+                  'flex flex-col items-center space-y-3 sm:flex-row sm:gap-6 sm:space-y-0 md:w-fit w-full',
                 )}
               >
-                <SignInButton text={'Sign Up'} />
+                {status === 'authenticated' ? (
+                  <div className="flex items-center gap-6">
+                    <Button>
+                      <Link
+                        href="/app"
+                        className="hidden text-sm font-medium transition-colors sm:block"
+                      >
+                        Go App
+                      </Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <SignInButton text={'Sign Up'} />
+                )}
               </div>
             </div>
           </div>
