@@ -23,7 +23,11 @@ import {
   useNotionConfig,
 } from '../hooks';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  ProfileCard,
+  ProfileCardAvatar,
+  ProfileCardDetails,
+} from '@/components/profile-card';
 
 export function SettingsPage() {
   const { data: user } = useCurrentUser();
@@ -41,22 +45,22 @@ export function SettingsPage() {
 
   return (
     <PageContainer className="max-w-6xl mx-auto space-y-8 py-10">
-      <div className="space-y-2">
-        <h1 className="text-4xl font-bold tracking-tight text-foreground">
-          Settings
-        </h1>
-        <p className="text-lg text-muted-foreground">
-          Manage your account preferences, security settings, and AI
-          integrations.
-        </p>
-      </div>
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-semibold tracking-tight">Settings</h1>
+          <p className="text-muted-foreground">
+            Manage your account preferences, security settings, and AI
+            integrations.
+          </p>
+        </div>
+      </header>
 
       <Tabs
         defaultValue="account"
         orientation="vertical"
         className="flex flex-col md:flex-row gap-8 min-h-[600px]"
       >
-        <TabsList className="flex flex-col h-auto bg-transparent p-0 gap-1 min-w-[240px] items-stretch justify-start border-r pr-6 border-border/40">
+        <TabsList className="flex flex-col h-auto bg-transparent p-0 gap-1 min-w-[240px] items-stretch justify-start">
           <TabsTrigger
             value="account"
             className="justify-start gap-3 px-4 py-3 h-auto data-[state=active]:bg-primary/5 data-[state=active]:text-primary transition-all rounded-xl border border-transparent hover:border-border/50"
@@ -140,27 +144,27 @@ export function SettingsPage() {
             className="m-0 space-y-6 animate-in fade-in slide-in-from-right-2 duration-300"
           >
             <Card className="border-border/60 shadow-sm overflow-hidden">
-              <CardHeader className="bg-muted/30 pb-8">
-                <div className="flex items-center gap-6">
-                  <Avatar className="size-20 border-4 border-background shadow-lg">
-                    <AvatarImage src={user?.avatarUrl || undefined} />
-                    <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold">
-                      {(user?.name || user?.email || 'U')
-                        .slice(0, 2)
-                        .toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="space-y-1">
-                    <CardTitle className="text-2xl">
-                      {user?.name || 'Unnamed user'}
-                    </CardTitle>
-                    <CardDescription className="text-base text-muted-foreground">
-                      {user?.email}
-                    </CardDescription>
-                  </div>
-                </div>
+              <CardHeader>
+                <ProfileCard className="gap-4">
+                  <ProfileCardAvatar
+                    src={user?.avatarUrl || ''}
+                    name={user?.name || user?.email || 'U'}
+                    size="lg"
+                    className="border-4 border-background shadow-lg"
+                  />
+                  <ProfileCardDetails>
+                    <div className="space-y-1">
+                      <CardTitle className="text-2xl">
+                        {user?.name || 'Unnamed user'}
+                      </CardTitle>
+                      <CardDescription className="text-base text-muted-foreground">
+                        {user?.email}
+                      </CardDescription>
+                    </div>
+                  </ProfileCardDetails>
+                </ProfileCard>
               </CardHeader>
-              <CardContent className="pt-8">
+              <CardContent>
                 <ProfileForm />
               </CardContent>
             </Card>
