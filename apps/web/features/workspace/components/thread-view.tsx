@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useSearchChat } from '@/features/search/hooks';
 import { searchApi } from '@/features/search/api';
 import { QUERY_KEYS } from '@/lib/query-keys';
@@ -12,9 +12,20 @@ import { useThreadStream } from './thread-stream-context';
 import { Chat } from '@/components/ai/chat';
 import type { Message } from '@/components/ai/chat-message';
 import { PageContainer } from './page-container';
+import { ChevronLeft, MessageSquare, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Empty,
+  EmptyHeader,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyContent,
+  EmptyMedia,
+} from '@/components/ui/empty';
 
 export function ThreadView() {
   const params = useParams();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const threadStream = useThreadStream();
   const threadId = typeof params.threadId === 'string' ? params.threadId : null;
@@ -240,13 +251,63 @@ export function ThreadView() {
     );
   }
 
+  if (!isLoading && !conversation && !hasOmniStream) {
+    return (
+      <PageContainer
+        isFullHeight
+        className="absolute inset-0 px-0 py-0 flex items-center justify-center bg-background"
+      >
+        <Empty className="max-w-md border-dashed">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <AlertCircle className="size-4" />
+            </EmptyMedia>
+            <EmptyTitle>Conversation not found</EmptyTitle>
+            <EmptyDescription>
+              This conversation may have been deleted or moved.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button
+              onClick={() => router.push('/app')}
+              variant="outline"
+              size="sm"
+            >
+              <ChevronLeft className="mr-2 size-4" />
+              Back to Dashboard
+            </Button>
+          </EmptyContent>
+        </Empty>
+      </PageContainer>
+    );
+  }
+
   return (
     <PageContainer
       isFullHeight
       className="absolute inset-0 px-0 py-0! pb-0 md:px-0 lg:px-0 md:pb-0 lg:pb-0 overflow-hidden"
     >
-      {/* Main Chat Area */}
       <div className="flex flex-col h-full min-h-0 overflow-hidden w-full">
+        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center bg-background/80 backdrop-blur-sm">
+          <div className="mx-auto flex w-full max-w-4xl items-center gap-3 px-4 md:px-8">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="-ml-2 size-8 rounded-lg hover:bg-muted/60 shrink-0"
+              onClick={() => router.push('/app')}
+            >
+              <ChevronLeft className="size-4" />
+              <span className="sr-only">Back</span>
+            </Button>
+            <div className="flex items-center gap-2 min-w-0">
+              <MessageSquare className="size-4 text-muted-foreground/70 shrink-0" />
+              <h1 className="font-medium text-sm truncate text-muted-foreground">
+                {conversation?.title || 'Chat'}
+              </h1>
+            </div>
+          </div>
+        </header>
+
         <Chat
           messages={messages}
           input={question}

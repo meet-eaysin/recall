@@ -198,7 +198,10 @@ export function Chat({
 
   return (
     <ChatContainer
-      className={cn('flex flex-col flex-1 min-h-0 overflow-hidden', className)}
+      className={cn(
+        'flex flex-col flex-1 min-h-0 overflow-hidden mt-5',
+        className,
+      )}
     >
       {isEmpty && append && suggestions ? (
         <PromptSuggestions

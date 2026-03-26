@@ -3,7 +3,7 @@
 import * as React from 'react';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { isToday, subDays, isAfter } from 'date-fns';
 
 import {
@@ -105,6 +105,7 @@ function SidebarChatList({ query }: { query: string }) {
   const pathname = usePathname();
   const archiveChat = useArchiveChat();
   const deleteChat = useDeleteChat();
+  const router = useRouter();
   const { data: documentsData, isLoading: docsLoading } = useDocuments({
     limit: 1,
     page: 1,
@@ -304,6 +305,9 @@ function SidebarChatList({ query }: { query: string }) {
         confirmAction={() => {
           if (chatToDelete) {
             deleteChat.mutate(chatToDelete.id);
+            if (pathname.includes(chatToDelete.id)) {
+              router.push('/app');
+            }
           }
         }}
         isPending={deleteChat.isPending}
