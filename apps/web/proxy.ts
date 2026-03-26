@@ -14,14 +14,14 @@ export function proxy(request: NextRequest) {
     pathname.startsWith(prefix),
   );
 
-  const isAuthOrLanding = pathname.startsWith('/auth/');
+  const isLoginPage = pathname === '/auth/login';
 
   if (isProtectedPath) {
     if (!isAuthenticated) {
       const loginUrl = new URL('/auth/login', request.url);
       return NextResponse.redirect(loginUrl);
     }
-  } else if (isAuthenticated && isAuthOrLanding) {
+  } else if (isAuthenticated && isLoginPage) {
     const appUrl = new URL('/app', request.url);
     return NextResponse.redirect(appUrl);
   }
