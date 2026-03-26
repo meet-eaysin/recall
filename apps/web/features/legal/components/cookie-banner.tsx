@@ -78,9 +78,16 @@ export function CookieBanner() {
             We value your privacy
           </p>
           <p className="text-xs text-neutral-400 leading-relaxed italic">
-            We use cookies to enhance your experience and analyze site traffic. 
-            By clicking &quot;Accept All&quot;, you agree to our use of all cookies. 
-            Review our <Link href="/cookie-policy" className="text-primary hover:underline underline-offset-4">Cookie Policy</Link>.
+            We use cookies to enhance your experience and analyze site traffic.
+            By clicking &quot;Accept All&quot;, you agree to our use of all
+            cookies. Review our{' '}
+            <Link
+              href="/cookie-policy"
+              className="text-primary hover:underline underline-offset-4"
+            >
+              Cookie Policy
+            </Link>
+            .
           </p>
         </div>
 

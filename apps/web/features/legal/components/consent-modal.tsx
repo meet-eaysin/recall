@@ -1,25 +1,23 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
 import { legalApi } from '../api';
 import { useAnonymousId } from '../hooks/use-anonymous-id';
-import type { LegalDocument, CookieCategory, LegalDocumentType } from '@repo/types';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import type { CookieCategory, LegalDocumentType } from '@repo/types';
+import { ShieldCheck, Loader2, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { toast } from 'sonner';
-import { ShieldCheck, Loader2, Check, Settings2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ConsentModalProps {
   isOpen: boolean;
@@ -28,258 +26,220 @@ interface ConsentModalProps {
   requiredVersions: Record<LegalDocumentType, string>;
 }
 
-export function ConsentModal({ isOpen, onSuccess, onClose, requiredVersions }: ConsentModalProps) {
-  const [policies, setPolicies] = useState<Record<LegalDocumentType, LegalDocument | null>>({
-    privacy: null,
-    cookie: null,
-    terms: null,
-  });
-  
-  const [hasScrolled, setHasScrolled] = useState<Record<LegalDocumentType, boolean>>({
-    privacy: false,
-    cookie: false,
-    terms: false,
-  });
+const POLICIES: { type: LegalDocumentType; label: string; path: string }[] = [
+  { type: 'privacy', label: 'Privacy Policy', path: '/privacy-policy' },
+  { type: 'cookie', label: 'Cookie Policy', path: '/cookie-policy' },
+  { type: 'terms', label: 'Terms of Service', path: '/terms-of-service' },
+];
 
-  const [acceptedPolicies, setAcceptedPolicies] = useState<Record<LegalDocumentType, boolean>>({
-    privacy: false,
-    cookie: false,
-    terms: false,
-  });
+const COOKIE_OPTIONS: {
+  key: CookieCategory;
+  label: string;
+  description: string;
+  required?: boolean;
+}[] = [
+  {
+    key: 'necessary',
+    label: 'Necessary',
+    description: 'Core functionality & security',
+    required: true,
+  },
+  {
+    key: 'analytics',
+    label: 'Analytics',
+    description: 'Usage insights & improvements',
+  },
+  {
+    key: 'marketing',
+    label: 'Marketing',
+    description: 'Personalized announcements',
+  },
+];
 
+export function ConsentModal({
+  isOpen,
+  onSuccess,
+  onClose,
+  requiredVersions,
+}: ConsentModalProps) {
   const [categories, setCategories] = useState<CookieCategory[]>(['necessary']);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>('privacy');
-  
+
   const anonymousId = useAnonymousId();
 
-  useEffect(() => {
-    if (isOpen) {
-      void Promise.all([
-        legalApi.getPolicy('privacy'),
-        legalApi.getPolicy('cookie'),
-        legalApi.getTermsOfService(),
-      ]).then(([privacy, cookie, terms]) => {
-        setPolicies({ privacy, cookie, terms });
-      }).catch((err: Error) => {
-        console.error('Failed to pre-fetch policies:', err);
-      });
-    }
-  }, [isOpen]);
-
-  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>, type: LegalDocumentType) => {
-    const target = e.currentTarget;
-    const isAtBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 40;
-    if (isAtBottom) {
-      setHasScrolled(prev => ({ ...prev, [type]: true }));
-    }
-  }, []);
-
-  const handleTogglePolicy = (type: LegalDocumentType, checked: boolean) => {
-    setAcceptedPolicies(prev => ({ ...prev, [type]: checked }));
-  };
-
-  const handleToggleCategory = (category: CookieCategory, checked: boolean) => {
-    if (category === 'necessary') return;
-    setCategories(prev => 
-      checked ? [...prev, category] : prev.filter(c => c !== category)
+  const toggleCategory = (key: CookieCategory, checked: boolean) => {
+    if (key === 'necessary') return;
+    setCategories((prev) =>
+      checked ? [...prev, key] : prev.filter((c) => c !== key),
     );
   };
 
-  const submitConsent = async (targetCategories: CookieCategory[]) => {
-    if (!acceptedPolicies.privacy || !acceptedPolicies.cookie || !acceptedPolicies.terms) {
-      toast.error('Please accept all mandatory policies to continue.');
-      return;
-    }
-
+  const submit = async (cats: CookieCategory[]) => {
     setIsSubmitting(true);
     try {
-      await legalApi.acceptConsent({
-        policyVersions: requiredVersions,
-        categories: targetCategories,
-      }, { anonymousId: anonymousId || undefined });
-      
-      toast.success('Preferences saved successfully');
+      await legalApi.acceptConsent(
+        { policyVersions: requiredVersions, categories: cats },
+        { anonymousId: anonymousId || undefined },
+      );
+      toast.success('Preferences saved.');
       onSuccess();
-    } catch (error) {
-      toast.error('Failed to save preferences. Please try again.');
-      console.error(error);
+    } catch (err) {
+      console.error(err);
+      toast.error('Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleAcceptAll = () => {
-    if (!hasScrolled.privacy || !hasScrolled.cookie || !hasScrolled.terms) {
-      toast.info('Please scroll through all policies first.');
-      return;
-    }
-    setAcceptedPolicies({ privacy: true, cookie: true, terms: true });
-    setCategories(['necessary', 'analytics', 'marketing']);
-    void submitConsent(['necessary', 'analytics', 'marketing']);
+    const all: CookieCategory[] = ['necessary', 'analytics', 'marketing'];
+    setCategories(all);
+    void submit(all);
   };
 
-  const handleSavePreferences = () => {
-    void submitConsent(categories);
-  };
-
-  const canSubmit = acceptedPolicies.privacy && acceptedPolicies.cookie && acceptedPolicies.terms && !isSubmitting;
-
-  const renderPolicyContent = (type: LegalDocumentType) => {
-    const policy = policies[type];
-    if (!policy) {
-      return (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="size-5 animate-spin text-neutral-500" />
-        </div>
-      );
-    }
-
-    return (
-      <div className="flex-1 flex flex-col overflow-hidden m-0">
-        <div 
-          onScroll={(e) => handleScroll(e, type)}
-          className="flex-1 overflow-y-auto px-4 py-3"
-        >
-          <div className="prose prose-sm prose-invert max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-p:text-neutral-400 prose-li:text-neutral-400 prose-strong:text-white">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {policy.content}
-            </ReactMarkdown>
-          </div>
-        </div>
-        <div className="border-t border-neutral-800 px-4 py-3 bg-neutral-900/50">
-          <label className="flex items-start gap-3 cursor-pointer select-none">
-            <Checkbox
-              checked={acceptedPolicies[type]}
-              onCheckedChange={(checked) => handleTogglePolicy(type, checked === true)}
-              disabled={!hasScrolled[type]}
-              className="mt-0.5"
-            />
-            <span className="text-sm leading-snug">
-              {hasScrolled[type] ? (
-                <span className="text-white font-medium italic">
-                  I have read and accept the {policy.title}
-                </span>
-              ) : (
-                <span className="text-neutral-400">
-                  Scroll to the bottom to accept the {policy.type} policy
-                </span>
-              )}
-            </span>
-          </label>
-        </div>
-      </div>
-    );
-  };
+  const handleSave = () => void submit(categories);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose?.()}>
-      <DialogContent showCloseButton={!!onClose} className="sm:max-w-2xl max-h-[90vh] flex flex-col gap-0 p-0 overflow-hidden bg-neutral-950 border-neutral-800 shadow-2xl">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b border-neutral-800">
-          <DialogTitle className="flex items-center gap-2 text-xl text-white">
-            <ShieldCheck className="size-6 text-primary" />
-            Legal Consent & Preferences
-          </DialogTitle>
-          <DialogDescription className="text-neutral-400">
-            We value your privacy. Please review our policies and customize your cookie settings.
+      <DialogContent
+        showCloseButton={!!onClose}
+        className="sm:max-w-lg p-0 gap-0 bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 shadow-xl rounded-2xl overflow-hidden"
+      >
+        {/* ── Header ── */}
+        <DialogHeader className="px-6 pt-6 pb-0">
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="size-8 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-center">
+              <ShieldCheck className="size-4 text-neutral-600 dark:text-neutral-400" />
+            </div>
+            <DialogTitle className="text-sm font-semibold text-neutral-900 dark:text-white tracking-tight">
+              Before you continue
+            </DialogTitle>
+          </div>
+          <DialogDescription className="text-[13px] text-neutral-500 dark:text-neutral-400 leading-relaxed">
+            We&apos;ve updated our policies. Please review and accept to keep
+            using the service.
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <div className="px-6 bg-neutral-900/30">
-            <TabsList className="w-full justify-start gap-2 h-12 bg-transparent border-none">
-              <TabsTrigger value="privacy" className="data-[state=active]:text-primary data-[state=active]:bg-transparent">Privacy</TabsTrigger>
-              <TabsTrigger value="cookie" className="data-[state=active]:text-primary data-[state=active]:bg-transparent">Cookies</TabsTrigger>
-              <TabsTrigger value="terms" className="data-[state=active]:text-primary data-[state=active]:bg-transparent">Terms</TabsTrigger>
-              <TabsTrigger value="preferences" className="data-[state=active]:text-primary data-[state=active]:bg-transparent flex items-center gap-1.5">
-                <Settings2 className="size-3.5" />
-                Customize
-              </TabsTrigger>
-            </TabsList>
+        <div className="px-6 py-5 space-y-5">
+          {/* ── Policies list ── */}
+          <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden divide-y divide-neutral-100 dark:divide-neutral-800/80">
+            {POLICIES.map((p) => (
+              <Link
+                key={p.type}
+                href={p.path}
+                target="_blank"
+                className="flex items-center justify-between px-4 py-3 bg-neutral-50 dark:bg-neutral-900/40 hover:bg-neutral-100 dark:hover:bg-neutral-900/80 transition-colors group"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="text-[13px] font-medium text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors truncate">
+                    {p.label}
+                  </span>
+                  <span className="text-[10px] font-mono text-neutral-400 dark:text-neutral-600 shrink-0">
+                    v{requiredVersions[p.type]}
+                  </span>
+                </div>
+                <ArrowRight className="size-3.5 text-neutral-400 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 shrink-0 transition-colors" />
+              </Link>
+            ))}
           </div>
 
-          <TabsContent value="privacy" className="flex-1 flex flex-col overflow-hidden m-0 outline-none">
-            {renderPolicyContent('privacy')}
-          </TabsContent>
+          <Separator className="bg-neutral-100 dark:bg-neutral-800" />
 
-          <TabsContent value="cookie" className="flex-1 flex flex-col overflow-hidden m-0 outline-none">
-            {renderPolicyContent('cookie')}
-          </TabsContent>
-
-          <TabsContent value="terms" className="flex-1 flex flex-col overflow-hidden m-0 outline-none">
-            {renderPolicyContent('terms')}
-          </TabsContent>
-
-          <TabsContent value="preferences" className="flex-1 flex flex-col overflow-hidden m-0 p-6 outline-none">
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 rounded-lg bg-neutral-900/50 border border-neutral-800">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-white">Necessary Cookies</p>
-                    <p className="text-xs text-neutral-500">Essential for the website to function. Always active.</p>
+          {/* ── Cookie toggles ── */}
+          <div className="space-y-1">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-600 mb-3">
+              Cookie preferences
+            </p>
+            {COOKIE_OPTIONS.map((opt, i) => (
+              <div
+                key={opt.key}
+                className={cn(
+                  'flex items-center justify-between py-2.5 px-1',
+                  i !== COOKIE_OPTIONS.length - 1 &&
+                    'border-b border-neutral-100 dark:border-neutral-800/60',
+                )}
+              >
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <p className="text-[13px] font-medium text-neutral-800 dark:text-neutral-200">
+                      {opt.label}
+                    </p>
+                    {opt.required && (
+                      <span className="text-[10px] text-neutral-400 dark:text-neutral-600 font-mono">
+                        required
+                      </span>
+                    )}
                   </div>
-                  <Switch checked disabled />
+                  <p className="text-[11px] text-neutral-400 dark:text-neutral-500">
+                    {opt.description}
+                  </p>
                 </div>
-
-                <div className="flex items-center justify-between p-4 rounded-lg bg-neutral-900/50 border border-neutral-800">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-white">Analytics Cookies</p>
-                    <p className="text-xs text-neutral-500">Help us improve by understanding how you use our service.</p>
-                  </div>
-                  <Switch 
-                    checked={categories.includes('analytics')} 
-                    onCheckedChange={(checked) => handleToggleCategory('analytics', checked)}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-4 rounded-lg bg-neutral-900/50 border border-neutral-800">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-white">Marketing Cookies</p>
-                    <p className="text-xs text-neutral-500">Used to provide personalized announcements and features.</p>
-                  </div>
-                  <Switch 
-                    checked={categories.includes('marketing')} 
-                    onCheckedChange={(checked) => handleToggleCategory('marketing', checked)}
-                  />
-                </div>
+                <Switch
+                  checked={opt.required || categories.includes(opt.key)}
+                  onCheckedChange={(checked) =>
+                    toggleCategory(opt.key, checked)
+                  }
+                  disabled={!!opt.required}
+                  className="shrink-0 scale-90"
+                />
               </div>
+            ))}
+          </div>
+        </div>
 
-              <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-                <p className="text-xs text-primary leading-relaxed">
-                  Note: Mandatory policies (Privacy, Cookie, Terms) must be accepted regardless of optional cookie categories.
-                </p>
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
+        {/* ── Footer ── */}
+        <div className="px-6 pb-6 flex flex-col gap-2">
+          {/* Legal note */}
+          <p className="text-[11px] text-neutral-400 dark:text-neutral-600 text-center leading-relaxed mb-1">
+            By continuing, you agree to our{' '}
+            <Link
+              href="/privacy-policy"
+              target="_blank"
+              className="underline underline-offset-2 hover:text-neutral-600 dark:hover:text-neutral-400 transition-colors"
+            >
+              Privacy Policy
+            </Link>
+            ,{' '}
+            <Link
+              href="/cookie-policy"
+              target="_blank"
+              className="underline underline-offset-2 hover:text-neutral-600 dark:hover:text-neutral-400 transition-colors"
+            >
+              Cookie Policy
+            </Link>{' '}
+            &{' '}
+            <Link
+              href="/terms-of-service"
+              target="_blank"
+              className="underline underline-offset-2 hover:text-neutral-600 dark:hover:text-neutral-400 transition-colors"
+            >
+              Terms of Service
+            </Link>
+            .
+          </p>
 
-        <DialogFooter className="px-6 py-4 border-t border-neutral-800 bg-neutral-950 flex flex-col sm:flex-row gap-3">
-          <Button
-            variant="ghost"
-            onClick={handleSavePreferences}
-            disabled={!canSubmit || isSubmitting}
-            className="w-full sm:w-auto text-neutral-400 hover:text-white"
-          >
-            Save Preferences
-          </Button>
           <Button
             onClick={handleAcceptAll}
             disabled={isSubmitting}
-            className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8"
+            className="w-full h-10 text-[13px] font-semibold bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 dark:text-neutral-900 text-white rounded-xl transition-colors"
           >
             {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing…
-              </>
+              <Loader2 className="size-4 animate-spin" />
             ) : (
-              <>
-                <Check className="mr-2 h-4 w-4" />
-                Accept All & Continue
-              </>
+              'Accept all & continue'
             )}
           </Button>
-        </DialogFooter>
+
+          <Button
+            variant="ghost"
+            onClick={handleSave}
+            disabled={isSubmitting}
+            className="w-full h-9 text-[12px] text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-900 rounded-xl transition-colors"
+          >
+            Save my preferences
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -42,7 +42,7 @@ export default function TermsOfServicePage() {
   }
 
   return (
-    <div className="container max-w-4xl py-16 md:py-24">
+    <div className="container mx-auto max-w-7xl py-16 md:py-24">
       {/* Page Header */}
       <div className="mb-12 space-y-4">
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl text-white">

@@ -15,15 +15,21 @@ const ConsentContext = createContext<ConsentContextType | undefined>(undefined);
 
 export function ConsentProvider({ children }: { children: React.ReactNode }) {
   const anonymousId = useAnonymousId();
-  const { data: consent, status, isLoading: isConsentLoading, refetch } = useConsentStatus({ anonymousId });
+  const {
+    data: consent,
+    status,
+    isLoading: isConsentLoading,
+    refetch,
+  } = useConsentStatus({ anonymousId });
   const [showModal, setShowModal] = useState(false);
-  
+
   // Consent is required if any mandatory policy is not accepted
-  const isConsentRequired = !isConsentLoading && !!consent && (
-    !consent.privacyAccepted || 
-    !consent.cookieAccepted || 
-    !consent.termsAccepted
-  );
+  const isConsentRequired =
+    !isConsentLoading &&
+    !!consent &&
+    (!consent.privacyAccepted ||
+      !consent.cookieAccepted ||
+      !consent.termsAccepted);
 
   // Auto-show modal ONLY for authenticated users who need to accept terms
   useEffect(() => {
@@ -36,15 +42,17 @@ export function ConsentProvider({ children }: { children: React.ReactNode }) {
   const closeModal = () => setShowModal(false);
 
   return (
-    <ConsentContext.Provider value={{ 
-      isConsentRequired: !!isConsentRequired,
-      openModal 
-    }}>
+    <ConsentContext.Provider
+      value={{
+        isConsentRequired: !!isConsentRequired,
+        openModal,
+      }}
+    >
       {children}
       {!showModal && <CookieBanner />}
       {showModal && consent && (
-        <ConsentModal 
-          isOpen={showModal} 
+        <ConsentModal
+          isOpen={showModal}
           onSuccess={() => {
             closeModal();
             void refetch();

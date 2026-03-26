@@ -1,4 +1,9 @@
-import { Injectable, OnApplicationBootstrap, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  OnApplicationBootstrap,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import type {
   AcceptConsentDto,
   ConsentStatus,

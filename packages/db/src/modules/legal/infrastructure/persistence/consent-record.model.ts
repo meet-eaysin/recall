@@ -27,5 +27,7 @@ consentRecordSchema.index({ userId: 1, timestamp: -1 });
 consentRecordSchema.index({ anonymousId: 1, timestamp: -1 });
 
 export const ConsentRecordModel: Model<IConsentRecordDocument> =
-  (mongoose.models['ConsentRecord'] as Model<IConsentRecordDocument> | undefined) ??
+  (mongoose.models['ConsentRecord'] as
+    | Model<IConsentRecordDocument>
+    | undefined) ??
   mongoose.model<IConsentRecordDocument>('ConsentRecord', consentRecordSchema);

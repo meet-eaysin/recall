@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Req,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LegalService } from '../application/legal.service';
 import { User } from '../../../shared/decorators/user.decorator';
@@ -50,7 +43,13 @@ export class LegalController {
     const ip = this.getIpAddress(request);
     const ua = request.get('user-agent') || 'unknown';
     const { anonymousId, ...acceptDto } = dto;
-    return this.legalService.acceptConsent(userId, anonymousId, acceptDto, ip, ua);
+    return this.legalService.acceptConsent(
+      userId,
+      anonymousId,
+      acceptDto,
+      ip,
+      ua,
+    );
   }
 
   @Get('consent-status')

@@ -9,10 +9,7 @@ import { IConsentRepository } from './domain/repositories/consent.repository';
 import { MongooseConsentRepository } from './infrastructure/persistence/mongoose-consent.repository';
 
 @Module({
-  imports: [
-    forwardRef(() => AuthModule),
-    UsersModule,
-  ],
+  imports: [forwardRef(() => AuthModule), UsersModule],
   controllers: [LegalController],
   providers: [
     LegalService,

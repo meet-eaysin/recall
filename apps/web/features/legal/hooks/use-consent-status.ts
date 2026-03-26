@@ -10,10 +10,10 @@ export function useConsentStatus(props?: { anonymousId?: string | null }) {
 
   const query = useQuery({
     queryKey: ['consent-status', data?.user?.id, props?.anonymousId],
-    queryFn: () => 
-      legalApi.getConsentStatus({ 
-        userId: data?.user?.id, 
-        anonymousId: props?.anonymousId || undefined 
+    queryFn: () =>
+      legalApi.getConsentStatus({
+        userId: data?.user?.id,
+        anonymousId: props?.anonymousId || undefined,
       }),
     enabled: !isAuthLoading,
     staleTime: 1000 * 60 * 5, // 5 minutes

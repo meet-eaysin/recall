@@ -27,12 +27,17 @@ export class ConsentGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest<Request & { user?: AuthenticatedUser }>();
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { user?: AuthenticatedUser }>();
     const user = request.user;
 
     // Legal routes are excluded via @Public() or explicit check
     const controller = context.getClass();
-    if (controller.name === 'LegalController' || controller.name === 'AuthController') {
+    if (
+      controller.name === 'LegalController' ||
+      controller.name === 'AuthController'
+    ) {
       return true;
     }
 
@@ -50,7 +55,8 @@ export class ConsentGuard implements CanActivate {
       throw new ForbiddenException({
         code: 'CONSENT_REQUIRED',
         missing,
-        message: 'You must accept the current privacy and cookie policies to continue.',
+        message:
+          'You must accept the current privacy and cookie policies to continue.',
       });
     }
 

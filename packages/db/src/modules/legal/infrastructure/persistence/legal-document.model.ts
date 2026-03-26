@@ -23,5 +23,7 @@ legalDocumentSchema.index({ type: 1, active: 1 });
 legalDocumentSchema.index({ type: 1, version: 1 }, { unique: true });
 
 export const LegalDocumentModel: Model<ILegalDocumentDocument> =
-  (mongoose.models['LegalDocument'] as Model<ILegalDocumentDocument> | undefined) ??
+  (mongoose.models['LegalDocument'] as
+    | Model<ILegalDocumentDocument>
+    | undefined) ??
   mongoose.model<ILegalDocumentDocument>('LegalDocument', legalDocumentSchema);
