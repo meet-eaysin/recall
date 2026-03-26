@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export function PolicySkeleton() {
   return (
-    <div className="container max-w-4xl py-12 space-y-8 animate-in fade-in duration-500">
+    <div className="container mx-auto max-w-7xl py-12 space-y-8 animate-in fade-in duration-500">
       <div className="space-y-4">
         <Skeleton className="h-10 w-2/3" />
         <Skeleton className="h-4 w-1/4" />

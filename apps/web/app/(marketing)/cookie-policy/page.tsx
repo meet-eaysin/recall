@@ -15,7 +15,8 @@ export default function CookiePolicyPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    legalApi.getPolicy('cookie')
+    legalApi
+      .getPolicy('cookie')
       .then(setPolicy)
       .catch((err: Error) => {
         console.error('Failed to fetch cookie policy:', err);
@@ -41,14 +42,15 @@ export default function CookiePolicyPage() {
   }
 
   return (
-    <div className="container max-w-4xl py-16 md:py-24">
+    <div className="container mx-auto max-w-7xl py-16 md:py-24">
       {/* Page Header */}
       <div className="mb-12 space-y-4">
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl text-white">
           {policy.title}
         </h1>
         <p className="text-sm text-neutral-500">
-          Last updated: {new Date(policy.effectiveDate).toLocaleDateString()} (Version {policy.version})
+          Last updated: {new Date(policy.effectiveDate).toLocaleDateString()}{' '}
+          (Version {policy.version})
         </p>
         <div className="h-px bg-white/10" />
       </div>

@@ -15,7 +15,8 @@ export default function TermsOfServicePage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    legalApi.getTermsOfService()
+    legalApi
+      .getTermsOfService()
       .then(setPolicy)
       .catch((err: Error) => {
         console.error('Failed to fetch terms of service:', err);
@@ -30,7 +31,7 @@ export default function TermsOfServicePage() {
 
   if (error || !policy) {
     return (
-      <div className="container max-w-2xl py-16">
+      <div className="container mx-auto max-w-7xl py-16">
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
@@ -48,7 +49,8 @@ export default function TermsOfServicePage() {
           {policy.title}
         </h1>
         <p className="text-sm text-neutral-500">
-          Last updated: {new Date(policy.effectiveDate).toLocaleDateString()} (Version {policy.version})
+          Last updated: {new Date(policy.effectiveDate).toLocaleDateString()}{' '}
+          (Version {policy.version})
         </p>
         <div className="h-px bg-white/10" />
       </div>
