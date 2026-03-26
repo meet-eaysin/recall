@@ -7,6 +7,7 @@ export interface ILegalDocument {
   title: string;
   content: string;
   effectiveDate: Date;
+  active: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

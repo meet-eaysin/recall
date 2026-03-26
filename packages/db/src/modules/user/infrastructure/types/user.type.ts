@@ -1,7 +1,6 @@
-import { Document } from 'mongoose';
-import { LLMUserSettings, UserConsent } from '@repo/types';
+import { LLMUserSettings } from '@repo/types';
 
-export interface IUser extends UserConsent {
+export interface IUser {
   email: string;
   name: string;
   avatarUrl?: string;
@@ -11,4 +10,4 @@ export interface IUser extends UserConsent {
   updatedAt: Date;
 }
 
-export type IUserDocument = IUser & Document;
+export type IUserDocument = IUser & import('mongoose').Document;

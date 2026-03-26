@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   description: 'Your personal knowledge engine',
 };
 
-import { CookieConsent } from '@/components/cookie-consent';
+import { ConsentProvider } from '@/providers/consent-provider';
 
 export default function RootLayout({
   children,
@@ -48,8 +48,7 @@ export default function RootLayout({
           <ToastProvider>
             <AnchoredToastProvider>
               <ThemeProvider>
-                {children}
-                <CookieConsent />
+                <ConsentProvider>{children}</ConsentProvider>
               </ThemeProvider>
             </AnchoredToastProvider>
           </ToastProvider>

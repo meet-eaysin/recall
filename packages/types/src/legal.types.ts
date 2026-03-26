@@ -1,31 +1,39 @@
-export type LegalDocumentType = 'privacy' | 'cookie';
+export type LegalDocumentType = 'privacy' | 'cookie' | 'terms';
+
+export type CookieCategory = 'necessary' | 'analytics' | 'marketing';
 
 export interface LegalDocument {
   id: string;
   type: LegalDocumentType;
   version: string;
   title: string;
-  content: string; // Markdown/HTML
+  content: string; // Markdown
   effectiveDate: Date;
+  active: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface UserConsent {
-  privacyPolicyAcceptedAt: Date | null;
-  cookiePolicyAcceptedAt: Date | null;
-  consentVersion: string | null;
-  consentIp: string | null;
-  consentUserAgent: string | null;
+export interface ConsentRecord {
+  id: string;
+  userId?: string;
+  anonymousId?: string;
+  policyVersions: Record<LegalDocumentType, string>;
+  categories: CookieCategory[];
+  ip: string;
+  userAgent: string;
+  timestamp: Date;
 }
 
 export interface AcceptConsentDto {
-  types: LegalDocumentType[];
-  version: string;
+  policyVersions: Record<LegalDocumentType, string>;
+  categories: CookieCategory[];
 }
 
 export interface ConsentStatus {
   privacyAccepted: boolean;
   cookieAccepted: boolean;
-  requiredVersion: string;
+  termsAccepted: boolean;
+  acceptedCategories: CookieCategory[];
+  requiredVersions: Record<LegalDocumentType, string>;
 }

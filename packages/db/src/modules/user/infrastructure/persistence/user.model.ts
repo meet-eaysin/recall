@@ -31,11 +31,6 @@ const userSchema = new Schema<IUserDocument>(
     avatarUrl: { type: String },
     authId: { type: String, required: true, unique: true, index: true },
     llmUserSettings: { type: llmUserSettingsSchema },
-    privacyPolicyAcceptedAt: { type: Date, default: null },
-    cookiePolicyAcceptedAt: { type: Date, default: null },
-    consentVersion: { type: String, default: null },
-    consentIp: { type: String, default: null },
-    consentUserAgent: { type: String, default: null },
   },
   { timestamps: true },
 );

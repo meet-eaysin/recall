@@ -4,11 +4,10 @@ import {
   Get,
   Post,
   Req,
-  UseGuards,
+  Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LegalService } from '../application/legal.service';
-import { JwtAuthGuard } from '../../auth/infrastructure/guards/jwt-auth.guard';
 import { User } from '../../../shared/decorators/user.decorator';
 import { Request } from 'express';
 import { AcceptConsentDto, ConsentStatus, LegalDocument } from '@repo/types';
@@ -23,56 +22,45 @@ export class LegalController {
   @Public()
   @ApiOperation({ summary: 'Get current active privacy policy' })
   async getPrivacyPolicy(): Promise<LegalDocument> {
-    const policy = await this.legalService.getActivePolicy('privacy');
-    return {
-      id: policy.id,
-      type: policy.type,
-      version: policy.version,
-      title: policy.title,
-      content: policy.content,
-      effectiveDate: policy.effectiveDate,
-      createdAt: policy.createdAt,
-      updatedAt: policy.updatedAt,
-    };
+    return this.legalService.getActivePolicy('privacy');
   }
 
   @Get('cookie-policy')
   @Public()
   @ApiOperation({ summary: 'Get current active cookie policy' })
   async getCookiePolicy(): Promise<LegalDocument> {
-    const policy = await this.legalService.getActivePolicy('cookie');
-    return {
-      id: policy.id,
-      type: policy.type,
-      version: policy.version,
-      title: policy.title,
-      content: policy.content,
-      effectiveDate: policy.effectiveDate,
-      createdAt: policy.createdAt,
-      updatedAt: policy.updatedAt,
-    };
+    return this.legalService.getActivePolicy('cookie');
+  }
+
+  @Get('terms-of-service')
+  @Public()
+  @ApiOperation({ summary: 'Get current active terms of service' })
+  async getTermsOfService(): Promise<LegalDocument> {
+    return this.legalService.getActivePolicy('terms');
   }
 
   @Post('accept')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('bearerAuth')
-  @ApiOperation({ summary: 'Accept privacy/cookie policies' })
+  @Public() // Allow anonymous consent
+  @ApiOperation({ summary: 'Accept privacy/cookie/terms policies' })
   async acceptPolicy(
-    @User('userId') userId: string,
-    @Body() dto: AcceptConsentDto,
+    @User('userId') userId: string | undefined, // userId might be null for anonymous
+    @Body() dto: AcceptConsentDto & { anonymousId?: string },
     @Req() request: Request,
   ): Promise<ConsentStatus> {
     const ip = this.getIpAddress(request);
-    const ua = (request.headers['user-agent'] as string) || 'unknown';
-    return this.legalService.acceptConsent(userId, dto, ip, ua);
+    const ua = request.get('user-agent') || 'unknown';
+    const { anonymousId, ...acceptDto } = dto;
+    return this.legalService.acceptConsent(userId, anonymousId, acceptDto, ip, ua);
   }
 
   @Get('consent-status')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('bearerAuth')
+  @Public() // Allow checking status for anonymous
   @ApiOperation({ summary: 'Get current user consent status' })
-  async getConsentStatus(@User('userId') userId: string): Promise<ConsentStatus> {
-    return this.legalService.getConsentStatus(userId);
+  async getConsentStatus(
+    @User('userId') userId: string | undefined,
+    @Query('anonymousId') anonymousId?: string,
+  ): Promise<ConsentStatus> {
+    return this.legalService.getConsentStatus(userId, anonymousId);
   }
 
   private getIpAddress(request: Request): string {

@@ -1,43 +1,56 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useConsentStatus } from '@/hooks/use-consent-status';
-import { useAuthSession } from '@/features/auth/hooks';
-import { ConsentModal } from '@/components/legal/consent-modal';
+import { useConsentStatus } from '@/features/legal/hooks/use-consent-status';
+import { useAnonymousId } from '@/features/legal/hooks/use-anonymous-id';
+import { ConsentModal } from '@/features/legal/components/consent-modal';
+import { CookieBanner } from '@/features/legal/components/cookie-banner';
 
 interface ConsentContextType {
   isConsentRequired: boolean;
+  openModal: () => void;
 }
 
 const ConsentContext = createContext<ConsentContextType | undefined>(undefined);
 
 export function ConsentProvider({ children }: { children: React.ReactNode }) {
-  const { status: authStatus } = useAuthSession();
-  const { data: consent, isLoading: isConsentLoading, refetch } = useConsentStatus();
+  const anonymousId = useAnonymousId();
+  const { data: consent, status, isLoading: isConsentLoading, refetch } = useConsentStatus({ anonymousId });
   const [showModal, setShowModal] = useState(false);
+  
+  // Consent is required if any mandatory policy is not accepted
+  const isConsentRequired = !isConsentLoading && !!consent && (
+    !consent.privacyAccepted || 
+    !consent.cookieAccepted || 
+    !consent.termsAccepted
+  );
 
-  const isAuthenticated = authStatus === 'authenticated';
-  const isConsentRequired = isAuthenticated && !isConsentLoading && consent && (!consent.privacyAccepted || !consent.cookieAccepted);
-
+  // Auto-show modal ONLY for authenticated users who need to accept terms
   useEffect(() => {
-    if (isConsentRequired) {
+    if (status === 'authenticated' && isConsentRequired) {
       setShowModal(true);
-    } else {
-      setShowModal(false);
     }
-  }, [isConsentRequired]);
+  }, [status, isConsentRequired]);
+
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
 
   return (
-    <ConsentContext.Provider value={{ isConsentRequired: !!isConsentRequired }}>
+    <ConsentContext.Provider value={{ 
+      isConsentRequired: !!isConsentRequired,
+      openModal 
+    }}>
       {children}
+      {!showModal && <CookieBanner />}
       {showModal && consent && (
         <ConsentModal 
           isOpen={showModal} 
           onSuccess={() => {
-            setShowModal(false);
+            closeModal();
             void refetch();
           }}
-          requiredVersion={consent.requiredVersion}
+          onClose={status !== 'authenticated' ? closeModal : undefined}
+          requiredVersions={consent.requiredVersions}
         />
       )}
     </ConsentContext.Provider>

@@ -9,17 +9,17 @@ import type { LegalDocument } from '@repo/types';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-export default function PrivacyPolicyPage() {
+export default function TermsOfServicePage() {
   const [policy, setPolicy] = useState<LegalDocument | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    legalApi.getPolicy('privacy')
+    legalApi.getTermsOfService()
       .then(setPolicy)
       .catch((err: Error) => {
-        console.error('Failed to fetch privacy policy:', err);
-        setError('Failed to load privacy policy. Please try again later.');
+        console.error('Failed to fetch terms of service:', err);
+        setError('Failed to load terms of service. Please try again later.');
       })
       .finally(() => setIsLoading(false));
   }, []);
