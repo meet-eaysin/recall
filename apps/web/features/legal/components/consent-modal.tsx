@@ -62,7 +62,11 @@ export function ConsentModal({
   onClose,
   requiredVersions,
 }: ConsentModalProps) {
-  const [categories, setCategories] = useState<CookieCategory[]>(['necessary']);
+  const [categories, setCategories] = useState<CookieCategory[]>([
+    'necessary',
+    'analytics',
+    'marketing',
+  ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const anonymousId = useAnonymousId();

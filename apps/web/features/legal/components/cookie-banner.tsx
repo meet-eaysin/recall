@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { useConsentStatus } from '../hooks/use-consent-status';
 import { legalApi } from '../api';
 import { useAnonymousId } from '../hooks/use-anonymous-id';
 import { Cookie, Settings2 } from 'lucide-react';
@@ -11,15 +10,11 @@ import { useConsent } from '@/providers/consent-provider';
 
 export function CookieBanner() {
   const anonymousId = useAnonymousId();
-  const {
-    data: consent,
-    isLoading,
-    refetch,
-  } = useConsentStatus({ anonymousId });
-  const { openModal } = useConsent();
+  const { consent, isLoading, refetch, openModal } = useConsent();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    // Only show if not loading, we have consent data, and cookies are not accepted yet
     if (!isLoading && consent && !consent.cookieAccepted) {
       const timer = setTimeout(() => setIsVisible(true), 1000);
       return () => clearTimeout(timer);
