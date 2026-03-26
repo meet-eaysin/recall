@@ -28,34 +28,7 @@ const Footer = () => {
             © {new Date().getFullYear()} Recall. All rights reserved.
           </p>
         </div>
-        <div className="mt-10 grid grid-cols-2 gap-10 md:mt-0 md:grid-cols-4">
-          <div className="flex flex-col space-y-4">
-            <h4 className="text-sm font-semibold text-white">Product</h4>
-            <Link
-              href="#features"
-              className="text-neutral-500 transition-colors hover:text-neutral-300"
-            >
-              Features
-            </Link>
-            <Link
-              href="/app/settings"
-              className="text-neutral-500 transition-colors hover:text-neutral-300"
-            >
-              Settings
-            </Link>
-            <Link
-              href="/changelog"
-              className="text-neutral-500 transition-colors hover:text-neutral-300"
-            >
-              Changelog
-            </Link>
-            <Link
-              href="/status"
-              className="text-neutral-500 transition-colors hover:text-neutral-300"
-            >
-              Status
-            </Link>
-          </div>
+        <div className="mt-10 grid grid-cols-2 gap-10 md:mt-0 md:grid-cols-2">
           <div className="flex flex-col space-y-4">
             <h4 className="text-sm font-semibold text-white">Community</h4>
             <Link
@@ -90,49 +63,22 @@ const Footer = () => {
           <div className="flex flex-col space-y-4">
             <h4 className="text-sm font-semibold text-white">Legal</h4>
             <Link
-              href="/termsofservice"
+              href="/terms-of-service"
               className="text-neutral-500 transition-colors hover:text-neutral-300"
             >
               Terms of Service
             </Link>
             <Link
-              href="/privacypolicy"
+              href="/privacy-policy"
               className="text-neutral-500 transition-colors hover:text-neutral-300"
             >
               Privacy Policy
             </Link>
             <Link
-              href="/cookies"
+              href="/cookie-policy"
               className="text-neutral-500 transition-colors hover:text-neutral-300"
             >
               Cookie Policy
-            </Link>
-          </div>
-          <div className="flex flex-col space-y-4">
-            <h4 className="text-sm font-semibold text-white">Company</h4>
-            <Link
-              href="/about"
-              className="text-neutral-500 transition-colors hover:text-neutral-300"
-            >
-              About
-            </Link>
-            <Link
-              href="/app/analytics"
-              className="text-neutral-500 transition-colors hover:text-neutral-300"
-            >
-              Analytics
-            </Link>
-            <Link
-              href="/app/graph"
-              className="text-neutral-500 transition-colors hover:text-neutral-300"
-            >
-              Graph
-            </Link>
-            <Link
-              href="/contact"
-              className="text-neutral-500 transition-colors hover:text-neutral-300"
-            >
-              Contact
             </Link>
           </div>
         </div>

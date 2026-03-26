@@ -28,11 +28,12 @@ export const legalApi = {
   },
 
   acceptConsent: (dto: AcceptConsentDto, params: { anonymousId?: string }) => {
-    const query = new URLSearchParams();
-    if (params.anonymousId) query.append('anonymousId', params.anonymousId);
-    return apiPost<ConsentStatus>(
-      `${API_ENDPOINTS.LEGAL.ACCEPT}?${query.toString()}`,
-      { body: dto },
-    );
+    return apiPost<ConsentStatus>(API_ENDPOINTS.LEGAL.ACCEPT, {
+      body: {
+        ...dto,
+        anonymousId: params.anonymousId,
+      },
+    });
   },
+
 };

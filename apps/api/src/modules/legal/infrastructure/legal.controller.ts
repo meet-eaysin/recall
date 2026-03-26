@@ -33,16 +33,18 @@ export class LegalController {
   }
 
   @Post('accept')
-  @Public() // Allow anonymous consent
+  @Public()
   @ApiOperation({ summary: 'Accept privacy/cookie/terms policies' })
   async acceptPolicy(
-    @User('userId') userId: string | undefined, // userId might be null for anonymous
+    @User('userId') userId: string | undefined,
     @Body() dto: AcceptConsentDto & { anonymousId?: string },
+    @Query('anonymousId') queryAnonymousId: string | undefined,
     @Req() request: Request,
   ): Promise<ConsentStatus> {
     const ip = this.getIpAddress(request);
     const ua = request.get('user-agent') || 'unknown';
-    const { anonymousId, ...acceptDto } = dto;
+    const { anonymousId: bodyAnonymousId, ...acceptDto } = dto;
+    const anonymousId = bodyAnonymousId || queryAnonymousId;
     return this.legalService.acceptConsent(
       userId,
       anonymousId,
