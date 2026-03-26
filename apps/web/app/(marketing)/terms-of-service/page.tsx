@@ -36,7 +36,9 @@ export default function TermsOfServicePage() {
   }
 
   if (error || !policy) {
-    return <PolicyError error={error || 'Policy not found.'} onRetry={fetchPolicy} />;
+    return (
+      <PolicyError error={error || 'Policy not found.'} onRetry={fetchPolicy} />
+    );
   }
 
   return (
@@ -50,11 +52,14 @@ export default function TermsOfServicePage() {
           <div className="flex items-center gap-3 text-sm text-neutral-500 font-medium bg-neutral-900/40 w-fit px-4 py-2 rounded-full border border-neutral-800">
             <span>Version {policy.version}</span>
             <span className="w-1 h-1 rounded-full bg-neutral-700" />
-            <span>Effective: {new Date(policy.effectiveDate).toLocaleDateString(undefined, {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}</span>
+            <span>
+              Effective:{' '}
+              {new Date(policy.effectiveDate).toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </span>
           </div>
         </div>
         <div className="h-px bg-white/10 w-full" />
@@ -69,7 +74,13 @@ export default function TermsOfServicePage() {
 
       <div className="mt-24 pt-12 border-t border-white/10 text-center">
         <p className="text-sm text-neutral-500">
-          Have questions about our terms? <a href="mailto:support@recall.ai" className="text-white hover:underline underline-offset-4 font-medium transition-colors">Contact Support</a>
+          Have questions about our terms?{' '}
+          <a
+            href="mailto:support@recall.ai"
+            className="text-white hover:underline underline-offset-4 font-medium transition-colors"
+          >
+            Contact Support
+          </a>
         </p>
       </div>
     </div>
