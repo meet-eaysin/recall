@@ -254,6 +254,7 @@ export function MessageInput({
             variant="outline"
             className="h-8 w-8"
             aria-label="Attach a file"
+            disabled={props.disabled}
             onClick={async () => {
               const files = await showFileUploadDialog();
               addFiles(files);
@@ -269,6 +270,7 @@ export function MessageInput({
             className={cn('h-8 w-8', isListening && 'text-primary')}
             aria-label="Voice input"
             size="icon"
+            disabled={props.disabled}
             onClick={toggleListening}
           >
             <Mic className="h-4 w-4" />
@@ -290,7 +292,7 @@ export function MessageInput({
             size="icon"
             className="h-8 w-8 transition-opacity"
             aria-label="Send message"
-            disabled={props.value === '' || isGenerating}
+            disabled={props.value === '' || isGenerating || props.disabled}
           >
             <ArrowUp className="h-5 w-5" />
           </Button>

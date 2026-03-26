@@ -18,6 +18,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useSidebar } from '@/components/ui/sidebar';
+import { AddDocumentDialog } from '@/features/library/components/add-document-dialog';
 
 const navItems = [
   { name: 'Workspace', href: '/app', icon: LayoutDashboard },
@@ -74,21 +75,18 @@ export function Dock() {
           <TooltipContent side="top">History (H)</TooltipContent>
         </Tooltip>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
+        <AddDocumentDialog
+          trigger={
             <Button
-              asChild
               variant="default"
               size="icon"
               aria-label="Add Quick"
+              title="Add Quick (N)"
             >
-              <Link href="/app/library/new">
-                <Plus className="size-5" />
-              </Link>
+              <Plus className="size-5" />
             </Button>
-          </TooltipTrigger>
-          <TooltipContent side="top">Add Quick (N)</TooltipContent>
-        </Tooltip>
+          }
+        />
       </nav>
     </div>
   );

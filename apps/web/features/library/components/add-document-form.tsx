@@ -17,13 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  DialogClose,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+
 import {
   Field,
   FieldError,
@@ -39,7 +33,6 @@ import {
   FileImageIcon,
   FileTextIcon,
   LinkIcon,
-  NotebookPenIcon,
   PlayCircleIcon,
 } from 'lucide-react';
 
@@ -101,12 +94,6 @@ const TYPE_ITEMS = [
     value: DocumentType.IMAGE,
     icon: FileImageIcon,
     placeholder: 'https://example.com/image.jpg',
-  },
-  {
-    label: 'Note',
-    value: DocumentType.TEXT,
-    icon: NotebookPenIcon,
-    placeholder: '',
   },
 ] as const;
 
@@ -223,13 +210,6 @@ export function AddDocumentForm({
       className="flex flex-col gap-0"
       onSubmit={form.handleSubmit((v) => mutation.mutate(v))}
     >
-      <DialogHeader>
-        <DialogTitle>Add to library</DialogTitle>
-        <DialogDescription>
-          Save a link, PDF, image, or write a note to your knowledge base.
-        </DialogDescription>
-      </DialogHeader>
-
       <FieldGroup className="py-4">
         {/* ── Type Selector ── */}
         <Field>
@@ -371,12 +351,15 @@ export function AddDocumentForm({
           ) && <FieldError>{mutation.error.message}</FieldError>}
       </FieldGroup>
 
-      <DialogFooter>
-        <DialogClose asChild>
-          <Button variant="outline" size="sm" onClick={onCancel}>
-            Cancel
-          </Button>
-        </DialogClose>
+      <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 pt-4">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onCancel ?? (() => router.push('/app/library'))}
+        >
+          Cancel
+        </Button>
         <Button
           type="submit"
           size="sm"
@@ -385,7 +368,7 @@ export function AddDocumentForm({
         >
           {mutation.isPending ? 'Adding…' : 'Add to library'}
         </Button>
-      </DialogFooter>
+      </div>
     </Form>
   );
 }

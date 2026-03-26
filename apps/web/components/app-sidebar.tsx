@@ -11,6 +11,7 @@ import {
   useDeleteChat,
   useSearchChats,
 } from '@/features/search/hooks';
+import { useDocuments } from '@/features/library/hooks';
 import { NavUser } from '@/components/nav-user';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import {
@@ -104,6 +105,12 @@ function SidebarChatList({ query }: { query: string }) {
   const pathname = usePathname();
   const archiveChat = useArchiveChat();
   const deleteChat = useDeleteChat();
+  const { data: documentsData, isLoading: docsLoading } = useDocuments({
+    limit: 1,
+    page: 1,
+  });
+  const isEmptyLibrary = !docsLoading && documentsData?.total === 0;
+
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [chatToDelete, setChatToDelete] = React.useState<
     NonNullable<typeof chats>[number] | null
@@ -205,19 +212,33 @@ function SidebarChatList({ query }: { query: string }) {
       <SidebarGroup>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              variant="outline"
-              tooltip="New chat"
-              className="group-data-[collapsible=icon]:justify-center"
-            >
-              <Link href="/app">
+            {isEmptyLibrary ? (
+              <SidebarMenuButton
+                variant="outline"
+                tooltip="New chat"
+                className="group-data-[collapsible=icon]:justify-center"
+                disabled
+              >
                 <PlusIcon />
                 <span className="group-data-[collapsible=icon]:hidden">
                   New chat
                 </span>
-              </Link>
-            </SidebarMenuButton>
+              </SidebarMenuButton>
+            ) : (
+              <SidebarMenuButton
+                asChild
+                variant="outline"
+                tooltip="New chat"
+                className="group-data-[collapsible=icon]:justify-center"
+              >
+                <Link href="/app">
+                  <PlusIcon />
+                  <span className="group-data-[collapsible=icon]:hidden">
+                    New chat
+                  </span>
+                </Link>
+              </SidebarMenuButton>
+            )}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroup>

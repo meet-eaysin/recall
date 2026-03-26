@@ -41,6 +41,7 @@ import {
   useDismissReview,
   useReviewRecommendations,
 } from '../hooks';
+import { AddDocumentDialog } from '@/features/library/components/add-document-dialog';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -476,12 +477,14 @@ export function HomePage() {
             and continue your research threads.
           </p>
         </div>
-        <Button asChild variant="default" size="default">
-          <Link href="/app/library/new">
-            <Plus className="mr-2 size-4" />
-            Add Document
-          </Link>
-        </Button>
+        <AddDocumentDialog
+          trigger={
+            <Button variant="default" size="default">
+              <Plus className="mr-2 size-4" />
+              Add Document
+            </Button>
+          }
+        />
       </header>
 
       <main>

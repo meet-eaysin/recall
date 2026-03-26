@@ -10,7 +10,7 @@ import { useThreadStream } from './thread-stream-context';
 
 import { MessageInput } from '@/components/ai/message-input';
 
-export function OmniBox() {
+export function OmniBox({ disabled }: { disabled?: boolean }) {
   const queryClient = useQueryClient();
   const threadStream = useThreadStream();
   const [query, setQuery] = React.useState('');
@@ -118,7 +118,12 @@ export function OmniBox() {
           onChange={(e) => setQuery(e.target.value)}
           isGenerating={isSubmitting}
           allowAttachments={false}
-          placeholder="Filter by topic, ask a question, or jump to a thread..."
+          disabled={disabled}
+          placeholder={
+            disabled
+              ? 'Please add a document first to start using AI...'
+              : 'Filter by topic, ask a question, or jump to a thread...'
+          }
         />
       </form>
 
@@ -133,6 +138,7 @@ export function OmniBox() {
             key={hint}
             variant="outline"
             size="xs"
+            disabled={disabled}
             onClick={() => setQuery(hint)}
           >
             {hint}

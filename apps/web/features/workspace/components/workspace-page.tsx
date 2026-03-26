@@ -8,6 +8,7 @@ import { useThreadStream } from './thread-stream-context';
 import { useSearchChat } from '@/features/search/hooks';
 import { searchApi } from '@/features/search/api';
 import { QUERY_KEYS } from '@/lib/query-keys';
+import { useDocuments } from '@/features/library/hooks';
 import { DocumentDetailView } from '@/features/library/components/document-detail-view';
 import { ResizableDocumentPreview } from './resizable-document-preview';
 import { Chat } from '@/components/ai/chat';
@@ -17,12 +18,18 @@ import { PageContainer } from './page-container';
 export function WorkspacePage() {
   const threadStream = useThreadStream();
   const activeStream = threadStream.activeStream;
+  const { data: documentsData, isLoading: docsLoading } = useDocuments({
+    limit: 1,
+    page: 1,
+  });
+
+  const isEmptyLibrary = !docsLoading && documentsData?.total === 0;
 
   if (activeStream) return <InlineChat />;
 
   return (
     <PageContainer>
-      <OmniBox />
+      <OmniBox disabled={isEmptyLibrary} />
 
       <section className="space-y-4 pt-10">
         <div className="flex items-center justify-between">
