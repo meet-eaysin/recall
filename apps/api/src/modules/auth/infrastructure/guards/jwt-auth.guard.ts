@@ -15,19 +15,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   canActivate(context: ExecutionContext) {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-    if (isPublic) {
-      return true;
-    }
-
     const request = context.switchToHttp().getRequest();
 
     // Dev auth bypass
     if (env.DEV_AUTH_ENABLED && request.headers['x-user-id']) {
-      request.user = { id: request.headers['x-user-id'] };
+      request.user = { userId: request.headers['x-user-id'] };
       return true;
     }
 
@@ -38,12 +30,22 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     err: unknown,
     user: TUser | null,
     _info: unknown,
-    _context: ExecutionContext,
+    context: ExecutionContext,
     _status?: unknown,
   ): TUser {
     if (err || !user) {
+      const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+        context.getHandler(),
+        context.getClass(),
+      ]);
+      
+      if (isPublic) {
+        return null as unknown as TUser;
+      }
+      
       throw err || new UnauthorizedException('Authentication required');
     }
+    
     return user;
   }
 }

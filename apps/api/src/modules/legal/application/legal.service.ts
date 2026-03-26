@@ -17,6 +17,7 @@ import type {
   IConsentRecordDocument,
 } from '@repo/db';
 import { IConsentRepository } from '../domain/repositories/consent.repository';
+import { isString, isMap } from 'src/shared/utils/type-guards.util';
 
 @Injectable()
 export class LegalService implements OnApplicationBootstrap {
@@ -187,7 +188,17 @@ We reserve the right to terminate or suspend access to our service for any reaso
 
     const checkAccepted = (type: LegalDocumentType): boolean => {
       const versions = latestConsent?.policyVersions;
-      return !!versions && versions[type] === this.VERSIONS[type];
+      if (!versions) return false;
+
+      let v: unknown;
+
+      if (isMap(versions)) {
+        v = versions.get(type);
+      } else {
+        v = (versions as Record<string, unknown>)[type];
+      }
+
+      return isString(v) && v === this.VERSIONS[type];
     };
 
     return {
