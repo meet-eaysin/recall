@@ -82,7 +82,11 @@ export class DocumentsController {
       type: 'object',
       properties: {
         source: { type: 'string', description: 'URL source if not a file' },
-        file: { type: 'string', format: 'binary', description: 'The file to upload' },
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'The file to upload',
+        },
         title: { type: 'string' },
         folderIds: { type: 'array', items: { type: 'string' } },
         tagIds: { type: 'array', items: { type: 'string' } },
@@ -104,7 +108,9 @@ export class DocumentsController {
     @Body() body: SmartAddDocumentDto,
   ) {
     if (!file && !body.source) {
-      throw new BadRequestException('Either a file or a source URL must be provided');
+      throw new BadRequestException(
+        'Either a file or a source URL must be provided',
+      );
     }
 
     const doc = await this.smartAddDocumentUseCase.execute({

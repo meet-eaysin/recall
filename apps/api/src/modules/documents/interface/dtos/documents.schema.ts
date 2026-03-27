@@ -24,15 +24,17 @@ export class SmartAddDocumentDto {
   source?: string;
 
   @ApiPropertyOptional({
-    description: 'Optional initial title of the document. If missing, it will be auto-generated.',
+    description:
+      'Optional initial title of the document. If missing, it will be auto-generated.',
     example: 'Annual Report',
   })
   @IsString()
   @IsOptional()
   title?: string;
-  
+
   @ApiPropertyOptional({
-    description: 'Optional initial description/summary of the document. If missing, it will be auto-generated.',
+    description:
+      'Optional initial description/summary of the document. If missing, it will be auto-generated.',
     example: 'This report covers the Q4 financial results...',
   })
   @IsString()
@@ -174,4 +176,3 @@ export class ListDocumentsDto {
   @IsOptional()
   limit?: number = 20;
 }
-

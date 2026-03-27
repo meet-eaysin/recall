@@ -42,9 +42,7 @@ import {
 import * as crypto from 'crypto';
 import { Types } from 'mongoose';
 import { env } from '../../../shared/utils/env';
-import {
-  hasBooleanProperty,
-} from '../../../shared/utils/type-guards.util';
+import { hasBooleanProperty } from '../../../shared/utils/type-guards.util';
 
 @Controller('api/webhooks')
 export class IngestionController {

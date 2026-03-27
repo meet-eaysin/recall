@@ -145,25 +145,18 @@ export class OAuthProviderService {
 
     const user = (await userResponse.json()) as Record<string, unknown>;
 
-    let email =
-      typeof user.email === 'string' && user.email.length > 0
-        ? user.email
-        : undefined;
+    let email: string | undefined = undefined;
     let emailVerified = false;
 
-    if (!email) {
-      const emailResponse = await fetch('https://api.github.com/user/emails', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          Accept: 'application/vnd.github+json',
-          'User-Agent': 'recall-auth',
-        },
-      });
+    const emailResponse = await fetch('https://api.github.com/user/emails', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/vnd.github+json',
+        'User-Agent': 'recall-auth',
+      },
+    });
 
-      if (!emailResponse.ok) {
-        throw new BadRequestException('Failed to fetch GitHub emails');
-      }
-
+    if (emailResponse.ok) {
       const emails = (await emailResponse.json()) as Record<string, unknown>[];
       const primary = emails.find(
         (entry) => entry.primary === true && typeof entry.email === 'string',
@@ -172,10 +165,15 @@ export class OAuthProviderService {
         (entry) => entry.verified === true && typeof entry.email === 'string',
       );
       const selected = primary ?? verified;
+
       if (selected && typeof selected.email === 'string') {
         email = selected.email;
         emailVerified = Boolean(selected.verified);
       }
+    }
+
+    if (!email && typeof user.email === 'string' && user.email.length > 0) {
+      email = user.email;
     }
 
     return {

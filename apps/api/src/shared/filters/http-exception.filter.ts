@@ -61,6 +61,45 @@ export class AllExceptionsFilter implements ExceptionFilter {
       });
     }
 
+    if (exception && typeof exception === 'object' && 'name' in exception) {
+      const err = exception as Record<string, unknown>;
+
+      if (err.name === 'MongoServerError' && err.code === 11000) {
+        const msg =
+          typeof err.message === 'string'
+            ? err.message
+            : 'Unknown MongoServerError';
+        this.logger.warn(`Duplicate key error: ${msg}`);
+        return response.status(HttpStatus.CONFLICT).json({
+          success: false,
+          statusCode: HttpStatus.CONFLICT,
+          error: 'CONFLICT',
+          message: 'A record with this unique identifier already exists.',
+          timestamp,
+          path,
+        });
+      }
+
+      if (err.name === 'OPError' || err.name === 'RPError') {
+        const msg =
+          typeof err.message === 'string' ? err.message : 'Unknown OAuth Error';
+        const desc =
+          typeof err.error_description === 'string'
+            ? err.error_description
+            : undefined;
+        this.logger.warn(`OAuth Provider Error: ${msg}`);
+
+        return response.status(HttpStatus.BAD_REQUEST).json({
+          success: false,
+          statusCode: HttpStatus.BAD_REQUEST,
+          error: 'BAD_REQUEST',
+          message: desc || msg || 'OAuth authentication failed',
+          timestamp,
+          path,
+        });
+      }
+    }
+
     this.logger.error(
       `Unhandled exception: ${exception instanceof Error ? exception.message : 'Unknown'}`,
       exception instanceof Error ? exception.stack : '',

@@ -3,7 +3,11 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LegalService } from '../application/legal.service';
 import { User } from '../../../shared/decorators/user.decorator';
 import type { Request } from 'express';
-import type { AcceptConsentDto, ConsentStatus, LegalDocument } from '@repo/types';
+import type {
+  AcceptConsentDto,
+  ConsentStatus,
+  LegalDocument,
+} from '@repo/types';
 
 import { Public } from '../../../shared/decorators/public.decorator';
 

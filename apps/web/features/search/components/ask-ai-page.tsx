@@ -288,7 +288,10 @@ export function AskAiPage() {
     useSearchChats();
   const { data: conversation, isLoading: conversationLoading } =
     useSearchChat(conversationId);
-  const { data: documentsData, isLoading: docsLoading } = useDocuments({ limit: 12, page: 1 });
+  const { data: documentsData, isLoading: docsLoading } = useDocuments({
+    limit: 12,
+    page: 1,
+  });
 
   React.useEffect(() => {
     setStreaming((current) => ({
@@ -495,9 +498,12 @@ export function AskAiPage() {
           <div className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
             <Bot className="size-6" />
           </div>
-          <h2 className="mt-4 text-xl font-semibold tracking-tight text-foreground">Ask AI is inactive</h2>
+          <h2 className="mt-4 text-xl font-semibold tracking-tight text-foreground">
+            Ask AI is inactive
+          </h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            You don&apos;t have any documents in your library yet. Add some documents to start a conversation with MindStack AI.
+            You don&apos;t have any documents in your library yet. Add some
+            documents to start a conversation with MindStack AI.
           </p>
           <AddDocumentDialog
             trigger={
