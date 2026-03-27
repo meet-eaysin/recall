@@ -1,19 +1,13 @@
 # `@repo/types`
 
-This package contains shared TypeScript types, interfaces, and enums for Recall.
+Shared cross-application types for Recall Beta.
 
-## 🚀 Purpose
+## Includes
 
-Provides a single source of truth for types that cross application boundaries, ensuring end-to-end type safety between the frontend and backend. Includes:
+- auth types
+- API envelope types
+- document, ingestion, graph, review, analytics, legal, notion, queue, and search types
 
-- API request/response DTOs.
-- Shared domain models.
-- Common utility types.
+## Notes
 
-## 📦 Usage
-
-To use this package, add it to your app's dependencies:
-
-```json
-"@repo/types": "workspace:*"
-```
+- This package is the public type contract between frontend and backend code

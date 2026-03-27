@@ -1,19 +1,14 @@
 # `@repo/crypto`
 
-This package provides cryptographic utilities for Recall.
+Shared crypto helpers for Recall Beta.
 
-## 🚀 Purpose
+## Purpose
 
-Provides centralized functions for:
+- Encryption helpers
+- token and secret handling support
+- shared cryptographic utilities consumed by other runtime packages
 
-- Hashing and verifying passwords.
-- Generating and validating JWT tokens.
-- Securely encrypting and decrypting sensitive user data.
+## Used By
 
-## 📦 Usage
-
-To use this package, add it to your app's dependencies:
-
-```json
-"@repo/crypto": "workspace:*"
-```
+- `@repo/ai`
+- `apps/api`

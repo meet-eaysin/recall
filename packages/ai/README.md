@@ -1,18 +1,21 @@
 # `@repo/ai`
 
-This package encapsulates all artificial intelligence and vector database operations for Recall.
+Shared AI runtime for Recall Beta.
 
-## 🚀 Purpose
+## Provides
 
-Provides services to interact with:
+- LLM client factory and provider adapters
+- Embedding adapters
+- Qdrant client wrapper
+- Extraction pipelines for URL, PDF, image, and YouTube sources
+- Summarization and chunking pipelines
 
-- **Ollama**: Local inferences, text summarization, entity extraction.
-- **Qdrant**: Vector database for storing document embeddings to power semantic searches and RAG (Retrieval-Augmented Generation).
+## Used By
 
-## 📦 Usage
+- `apps/api`
+- `apps/worker`
 
-To use this package, add it to your app's dependencies:
+## Notes
 
-```json
-"@repo/ai": "workspace:*"
-```
+- Provider selection is environment-driven.
+- This package is runtime code, not just type definitions.

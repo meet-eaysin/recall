@@ -1,7 +1,13 @@
 # `@repo/jest-config`
 
-Shared Jest configuration for the Recall monorepo.
+Shared Jest configuration package for Recall Beta.
 
-## 📦 Usage
+## Provides
 
-This package provides base testing environments and settings extended by all apps and packages, ensuring consistent unit and e2e testing.
+- base config
+- Nest config
+- Next config
+
+## Used For
+
+- keeping test runtime and transform settings consistent across workspaces

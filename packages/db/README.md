@@ -1,19 +1,16 @@
 # `@repo/db`
 
-This package manages the MongoDB connections and schemas for Recall.
+Shared MongoDB and Mongoose layer for Recall Beta.
 
-## 🚀 Purpose
+## Provides
 
-Centralizes the database layer:
+- Database connection helpers
+- Mongoose models
+- persistence repositories
+- storage helpers
+- module exports for document, graph, user, notion, ingestion, activity, and related domains
 
-- Connection setup via Mongoose.
-- Definition of highly-typed schemas and models (e.g., Users, Documents, Jobs).
-- Reusable repository patterns and database transactions.
+## Notes
 
-## 📦 Usage
-
-Ensure MongoDB is running (e.g., via `docker compose`). To use this package, add it to your app's dependencies:
-
-```json
-"@repo/db": "workspace:*"
-```
+- Used by both API and worker
+- Connection lifecycle is managed at the app layer

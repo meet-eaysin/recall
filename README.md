@@ -1,111 +1,91 @@
-# 🧠 Recall
+# Recall Beta
 
-![License](https://img.shields.io/badge/license-UNLICENSED-blue.svg)
-![Node](https://img.shields.io/badge/Node.js-24.x-brightgreen.svg)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)
-![Next.js](https://img.shields.io/badge/Next.js-16.x-black.svg)
-![NestJS](https://img.shields.io/badge/NestJS-11.x-red.svg)
+Recall is a monorepo for a document-first knowledge workspace. It includes a Next.js web app, a NestJS API, a NestJS worker, and shared packages for AI, data access, queueing, caching, and shared types.
 
-Recall is a robust, production-ready monorepo built for advanced document processing, AI-driven knowledge extraction, and scalable Web applications. It combines a high-performance **NestJS backend pipeline** with a modern **Next.js front-end**, all orchestrated by **Turborepo**.
+## Workspace Layout
 
-## 🏗 System Architecture
+- `apps/web`: Next.js 16 App Router frontend for marketing pages, authenticated workspace flows, search, graph, library, analytics, and settings.
+- `apps/api`: NestJS 11 HTTP API for auth, documents, search, graph, knowledge, legal, analytics, and user settings.
+- `apps/worker`: NestJS 11 worker/webhook service for ingestion, graph building, Notion jobs, transcripts, summaries, and email jobs.
+- `packages/*`: shared runtime and tooling packages.
 
-Recall utilizes a service-oriented architecture, splitting responsibilities between a client-facing web app, a core API API, and a background worker.
+## Runtime Architecture
 
-```mermaid
-graph TD
-    Client[Web App - Next.js] --> API[Core API - NestJS]
-    API --> DB[(MongoDB)]
-    API --> Cache[(Redis Cache)]
-    API --> Queue[Queue Provider]
-
-    Queue --> Worker[Worker Services - NestJS]
-    Worker --> DB
-    Worker --> AI[Local AI - Ollama]
-    Worker --> VectorDB[(Qdrant Vector DB)]
+```text
+web -> api -> mongo
+          -> cache
+          -> queue -> worker
+worker -> qdrant
+worker -> llm / embedding providers
 ```
 
-### 📦 Applications (`apps/`)
+Current document creation is handled through `POST /api/v1/documents`. There is no separate `/documents/upload` route.
 
-- **`apps/web`**: Frontend Next.js 16 application. Features modern UI (TailwindCSS v4, Shadcn), React Query for state management, and strict TypeScript integration.
-- **`apps/api`**: Core NestJS API handling user authentication (OAuth + JWT), document uploads, and serving data to the client. Includes Swagger/OpenAPI documentation.
-- **`apps/worker`**: Dedicated NestJS background processing service. Handles resource-intensive tasks such as document parsing, chunking, and interacting with AI models (LLMs and vector embedding).
+## Tech Stack
 
-### 🧩 Shared Packages (`packages/`)
+- Frontend: Next.js 16, React 19, Tailwind CSS v4, TanStack Query, Radix/Base UI, Framer Motion
+- Backend: NestJS 11, Express, Swagger, class-validator
+- Data: MongoDB via Mongoose, Qdrant for vector search
+- Async: pluggable queue providers, worker-side webhook processors
+- Tooling: Turborepo, Yarn 4, TypeScript, ESLint, Jest
 
-- **`@repo/ai`**: Qdrant and Ollama integrations for embeddings and AI interactions.
-- **`@repo/cache`**: Redis and Upstash caching utilities.
-- **`@repo/crypto`**: Security and encryption utilities.
-- **`@repo/db`**: MongoDB connection handlers and Mongoose schemas.
-- **`@repo/queue`**: Pluggable queue providers for background job dispatch and routing.
-- **`@repo/types`**: Shared TypeScript interfaces across the monorepo.
-- **`@repo/eslint-config`, `@repo/jest-config`, `@repo/typescript-config`**: Centralized configurations ensuring consistency.
+## Prerequisites
 
-## 🚀 Tech Stack
+- Node.js `24.x`
+- Corepack with Yarn `4.5.1`
+- Docker and Docker Compose for local infra
 
-- **Frontend:** Next.js 16 (App Router), React 19, TailwindCSS v4, Shadcn UI, Framer Motion
-- **Backend:** NestJS 11, Express
-- **Database:** MongoDB
-- **Caching & Queues:** Redis, Upstash, Queue Providers
-- **AI & Vector DB:** Ollama (Local LLMs), Qdrant (Vector DB)
-- **Tooling:** Turborepo, Yarn 4 (Workspaces), ESLint, Prettier, Jest
+## Setup
 
-## 🛠 Getting Started
+1. Install dependencies.
 
-### Prerequisites
+```bash
+yarn install
+```
 
-Ensure you have the following installed on your system:
+2. Start local infrastructure.
 
-- **Node.js** (v24.x recommended)
-- **Yarn** (v4.5.1 configured via corepack)
-- **Docker** and **Docker Compose** (for running local dependencies)
+```bash
+docker compose up -d
+```
 
-### Installation
+3. Copy environment files as needed.
 
-1. Clone the repository:
+- `apps/web/.env.example -> apps/web/.env.local`
+- `apps/api/.env.example -> apps/api/.env.local`
+- `apps/worker/.env.example -> apps/worker/.env.local`
 
-   ```bash
-   git clone <repository_url>
-   cd recall
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   yarn install
-   ```
-
-3. Start backing services via Docker (MongoDB, Redis, Qdrant, Ollama):
-
-   ```bash
-   docker compose up -d
-   ```
-
-4. Set up environment variables (copy `.env.example` to `.env` in respective apps and packages as required).
-
-### Development
-
-Run the entire stack in development mode:
+4. Start the full workspace.
 
 ```bash
 yarn dev
 ```
 
-This command will start the Next.js web app, the NestJS API, and the NestJS Worker concurrently using Turborepo.
+## Common Commands
 
-### Operations
+```bash
+yarn dev
+yarn build
+yarn lint
+yarn lint:fix
+yarn typecheck
+yarn test
+yarn test:e2e
+yarn format
+```
 
-- `yarn build`: Builds all apps and packages.
-- `yarn test`: Runs unit tests across the monorepo.
-- `yarn test:e2e`: Runs end-to-end tests.
-- `yarn lint`: Lints all code.
-- `yarn format`: Formats code using Prettier.
-- `yarn typecheck`: Runs TypeScript compiler (noEmit) to catch type errors.
+## Notes
 
-## 🤝 Contributing
+- The web app currently imports Google fonts at build time. In restricted-network environments, `yarn build` for `apps/web` will fail unless those fonts are made local.
+- The API and worker both rely on environment-driven provider configuration. Review `turbo.json` and each app's `.env.example` before deployment.
 
-We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md) for detailed instructions on branching, coding standards, and submitting pull requests.
+## Documentation
 
-## 📜 License
+- Root contribution guide: [CONTRIBUTING.md](./CONTRIBUTING.md)
+- Web app: [apps/web/README.md](./apps/web/README.md)
+- API: [apps/api/README.md](./apps/api/README.md)
+- Worker: [apps/worker/README.md](./apps/worker/README.md)
 
-[UNLICENSED](./LICENSE)
+## License
+
+UNLICENSED

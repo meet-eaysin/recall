@@ -1,36 +1,68 @@
-# Recall - Core API
+# Recall Beta API
 
-This is the core backend application for Recall, built with **NestJS 11**.
+`apps/api` is the NestJS 11 HTTP backend for Recall Beta.
 
-## 🚀 Tech Stack
+## Modules
 
-- **Framework:** NestJS 11
-- **Language:** TypeScript 5
-- **Authentication:** Passport, JWT, OAuth (Google/GitHub)
-- **API Docs:** Swagger (OpenAPI)
+- `auth`
+- `users`
+- `documents`
+- `search`
+- `graph`
+- `knowledge`
+- `analytics`
+- `review`
+- `notion`
+- `legal`
+- `llm`
+- `queue`
 
-## 🛠 Setup & Development
+## Key Contracts
 
-Ensure you have run `yarn install` from the root of the monorepo.
+- Document smart-add: `POST /api/v1/documents`
+- Document retrieval: `GET /api/v1/documents/:id`
+- Search streaming: `POST /api/v1/search/ask/stream`
+- Ingestion retry: `POST /api/v1/documents/:id/retry-ingestion`
 
-To start the development server for this app specifically:
+## Development
 
-```bash
-yarn workspace api dev
-```
-
-Or run the dev script from the root using Turbo:
+From the repo root:
 
 ```bash
 yarn turbo run dev --filter api
 ```
 
-## 🏗 Key Features
+From this workspace:
 
-- **Robust Architecture:** Follows NestJS modular architecture and dependency injection.
-- **Secure:** Integrated authentication strategies, OAuth Proxies, and helmet protection.
-- **Shared Packages:** Leverages `@repo/db` for MongoDB connections, `@repo/cache` for Redis, and `@repo/queue` to dispatch background jobs to the worker.
+```bash
+yarn dev
+```
 
-## ⚙️ Environment Variables
+Default local port: `3001`
 
-Make sure to configure the `.env` file for the API. It requires connections to MongoDB, Redis, queue provider configuration, JWT secrets, and OAuth Client IDs/Secrets.
+## Verification
+
+```bash
+yarn typecheck
+yarn lint
+yarn test
+yarn test:e2e
+```
+
+## Environment
+
+Important groups:
+
+- MongoDB: `MONGODB_URI`
+- Auth/session: `JWT_SECRET`, `REFRESH_TOKEN_SECRET`, OAuth client variables
+- Queue/cache: `QUEUE_PROVIDER`, `CACHE_PROVIDER`, Redis/QStash variables
+- AI defaults: `DEFAULT_LLM_*`, `DEFAULT_EMBEDDING_*`, provider keys
+- Storage: `FILE_UPLOAD_DIR`, `MAX_FILE_SIZE_MB`
+
+The app loads environment files through `src/shared/utils/env.ts`.
+
+## Notes
+
+- Swagger is enabled outside production.
+- Global response wrapping, validation, and exception filtering are configured in `src/main.ts`.
+- The previous `/documents/upload` route no longer exists; file and URL creation both go through `POST /documents`.

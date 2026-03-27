@@ -1,7 +1,16 @@
 # `@repo/eslint-config`
 
-Shared ESLint configuration for the Recall monorepo.
+Shared ESLint presets for Recall Beta.
 
-## 📦 Usage
+## Includes
 
-This package provides base rules extended by all apps and packages, enforcing clean code architecture and best practices globally.
+- base config
+- Next.js config
+- NestJS config
+- library config
+- React internal config
+
+## Notes
+
+- The Nest preset enforces no explicit `any`
+- Apps extend these presets rather than defining policy independently

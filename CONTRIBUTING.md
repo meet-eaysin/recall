@@ -1,66 +1,47 @@
-# Contributing to Recall
+# Contributing
 
-Thank you for your interest in contributing to Recall! This guide outlines the process, standards, and expectations for all contributions to ensure consistency and quality across the codebase.
+## Baseline
 
-## 🚀 Getting Started
+- Use Node `24.x` and Yarn `4.5.1`
+- Install from the repo root with `yarn install`
+- Run services through the monorepo unless you are intentionally isolating an app
 
-1. **Ensure you have the right environment:**
-   - Node v24.x
-   - Yarn v4.5.1+
-   - Docker & Docker Compose
-2. **Setup the project:** Follow the 'Getting Started' instructions in the [README.md](./README.md).
-3. **Familiarize yourself with the architecture:** Understand the boundaries of `apps/` and `packages/`. Make changes in the most appropriate layer. Avoid coupling independent services.
+## Standards
 
-## 🌿 Branching Strategy
+- Keep changes explicit and local. Do not add generic abstractions without a concrete need.
+- Preserve strict typing. Avoid `any`, unsafe casts, and non-null assertions unless there is no better option.
+- Match the existing architectural split:
+  - `apps/web` for UI and frontend integration
+  - `apps/api` for HTTP boundary and synchronous business flows
+  - `apps/worker` for async/background processing
+  - `packages/*` for shared runtime concerns
+- Prefer fixing the contract or architecture rather than adapting tests/docs around stale behavior.
 
-We follow a structured branching model:
+## Validation Before Merge
 
-- `main`: The stable production-ready branch.
-- `dev` or `develop`: The active development branch.
-- **Feature Branches:** Create branches off `dev` for new features or fixes.
-  - Format: `<type>/<issue-number>-<short-description>`
-  - Types: `feature`, `fix`, `chore`, `refactor`, `docs`
-  - Example: `feature/12-add-oauth-login`
+Run the relevant checks from the repo root:
 
-## 💻 Coding Standards
+```bash
+yarn lint
+yarn typecheck
+yarn test
+yarn test:e2e
+```
 
-We enforce strict coding standards to maintain uniformity:
+If you change shared config, queues, environment loading, or API contracts, also run:
 
-- **Type Safety**: Zero Tolerance for `any` under any circumstances. Use precise types, generics, or `unknown` with type guards. Avoid `as` casting and non-null assertions (`!`). Code must prove its types through logical flow. Prefer explicit return types for exported functions.
-- **Formatting**: We use Prettier. Before committing, ensure you run:
-  ```bash
-  yarn format
-  ```
-- **Linting**: We enforce strict linting rules. Ensure there are no warnings or errors by running:
-  ```bash
-  yarn lint:fix
-  ```
-- **Clean Architecture & Best Practices**:
-  - Adhere to SOLID principles.
-  - Apply the "Happy Path" approach and follow framework-specific best practices (Next.js App Router patterns, NestJS DI patterns).
-  - Do not over-engineer features (YAGNI). Do not implement features or abstractions for hypothetical future needs.
-  - Resolve Root Causes: Never provide "band-aid" fixes. Identify the fundamental cause of an issue and fix it at the source.
-  - Performance Awareness: Minimize memory footprint and avoid unnecessary computations.
+```bash
+yarn build
+```
 
-## 🏗 Monorepo Guidelines (Turborepo)
+## Documentation Expectations
 
-- If you add a new dependency used only by one app/package, add it to that specific `package.json`.
-- If a dependency is shared widely, consider if it belongs in the root workspace or shared out via a `@repo/*` package.
-- Always run `yarn build` at the root directory to verify there are no cyclical dependencies or build failures before pushing.
+- Update README files when routes, scripts, runtime requirements, or package responsibilities change.
+- Keep docs aligned with the current API surface. Example: document creation is `POST /api/v1/documents`, not `/documents/upload`.
 
-## 🧪 Testing
+## Pull Requests
 
-- We rely heavily on automated tests.
-- Write unit tests for your logic changes.
-- Ensure all tests pass:
-  ```bash
-  yarn test
-  ```
-
-## 📬 Pull Request Process
-
-1. Provide a clear and descriptive title for your PR.
-2. Ensure the PR is pointed against the `dev` branch.
-3. Your code MUST pass the CI pipeline (Lint, Typecheck, Build, Test).
-4. Request reviews from code maintainers. Resolve all discussions before merging.
-5. Provide a summary of changes in the PR description, including how to verify the new feature or fix.
+- Use a clear title and summary
+- Explain behavior changes and verification steps
+- Call out intentional breaking changes
+- Do not leave stale docs or stale tests behind
