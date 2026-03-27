@@ -10,7 +10,7 @@ import { PaginatedResponseDto } from '../dtos/paginated-response.dto';
  * Generates an explicit Swagger schema for a paginated result.
  * This ensures full response consistency and standard-compliant OpenAPI documentation.
  */
-export const ApiPaginatedResponse = <TModel extends Type<any>>(
+export const ApiPaginatedResponse = <TModel extends Type<unknown>>(
   model: TModel,
   description: string = 'Successful paginated response',
 ) => {

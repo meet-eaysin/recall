@@ -17,7 +17,7 @@ import {
   assertErrorShape,
   generateId,
 } from './helpers';
-import { DocumentType, DocumentStatus } from '@repo/types';
+import { DocumentStatus } from '@repo/types';
 import type { Server } from 'http';
 
 describe('Documents (e2e)', () => {
@@ -43,7 +43,6 @@ describe('Documents (e2e)', () => {
         email: 'documents-create@test.local',
       });
       const payload = {
-        type: DocumentType.PDF,
         source: 'https://example.com/test.pdf',
         title: 'New E2E Document',
       };
@@ -64,13 +63,13 @@ describe('Documents (e2e)', () => {
       }
     });
 
-    it('should return 400 for invalid payload (missing type)', async () => {
+    it('should return 400 when neither source nor file is provided', async () => {
       const auth = await createTestAuthContext(app, {
         authId: 'dev:documents-invalid',
         email: 'documents-invalid@test.local',
       });
       const payload = {
-        source: 'https://example.com/test.pdf',
+        title: 'Missing source',
       };
 
       const response = await request(app.getHttpServer())
@@ -79,7 +78,7 @@ describe('Documents (e2e)', () => {
         .send(payload)
         .expect(400);
 
-      assertErrorShape(response.body, 400, 'VALIDATION_ERROR');
+      assertErrorShape(response.body, 400, 'BAD_REQUEST');
     });
   });
 

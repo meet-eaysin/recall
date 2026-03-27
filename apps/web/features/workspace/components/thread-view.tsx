@@ -3,9 +3,6 @@
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSearchChat } from '@/features/search/hooks';
-import { searchApi } from '@/features/search/api';
-import { QUERY_KEYS } from '@/lib/query-keys';
-import { useQueryClient } from '@tanstack/react-query';
 import { DocumentDetailView } from '@/features/library/components/document-detail-view';
 import { ResizableDocumentPreview } from './resizable-document-preview';
 import { useThreadStream } from './thread-stream-context';
@@ -22,20 +19,25 @@ import {
   EmptyContent,
   EmptyMedia,
 } from '@/components/ui/empty';
+import { useChatFollowUpStream } from '../hooks/use-chat-follow-up-stream';
+import { mapConversationMessages } from '../lib/chat-message-mappers';
 
 export function ThreadView() {
   const params = useParams();
   const router = useRouter();
-  const queryClient = useQueryClient();
   const threadStream = useThreadStream();
   const threadId = typeof params.threadId === 'string' ? params.threadId : null;
-
-  const [question, setQuestion] = React.useState('');
-  const [isStreaming, setIsStreaming] = React.useState(false);
-  const [streamingAnswer, setStreamingAnswer] = React.useState('');
-  const [streamingQuestion, setStreamingQuestion] = React.useState('');
   const [previewId, setPreviewId] = React.useState<string | null>(null);
-  const followUpAbortRef = React.useRef<AbortController | null>(null);
+  const {
+    error,
+    handleInputChange,
+    handleSubmit,
+    isStreaming,
+    question,
+    stop,
+    streamingAnswer,
+    streamingQuestion,
+  } = useChatFollowUpStream(threadId);
 
   const { data: conversation, isLoading } = useSearchChat(threadId);
 
@@ -59,107 +61,18 @@ export function ThreadView() {
     }
   }, [omniStream, conversation, threadId, threadStream]);
 
-  const [error, setError] = React.useState<string | null>(null);
-
-  const submitQuestion = async () => {
-    const trimmed = question.trim();
-    if (!trimmed || isStreaming) return;
-
-    setIsStreaming(true);
-    setStreamingAnswer('');
-    setError(null);
-    setStreamingQuestion(trimmed);
-    setQuestion('');
-
-    try {
-      if (followUpAbortRef.current) {
-        followUpAbortRef.current.abort();
-      }
-      const controller = new AbortController();
-      followUpAbortRef.current = controller;
-
-      await searchApi.streamAsk(
-        {
-          conversationId: threadId ?? '',
-          question: trimmed,
-        },
-        {
-          signal: controller.signal,
-          onEvent: (event) => {
-            if (event.type === 'delta') {
-              setStreamingAnswer((prev) => prev + event.chunk);
-            } else if (event.type === 'error') {
-              console.error(event.message);
-              setError(event.message);
-              setIsStreaming(false);
-              followUpAbortRef.current = null;
-              queryClient.invalidateQueries({
-                queryKey: QUERY_KEYS.SEARCH.chat(threadId ?? ''),
-              });
-              queryClient.invalidateQueries({
-                queryKey: QUERY_KEYS.SEARCH.chats(),
-              });
-            } else if (event.type === 'done') {
-              queryClient.invalidateQueries({
-                queryKey: QUERY_KEYS.SEARCH.chat(threadId ?? ''),
-              });
-              queryClient.invalidateQueries({
-                queryKey: QUERY_KEYS.SEARCH.chats(),
-              });
-              setIsStreaming(false);
-              setStreamingAnswer('');
-              setStreamingQuestion('');
-              followUpAbortRef.current = null;
-            }
-          },
-        },
-      );
-    } catch (error) {
-      console.error(error);
-      const msg = error instanceof Error ? error.message : String(error);
-      setError(msg);
-      setIsStreaming(false);
-      followUpAbortRef.current = null;
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setQuestion(e.target.value);
-  };
-
-  const handleSubmit = (event?: { preventDefault?: () => void }) => {
-    event?.preventDefault?.();
-    if (question.trim()) {
-      void submitQuestion();
-    }
-  };
-
   const showOmniStream =
     hasOmniStream && omniStream && (conversation?.messages.length ?? 0) === 0;
   const showFollowUpStream = isStreaming;
+  const persistedMessages = React.useMemo(
+    () => mapConversationMessages(conversation),
+    [conversation],
+  );
 
   const messages: Message[] = React.useMemo(() => {
     const list: Message[] = [];
 
-    if (conversation?.messages) {
-      conversation.messages.forEach((msg) => {
-        list.push({
-          id: msg.id,
-          role: msg.role as 'user' | 'assistant',
-          content: msg.content,
-          createdAt: new Date(msg.createdAt),
-          sources: msg.sources
-            ? msg.sources.map((s) => ({
-                documentId: s.documentId,
-                title: s.title,
-                author: s.author,
-                publishedAt: s.publishedAt,
-                originalSource: s.originalSource,
-              }))
-            : undefined,
-        });
-      });
-    }
+    list.push(...persistedMessages);
 
     if (showOmniStream && omniStream) {
       list.push({
@@ -197,7 +110,7 @@ export function ThreadView() {
 
     return list;
   }, [
-    conversation?.messages,
+    persistedMessages,
     omniStream,
     showOmniStream,
     showFollowUpStream,
@@ -207,12 +120,8 @@ export function ThreadView() {
   ]);
 
   const stopGeneration = () => {
-    if (followUpAbortRef.current) {
-      followUpAbortRef.current.abort();
-      followUpAbortRef.current = null;
-    }
+    stop();
     threadStream.abortStream();
-    setIsStreaming(false);
   };
 
   if (isLoading && !hasOmniStream) {
