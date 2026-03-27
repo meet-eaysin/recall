@@ -24,8 +24,7 @@ import {
   ApiNoContentResponse,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CreateDocumentUseCase } from '../application/use-cases/create-document.usecase';
-import { CreateUploadDocumentUseCase } from '../application/use-cases/create-upload-document.usecase';
+import { SmartAddDocumentUseCase } from '../application/use-cases/smart-add-document.usecase';
 import { DeleteDocumentUseCase } from '../application/use-cases/delete-document.usecase';
 import { GetDocumentUseCase } from '../application/use-cases/get-document.usecase';
 import { GetIngestionStatusUseCase } from '../application/use-cases/get-ingestion-status.usecase';
@@ -35,10 +34,9 @@ import { SummaryUseCase } from '../application/use-cases/summary.usecase';
 import { TranscriptUseCase } from '../application/use-cases/transcript.usecase';
 import { UpdateDocumentUseCase } from '../application/use-cases/update-document.usecase';
 import {
-  CreateDocumentDto,
   UpdateDocumentDto,
   ListDocumentsDto,
-  UploadDocumentDto,
+  SmartAddDocumentDto,
 } from './dtos/documents.schema';
 import {
   DocumentPublicViewDto,
@@ -55,8 +53,7 @@ import { ApiSuccessResponse } from '../../../shared/decorators/api-success-respo
 @Controller('documents')
 export class DocumentsController {
   constructor(
-    private readonly createDocumentUseCase: CreateDocumentUseCase,
-    private readonly createUploadDocumentUseCase: CreateUploadDocumentUseCase,
+    private readonly smartAddDocumentUseCase: SmartAddDocumentUseCase,
     private readonly deleteDocumentUseCase: DeleteDocumentUseCase,
     private readonly getDocumentUseCase: GetDocumentUseCase,
     private readonly getIngestionStatusUseCase: GetIngestionStatusUseCase,
@@ -78,36 +75,18 @@ export class DocumentsController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new document via URL or source' })
-  @ApiCreatedResponse({ type: DocumentResponseDto })
-  async createDocument(
-    @User('userId') userId: string,
-    @Body() data: CreateDocumentDto,
-  ) {
-    const doc = await this.createDocumentUseCase.execute({
-      userId,
-      ...data,
-      source: data.source,
-    });
-    return { document: doc };
-  }
-
-  @Post('upload')
-  @ApiOperation({ summary: 'Upload a file as a document' })
-  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Smart add document (URL or File)' })
+  @ApiConsumes('multipart/form-data', 'application/json')
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-          description: 'The file to upload',
-        },
+        source: { type: 'string', description: 'URL source if not a file' },
+        file: { type: 'string', format: 'binary', description: 'The file to upload' },
         title: { type: 'string' },
         folderIds: { type: 'array', items: { type: 'string' } },
         tagIds: { type: 'array', items: { type: 'string' } },
-        metadata: { type: 'object' },
+        notes: { type: 'string' },
       },
     },
   })
@@ -119,22 +98,25 @@ export class DocumentsController {
       },
     }),
   )
-  async uploadDocument(
+  async addDocument(
     @User('userId') userId: string,
-    @UploadedFile() file: Express.Multer.File,
-    @Body() body: UploadDocumentDto,
+    @UploadedFile() file: Express.Multer.File | undefined,
+    @Body() body: SmartAddDocumentDto,
   ) {
-    if (!file) throw new BadRequestException('No file uploaded');
+    if (!file && !body.source) {
+      throw new BadRequestException('Either a file or a source URL must be provided');
+    }
 
-    const doc = await this.createUploadDocumentUseCase.execute({
+    const doc = await this.smartAddDocumentUseCase.execute({
       userId,
-      buffer: file.buffer,
-      originalName: file.originalname,
-      mimeType: file.mimetype,
+      buffer: file?.buffer,
+      originalName: file?.originalname,
+      mimeType: file?.mimetype,
+      source: body.source,
       title: body.title,
       folderIds: body.folderIds,
       tagIds: body.tagIds,
-      metadata: body.metadata,
+      notes: body.notes,
     });
 
     return { document: doc };

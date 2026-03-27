@@ -44,9 +44,7 @@ export class YouTubeExtractor {
     let transcript: YTTranscriptResponse[] = [];
     try {
       transcript = await YoutubeTranscript.fetchTranscript(videoId);
-    } catch {
-      // Transcript is optional
-    }
+    } catch {}
 
     const metadata = await this.fetchMetadata(videoId);
 
@@ -72,7 +70,7 @@ export class YouTubeExtractor {
       return {
         title: data.title,
         channelTitle: data.author_name,
-        description: '', // OEmbed doesn't provide description
+        description: '',
         thumbnail: data.thumbnail_url,
       };
     } catch {

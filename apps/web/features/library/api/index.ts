@@ -1,4 +1,4 @@
-import type { DocumentStatus, DocumentType } from '@repo/types';
+import type { DocumentStatus } from '@repo/types';
 import { apiDelete, apiGet, apiPatch, apiPost } from '@/lib/api';
 import { API_ENDPOINTS } from '@/lib/api-endpoints';
 import type {
@@ -42,12 +42,7 @@ function buildQueryString(
 }
 
 export const libraryApi = {
-  createDocument: (payload: {
-    folderIds?: string[];
-    source: string;
-    title?: string;
-    type: DocumentType;
-  }) =>
+  createDocument: (payload: FormData) =>
     apiPost<{ document: DocumentDetail }>(API_ENDPOINTS.DOCUMENTS.CREATE, {
       body: payload,
     }),

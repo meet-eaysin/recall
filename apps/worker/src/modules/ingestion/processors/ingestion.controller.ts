@@ -21,7 +21,7 @@ import {
   QdrantWrapper,
   LLMClientFactory,
 } from '@repo/ai';
-import type { ResolvedLLMConfig } from '@repo/ai';
+import type { ResolvedClient } from '@repo/ai';
 import {
   IngestionStatus,
   IngestionStage,
@@ -39,10 +39,12 @@ import {
   DocumentModel,
   DocumentChunkModel,
 } from '@repo/db';
-import { env } from '../../../shared/utils/env';
-import { Types } from 'mongoose';
-import axios from 'axios';
 import * as crypto from 'crypto';
+import { Types } from 'mongoose';
+import { env } from '../../../shared/utils/env';
+import {
+  hasBooleanProperty,
+} from '../../../shared/utils/type-guards.util';
 
 @Controller('api/webhooks')
 export class IngestionController {
@@ -134,12 +136,22 @@ export class IngestionController {
       } else if (type === 'url') {
         const result = await urlExtractor.extractFromUrl(source);
         text = result.markdown;
-        await this.documentRepository.update(documentId, userId, {
-          renderedMarkdown: text,
-        });
+        const updateData: Record<string, unknown> = { renderedMarkdown: text };
+        if (result.title && result.title !== 'Untitled') {
+          updateData.title = result.title;
+        }
+        await this.documentRepository.update(documentId, userId, updateData);
       } else if (type === 'youtube') {
         const result = await youtubeExtractor.extractYouTube(source);
         text = result.transcript.map((t) => t.text).join(' ');
+        const updateData: Record<string, unknown> = {};
+        if (result.title && result.title !== 'Unknown Title') {
+          updateData.title = result.title;
+        }
+
+        if (Object.keys(updateData).length > 0) {
+          await this.documentRepository.update(documentId, userId, updateData);
+        }
       } else if (type === 'image') {
         const buffer = await this.localStorage.getFile(source);
         const result = await imageExtractor.extractImage(buffer);
@@ -178,10 +190,71 @@ export class IngestionController {
         userId,
       );
       const config = await this.llmClientFactory.resolveConfigForUserId(userId);
+      const llmClient = await this.llmClientFactory.createForUserId(userId);
+
+      // AI Enrichment for Smart Add
+      const metadata = doc.props.metadata || {};
+      const expectsEnrichment =
+        hasBooleanProperty(metadata, 'requiresEnrichment') &&
+        metadata.requiresEnrichment === true;
+
+      if (expectsEnrichment) {
+        try {
+          const enrichment = await this.enrichDocument(
+            text.substring(0, 8000),
+            llmClient,
+          );
+
+          if (enrichment.title || enrichment.description) {
+            const updatedMetadata: Record<string, unknown> = {
+              ...metadata,
+              requiresEnrichment: false,
+            };
+
+            const updateData: Record<string, unknown> = {
+              metadata: updatedMetadata,
+            };
+
+            // Only update title if flagged for enrichment
+            if (
+              hasBooleanProperty(metadata, 'requiresEnrichmentTitle') &&
+              metadata.requiresEnrichmentTitle === true &&
+              enrichment.title &&
+              enrichment.title !== 'Untitled Document'
+            ) {
+              updateData.title = enrichment.title;
+            }
+
+            // Only update description if flagged for enrichment
+            if (
+              hasBooleanProperty(metadata, 'requiresEnrichmentDescription') &&
+              metadata.requiresEnrichmentDescription === true &&
+              enrichment.description
+            ) {
+              updatedMetadata['description'] = enrichment.description;
+            }
+
+            await this.documentRepository.update(
+              documentId,
+              userId,
+              updateData,
+            );
+
+            this.logger.log(
+              `Document ${documentId} handled with AI enrichment.`,
+            );
+          }
+        } catch (error) {
+          this.logger.warn(
+            `AI Enrichment failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          );
+        }
+      }
+
       try {
         const topics = await this.classifyTopics(
           text.substring(0, 5000),
-          config,
+          llmClient,
         );
         if (topics.length > 0) {
           for (const topic of topics) {
@@ -262,23 +335,18 @@ export class IngestionController {
         .filter((p): p is NonNullable<typeof p> => p !== null);
 
       if (points.length > 0) {
-        // Clean up any existing points for this document to prevent duplicates
-        // if re-indexing happened with different chunk counts
         await this.qdrant.deleteByFilter('mindstack', {
           must: [
             { key: 'documentId', match: { value: documentId.toString() } },
           ],
         });
 
-        // Generate deterministic IDs for the points for double-protection
         const pointsForUpsert = points.map((p) => {
-          // Create a deterministic UUID from documentId and chunkIndex
           const hash = crypto
             .createHash('md5')
             .update(`${documentId.toString()}-${p.payload.chunkIndex}`)
             .digest('hex');
 
-          // Format as UUID: 8-4-4-4-12
           const id = `${hash.slice(0, 8)}-${hash.slice(8, 12)}-${hash.slice(12, 16)}-${hash.slice(16, 20)}-${hash.slice(20, 32)}`;
 
           return {
@@ -340,33 +408,70 @@ export class IngestionController {
 
   private async classifyTopics(
     text: string,
-    config: ResolvedLLMConfig,
+    client: ResolvedClient,
   ): Promise<string[]> {
-    if (config.provider === 'ollama') {
-      try {
-        interface OllamaGenerateResponse {
-          response: string;
-        }
-        const response = await axios.post<OllamaGenerateResponse>(
-          `${config.baseUrl}/api/generate`,
-          {
-            model: config.chatModel,
-            prompt: `Extract 3-5 main topics from this text as a comma-separated list. Only return the list.\n\nText: ${text}`,
-            stream: false,
-          },
-          { timeout: 10000 },
-        );
-        const responseText = response.data?.response;
-        if (typeof responseText === 'string') {
-          return responseText
-            .split(',')
-            .map((s) => s.trim())
-            .filter(Boolean);
-        }
-      } catch {
-        return [];
+    try {
+      const prompt = `Extract 3-5 main topics from this text as a comma-separated list. Only return the list.\n\nText: ${text}`;
+      const response = await client.complete({
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.1,
+      });
+
+      if (response && typeof response === 'string') {
+        return response
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
       }
+    } catch (error) {
+      this.logger.warn(
+        `Failed to classify topics: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
     return [];
+  }
+
+  private async enrichDocument(
+    text: string,
+    client: ResolvedClient,
+  ): Promise<{ title?: string; description?: string }> {
+    try {
+      const prompt = `Based on the following text, generate a concise title and a short 1-2 sentence description. Format your response exactly as JSON:\n{"title": "...", "description": "..."}\n\nText: ${text.substring(0, 3000)}`;
+      const response = await client.complete({
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.3,
+      });
+
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      let jsonStr = response;
+      if (jsonMatch && jsonMatch[0]) {
+        jsonStr = jsonMatch[0];
+      }
+
+      const data = JSON.parse(jsonStr) as {
+        title?: unknown;
+        description?: unknown;
+      };
+
+      let finalTitle: string | undefined;
+      if (typeof data.title === 'string') {
+        finalTitle = data.title;
+      }
+
+      let finalDescription: string | undefined;
+      if (typeof data.description === 'string') {
+        finalDescription = data.description;
+      }
+
+      return {
+        title: finalTitle,
+        description: finalDescription,
+      };
+    } catch (error) {
+      this.logger.error(
+        `Document enrichment error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      return {};
+    }
   }
 }

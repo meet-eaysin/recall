@@ -4,11 +4,10 @@ import * as React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from 'lucide-react';
-import { AddDocumentForm } from './add-document-form';
+import { SmartAddDocument } from './smart-add-document';
 
 export function AddDocumentDialog({ trigger }: { trigger?: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
-  const formId = React.useId();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -28,8 +27,7 @@ export function AddDocumentDialog({ trigger }: { trigger?: React.ReactNode }) {
             Save a link, PDF, image, or write a note to your knowledge base.
           </DialogDescription>
         </DialogHeader>
-        <AddDocumentForm
-          formId={formId}
+        <SmartAddDocument
           onSuccess={() => setOpen(false)}
           onCancel={() => setOpen(false)}
         />

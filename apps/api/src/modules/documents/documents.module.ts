@@ -3,8 +3,7 @@ import { IDocumentRepository } from './domain/repositories/document.repository';
 import { IDocumentUnlinkRepository } from '../knowledge/domain/repositories/document-unlink.repository';
 import { MongooseDocumentRepository } from './infrastructure/persistence/mongoose-document.repository';
 import { MongooseDocumentUnlinkRepository } from './infrastructure/persistence/document-unlink.repository';
-import { CreateDocumentUseCase } from './application/use-cases/create-document.usecase';
-import { CreateUploadDocumentUseCase } from './application/use-cases/create-upload-document.usecase';
+import { SmartAddDocumentUseCase } from './application/use-cases/smart-add-document.usecase';
 import { DeleteDocumentUseCase } from './application/use-cases/delete-document.usecase';
 import { GetDocumentUseCase } from './application/use-cases/get-document.usecase';
 import { GetIngestionStatusUseCase } from './application/use-cases/get-ingestion-status.usecase';
@@ -20,8 +19,7 @@ import { ITranscriptRepository } from './domain/repositories/transcript.reposito
 import { MongooseTranscriptRepository } from './infrastructure/persistence/mongoose-transcript.repository';
 
 const useCases = [
-  CreateDocumentUseCase,
-  CreateUploadDocumentUseCase,
+  SmartAddDocumentUseCase,
   DeleteDocumentUseCase,
   GetDocumentUseCase,
   GetIngestionStatusUseCase,
