@@ -1,5 +1,5 @@
-import Navbar from './_components/navbar-shrink';
-import Footer from './_components/footer';
+import Navbar from '../../features/marketing/components/navbar-shrink';
+import Footer from '../../features/marketing/components/footer';
 
 export default function MarketingLayout({
   children,

@@ -20,7 +20,6 @@ export class GetStatsUseCase {
       mostActiveDay,
     } = stats;
 
-    // Format distributions
     const byType: Record<string, number> = {};
     docsByType.forEach((item: AnalyticsDocumentStatsAggregationResult) => {
       byType[item._id] = item.count;
@@ -31,7 +30,6 @@ export class GetStatsUseCase {
       byStatus[item._id] = item.count;
     });
 
-    // Streak calculation
     const activeDates: string[] = activityHistory.map(
       (item: { _id: string }) => item._id,
     );
@@ -57,7 +55,6 @@ export class GetStatsUseCase {
       return { currentStreak: 0, longestStreak: 0 };
     }
 
-    // Current Streak
     const today = new Date().toISOString().split('T')[0] ?? '';
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
@@ -78,11 +75,9 @@ export class GetStatsUseCase {
       }
     }
 
-    // Longest Streak
     let longestStreak = 0;
     let currentTempStreak = 0;
 
-    // Sort ascending for longest streak calc
     const sortedDates = [...activeDates].sort();
     let prevDate: Date | null = null;
 

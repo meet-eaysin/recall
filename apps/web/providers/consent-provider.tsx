@@ -20,7 +20,12 @@ interface ConsentContextType {
 
 const ConsentContext = createContext<ConsentContextType | undefined>(undefined);
 
-const LEGAL_PAGES = ['/privacy-policy', '/cookie-policy', '/terms-of-service', '/terms'];
+const LEGAL_PAGES = [
+  '/privacy-policy',
+  '/cookie-policy',
+  '/terms-of-service',
+  '/terms',
+];
 
 export function ConsentProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -37,7 +42,6 @@ export function ConsentProvider({ children }: { children: React.ReactNode }) {
   const isLegalPage = LEGAL_PAGES.includes(pathname);
   const isAppRoute = pathname.startsWith('/app');
 
-  // Consent is required if any mandatory policy is not accepted
   const isConsentRequired =
     !isConsentLoading &&
     !!consent &&
@@ -45,15 +49,10 @@ export function ConsentProvider({ children }: { children: React.ReactNode }) {
       !consent.cookieAccepted ||
       !consent.termsAccepted);
 
-  // Close modal automatically when navigating into a legal or marketing page
   useEffect(() => {
-    if (!isAppRoute || isLegalPage) {
-      setShowModal(false);
-    }
+    if (!isAppRoute || isLegalPage) setShowModal(false);
   }, [pathname, isAppRoute, isLegalPage]);
 
-  // Auto-show modal for authenticated users who need to accept terms
-  // BUT only when they are in the high-intent app area
   useEffect(() => {
     if (isAuthenticated && isConsentRequired && isAppRoute) {
       setShowModal(true);
@@ -76,13 +75,7 @@ export function ConsentProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
-      
-      {/* 
-        Recommended Logic:
-        1. If Modal is open, show NOTHING else.
-        2. CookieBanner is ONLY for guests (unauthenticated users).
-        3. Authenticated users are handled via ConsentModal auto-trigger.
-      */}
+
       {!showModal && !isAuthenticated && <CookieBanner />}
 
       {showModal && consent && (
@@ -92,7 +85,6 @@ export function ConsentProvider({ children }: { children: React.ReactNode }) {
             closeModal();
             void refetch();
           }}
-          // Blocking for authenticated users, closable for guests
           onClose={!isAuthenticated ? closeModal : undefined}
           requiredVersions={consent.requiredVersions}
         />
