@@ -2,28 +2,26 @@
 
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, ExternalLink, X } from 'lucide-react';
-
 import { useSearchChat } from '@/features/search/hooks';
 import { searchApi } from '@/features/search/api';
 import { QUERY_KEYS } from '@/lib/query-keys';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useQueryClient } from '@tanstack/react-query';
 import { DocumentDetailView } from '@/features/library/components/document-detail-view';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerClose,
-} from '@/components/ui/drawer';
-import { formatDistanceToNow } from 'date-fns';
+import { ResizableDocumentPreview } from './resizable-document-preview';
 import { useThreadStream } from './thread-stream-context';
 import { Chat } from '@/components/ai/chat';
 import type { Message } from '@/components/ai/chat-message';
 import { PageContainer } from './page-container';
+import { ChevronLeft, MessageSquare, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Empty,
+  EmptyHeader,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyContent,
+  EmptyMedia,
+} from '@/components/ui/empty';
 
 export function ThreadView() {
   const params = useParams();
@@ -41,7 +39,6 @@ export function ThreadView() {
 
   const { data: conversation, isLoading } = useSearchChat(threadId);
 
-  // Check if there's an active stream from OmniBox for this thread
   const omniStream = threadStream.activeStream;
   const hasOmniStream =
     omniStream !== null &&
@@ -50,8 +47,6 @@ export function ThreadView() {
       omniStream.answer.length > 0 ||
       !!omniStream.error);
 
-  // Clear the omni stream once the conversation data has been fetched
-  // and the stream is complete
   React.useEffect(() => {
     if (
       omniStream &&
@@ -146,7 +141,6 @@ export function ThreadView() {
   const messages: Message[] = React.useMemo(() => {
     const list: Message[] = [];
 
-    // 1. Add persisted messages
     if (conversation?.messages) {
       conversation.messages.forEach((msg) => {
         list.push({
@@ -167,7 +161,6 @@ export function ThreadView() {
       });
     }
 
-    // 2. Add omni stream if active (initial query) and not already persisted
     if (showOmniStream && omniStream) {
       list.push({
         id: 'omni-user',
@@ -184,7 +177,6 @@ export function ThreadView() {
       }
     }
 
-    // 3. Add followUp stream
     if (showFollowUpStream || error) {
       if (streamingQuestion) {
         list.push({
@@ -223,19 +215,62 @@ export function ThreadView() {
     setIsStreaming(false);
   };
 
-  const scrollRef = React.useRef<HTMLDivElement>(null);
-
   if (isLoading && !hasOmniStream) {
     return (
-      <PageContainer>
-        <div className="space-y-8">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="space-y-4">
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-24 w-full" />
+      <PageContainer
+        isFullHeight
+        className="absolute inset-0 px-0 py-0 overflow-hidden"
+      >
+        <div className="flex flex-col h-full bg-background animate-pulse">
+          <div className="flex-1 space-y-8 p-4 md:p-8 overflow-hidden">
+            <div className="max-w-4xl mx-auto space-y-8">
+              <div className="flex flex-col gap-3">
+                <div className="h-4 w-3/4 rounded-full bg-muted/60" />
+                <div className="h-4 w-1/2 rounded-full bg-muted/40" />
+              </div>
+              <div className="flex flex-col items-end gap-3">
+                <div className="h-4 w-2/3 rounded-full bg-muted/60" />
+                <div className="h-4 w-1/3 rounded-full bg-muted/40" />
+              </div>
+              <div className="flex flex-col gap-3">
+                <div className="h-4 w-5/6 rounded-full bg-muted/60" />
+                <div className="h-4 w-1/2 rounded-full bg-muted/40" />
+                <div className="h-4 w-2/3 rounded-full bg-muted/20" />
+              </div>
             </div>
-          ))}
+          </div>
         </div>
+      </PageContainer>
+    );
+  }
+
+  if (!isLoading && !conversation && !hasOmniStream) {
+    return (
+      <PageContainer
+        isFullHeight
+        className="absolute inset-0 px-0 py-0 flex items-center justify-center bg-background"
+      >
+        <Empty className="max-w-md border-dashed">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <AlertCircle className="size-4" />
+            </EmptyMedia>
+            <EmptyTitle>Conversation not found</EmptyTitle>
+            <EmptyDescription>
+              This conversation may have been deleted or moved.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button
+              onClick={() => router.push('/app')}
+              variant="outline"
+              size="sm"
+            >
+              <ChevronLeft className="mr-2 size-4" />
+              Back to Dashboard
+            </Button>
+          </EmptyContent>
+        </Empty>
       </PageContainer>
     );
   }
@@ -243,94 +278,48 @@ export function ThreadView() {
   return (
     <PageContainer
       isFullHeight
-      className="px-0 py-0 pb-0 md:px-0 lg:px-0 md:pb-0 lg:pb-0 min-h-[calc(100svh-0.5rem)]"
-      ref={scrollRef}
+      className="absolute inset-0 px-0 py-0! pb-0 md:px-0 lg:px-0 md:pb-0 lg:pb-0 overflow-hidden"
     >
-      <div className="flex flex-col flex-1 h-full w-full min-h-0">
-        {/* Header */}
-        <div className="sticky top-0 z-20 w-full bg-background/80 backdrop-blur-md">
-          <div className="max-w-4xl mx-auto px-4 md:px-8">
-            <header className="flex items-center gap-4 py-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => router.push('/app')}
-                className="shrink-0"
-              >
-                <ArrowLeft className="size-4" />
-              </Button>
-              <div className="min-w-0">
-                <h1 className="text-xl font-bold tracking-tight truncate">
-                  {conversation?.title || omniStream?.question || 'New Thread'}
-                </h1>
-                {conversation && (
-                  <p className="text-xs text-muted-foreground">
-                    Started{' '}
-                    {formatDistanceToNow(new Date(conversation.createdAt))} ago
-                  </p>
-                )}
-              </div>
-            </header>
+      <div className="flex flex-col h-full min-h-0 overflow-hidden w-full">
+        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center bg-background/80 backdrop-blur-sm">
+          <div className="mx-auto flex w-full max-w-4xl items-center gap-3 px-4 md:px-8">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="-ml-2 size-8 rounded-lg hover:bg-muted/60 shrink-0"
+              onClick={() => router.push('/app')}
+            >
+              <ChevronLeft className="size-4" />
+              <span className="sr-only">Back</span>
+            </Button>
+            <div className="flex items-center gap-2 min-w-0">
+              <MessageSquare className="size-4 text-muted-foreground/70 shrink-0" />
+              <h1 className="font-medium text-sm truncate text-muted-foreground">
+                {conversation?.title || 'Chat'}
+              </h1>
+            </div>
           </div>
-        </div>
+        </header>
 
-        {/* Messages and Input replacing manual blocks */}
-        <div className="flex-1 flex flex-col">
-          <Chat
-            messages={messages}
-            input={question}
-            handleInputChange={handleInputChange}
-            handleSubmit={handleSubmit}
-            isGenerating={isStreaming || !!omniStream?.isStreaming}
-            onSourceClick={setPreviewId}
-            stop={stopGeneration}
-            scrollRef={scrollRef}
-          />
-        </div>
+        <Chat
+          messages={messages}
+          input={question}
+          handleInputChange={handleInputChange}
+          handleSubmit={handleSubmit}
+          isGenerating={isStreaming || !!omniStream?.isStreaming}
+          onSourceClick={setPreviewId}
+          stop={stopGeneration}
+        />
       </div>
 
-      <Drawer
-        direction="right"
-        open={!!previewId}
-        onOpenChange={(open) => !open && setPreviewId(null)}
+      <ResizableDocumentPreview
+        isOpen={!!previewId}
+        onClose={() => setPreviewId(null)}
       >
-        <DrawerContent className="h-full sm:max-w-2xl p-0">
-          <DrawerHeader className="flex-row items-center justify-between border-b px-6 py-4">
-            <div className="flex items-center gap-3">
-              <DrawerTitle className="text-xs font-semibold text-muted-foreground/80">
-                Document Preview
-              </DrawerTitle>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => router.push(`/app/library/${previewId}`)}
-              >
-                <ExternalLink className="size-3" />
-                Open Full Page
-              </Button>
-            </div>
-            <DrawerClose asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 rounded-full"
-              >
-                <X className="size-4" />
-                <span className="sr-only">Close</span>
-              </Button>
-            </DrawerClose>
-          </DrawerHeader>
-          <div className="flex-1 overflow-hidden">
-            <ScrollArea className="h-full">
-              <div className="p-0">
-                {previewId && (
-                  <DocumentDetailView id={previewId} isCompact={true} />
-                )}
-              </div>
-            </ScrollArea>
-          </div>
-        </DrawerContent>
-      </Drawer>
+        {previewId ? (
+          <DocumentDetailView id={previewId} isCompact={true} />
+        ) : null}
+      </ResizableDocumentPreview>
     </PageContainer>
   );
 }

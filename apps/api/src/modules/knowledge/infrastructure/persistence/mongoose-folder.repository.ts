@@ -32,6 +32,26 @@ export class MongooseFolderRepository extends IFolderRepository {
     return this.toEntity(folder);
   }
 
+  async findByName(
+    name: string,
+    userId: string,
+    parentId?: string | null,
+  ): Promise<FolderEntity | null> {
+    const query: Record<string, unknown> = {
+      name: { $regex: new RegExp(`^${name}$`, 'i') },
+      userId,
+    };
+
+    if (parentId) {
+      query.parentId = new Types.ObjectId(parentId);
+    } else {
+      query.parentId = null;
+    }
+
+    const folder = await FolderModel.findOne(query).exec();
+    return folder ? this.toEntity(folder) : null;
+  }
+
   async update(
     id: string,
     userId: string,
@@ -70,6 +90,10 @@ export class MongooseFolderRepository extends IFolderRepository {
       folderId: new Types.ObjectId(folderId),
       userId,
     }).exec();
+  }
+
+  async deleteAllByUserId(userId: string): Promise<void> {
+    await FolderModel.deleteMany({ userId }).exec();
   }
 
   private toEntity(doc: IFolderDocument): FolderEntity {

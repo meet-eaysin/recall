@@ -4,6 +4,7 @@ import { Sora, Geist } from 'next/font/google';
 import '../styles/globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AnchoredToastProvider, ToastProvider } from '@/components/ui/toast';
+import { Toaster } from '@/components/ui/sonner';
 import { QueryProvider } from '@/providers/query-provider';
 import { cn } from '@/lib/utils';
 
@@ -25,6 +26,8 @@ export const metadata: Metadata = {
   description: 'Your personal knowledge engine',
 };
 
+import { ConsentProvider } from '@/providers/consent-provider';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -45,7 +48,10 @@ export default function RootLayout({
         <QueryProvider>
           <ToastProvider>
             <AnchoredToastProvider>
-              <ThemeProvider>{children}</ThemeProvider>
+              <ThemeProvider>
+                <ConsentProvider>{children}</ConsentProvider>
+                <Toaster />
+              </ThemeProvider>
             </AnchoredToastProvider>
           </ToastProvider>
         </QueryProvider>

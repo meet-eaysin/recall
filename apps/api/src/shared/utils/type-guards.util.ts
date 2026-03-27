@@ -42,3 +42,10 @@ export function hasStringProperty<T extends string>(
 ): obj is Record<T, string> {
   return hasProperty(obj, prop) && isString(obj[prop]);
 }
+
+/**
+ * Checks if a value is a Map.
+ */
+export function isMap(val: unknown): val is Map<unknown, unknown> {
+  return val instanceof Map;
+}

@@ -15,4 +15,5 @@ export abstract class INoteRepository {
     content: string,
   ): Promise<NoteEntity | null>;
   abstract delete(id: string, userId: string): Promise<boolean>;
+  abstract deleteAllByUserId(userId: string): Promise<void>;
 }

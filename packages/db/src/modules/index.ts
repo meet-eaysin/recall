@@ -10,3 +10,4 @@ export * from './notion';
 export * from './tag';
 export * from './transcript';
 export * from './user';
+export * from './legal';

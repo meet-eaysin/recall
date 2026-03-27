@@ -2,23 +2,15 @@
 
 import * as React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, X } from 'lucide-react';
 import { OmniBox } from './omni-box';
 import { HomeContent } from '@/features/home/components/home-page';
 import { useThreadStream } from './thread-stream-context';
 import { useSearchChat } from '@/features/search/hooks';
 import { searchApi } from '@/features/search/api';
 import { QUERY_KEYS } from '@/lib/query-keys';
-import { Button } from '@/components/ui/button';
+import { useDocuments } from '@/features/library/hooks';
 import { DocumentDetailView } from '@/features/library/components/document-detail-view';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerClose,
-} from '@/components/ui/drawer';
-import { formatDistanceToNow } from 'date-fns';
+import { ResizableDocumentPreview } from './resizable-document-preview';
 import { Chat } from '@/components/ai/chat';
 import type { Message } from '@/components/ai/chat-message';
 import { PageContainer } from './page-container';
@@ -26,12 +18,18 @@ import { PageContainer } from './page-container';
 export function WorkspacePage() {
   const threadStream = useThreadStream();
   const activeStream = threadStream.activeStream;
+  const { data: documentsData, isLoading: docsLoading } = useDocuments({
+    limit: 1,
+    page: 1,
+  });
+
+  const isEmptyLibrary = !docsLoading && documentsData?.total === 0;
 
   if (activeStream) return <InlineChat />;
 
   return (
     <PageContainer>
-      <OmniBox />
+      <OmniBox disabled={isEmptyLibrary} />
 
       <section className="space-y-4 pt-10">
         <div className="flex items-center justify-between">
@@ -41,6 +39,33 @@ export function WorkspacePage() {
         </div>
         <HomeContent />
       </section>
+    </PageContainer>
+  );
+}
+
+function InlineChatSkeleton() {
+  return (
+    <PageContainer
+      isFullHeight
+      className="absolute inset-0 px-0 py-0 overflow-hidden"
+    >
+      <div className="flex flex-col h-full bg-background animate-pulse">
+        {/* Skeleton Messages */}
+        <div className="flex-1 space-y-8 p-4 md:p-8 overflow-hidden">
+          <div className="max-w-4xl mx-auto space-y-8">
+            <div className="flex flex-col gap-4">
+              <div className="h-4 w-3/4 rounded bg-muted/60" />
+              <div className="h-4 w-1/2 rounded bg-muted/40" />
+            </div>
+            <div className="flex flex-col items-end gap-4">
+              <div className="h-4 w-2/3 rounded bg-muted/60" />
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="h-20 w-full rounded bg-muted/40" />
+            </div>
+          </div>
+        </div>
+      </div>
     </PageContainer>
   );
 }
@@ -61,11 +86,6 @@ function InlineChat() {
   const [error, setError] = React.useState<string | null>(null);
 
   const { data: conversation } = useSearchChat(conversationId);
-
-  const goBack = () => {
-    threadStream.clearStream();
-    window.history.replaceState(null, '', '/app');
-  };
 
   const submitFollowUp = async () => {
     const trimmed = question.trim();
@@ -148,6 +168,7 @@ function InlineChat() {
 
   // Build the message list
   const persistedMessages = conversation?.messages ?? [];
+
   const showInitialStream =
     activeStream &&
     (activeStream.isStreaming ||
@@ -231,84 +252,37 @@ function InlineChat() {
     error,
   ]);
 
-  const scrollRef = React.useRef<HTMLDivElement>(null);
+  if (!conversation && !activeStream) {
+    return <InlineChatSkeleton />;
+  }
 
   return (
     <PageContainer
       isFullHeight
-      ref={scrollRef}
-      className="px-0 py-0 pb-0 md:pb-0 lg:pb-0 min-h-[calc(100svh-0.5rem)]"
+      className="absolute inset-0 px-0 py-0! pb-0 md:pb-0 lg:pb-0 overflow-hidden"
     >
-      <div className="flex flex-1 flex-col">
-        {/* Header */}
-        <div className="sticky top-0 z-20 w-full bg-background/80 backdrop-blur-md">
-          <div className="max-w-4xl mx-auto px-4 md:px-8">
-            <header className="flex items-center gap-4 py-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={goBack}
-                className="shrink-0"
-              >
-                <ArrowLeft className="size-4" />
-              </Button>
-              <div className="min-w-0">
-                <h1 className="text-lg font-bold tracking-tight truncate">
-                  {conversation?.title ||
-                    activeStream?.question ||
-                    'New Thread'}
-                </h1>
-                {conversation && (
-                  <p className="text-xs text-muted-foreground">
-                    Started{' '}
-                    {formatDistanceToNow(new Date(conversation.createdAt))} ago
-                  </p>
-                )}
-              </div>
-            </header>
-          </div>
-        </div>
-
-        {/* Messages and Input replacing manual blocks */}
-        <div className="flex-1 flex flex-col">
-          <Chat
-            messages={messages}
-            input={question}
-            handleInputChange={handleInputChange}
-            handleSubmit={handleSubmit}
-            isGenerating={isStreaming || !!activeStream?.isStreaming}
-            onSourceClick={setPreviewId}
-            stop={stopGeneration}
-            scrollRef={scrollRef}
-          />
-        </div>
+      {/* Main Chat Area */}
+      <div className="flex flex-col h-full min-h-0 overflow-hidden w-full">
+        <Chat
+          messages={messages}
+          input={question}
+          handleInputChange={handleInputChange}
+          handleSubmit={handleSubmit}
+          isGenerating={isStreaming || !!activeStream?.isStreaming}
+          onSourceClick={setPreviewId}
+          stop={stopGeneration}
+        />
       </div>
 
-      {/* Source Preview Drawer */}
-      <Drawer
-        direction="right"
-        open={!!previewId}
-        onOpenChange={(open) => !open && setPreviewId(null)}
+      {/* Document Preview Overlay */}
+      <ResizableDocumentPreview
+        isOpen={!!previewId}
+        onClose={() => setPreviewId(null)}
       >
-        <DrawerContent className="h-full sm:max-w-2xl p-0">
-          <DrawerHeader className="p-4 border-b flex flex-row items-center justify-between">
-            <DrawerTitle className="text-lg font-semibold">
-              Document Preview
-            </DrawerTitle>
-            <DrawerClose asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <X className="size-4" />
-                <span className="sr-only">Close</span>
-              </Button>
-            </DrawerClose>
-          </DrawerHeader>
-          <div className="flex-1 overflow-y-auto p-4">
-            {previewId && (
-              <DocumentDetailView id={previewId} isCompact={true} />
-            )}
-          </div>
-        </DrawerContent>
-      </Drawer>
+        {previewId ? (
+          <DocumentDetailView id={previewId} isCompact={true} />
+        ) : null}
+      </ResizableDocumentPreview>
     </PageContainer>
   );
 }

@@ -20,4 +20,15 @@ export abstract class IUserRepository {
   abstract upsertFromIdentity(
     input: UpsertIdentityUserInput,
   ): Promise<UserEntity>;
+  abstract update(
+    id: string,
+    input: Partial<Omit<UpsertIdentityUserInput, 'authId'>> & {
+      privacyPolicyAcceptedAt?: Date | null;
+      cookiePolicyAcceptedAt?: Date | null;
+      consentVersion?: string | null;
+      consentIp?: string | null;
+      consentUserAgent?: string | null;
+    },
+  ): Promise<UserEntity>;
+  abstract delete(id: string): Promise<void>;
 }

@@ -27,6 +27,14 @@ const nextConfig: NextConfig = {
         source: '/api/v1/:path*',
         destination: `${env.apiRewriteDestination}/:path*`,
       },
+      {
+        source: '/auth/:path*',
+        destination: `${env.apiRewriteDestination}/auth/:path*`,
+      },
+      {
+        source: '/legal/:path*',
+        destination: `${env.apiRewriteDestination}/legal/:path*`,
+      },
     ];
   },
 };

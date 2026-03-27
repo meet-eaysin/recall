@@ -3,7 +3,7 @@
 import * as React from 'react';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { isToday, subDays, isAfter } from 'date-fns';
 
 import {
@@ -11,6 +11,7 @@ import {
   useDeleteChat,
   useSearchChats,
 } from '@/features/search/hooks';
+import { useDocuments } from '@/features/library/hooks';
 import { NavUser } from '@/components/nav-user';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import {
@@ -33,6 +34,7 @@ import {
   SidebarMenuSkeleton,
   SidebarInput,
   SidebarRail,
+  SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
 import {
@@ -44,6 +46,7 @@ import {
   MoreHorizontal,
 } from 'lucide-react';
 import { ApplicationIcon } from './application-logo';
+import { cn } from '@/lib/utils';
 
 function SidebarSearch({
   value,
@@ -102,6 +105,13 @@ function SidebarChatList({ query }: { query: string }) {
   const pathname = usePathname();
   const archiveChat = useArchiveChat();
   const deleteChat = useDeleteChat();
+  const router = useRouter();
+  const { data: documentsData, isLoading: docsLoading } = useDocuments({
+    limit: 1,
+    page: 1,
+  });
+  const isEmptyLibrary = !docsLoading && documentsData?.total === 0;
+
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [chatToDelete, setChatToDelete] = React.useState<
     NonNullable<typeof chats>[number] | null
@@ -149,12 +159,12 @@ function SidebarChatList({ query }: { query: string }) {
         asChild
         isActive={pathname.includes(chat.id)}
         tooltip={chat.title}
-        className="h-auto py-2.5 transition-all duration-200 hover:bg-sidebar-accent/50 data-active:bg-sidebar-accent data-active:shadow-sm"
+        className="h-auto py-2.5 items-start transition-all duration-200 hover:bg-sidebar-accent/50 data-active:bg-sidebar-accent data-active:shadow-sm"
       >
         <Link href={`/app/t/${chat.id}`}>
-          <MessageSquareIcon className="size-4 shrink-0 transition-transform duration-200 group-hover/menu-button:scale-110" />
-          <div className="flex min-w-0 flex-col gap-0.5">
-            <span className="truncate font-medium leading-none text-sidebar-foreground">
+          <MessageSquareIcon className="size-4 shrink-0 mt-0.5 transition-transform duration-200 group-hover/menu-button:scale-110" />
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <span className="truncate font-semibold text-sidebar-foreground">
               {chat.title}
             </span>
             <span className="line-clamp-1 text-xs text-muted-foreground/80 leading-tight">
@@ -203,19 +213,33 @@ function SidebarChatList({ query }: { query: string }) {
       <SidebarGroup>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              variant="outline"
-              tooltip="New chat"
-              className="group-data-[collapsible=icon]:justify-center"
-            >
-              <Link href="/app">
+            {isEmptyLibrary ? (
+              <SidebarMenuButton
+                variant="outline"
+                tooltip="New chat"
+                className="group-data-[collapsible=icon]:justify-center"
+                disabled
+              >
                 <PlusIcon />
                 <span className="group-data-[collapsible=icon]:hidden">
                   New chat
                 </span>
-              </Link>
-            </SidebarMenuButton>
+              </SidebarMenuButton>
+            ) : (
+              <SidebarMenuButton
+                asChild
+                variant="outline"
+                tooltip="New chat"
+                className="group-data-[collapsible=icon]:justify-center"
+              >
+                <Link href="/app">
+                  <PlusIcon />
+                  <span className="group-data-[collapsible=icon]:hidden">
+                    New chat
+                  </span>
+                </Link>
+              </SidebarMenuButton>
+            )}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroup>
@@ -281,6 +305,9 @@ function SidebarChatList({ query }: { query: string }) {
         confirmAction={() => {
           if (chatToDelete) {
             deleteChat.mutate(chatToDelete.id);
+            if (pathname.includes(chatToDelete.id)) {
+              router.push('/app');
+            }
           }
         }}
         isPending={deleteChat.isPending}
@@ -296,11 +323,26 @@ function SidebarChatList({ query }: { query: string }) {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [searchFocusKey, setSearchFocusKey] = React.useState(0);
+  const { state } = useSidebar();
+  const isCollapsed = state === 'collapsed';
 
   return (
     <Sidebar variant="sidebar" collapsible="icon" {...props}>
-      <SidebarHeader className="pb-2">
-        <ApplicationIcon />
+      <SidebarHeader className="pb-2 overflow-hidden">
+        <div className="flex items-center justify-between gap-1 h-12 group-data-[collapsible=icon]:justify-center">
+          <div
+            className="flex-1 overflow-hidden transition-all duration-500 data-[collapsed=true]:w-0 data-[collapsed=true]:opacity-0"
+            data-collapsed={isCollapsed}
+          >
+            <ApplicationIcon expanded={!isCollapsed} />
+          </div>
+          <SidebarTrigger
+            className={cn(
+              'shrink-0 transition-transform duration-300',
+              isCollapsed && 'size-9 hover:bg-sidebar-accent',
+            )}
+          />
+        </div>
       </SidebarHeader>
       <SidebarContent className="gap-0">
         <SidebarSearch

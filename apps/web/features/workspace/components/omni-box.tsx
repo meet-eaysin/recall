@@ -3,19 +3,14 @@
 import * as React from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { Search, Sparkles, Command, ArrowRight } from 'lucide-react';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroupInput,
-} from '@/components/ui/input-group';
 import { Button } from '@/components/ui/button';
 import { searchApi } from '@/features/search/api';
 import { QUERY_KEYS } from '@/lib/query-keys';
 import { useThreadStream } from './thread-stream-context';
 
-export function OmniBox() {
+import { MessageInput } from '@/components/ai/message-input';
+
+export function OmniBox({ disabled }: { disabled?: boolean }) {
   const queryClient = useQueryClient();
   const threadStream = useThreadStream();
   const [query, setQuery] = React.useState('');
@@ -111,45 +106,26 @@ export function OmniBox() {
         </p>
       </div>
 
-      <InputGroup data-align="center">
-        <InputGroupAddon>
-          <InputGroupText>
-            <Search className="size-4 text-muted-foreground" />
-          </InputGroupText>
-        </InputGroupAddon>
-
-        <InputGroupInput
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void handleSubmit();
+        }}
+        className="w-full relative"
+      >
+        <MessageInput
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              void handleSubmit();
-            }
-          }}
-          placeholder="Filter by topic, ask a question, or jump to a thread..."
+          isGenerating={isSubmitting}
+          allowAttachments={false}
+          disabled={disabled}
+          placeholder={
+            disabled
+              ? 'Please add a document first to start using AI...'
+              : 'Filter by topic, ask a question, or jump to a thread...'
+          }
         />
-
-        <InputGroupAddon align="inline-end">
-          <div className="flex items-center gap-2 px-1">
-            <div className="hidden items-center gap-1 text-xs text-muted-foreground sm:flex">
-              <Command className="size-3" /> K
-            </div>
-            <Button
-              size="sm"
-              onClick={() => void handleSubmit()}
-              disabled={isSubmitting || !query.trim()}
-            >
-              {isSubmitting ? (
-                <ArrowRight className="mr-2 size-4" />
-              ) : (
-                <Sparkles className="mr-2 size-4" />
-              )}
-              Ask AI
-            </Button>
-          </div>
-        </InputGroupAddon>
-      </InputGroup>
+      </form>
 
       <div className="flex flex-wrap items-center justify-center gap-2">
         <span className="text-sm text-muted-foreground">Try:</span>
@@ -162,6 +138,7 @@ export function OmniBox() {
             key={hint}
             variant="outline"
             size="xs"
+            disabled={disabled}
             onClick={() => setQuery(hint)}
           >
             {hint}

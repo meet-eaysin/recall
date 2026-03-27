@@ -14,4 +14,5 @@ export abstract class ITagRepository {
     data: Partial<TagEntity['props']>,
   ): Promise<TagEntity | null>;
   abstract delete(id: string, userId: string): Promise<boolean>;
+  abstract deleteAllByUserId(userId: string): Promise<void>;
 }

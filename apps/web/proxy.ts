@@ -6,18 +6,24 @@ const protectedPrefixes = ['/app'];
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  const accessToken = request.cookies.get('ms_access_token');
+  const refreshToken = request.cookies.get('ms_refresh_token');
+  const isAuthenticated = !!(accessToken || refreshToken);
+
   const isProtectedPath = protectedPrefixes.some((prefix) =>
     pathname.startsWith(prefix),
   );
 
-  if (isProtectedPath) {
-    const accessToken = request.cookies.get('ms_access_token');
-    const refreshToken = request.cookies.get('ms_refresh_token');
+  const isLoginPage = pathname === '/auth/login';
 
-    if (!accessToken && !refreshToken) {
+  if (isProtectedPath) {
+    if (!isAuthenticated) {
       const loginUrl = new URL('/auth/login', request.url);
       return NextResponse.redirect(loginUrl);
     }
+  } else if (isAuthenticated && isLoginPage) {
+    const appUrl = new URL('/app', request.url);
+    return NextResponse.redirect(appUrl);
   }
 
   return NextResponse.next();
@@ -26,3 +32,5 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
+
+export default proxy;

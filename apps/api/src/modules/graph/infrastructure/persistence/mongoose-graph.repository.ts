@@ -254,4 +254,12 @@ export class MongooseGraphRepository extends IGraphRepository {
 
     return false;
   }
+
+  async deleteAllByUserId(userId: string): Promise<void> {
+    const userIdObj = new Types.ObjectId(userId);
+    await Promise.all([
+      GraphNodeModel.deleteMany({ userId: userIdObj }).exec(),
+      GraphEdgeModel.deleteMany({ userId: userIdObj }).exec(),
+    ]);
+  }
 }

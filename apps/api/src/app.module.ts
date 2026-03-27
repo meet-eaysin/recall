@@ -19,6 +19,7 @@ import { ReviewModule } from './modules/review/review.module';
 import { SearchModule } from './modules/search/search.module';
 import { QueueModule } from './modules/queue/queue.module';
 import { UsersModule } from './modules/users/users.module';
+import { LegalModule } from './modules/legal/legal.module';
 import { HealthController } from './modules/health/health.controller';
 import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
 
@@ -48,6 +49,7 @@ import { CacheModule } from '@repo/cache';
     ReviewModule,
     SearchModule,
     UsersModule,
+    LegalModule,
   ],
   controllers: [HealthController],
   providers: [

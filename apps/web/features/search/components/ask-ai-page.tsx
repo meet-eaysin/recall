@@ -52,6 +52,7 @@ import { useDocuments } from '@/features/library/hooks';
 import { searchApi } from '../api';
 import { useSearchChat, useSearchChats } from '../hooks';
 import { PageContainer } from '@/features/workspace/components/page-container';
+import { AddDocumentDialog } from '@/features/library/components/add-document-dialog';
 
 type StreamingState = {
   answer: string;
@@ -287,7 +288,7 @@ export function AskAiPage() {
     useSearchChats();
   const { data: conversation, isLoading: conversationLoading } =
     useSearchChat(conversationId);
-  const { data: documentsData } = useDocuments({ limit: 12, page: 1 });
+  const { data: documentsData, isLoading: docsLoading } = useDocuments({ limit: 12, page: 1 });
 
   React.useEffect(() => {
     setStreaming((current) => ({
@@ -484,6 +485,32 @@ export function AskAiPage() {
     id: document.id,
     title: document.title,
   }));
+
+  const isEmptyLibrary = !docsLoading && documentsData?.total === 0;
+
+  if (isEmptyLibrary) {
+    return (
+      <PageContainer className="flex flex-1 items-center justify-center p-8">
+        <div className="flex w-full max-w-md flex-col items-center justify-center rounded-xl border border-dashed py-16 px-6 text-center">
+          <div className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <Bot className="size-6" />
+          </div>
+          <h2 className="mt-4 text-xl font-semibold tracking-tight text-foreground">Ask AI is inactive</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            You don&apos;t have any documents in your library yet. Add some documents to start a conversation with MindStack AI.
+          </p>
+          <AddDocumentDialog
+            trigger={
+              <Button className="mt-6" size="sm">
+                <Plus className="mr-2 size-4" />
+                Add Document
+              </Button>
+            }
+          />
+        </div>
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer className="space-y-8">

@@ -53,7 +53,7 @@ export function NotesTab({ isCompact = false }: { isCompact?: boolean }) {
   return (
     <div
       className={cn(
-        'max-w-5xl mx-auto space-y-12 pb-20',
+        'mx-auto space-y-12 pb-20',
         isCompact && 'max-w-none space-y-8 pb-10',
       )}
     >
@@ -72,11 +72,8 @@ export function NotesTab({ isCompact = false }: { isCompact?: boolean }) {
           </p>
         </div>
 
-        <form
-          onSubmit={handleCreateNote}
-          className="group relative rounded-2xl border bg-card shadow-sm transition-all focus-within:ring-2 focus-within:ring-primary/20 hover:shadow-md"
-        >
-          <div className={cn('p-6 pb-0', isCompact && 'p-4 pb-0')}>
+        <form onSubmit={handleCreateNote} className="group relative">
+          <div className={cn(isCompact && 'p-4 pb-0')}>
             <Textarea
               onChange={(e) => setNoteDraft(e.target.value)}
               onKeyDown={(event) => {
@@ -86,38 +83,36 @@ export function NotesTab({ isCompact = false }: { isCompact?: boolean }) {
                   form?.requestSubmit();
                 }
               }}
-              placeholder="Start typing your insight... (Cmd + Enter to save)"
+              placeholder="Capture a key insight or personal thought... (Cmd + Enter to save)"
               value={noteDraft}
-              className={cn(
-                'min-h-[120px] resize-none border-none bg-transparent p-0 text-lg shadow-none focus-visible:ring-0 leading-relaxed placeholder:text-muted-foreground/50',
-                isCompact && 'text-base min-h-[100px]',
-              )}
             />
           </div>
           <div
             className={cn(
-              'mt-2 flex items-center justify-between border-t bg-muted/5 px-6 py-3 rounded-b-2xl',
+              'mt-2 flex items-center justify-between bg-muted/5 py-3 rounded-b-2xl',
               isCompact && 'px-4 py-2',
             )}
           >
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 flex items-center gap-2">
+            <div className="flex items-center gap-2 text-muted-foreground/60">
               <Clock className="size-3" />
-              Private Workspace Note
-            </p>
+              <p className="text-[10px] font-bold uppercase tracking-widest">
+                Private Workspace Note
+              </p>
+            </div>
             <Button
               disabled={!noteDraft.trim() || actions.createNote.isPending}
               size="sm"
               className={cn(
-                'h-8 px-4 rounded-full font-semibold shadow-sm transition-transform active:scale-95',
+                'h-8 px-4 rounded-md font-semibold shadow-sm transition-transform active:scale-95',
                 isCompact && 'h-7 text-xs px-3',
               )}
             >
               {actions.createNote.isPending ? (
-                <LoaderCircle className="size-3.5 animate-spin mr-2" />
+                <LoaderCircle className="size-4 animate-spin mr-2" />
               ) : (
-                <StickyNote className="size-3.5 mr-2" />
+                <StickyNote className="size-4 mr-2" />
               )}
-              Save Note
+              Save Insight
             </Button>
           </div>
         </form>
@@ -153,22 +148,24 @@ export function NotesTab({ isCompact = false }: { isCompact?: boolean }) {
             {notes.map((note) => (
               <article
                 key={note.id}
-                className="break-inside-avoid flex flex-col rounded-2xl border bg-card p-6 shadow-sm transition-all hover:shadow-md hover:border-primary/20 hover:translate-y-[-2px]"
+                className="group/note break-inside-avoid flex flex-col rounded-2xl border bg-card p-6 shadow-sm transition-all hover:shadow-md hover:border-primary/20 hover:translate-y-[-2px]"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/50">
-                    {formatDistanceToNow(new Date(note.createdAt), {
-                      addSuffix: true,
-                    })}
-                  </span>
-                  <div className="flex items-center gap-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/50">
+                      {formatDistanceToNow(new Date(note.createdAt), {
+                        addSuffix: true,
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-0.5 opacity-0 group-hover/note:opacity-100 transition-opacity duration-200">
                     <Button
                       onClick={() =>
                         handleStartEditingNote(note.id, note.content)
                       }
                       size="icon-sm"
                       variant="ghost"
-                      className="h-7 w-7 rounded-full text-muted-foreground/60 hover:text-foreground"
+                      className="h-7 w-7 rounded-sm text-muted-foreground/60 hover:text-primary hover:bg-primary/10"
                     >
                       <PencilLine className="size-3.5" />
                     </Button>
@@ -176,7 +173,7 @@ export function NotesTab({ isCompact = false }: { isCompact?: boolean }) {
                       onClick={() => setDeletingNoteId(note.id)}
                       size="icon-sm"
                       variant="ghost"
-                      className="h-7 w-7 rounded-full text-muted-foreground/60 hover:text-destructive"
+                      className="h-7 w-7 rounded-sm text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10"
                     >
                       <Trash2 className="size-3.5" />
                     </Button>
@@ -191,28 +188,28 @@ export function NotesTab({ isCompact = false }: { isCompact?: boolean }) {
                         setEditingNoteDraft(event.target.value)
                       }
                       autoFocus
-                      className="min-h-[120px] text-base resize-none bg-muted/10"
+                      className="min-h-[120px] text-sm resize-none bg-muted/10 border-primary/20 rounded-xl p-3 focus-visible:ring-1 focus-visible:ring-primary"
                     />
                     <div className="flex justify-end gap-2">
                       <Button
                         onClick={handleCancelEditingNote}
                         variant="ghost"
                         size="sm"
-                        className="h-8 rounded-full"
+                        className="h-8 rounded-md px-4"
                       >
                         Cancel
                       </Button>
                       <Button
                         onClick={() => void handleSaveNote(note.id)}
                         size="sm"
-                        className="h-8 rounded-full px-4"
+                        className="h-8 rounded-md px-4 shadow-sm"
                       >
-                        Save Changes
+                        Save
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-[15px] leading-relaxed text-foreground/80 whitespace-pre-wrap font-sans-subtle">
+                  <p className="text-[14px] leading-relaxed text-foreground/80 whitespace-pre-wrap">
                     {note.content}
                   </p>
                 )}

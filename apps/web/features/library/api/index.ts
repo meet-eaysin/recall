@@ -20,7 +20,7 @@ type UpdateDocumentInput = {
 };
 
 function buildQueryString(
-  params: Record<string, string | number | undefined | string[]>,
+  params: Record<string, string | number | boolean | undefined | string[]>,
 ) {
   const searchParams = new URLSearchParams();
 
@@ -97,6 +97,7 @@ export const libraryApi = {
       q: filters.q,
       status: filters.status,
       type: filters.type,
+      unassigned: filters.unassigned,
     });
 
     return apiGet<DocumentsListData>(`${API_ENDPOINTS.DOCUMENTS.LIST}${query}`);
@@ -155,4 +156,20 @@ export const libraryApi = {
     );
     return response.note;
   },
+
+  updateFolder: async (
+    id: string,
+    payload: { name?: string; color?: string; description?: string },
+  ) => {
+    const response = await apiPatch<{ folder: FolderRow }>(
+      API_ENDPOINTS.KNOWLEDGE.FOLDERS.detail(id),
+      {
+        body: payload,
+      },
+    );
+    return response.folder;
+  },
+
+  deleteFolder: (id: string) =>
+    apiDelete<void>(API_ENDPOINTS.KNOWLEDGE.FOLDERS.detail(id)),
 };

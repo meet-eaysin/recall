@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { DocumentStatus, DocumentType } from '@repo/types';
-import { BookOpen, Files, Filter, Folder, FolderPlus, X } from 'lucide-react';
+import { BookOpen, Files, Filter, FolderPlus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -54,6 +54,7 @@ export function LibraryFeed() {
   const filters = React.useMemo(
     () => ({
       folderIds: activeFolderId ? [activeFolderId] : undefined,
+      unassigned: !activeFolderId && !status && !type ? true : undefined,
       limit: 24,
       page,
       status: status ?? undefined,
@@ -63,7 +64,7 @@ export function LibraryFeed() {
   );
 
   const { data, error, isLoading } = useDocuments(filters);
-  const { data: folders = [], isLoading: foldersLoading } = useFolders();
+  const { data: folders = [] } = useFolders();
   const items = data?.items ?? [];
   const totalPages = Math.max(
     1,
@@ -98,31 +99,31 @@ export function LibraryFeed() {
           <Skeleton className="h-9 w-28" />
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <Skeleton className="h-8 w-24" key={index} />
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="flex flex-col gap-3 rounded-lg border p-4">
-              <div className="flex items-center gap-3">
-                <Skeleton className="size-8 rounded-lg" />
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="ml-auto h-4 w-14 rounded-sm" />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={i}
+              className="flex flex-col overflow-hidden rounded-xl border bg-card"
+            >
+              <div className="border-b bg-muted/10 p-1.5">
+                <Skeleton className="aspect-16/6 w-full rounded-lg" />
               </div>
-              <div className="flex-1 space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-3 w-1/2" />
-              </div>
-              <div className="flex items-center justify-between pt-1">
-                <div className="flex gap-1.5">
-                  <Skeleton className="h-4 w-10 rounded-sm" />
-                  <Skeleton className="h-4 w-12 rounded-sm" />
+              <div className="flex flex-1 flex-col gap-2 p-2.5">
+                <div className="flex items-start gap-2">
+                  <Skeleton className="size-8 rounded-lg" />
+                  <div className="flex-1 space-y-1.5">
+                    <Skeleton className="h-3 w-16" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
                 </div>
-                <Skeleton className="h-3 w-16" />
+                <div className="mt-1 space-y-1.5">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+                <div className="mt-auto flex items-center justify-between pt-1">
+                  <Skeleton className="h-3 w-12" />
+                  <Skeleton className="size-2 rounded-full" />
+                </div>
               </div>
             </div>
           ))}
@@ -133,87 +134,46 @@ export function LibraryFeed() {
 
   return (
     <div className="space-y-6">
-      <section className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <div className="space-y-1">
-            <h2 className="text-sm font-semibold tracking-tight">Folders</h2>
-            <p className="text-sm text-muted-foreground">
-              Pick a folder to narrow the library, or stay on all documents.
-            </p>
-          </div>
-          <FolderCreateDialog
-            trigger={
-              <Button variant="outline">
-                <FolderPlus className="size-4" />
-                New Folder
-              </Button>
-            }
-          />
-        </div>
-
-        {foldersLoading ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton className="h-24" key={index} />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <FolderShelfCard
-              active={!activeFolderId}
-              description="Browse everything in your library."
-              icon={Files}
-              name="All Documents"
-              onClick={() => {
-                setActiveFolderId(null);
-                setPage(1);
-              }}
-            />
-            {folders.map((folder) => (
-              <FolderShelfCard
-                key={folder.id}
-                active={activeFolderId === folder.id}
-                description={
-                  folder.description?.trim() ||
-                  'Open this folder to view its documents.'
-                }
-                folder={folder}
-                icon={Folder}
-                name={folder.name}
-                onClick={() => {
-                  setActiveFolderId(folder.id);
-                  setPage(1);
-                }}
-              />
-            ))}
-          </div>
-        )}
-      </section>
-
       <section className="space-y-4">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="space-y-1">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            {activeFolderId && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="-ml-2 h-8"
+                onClick={() => setActiveFolderId(null)}
+              >
+                <Files className="mr-2 size-4" />
+                Library
+              </Button>
+            )}
             <h2 className="text-sm font-semibold tracking-tight">
               {activeFolderId
-                ? `${folders.find((folder) => folder.id === activeFolderId)?.name ?? 'Folder'} documents`
-                : 'All documents'}
+                ? `/ ${folders.find((f) => f.id === activeFolderId)?.name ?? 'Folder'}`
+                : 'Documents'}
             </h2>
-            <p className="text-sm text-muted-foreground">
-              {activeFolderId
-                ? 'Documents inside the selected folder.'
-                : 'Every document in your library.'}
-            </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2">
+            {!activeFolderId && (
+              <FolderCreateDialog
+                trigger={
+                  <Button variant="outline" size="sm">
+                    <FolderPlus className="mr-2 size-4" />
+                    New Folder
+                  </Button>
+                }
+              />
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <Filter className="size-4" />
+                <Button variant="outline" size="sm">
+                  <Filter className="mr-2 size-4" />
                   Filters
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
                     Type: {type ? getTypeLabel(type) : 'All Types'}
@@ -262,23 +222,25 @@ export function LibraryFeed() {
                 </DropdownMenuSub>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={clearFilters}>
-                  <X className="size-4" />
+                  <X className="mr-2 size-4" />
                   Clear Filters
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
-        {items.length === 0 ? (
+
+        {items.length === 0 &&
+        (!activeFolderId ? folders.length === 0 : true) ? (
           <Card className="border-dashed">
             <Empty>
               <EmptyHeader>
                 <EmptyMedia variant="icon">
                   <BookOpen />
                 </EmptyMedia>
-                <EmptyTitle>No documents found</EmptyTitle>
+                <EmptyTitle>No items found</EmptyTitle>
                 <EmptyDescription>
-                  Adjust the current filters or add a new document.
+                  Adjust the current filters or add a new folder or document.
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
@@ -290,7 +252,24 @@ export function LibraryFeed() {
           </Card>
         ) : (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-4 auto-rows-max sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 auto-rows-max sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {/* INTERLEAVED GRID: Folders First (only at root without filters) */}
+              {!activeFolderId &&
+                !status &&
+                !type &&
+                folders.map((folder) => (
+                  <FolderShelfCard
+                    key={folder.id}
+                    active={false}
+                    folder={folder}
+                    onClick={() => {
+                      setActiveFolderId(folder.id);
+                      setPage(1);
+                    }}
+                  />
+                ))}
+
+              {/* Documents */}
               {items.map((doc) => (
                 <DocumentCard key={doc.id} document={doc} />
               ))}

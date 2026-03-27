@@ -36,7 +36,6 @@ interface ChatPropsBase {
   setMessages?: (messages: Message[]) => void;
   transcribeAudio?: (blob: Blob | null) => Promise<string>;
   onSourceClick?: (id: string) => void;
-  scrollRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 interface ChatPropsWithoutSuggestions extends ChatPropsBase {
@@ -65,7 +64,6 @@ export function Chat({
   setMessages,
   transcribeAudio,
   onSourceClick,
-  scrollRef,
 }: ChatProps) {
   const lastMessage = messages.at(-1);
   const isEmpty = messages.length === 0;
@@ -199,7 +197,12 @@ export function Chat({
   );
 
   return (
-    <ChatContainer className={cn('flex flex-col flex-1', className)}>
+    <ChatContainer
+      className={cn(
+        'flex flex-col flex-1 min-h-0 overflow-hidden mt-5',
+        className,
+      )}
+    >
       {isEmpty && append && suggestions ? (
         <PromptSuggestions
           label="Try these prompts ✨"
@@ -215,7 +218,7 @@ export function Chat({
       ) : null}
 
       {messages.length > 0 ? (
-        <ChatMessages messages={messages} scrollRef={scrollRef}>
+        <ChatMessages messages={messages}>
           <MessageList
             messages={messages}
             isTyping={isTyping}
@@ -225,7 +228,7 @@ export function Chat({
       ) : null}
 
       <ChatForm
-        className="sticky bottom-0 z-10 mt-auto mx-auto w-full max-w-4xl px-4 md:px-8 pb-20 pt-12 bg-linear-to-t from-background via-background/90 to-transparent"
+        className="shrink-0 z-10 mx-auto w-full max-w-4xl px-4 md:px-8 pb-24 pt-3"
         isPending={isGenerating || isTyping}
         handleSubmit={handleSubmit}
       >
@@ -250,42 +253,34 @@ Chat.displayName = 'Chat';
 export function ChatMessages({
   messages,
   children,
-  scrollRef,
 }: React.PropsWithChildren<{
   messages: Message[];
-  scrollRef?: React.RefObject<HTMLDivElement | null>;
 }>) {
-  const {
-    containerRef,
-    scrollToBottom,
-    handleScroll,
-    shouldAutoScroll,
-    handleTouchStart,
-  } = useAutoScroll([messages], scrollRef);
+  const { containerRef, scrollToBottom, showScrollButton } = useAutoScroll([
+    messages,
+  ]);
 
   return (
-    <div
-      className="flex flex-col pb-8 pt-4 w-full"
-      ref={containerRef}
-      onScroll={handleScroll}
-      onTouchStart={handleTouchStart}
-    >
-      <div className="max-w-4xl mx-auto w-full px-4 md:px-8 flex-1">
+    <div className="relative flex-1 min-h-0 overflow-y-auto" ref={containerRef}>
+      <div className="max-w-4xl mx-auto w-full px-4 md:px-8 pb-4 pt-2">
         {children}
       </div>
 
-      {!shouldAutoScroll && (
-        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-20">
-          <Button
-            onClick={scrollToBottom}
-            className="h-8 w-8 rounded-full shadow-lg bg-background/80 backdrop-blur border"
-            size="icon"
-            variant="ghost"
-          >
-            <ArrowDown className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
+      <div
+        className={cn(
+          'sticky bottom-4 flex justify-center z-20 pointer-events-none transition-opacity duration-200',
+          showScrollButton ? 'opacity-100' : 'opacity-0',
+        )}
+      >
+        <Button
+          onClick={scrollToBottom}
+          className="h-8 w-8 rounded-full shadow-lg bg-background/80 backdrop-blur border pointer-events-auto"
+          size="icon"
+          variant="ghost"
+        >
+          <ArrowDown className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 }

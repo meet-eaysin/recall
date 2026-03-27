@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { IFolderRepository } from '../../domain/repositories/folder.repository';
 import {
   FolderEntityProps,
@@ -21,6 +25,44 @@ export class UpdateFolderUseCase {
   constructor(private readonly folderRepository: IFolderRepository) {}
 
   async execute(command: UpdateFolderCommand): Promise<FolderPublicView> {
+    const existingFolder = await this.folderRepository.findById(
+      command.id,
+      command.userId,
+    );
+
+    if (!existingFolder) {
+      throw new NotFoundException('Folder not found');
+    }
+
+    const newName = command.data.name ?? existingFolder.props.name;
+    const newParentId =
+      command.data.parentId !== undefined
+        ? command.data.parentId
+        : existingFolder.props.parentId;
+
+    if (
+      command.data.name !== undefined ||
+      command.data.parentId !== undefined
+    ) {
+      const duplicate = await this.folderRepository.findByName(
+        newName,
+        command.userId,
+        newParentId,
+      );
+
+      if (duplicate && duplicate.id !== command.id) {
+        throw new BadRequestException({
+          message: 'Validation failed',
+          details: [
+            {
+              field: 'name',
+              messages: ['A folder with this name already exists'],
+            },
+          ],
+        });
+      }
+    }
+
     const updateData: Partial<FolderEntityProps> = {};
     if (command.data.name !== undefined) updateData.name = command.data.name;
     if (command.data.description !== undefined)

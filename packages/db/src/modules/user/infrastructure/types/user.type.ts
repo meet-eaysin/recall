@@ -1,4 +1,3 @@
-import { Document } from 'mongoose';
 import { LLMUserSettings } from '@repo/types';
 
 export interface IUser {
@@ -11,4 +10,4 @@ export interface IUser {
   updatedAt: Date;
 }
 
-export type IUserDocument = IUser & Document;
+export type IUserDocument = IUser & import('mongoose').Document;

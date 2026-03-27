@@ -13,6 +13,7 @@ export interface DocumentFilters {
   q?: string;
   status?: DocumentStatus;
   type?: DocumentType;
+  unassigned?: boolean;
 }
 
 export interface DocumentRow {

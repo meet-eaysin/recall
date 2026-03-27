@@ -4,24 +4,10 @@ import type React from 'react';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { ChevronLeftIcon } from 'lucide-react';
-// import { useDevLogin } from '@/features/auth/hooks';
-// import { isDevAuthEnabled } from '@/lib/dev-auth';
 import { authApi } from '@/features/auth/api';
 import Link from 'next/link';
 
 export default function LoginPage() {
-  // const devLogin = useDevLogin();
-  // const devAuthEnabled = isDevAuthEnabled();
-
-  // const handleDevLogin = async (event: React.FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   if (!devAuthEnabled) return;
-  //   const form = new FormData(event.currentTarget);
-  //   const email = String(form.get('email') ?? '').trim();
-  //   await devLogin.mutateAsync({ email: email || undefined });
-  //   window.location.href = '/app';
-  // };
-
   const handleOAuthLogin = (provider: 'google' | 'github') => {
     window.location.href = authApi.buildOAuthUrl(provider);
   };
@@ -58,7 +44,7 @@ export default function LoginPage() {
             <Button
               className="w-full"
               type="button"
-              onClick={() => handleOAuthLogin('google')}
+              onClick={() => handleOAuthLogin('github')}
             >
               <GithubIcon data-icon="inline-start" />
               Continue with GitHub
@@ -66,19 +52,19 @@ export default function LoginPage() {
           </div>
           <p className="mt-8 text-muted-foreground text-sm">
             By clicking continue, you agree to our{' '}
-            <a
+            <Link
               className="underline underline-offset-4 hover:text-primary"
               href="#"
             >
               Terms of Service
-            </a>{' '}
+            </Link>{' '}
             and{' '}
-            <a
+            <Link
               className="underline underline-offset-4 hover:text-primary"
-              href="#"
+              href="/privacy-policy"
             >
               Privacy Policy
-            </a>
+            </Link>
             .
           </p>
         </div>

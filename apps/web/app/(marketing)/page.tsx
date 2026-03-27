@@ -1,20 +1,16 @@
-import HeroSection from './_components/herosection';
-import FAQ from './_components/faq';
-import Navbar from './_components/navbar-shrink';
-import Footer from './_components/footer';
-import CtaSection from './_components/ctasection';
-import FeaturesBlock from './_components/features/features-block';
+import HeroSection from '../../features/marketing/components/herosection';
+import FAQ from '../../features/marketing/components/faq';
+import CtaSection from '../../features/marketing/components/ctasection';
+import FeaturesBlock from '../../features/marketing/components/features/features-block';
 
 const LandingPage = () => {
   return (
-    <div className="bg-black">
-      <Navbar />
+    <>
       <HeroSection />
       <FeaturesBlock />
       <FAQ />
       <CtaSection />
-      <Footer />
-    </div>
+    </>
   );
 };
 

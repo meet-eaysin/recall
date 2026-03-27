@@ -50,8 +50,7 @@ export const API_ENDPOINTS = {
     REFRESH: '/auth/refresh',
     LOGOUT: '/auth/logout',
     LOGOUT_ALL: '/auth/logout-all',
-    GOOGLE: '/auth/google',
-    GITHUB: '/auth/github',
+    OAUTH_URL: (provider: 'google' | 'github') => `/auth/${provider}`,
   },
   USERS: {
     ME: '/users/me',
@@ -72,5 +71,13 @@ export const API_ENDPOINTS = {
     FULL: '/graph',
     document: (id: string) => `/graph/document/${id}`,
     rebuild: (id: string) => `/graph/rebuild/${id}`,
+  },
+  LEGAL: {
+    BASE: '/legal',
+    PRIVACY_POLICY: '/legal/privacy-policy',
+    COOKIE_POLICY: '/legal/cookie-policy',
+    TERMS_OF_SERVICE: '/legal/terms-of-service',
+    ACCEPT: '/legal/accept',
+    CONSENT_STATUS: '/legal/consent-status',
   },
 } as const;

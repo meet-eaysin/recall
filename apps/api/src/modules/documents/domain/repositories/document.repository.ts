@@ -26,4 +26,5 @@ export abstract class IDocumentRepository {
   ): Promise<IngestionStatusView | null>;
   abstract removeFolderFromAll(folderId: string, userId: string): Promise<void>;
   abstract removeTagFromAll(tagId: string, userId: string): Promise<void>;
+  abstract deleteAllByUserId(userId: string): Promise<void>;
 }

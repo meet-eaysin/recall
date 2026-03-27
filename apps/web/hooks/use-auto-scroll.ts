@@ -1,85 +1,98 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const ACTIVATION_THRESHOLD = 50;
 const MIN_SCROLL_UP_THRESHOLD = 10;
 
-export function useAutoScroll(
-  dependencies: React.DependencyList,
-  externalRef?: React.RefObject<HTMLDivElement | null>,
-) {
-  const internalRef = useRef<HTMLDivElement | null>(null);
-  const containerRef = externalRef || internalRef;
+export function useAutoScroll(dependencies: readonly unknown[]) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const previousScrollTop = useRef<number | null>(null);
-  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const isAutoScrollRef = useRef(true);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const rafId = useRef<number | null>(null);
 
-  const scrollToBottom = React.useCallback(() => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'auto',
+  const scrollToBottom = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    // Don't scroll if we're already essentially at the bottom
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    const isAlreadyAtBottom =
+      Math.abs(scrollHeight - scrollTop - clientHeight) < 2;
+    if (isAlreadyAtBottom && isAutoScrollRef.current) return;
+
+    if (rafId.current !== null) cancelAnimationFrame(rafId.current);
+    rafId.current = requestAnimationFrame(() => {
+      el.scrollTop = el.scrollHeight;
+      rafId.current = null;
     });
   }, []);
 
-  const handleScroll = React.useCallback(() => {
-    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    const scrollHeight = document.documentElement.scrollHeight;
-    const clientHeight = document.documentElement.clientHeight;
+  const handleScroll = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
 
+    const { scrollTop, scrollHeight, clientHeight } = el;
     const distanceFromBottom = Math.abs(
       scrollHeight - scrollTop - clientHeight,
     );
 
-    const isScrollingUp = previousScrollTop.current
-      ? scrollTop < previousScrollTop.current
-      : false;
+    const isScrollingUp =
+      previousScrollTop.current !== null
+        ? scrollTop < previousScrollTop.current
+        : false;
 
-    const scrollUpDistance = previousScrollTop.current
-      ? previousScrollTop.current - scrollTop
-      : 0;
+    const scrollUpDistance =
+      previousScrollTop.current !== null
+        ? previousScrollTop.current - scrollTop
+        : 0;
 
     const isDeliberateScrollUp =
       isScrollingUp && scrollUpDistance > MIN_SCROLL_UP_THRESHOLD;
 
     if (isDeliberateScrollUp) {
-      setShouldAutoScroll(false);
+      isAutoScrollRef.current = false;
     } else {
-      const isScrolledToBottom = distanceFromBottom < ACTIVATION_THRESHOLD;
-      setShouldAutoScroll(isScrolledToBottom);
+      isAutoScrollRef.current = distanceFromBottom < ACTIVATION_THRESHOLD;
     }
+
+    // Only update state (and re-render) when button visibility actually changes
+    const shouldShowButton = !isAutoScrollRef.current;
+    setShowScrollButton((prev) =>
+      prev !== shouldShowButton ? shouldShowButton : prev,
+    );
 
     previousScrollTop.current = scrollTop;
   }, []);
 
-  const handleTouchStart = React.useCallback(() => {
-    setShouldAutoScroll(false);
+  useEffect(() => {
+    const el = containerRef.current;
+    if (el) {
+      previousScrollTop.current = el.scrollTop;
+    }
   }, []);
 
   useEffect(() => {
-    previousScrollTop.current =
-      window.scrollY || document.documentElement.scrollTop;
-  }, []);
-
-  useEffect(() => {
-    if (shouldAutoScroll) {
+    if (isAutoScrollRef.current) {
       scrollToBottom();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldAutoScroll, scrollToBottom, ...dependencies]);
+  }, [scrollToBottom, ...dependencies]);
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    const el = containerRef.current;
+    if (!el) return;
+
+    el.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('touchstart', handleTouchStart);
+      el.removeEventListener('scroll', handleScroll);
+      if (rafId.current !== null) cancelAnimationFrame(rafId.current);
     };
-  }, [handleScroll, handleTouchStart]);
+  }, [handleScroll]);
 
   return {
     containerRef,
     scrollToBottom,
-    handleScroll: undefined,
-    shouldAutoScroll,
-    handleTouchStart: undefined,
+    showScrollButton,
   };
 }

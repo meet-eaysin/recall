@@ -74,11 +74,15 @@ export function useCreateFolder() {
 
   return useMutation({
     mutationFn: libraryApi.createFolder,
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.LIBRARY.folders(),
-      });
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LIBRARY.ROOT });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.LIBRARY.folders(),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.LIBRARY.ROOT,
+        }),
+      ]);
     },
   });
 }
@@ -205,6 +209,42 @@ export function useUpdateNote(documentId: string) {
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.LIBRARY.notes(documentId),
+      });
+    },
+  });
+}
+
+export function useUpdateFolder(id: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: {
+      name?: string;
+      color?: string;
+      description?: string;
+    }) => libraryApi.updateFolder(id, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.LIBRARY.folders(),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.LIBRARY.ROOT,
+      });
+    },
+  });
+}
+
+export function useDeleteFolder() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: libraryApi.deleteFolder,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.LIBRARY.folders(),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.LIBRARY.ROOT,
       });
     },
   });

@@ -11,3 +11,4 @@ export * from './api.types';
 export * from './pagination';
 export * from './queue.types';
 export * from './search.types';
+export * from './legal.types';
