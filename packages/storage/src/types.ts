@@ -6,7 +6,11 @@ export interface UploadOptions {
 }
 
 export abstract class IStorageProvider {
-  abstract upload(file: Buffer | Readable, path: string, options?: UploadOptions): Promise<string>;
+  abstract upload(
+    file: Buffer | Readable,
+    path: string,
+    options?: UploadOptions,
+  ): Promise<string>;
   abstract getPublicUrl(path: string): string;
   abstract getSignedUrl(path: string, expiresIn?: number): Promise<string>;
   abstract delete(path: string): Promise<void>;

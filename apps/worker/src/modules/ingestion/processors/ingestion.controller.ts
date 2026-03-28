@@ -16,6 +16,7 @@ import {
   urlExtractor,
   youtubeExtractor,
   imageExtractor,
+  docxExtractor,
   chunkText,
   embeddingAdapter,
   QdrantWrapper,
@@ -29,6 +30,8 @@ import {
   QUEUE_INGESTION,
   QUEUE_GRAPH,
   QUEUE_NOTION_SYNC,
+  DocumentType,
+  SourceType,
 } from '@repo/types';
 import type { IngestionJobData } from '@repo/types';
 import {
@@ -123,7 +126,7 @@ export class IngestionController {
       let text = '';
       let ocrConfidence = 100;
 
-      if (type === 'pdf') {
+      if (type === DocumentType.PDF) {
         const buffer = await this.storageProvider.download(source);
         const result = await pdfExtractor.extractPdf(buffer);
         text = result.text;
@@ -131,7 +134,11 @@ export class IngestionController {
         await this.documentRepository.update(documentId, userId, {
           ocrConfidence,
         });
-      } else if (type === 'url') {
+      } else if (type === DocumentType.DOCX) {
+        const buffer = await this.storageProvider.download(source);
+        const result = await docxExtractor.extractDocx(buffer);
+        text = result.text;
+      } else if (type === DocumentType.URL) {
         const result = await urlExtractor.extractFromUrl(source);
         text = result.markdown;
         const updateData: Record<string, unknown> = { renderedMarkdown: text };
@@ -139,18 +146,17 @@ export class IngestionController {
           updateData.title = result.title;
         }
         await this.documentRepository.update(documentId, userId, updateData);
-      } else if (type === 'youtube') {
+      } else if (type === DocumentType.YOUTUBE) {
         const result = await youtubeExtractor.extractYouTube(source);
         text = result.transcript.map((t) => t.text).join(' ');
         const updateData: Record<string, unknown> = {};
         if (result.title && result.title !== 'Unknown Title') {
           updateData.title = result.title;
         }
-
         if (Object.keys(updateData).length > 0) {
           await this.documentRepository.update(documentId, userId, updateData);
         }
-      } else if (type === 'image') {
+      } else if (type === DocumentType.IMAGE) {
         const buffer = await this.storageProvider.download(source);
         const result = await imageExtractor.extractImage(buffer);
         text = result.text;
@@ -158,8 +164,8 @@ export class IngestionController {
         await this.documentRepository.update(documentId, userId, {
           ocrConfidence,
         });
-      } else if (type === 'text') {
-        if (doc.sourceType === 'file') {
+      } else if (type === DocumentType.TEXT) {
+        if (doc.sourceType === SourceType.FILE) {
           const buffer = await this.storageProvider.download(source);
           text = buffer.toString('utf-8');
         } else {

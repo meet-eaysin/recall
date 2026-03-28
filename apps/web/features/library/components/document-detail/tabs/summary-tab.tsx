@@ -13,6 +13,14 @@ import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { useDocumentDetail } from '../context';
 
 import { cn } from '@/lib/utils';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { MarkdownRenderer } from '@/components/ai/markdown-renderer';
 
 const HIGHLIGHTS = [
@@ -118,27 +126,27 @@ export function SummaryTab({ isCompact = false }: { isCompact?: boolean }) {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-6 rounded-2xl border border-dashed bg-muted/30 py-20 text-center transition-colors hover:bg-muted/50">
-              <div className="rounded-xl bg-background p-4 ring-1 ring-border shadow-sm">
-                <Sparkles className="size-8 text-muted-foreground" />
-              </div>
-              <div className="space-y-2">
-                <h4 className="text-lg font-semibold text-foreground/90">
-                  Ready to distill this content?
-                </h4>
-                <p className="text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">
+            <Empty className="py-20 rounded-2xl border border-dashed bg-muted/30 hover:bg-muted/50 transition-colors">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <Sparkles className="size-8 text-muted-foreground/40" />
+                </EmptyMedia>
+                <EmptyTitle>Ready to distill this content?</EmptyTitle>
+                <EmptyDescription>
                   Our intelligence engine will analyze the entire document to
                   synthesize key takeaways and core arguments in seconds.
-                </p>
-              </div>
-              <Button
-                onClick={() => actions.generateSummary.mutate(id)}
-                variant="outline"
-                size={'sm'}
-              >
-                Begin Analysis
-              </Button>
-            </div>
+                </EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button
+                  onClick={() => actions.generateSummary.mutate(id)}
+                  variant="outline"
+                  size={'sm'}
+                >
+                  Begin Analysis
+                </Button>
+              </EmptyContent>
+            </Empty>
           )}
         </div>
       </div>

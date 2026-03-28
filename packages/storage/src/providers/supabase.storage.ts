@@ -27,29 +27,45 @@ export class SupabaseStorageProvider extends IStorageProvider {
     if (this.initialized) return;
 
     try {
-      const { data: _bucket, error: getError } = await this.client.storage.getBucket(this.bucket);
-      
+      const { data: _bucket, error: getError } =
+        await this.client.storage.getBucket(this.bucket);
+
       if (getError) {
         // If bucket doesn't exist, try to create it
-        if (getError.message.includes('not found') || (getError as any).status === 404) {
-          this.logger.log(`Bucket '${this.bucket}' not found. Attempting to create...`);
-          const { error: createError } = await this.client.storage.createBucket(this.bucket, {
-            public: false, // Default to private for better security
-          });
+        if (
+          getError.message.includes('not found') ||
+          (getError as any).status === 404
+        ) {
+          this.logger.log(
+            `Bucket '${this.bucket}' not found. Attempting to create...`,
+          );
+          const { error: createError } = await this.client.storage.createBucket(
+            this.bucket,
+            {
+              public: false, // Default to private for better security
+            },
+          );
 
           if (createError) {
-            this.logger.error(`Failed to create bucket '${this.bucket}': ${createError.message}`);
+            this.logger.error(
+              `Failed to create bucket '${this.bucket}': ${createError.message}`,
+            );
           } else {
             this.logger.log(`Bucket '${this.bucket}' created successfully.`);
           }
         } else {
-          this.logger.warn(`Could not verify bucket '${this.bucket}': ${getError.message}`);
+          this.logger.warn(
+            `Could not verify bucket '${this.bucket}': ${getError.message}`,
+          );
         }
       }
 
       this.initialized = true;
     } catch (err) {
-      this.logger.error(`Error checking Supabase bucket '${this.bucket}':`, err);
+      this.logger.error(
+        `Error checking Supabase bucket '${this.bucket}':`,
+        err,
+      );
       // We set initialized to true anyway to avoid repeated fails on every upload
       this.initialized = true;
     }
@@ -112,7 +128,9 @@ export class SupabaseStorageProvider extends IStorageProvider {
         },
         chunkSize: 6 * 1024 * 1024,
         onError: (error) => {
-          reject(new Error(`Supabase resumable upload failed: ${error.message}`));
+          reject(
+            new Error(`Supabase resumable upload failed: ${error.message}`),
+          );
         },
         onSuccess: () => {
           resolve(path);
@@ -142,7 +160,9 @@ export class SupabaseStorageProvider extends IStorageProvider {
   }
 
   async delete(path: string): Promise<void> {
-    const { error } = await this.client.storage.from(this.bucket).remove([path]);
+    const { error } = await this.client.storage
+      .from(this.bucket)
+      .remove([path]);
 
     if (error) {
       throw new Error(`Supabase delete failed: ${error.message}`);

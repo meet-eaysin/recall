@@ -71,28 +71,51 @@ export class UrlExtractor {
             Accept:
               'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.9',
+            'Cache-Control': 'no-cache',
+            Pragma: 'no-cache',
           },
           httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+          validateStatus: (status) => status < 500, // Handle 4xx as possible content
         });
 
+        if (response.status === 403 || response.status === 401) {
+          return {
+            title: 'Access Restricted',
+            markdown: `This website is restricted or requires authentication. Status Code: ${response.status}. Please consider uploading a PDF or Text version of this content.`,
+            author: undefined,
+            publishedAt: undefined,
+            language: 'en',
+            isPartial: true,
+          };
+        }
+
         const html = response.data;
-        // Simple body extraction to avoid converting the whole page (head, etc)
-        const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-        const htmlToConvert = bodyMatch ? bodyMatch[1] : html;
-        const markdown = turndownService.turndown(htmlToConvert);
+        if (typeof html !== 'string') {
+          throw new Error('Invalid HTML response');
+        }
+
+        // Improved body extraction: look for main content areas
+        const contentMatch =
+          html.match(/<main[^>]*>([\s\S]*)<\/main>/i) ||
+          html.match(/<article[^>]*>([\s\S]*)<\/article>/i) ||
+          html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+
+        const htmlToConvert = contentMatch ? contentMatch[1] : html;
+        const markdown = turndownService.turndown(htmlToConvert || '');
 
         return {
-          title: 'Untitled',
-          markdown: markdown.substring(0, 15000), // Larger limit for conversion
+          title: 'Direct Scan',
+          markdown: markdown.substring(0, 20000), // Larger limit for conversion
           author: undefined,
           publishedAt: undefined,
           language: 'en',
           isPartial: true,
         };
       } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
         return {
-          title: 'Error',
-          markdown: 'Failed to extract content after multiple attempts.',
+          title: 'Ingestion Error',
+          markdown: `Failed to extract content from this URL: ${errorMsg}. This may be due to bot protection, complex JS rendering, or network restrictions.`,
           author: undefined,
           publishedAt: undefined,
           language: 'en',

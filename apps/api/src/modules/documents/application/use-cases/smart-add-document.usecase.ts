@@ -47,6 +47,8 @@ export class SmartAddDocumentUseCase {
           finalDocumentType = DocumentType.PDF;
         } else if (fileType === 'image') {
           finalDocumentType = DocumentType.IMAGE;
+        } else if (fileType === 'docx') {
+          finalDocumentType = DocumentType.DOCX;
         } else {
           finalDocumentType = DocumentType.TEXT;
         }
@@ -54,11 +56,16 @@ export class SmartAddDocumentUseCase {
         // Fallback to mimeType for streams if we can't easily peek
         const isPdf = command.mimeType?.includes('pdf');
         const isImage = command.mimeType?.includes('image');
+        const isDocx = command.mimeType?.includes(
+          'officedocument.wordprocessingml',
+        );
 
         if (isPdf) {
           finalDocumentType = DocumentType.PDF;
         } else if (isImage) {
           finalDocumentType = DocumentType.IMAGE;
+        } else if (isDocx) {
+          finalDocumentType = DocumentType.DOCX;
         } else {
           finalDocumentType = DocumentType.TEXT;
         }
@@ -115,7 +122,9 @@ export class SmartAddDocumentUseCase {
         );
       }
     } else {
-      throw new BadRequestException('Must provide either a file or a source URL');
+      throw new BadRequestException(
+        'Must provide either a file or a source URL',
+      );
     }
 
     const docType = DomainDocumentType.validate(finalDocumentType);

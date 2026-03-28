@@ -6,6 +6,7 @@ export enum DocumentType {
   PDF = 'pdf',
   IMAGE = 'image',
   TEXT = 'text',
+  DOCX = 'docx',
 }
 
 export enum DocumentStatus {

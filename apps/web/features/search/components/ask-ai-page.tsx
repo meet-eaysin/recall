@@ -35,6 +35,14 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import {
   InputGroup,
@@ -167,12 +175,17 @@ function ConversationList({
 
   if (conversations.length === 0) {
     return (
-      <Alert>
-        <AlertTitle>No conversations yet</AlertTitle>
-        <AlertDescription>
-          Your previous Ask AI threads will appear here.
-        </AlertDescription>
-      </Alert>
+      <Empty className="py-8">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <History className="size-4 text-muted-foreground" />
+          </EmptyMedia>
+          <EmptyTitle>No conversations yet</EmptyTitle>
+          <EmptyDescription>
+            Your previous Ask AI threads will appear here.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     );
   }
 
@@ -229,9 +242,11 @@ function ScopeSelector({
       </div>
       <div className="space-y-2">
         {documents.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No documents available.
-          </p>
+          <Empty className="min-h-0 py-4">
+            <EmptyDescription className="text-xs">
+              No documents available to select.
+            </EmptyDescription>
+          </Empty>
         ) : (
           documents.map((document) => {
             const checked = selectedDocumentIds.includes(document.id);
@@ -494,26 +509,28 @@ export function AskAiPage() {
   if (isEmptyLibrary) {
     return (
       <PageContainer className="flex flex-1 items-center justify-center p-8">
-        <div className="flex w-full max-w-md flex-col items-center justify-center rounded-xl border border-dashed py-16 px-6 text-center">
-          <div className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <Bot className="size-6" />
-          </div>
-          <h2 className="mt-4 text-xl font-semibold tracking-tight text-foreground">
-            Ask AI is inactive
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            You don&apos;t have any documents in your library yet. Add some
-            documents to start a conversation with MindStack AI.
-          </p>
-          <AddDocumentDialog
-            trigger={
-              <Button className="mt-6" size="sm">
-                <Plus className="mr-2 size-4" />
-                Add Document
-              </Button>
-            }
-          />
-        </div>
+        <Empty className="max-w-md rounded-xl border border-dashed px-6 py-16">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Bot className="size-6 text-primary" />
+            </EmptyMedia>
+            <EmptyTitle>Ask AI is inactive</EmptyTitle>
+            <EmptyDescription>
+              You don&apos;t have any documents in your library yet. Add some
+              documents to start a conversation with MindStack AI.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <AddDocumentDialog
+              trigger={
+                <Button size="sm">
+                  <Plus className="mr-2 size-4" />
+                  Add Document
+                </Button>
+              }
+            />
+          </EmptyContent>
+        </Empty>
       </PageContainer>
     );
   }
@@ -732,13 +749,20 @@ export function AskAiPage() {
                       </div>
                     ))
                   ) : (
-                    <Alert>
-                      <AlertTitle>No messages yet</AlertTitle>
-                      <AlertDescription>
-                        Ask your first question to start a grounded
-                        conversation.
-                      </AlertDescription>
-                    </Alert>
+                    <Empty className="py-12">
+                      <EmptyHeader>
+                        <EmptyMedia variant="icon">
+                          <Bot className="size-4 text-muted-foreground" />
+                        </EmptyMedia>
+                        <EmptyTitle className="text-sm">
+                          No messages yet
+                        </EmptyTitle>
+                        <EmptyDescription className="text-xs">
+                          Ask your first question to start a grounded
+                          conversation.
+                        </EmptyDescription>
+                      </EmptyHeader>
+                    </Empty>
                   )}
                 </div>
               </ScrollArea>

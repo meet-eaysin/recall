@@ -50,7 +50,7 @@ export class ListDocumentsUseCase {
         return view;
       }),
     );
-  
+
     return {
       items,
       total,

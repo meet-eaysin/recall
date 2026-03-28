@@ -41,12 +41,29 @@ export class YouTubeExtractor {
     const videoId = this.extractVideoId(url);
     if (!videoId) throw new Error('Invalid YouTube URL');
 
-    let transcript: YTTranscriptResponse[] = [];
-    try {
-      transcript = await YoutubeTranscript.fetchTranscript(videoId);
-    } catch {}
-
     const metadata = await this.fetchMetadata(videoId);
+    let transcript: YTTranscriptResponse[] = [];
+
+    // Try multiple languages and methods to fetch transcript
+    const langs = ['en', 'bn', 'hi']; // Common languages for this user base
+
+    for (const lang of langs) {
+      try {
+        transcript = await YoutubeTranscript.fetchTranscript(videoId, { lang });
+        if (transcript.length > 0) break;
+      } catch (err) {
+        // Continue to next language
+      }
+    }
+
+    // Last ditch effort: try without lang parameter
+    if (transcript.length === 0) {
+      try {
+        transcript = await YoutubeTranscript.fetchTranscript(videoId);
+      } catch (err) {
+        console.warn(`All transcript fetch attempts failed for ${videoId}`);
+      }
+    }
 
     return {
       videoId,

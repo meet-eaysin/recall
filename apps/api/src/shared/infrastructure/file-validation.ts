@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 
-export type FileType = 'pdf' | 'image' | 'text';
+export type FileType = 'pdf' | 'image' | 'text' | 'docx';
 
 export function validateFileType(
   buffer: Buffer,
@@ -11,6 +11,17 @@ export function validateFileType(
   // PDF magic bytes: %PDF
   if (hex === '25504446') {
     return 'pdf';
+  }
+
+  // Word (.docx) magic bytes: PK.. (ZIP format)
+  // hex: 50 4b 03 04
+  if (
+    hex === '504b0304' &&
+    (declaredMime.includes('officedocument.wordprocessingml') ||
+      declaredMime ===
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+  ) {
+    return 'docx';
   }
 
   // Image magic bytes
@@ -26,7 +37,9 @@ export function validateFileType(
   if (
     declaredMime.startsWith('text/') ||
     declaredMime === 'application/json' ||
-    declaredMime === 'application/javascript'
+    declaredMime === 'application/javascript' ||
+    declaredMime === 'application/x-markdown' ||
+    declaredMime === 'text/markdown'
   ) {
     // Basic check for text: no null bytes in the first 512 bytes
     const sample = buffer.slice(0, 512);

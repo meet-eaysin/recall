@@ -30,9 +30,13 @@ export class GetDocumentUseCase {
     // If it's an internal file, generate a signed URL
     if (view.sourceType === SourceType.FILE && view.sourceUrl) {
       try {
-        view.sourceUrl = await this.storageProvider.getSignedUrl(view.sourceUrl);
+        view.sourceUrl = await this.storageProvider.getSignedUrl(
+          view.sourceUrl,
+        );
       } catch (err) {
-        this.logger.warn(`Failed to generate signed URL for document ${id}: ${err instanceof Error ? err.message : String(err)}`);
+        this.logger.warn(
+          `Failed to generate signed URL for document ${id}: ${err instanceof Error ? err.message : String(err)}`,
+        );
       }
     }
 

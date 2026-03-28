@@ -19,6 +19,7 @@ const CARD_COMPONENT_MAP: Record<
   [DocumentType.PDF]: PdfCard,
   [DocumentType.TEXT]: TextCard,
   [DocumentType.IMAGE]: ImageCard,
+  [DocumentType.DOCX]: TextCard,
 };
 
 export function DocumentCard({ document }: DocumentCardProps) {

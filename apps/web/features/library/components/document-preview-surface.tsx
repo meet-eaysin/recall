@@ -1,7 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import { Download, ExternalLink, FileText, Globe, PlayCircle } from 'lucide-react';
+import {
+  Download,
+  ExternalLink,
+  FileText,
+  Globe,
+  PlayCircle,
+} from 'lucide-react';
 import type { DocumentDetail, DocumentRow } from '../types';
 import Image from 'next/image';
 
@@ -109,17 +115,17 @@ export function DocumentPreviewSurface({
         />
         {/* Progressively reveal actions on hover */}
         <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-           <a 
-            href={sourceUrl} 
+          <a
+            href={sourceUrl}
             download={document.title}
             className="p-2 bg-background/80 backdrop-blur-sm rounded-full shadow-lg border border-border hover:bg-background transition-colors"
             title="Download"
           >
             <Download className="size-4" />
           </a>
-          <a 
-            href={sourceUrl} 
-            target="_blank" 
+          <a
+            href={sourceUrl}
+            target="_blank"
             rel="noreferrer"
             className="p-2 bg-background/80 backdrop-blur-sm rounded-full shadow-lg border border-border hover:bg-background transition-colors"
             title="Open original"
