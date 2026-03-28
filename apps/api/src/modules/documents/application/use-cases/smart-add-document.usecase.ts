@@ -1,4 +1,9 @@
-import { Injectable, Logger, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { QueueService } from '@repo/queue';
 import { IDocumentRepository } from '../../domain/repositories/document.repository';
 import {
@@ -32,19 +37,44 @@ export class SmartAddDocumentUseCase {
     let finalDocumentType = DocumentType.URL;
     let initialTitle = command.title;
 
-    if (command.buffer && command.originalName) {
-      const fileType = validateFileType(command.buffer, command.mimeType || '');
-      finalDocumentType =
-        fileType === 'pdf'
-          ? DocumentType.PDF
-          : fileType === 'image'
-            ? DocumentType.IMAGE
-            : DocumentType.TEXT;
+    if ((command.buffer || command.stream) && command.originalName) {
+      if (command.buffer) {
+        const fileType = validateFileType(
+          command.buffer,
+          command.mimeType || '',
+        );
+        if (fileType === 'pdf') {
+          finalDocumentType = DocumentType.PDF;
+        } else if (fileType === 'image') {
+          finalDocumentType = DocumentType.IMAGE;
+        } else {
+          finalDocumentType = DocumentType.TEXT;
+        }
+      } else {
+        // Fallback to mimeType for streams if we can't easily peek
+        const isPdf = command.mimeType?.includes('pdf');
+        const isImage = command.mimeType?.includes('image');
+
+        if (isPdf) {
+          finalDocumentType = DocumentType.PDF;
+        } else if (isImage) {
+          finalDocumentType = DocumentType.IMAGE;
+        } else {
+          finalDocumentType = DocumentType.TEXT;
+        }
+      }
+
       finalSourceType = SourceType.FILE;
       const fileName = `${Date.now()}-${command.originalName}`;
       const filePath = `${command.userId}/${fileName}`;
+
+      const uploadSource = command.buffer || command.stream;
+      if (!uploadSource) {
+        throw new BadRequestException('File buffer or stream is missing');
+      }
+
       finalSourceUrl = await this.storageProvider.upload(
-        command.buffer,
+        uploadSource,
         filePath,
         {
           contentType: command.mimeType || undefined,
@@ -85,7 +115,7 @@ export class SmartAddDocumentUseCase {
         );
       }
     } else {
-      throw new Error('Must provide either a file or a source URL');
+      throw new BadRequestException('Must provide either a file or a source URL');
     }
 
     const docType = DomainDocumentType.validate(finalDocumentType);
@@ -152,9 +182,13 @@ export class SmartAddDocumentUseCase {
     // If it's a file, provide a signed URL for immediate viewing
     if (view.sourceType === SourceType.FILE && view.sourceUrl) {
       try {
-        view.sourceUrl = await this.storageProvider.getSignedUrl(view.sourceUrl);
+        view.sourceUrl = await this.storageProvider.getSignedUrl(
+          view.sourceUrl,
+        );
       } catch (err) {
-        this.logger.warn(`Failed to sign URL for new doc ${savedDoc.id}: ${err instanceof Error ? err.message : String(err)}`);
+        this.logger.warn(
+          `Failed to sign URL for new doc ${savedDoc.id}: ${err instanceof Error ? err.message : String(err)}`,
+        );
       }
     }
 

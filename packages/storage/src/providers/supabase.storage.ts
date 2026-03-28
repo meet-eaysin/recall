@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { Readable } from 'node:stream';
 import * as tus from 'tus-js-client';
 import { IStorageProvider, UploadOptions } from '../types';
 
@@ -55,20 +56,23 @@ export class SupabaseStorageProvider extends IStorageProvider {
   }
 
   async upload(
-    file: Buffer,
+    file: Buffer | Readable,
     path: string,
     options?: UploadOptions,
   ): Promise<string> {
     await this.ensureBucketExists();
 
-    if (file.length < this.RESUMABLE_THRESHOLD) {
+    // If it's a Buffer and below threshold, use standard upload
+    if (file instanceof Buffer && file.length < this.RESUMABLE_THRESHOLD) {
       return this.standardUpload(file, path, options);
     }
+
+    // Otherwise use resumable (TUS) for better reliability with streams/large files
     return this.resumableUpload(file, path, options);
   }
 
   private async standardUpload(
-    file: Buffer,
+    file: Buffer | Readable,
     path: string,
     options?: UploadOptions,
   ): Promise<string> {
@@ -87,7 +91,7 @@ export class SupabaseStorageProvider extends IStorageProvider {
   }
 
   private async resumableUpload(
-    file: Buffer,
+    file: Buffer | Readable,
     path: string,
     options?: UploadOptions,
   ): Promise<string> {

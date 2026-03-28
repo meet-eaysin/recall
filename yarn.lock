@@ -4208,7 +4208,7 @@ __metadata:
     "@repo/jest-config": "npm:*"
     "@supabase/supabase-js": "npm:^2.49.1"
     "@types/jest": "npm:^29.5.12"
-    "@types/node": "npm:^22.0.0"
+    "@types/node": "npm:^25.5.0"
     jest: "npm:^30.2.0"
     ts-jest: "npm:^29.1.2"
     tus-js-client: "npm:^4.3.1"
@@ -5050,7 +5050,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=13.7.0":
+"@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^25.5.0":
   version: 25.5.0
   resolution: "@types/node@npm:25.5.0"
   dependencies:
@@ -5068,7 +5068,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.0.0, @types/node@npm:^22.15.3, @types/node@npm:^22.19.3":
+"@types/node@npm:^22.15.3, @types/node@npm:^22.19.3":
   version: 22.19.15
   resolution: "@types/node@npm:22.19.15"
   dependencies:

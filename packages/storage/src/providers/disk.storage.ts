@@ -1,5 +1,8 @@
 import fs from 'node:fs/promises';
+import { createWriteStream } from 'node:fs';
 import path from 'node:path';
+import { pipeline } from 'node:stream/promises';
+import { Readable } from 'node:stream';
 import { IStorageProvider, UploadOptions } from '../types';
 
 export class DiskStorageProvider extends IStorageProvider {
@@ -8,7 +11,7 @@ export class DiskStorageProvider extends IStorageProvider {
   }
 
   async upload(
-    file: Buffer,
+    file: Buffer | Readable,
     filePath: string,
     _options?: UploadOptions,
   ): Promise<string> {
@@ -16,7 +19,13 @@ export class DiskStorageProvider extends IStorageProvider {
     const dir = path.dirname(fullPath);
 
     await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(fullPath, file);
+
+    if (file instanceof Buffer) {
+      await fs.writeFile(fullPath, file);
+    } else {
+      const writeStream = createWriteStream(fullPath);
+      await pipeline(file, writeStream);
+    }
 
     return filePath;
   }
