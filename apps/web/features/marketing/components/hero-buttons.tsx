@@ -16,7 +16,9 @@ const Herobuttons = () => {
       </Link>
       <Link
         href="/app/library"
-        className="group flex w-full items-center gap-2 text-nowrap rounded-sm bg-black/70 py-[10px] pl-3 pr-2 text-[0.9rem] text-sm text-neutral-200 transition-all duration-300 hover:bg-neutral-900/80 hover:text-white"
+        className={cn(
+          'group flex w-full items-center gap-2 text-nowrap rounded-sm bg-black/70 py-[10px] pl-3 pr-2 text-[0.9rem] text-sm text-neutral-200 transition-all font-semibold duration-300 hover:bg-neutral-900/80 hover:text-white',
+        )}
       >
         See How It Works
         <div className="relative overflow-hidden font-medium">

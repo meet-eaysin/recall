@@ -48,7 +48,7 @@ const Navbar = () => {
                 <Badge
                   variant="outline"
                   size="sm"
-                  className="h-5 border-white/20 bg-white/8 px-2 text-[9px] font-semibold tracking-[0.16em] text-white/85 backdrop-blur-sm"
+                  className="h-5 border-white/20 bg-white/8 px-2 text-[9px] font-semibold text-white/85 backdrop-blur-sm"
                 >
                   Beta
                 </Badge>

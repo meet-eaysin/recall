@@ -2,7 +2,6 @@
 
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { RotateCcwSquare } from 'lucide-react';
 import Herobuttons from './hero-buttons';
 import HeroBadge from './herobadge';
 
@@ -17,7 +16,7 @@ const HeroSection = () => {
       >
         <div
           className={cn(
-            'mt-tab mt-24 flex h-full min-h-[99.5vh] w-full flex-col justify-center rounded-b-2xl sm:mt-48 md:mt-48 lg:mt-0 lg:flex-row',
+            'mt-tab flex h-full min-h-[99.5vh] w-full flex-col justify-center rounded-b-2xl sm:mt-48 md:mt-48 lg:mt-0 lg:flex-row',
           )}
         >
           <div className="flex lg:flex-2">
@@ -85,36 +84,6 @@ const HeroSection = () => {
                 className="flex items-start"
               >
                 <Herobuttons />
-              </motion.div>
-            </div>
-          </div>
-          <div className="mx-auto mt-4 block max-w-7xl overflow-hidden lg:hidden">
-            <div className="-mr-16 pl-2">
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  filter: 'blur(10px)',
-                }}
-                whileInView={{
-                  opacity: 1,
-                  filter: 'blur(0px)',
-                }}
-                transition={{
-                  duration: 0.5,
-                  delay: 0.1,
-                  ease: 'easeInOut',
-                }}
-                viewport={{ once: true }}
-                className="relative skew-x-[.10rad] p-6"
-              >
-                <div className="flex h-full w-full items-center justify-center bg-neutral-900/50 rounded-xl border border-neutral-800 border-dashed aspect-video">
-                  <div className="flex flex-col items-center gap-3 text-neutral-500">
-                    <RotateCcwSquare className="size-12 opacity-20" />
-                    <p className="text-sm font-medium opacity-50 uppercase tracking-widest">
-                      Workspace Preview
-                    </p>
-                  </div>
-                </div>
               </motion.div>
             </div>
           </div>
