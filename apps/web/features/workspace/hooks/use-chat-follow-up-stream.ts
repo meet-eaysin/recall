@@ -24,7 +24,25 @@ const initialState: FollowUpStreamState = {
 export function useChatFollowUpStream(conversationId: string | null) {
   const queryClient = useQueryClient();
   const abortRef = React.useRef<AbortController | null>(null);
+  const conversationIdRef = React.useRef<string | null>(conversationId);
   const [state, setState] = React.useState<FollowUpStreamState>(initialState);
+
+  React.useEffect(() => {
+    conversationIdRef.current = conversationId;
+  }, [conversationId]);
+
+  React.useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+      abortRef.current = null;
+    };
+  }, []);
+
+  React.useEffect(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setState(initialState);
+  }, [conversationId]);
 
   const invalidateConversation = React.useCallback(async () => {
     if (!conversationId) {
@@ -64,6 +82,8 @@ export function useChatFollowUpStream(conversationId: string | null) {
       return;
     }
 
+    const requestConversationId = conversationId;
+
     setState((current) => ({
       ...current,
       error: null,
@@ -79,10 +99,12 @@ export function useChatFollowUpStream(conversationId: string | null) {
       abortRef.current = controller;
 
       await searchApi.streamAsk(
-        { conversationId, question: trimmed },
+        { conversationId: requestConversationId, question: trimmed },
         {
           signal: controller.signal,
           onEvent: (event) => {
+            if (conversationIdRef.current !== requestConversationId) return;
+
             if (event.type === 'delta') {
               setState((current) => ({
                 ...current,
@@ -124,7 +146,12 @@ export function useChatFollowUpStream(conversationId: string | null) {
       }));
       abortRef.current = null;
     }
-  }, [conversationId, invalidateConversation, state.isStreaming, state.question]);
+  }, [
+    conversationId,
+    invalidateConversation,
+    state.isStreaming,
+    state.question,
+  ]);
 
   const handleSubmit = React.useCallback(
     (event?: { preventDefault?: () => void }) => {
