@@ -7,7 +7,7 @@ import { ApiResponseDto } from '../../shared/dtos/api-response.dto';
  * Custom decorator to automatically construct a Swagger schema
  * that wraps a given DTO model inside the standard ApiResponseDto.
  */
-export const ApiSuccessResponse = <TModel extends Type<any>>(
+export const ApiSuccessResponse = <TModel extends Type<unknown>>(
   model?: TModel,
   description: string = 'Successful response',
   isArray: boolean = false,

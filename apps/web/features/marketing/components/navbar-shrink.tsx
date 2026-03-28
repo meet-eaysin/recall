@@ -7,6 +7,7 @@ import { useAuthSession } from '@/features/auth/hooks';
 import SignInButton from './signIn-butoon';
 import AnchorNav from './anchor-nav';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export const navItems = [
   { name: 'Home', href: '/' },
@@ -44,6 +45,13 @@ const Navbar = () => {
               <Link href="/" className="flex items-center gap-2">
                 <RotateCcwSquare />
                 <h3 className="text-xl font-bold text-white">Recall</h3>
+                <Badge
+                  variant="outline"
+                  size="sm"
+                  className="h-5 border-white/20 bg-white/8 px-2 text-[9px] font-semibold text-white/85 backdrop-blur-sm"
+                >
+                  Beta
+                </Badge>
               </Link>
 
               <button

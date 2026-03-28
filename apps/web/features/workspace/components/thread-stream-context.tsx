@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-type StreamState = {
+export type StreamState = {
   answer: string;
   conversationId: string;
   error: string | null;

@@ -1,37 +1,52 @@
-# Recall - Worker
+# Recall Beta Worker
 
-This is the background processing service for Recall, built as a standalone **NestJS 11** application.
+`apps/worker` is the asynchronous processing service for Recall Beta.
 
-## 🚀 Purpose
+## Responsibilities
 
-The worker is responsible for handling heavy, asynchronous tasks decoupled from the main API. It processes jobs dispatched via the queue provider. Common tasks include:
+- Ingestion webhooks
+- Transcript generation
+- Summary generation
+- Graph rebuild jobs
+- Notion sync jobs
+- Email dispatch jobs
 
-- Document parsing, text extraction, and chunking.
-- Generating vector embeddings using `@repo/ai` and storing them in Qdrant.
-- Interacting with local LLMs (Ollama) for summarization and knowledge extraction.
+## Development
 
-## 🛠 Setup & Development
-
-Ensure you have run `yarn install` from the root of the monorepo.
-
-To start the development server for this app specifically:
-
-```bash
-yarn workspace worker dev
-```
-
-Or run the dev script from the root using Turbo:
+From the repo root:
 
 ```bash
 yarn turbo run dev --filter worker
 ```
 
-## 🏗 Key Packages Used
+From this workspace:
 
-- `@repo/queue`: Receives jobs.
-- `@repo/ai`: Interfaces with Ollama and Qdrant.
-- `@repo/db`: Updates document processing statuses in MongoDB.
+```bash
+yarn dev
+```
 
-## ⚙️ Environment Variables
+Default local port: `3002`
 
-Make sure to configure the `.env` file for the worker, particularly the endpoints for Qdrant, Ollama, MongoDB, and queue provider credentials.
+## Dependencies
+
+- `@repo/db`
+- `@repo/queue`
+- `@repo/cache`
+- `@repo/ai`
+
+## Environment
+
+Important groups:
+
+- MongoDB: `MONGODB_URI`
+- Worker URL and queue webhook settings
+- Qdrant and model provider settings
+- Upload storage path
+- Email provider settings
+
+Resolved in `src/shared/utils/env.ts`.
+
+## Notes
+
+- The worker doubles as a webhook receiver for queue providers.
+- Queue provider selection is environment-driven and shared with the API.

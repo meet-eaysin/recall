@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { RotateCcwSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 export function LogoIcon({ className }: { className?: string }) {
   return (
@@ -26,9 +27,18 @@ export function ApplicationIcon({ expanded = true }: { expanded?: boolean }) {
       <LogoIcon className={expanded ? 'size-9' : 'size-8'} />
       {expanded && (
         <div className="grid flex-1 text-left text-sm leading-tight ml-1">
-          <span className="truncate font-bold tracking-tight text-sidebar-foreground">
-            Recall
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="truncate font-bold tracking-tight text-sidebar-foreground">
+              Recall
+            </span>
+            <Badge
+              variant="outline"
+              size="sm"
+              className="h-5 border-sidebar-border/80 bg-sidebar-accent/70 px-2 font-semibold tracking-[0.14em] text-[9px] text-sidebar-foreground shadow-sm"
+            >
+              Beta
+            </Badge>
+          </div>
           <span className="truncate text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">
             Workspace
           </span>

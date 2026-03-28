@@ -43,7 +43,7 @@ describe('AI Ingestion (e2e)', () => {
     });
     const filePath = path.join(__dirname, 'fixtures/documents/test.pdf');
     const response = await request(app.getHttpServer())
-      .post('/api/v1/documents/upload')
+      .post('/api/v1/documents')
       .set(auth.headers)
       .attach('file', filePath)
       .field('title', 'Ingestion E2E Doc')
@@ -65,7 +65,7 @@ describe('AI Ingestion (e2e)', () => {
     });
     const filePath = path.join(__dirname, 'fixtures/documents/test.pdf');
     const uploadResponse = await request(app.getHttpServer())
-      .post('/api/v1/documents/upload')
+      .post('/api/v1/documents')
       .set(auth.headers)
       .attach('file', filePath)
       .field('title', 'Status Check Doc')
@@ -97,7 +97,7 @@ describe('AI Ingestion (e2e)', () => {
       email: 'ai-ingestion-no-file@test.local',
     });
     await request(app.getHttpServer())
-      .post('/api/v1/documents/upload')
+      .post('/api/v1/documents')
       .set(auth.headers)
       .field('title', 'No File Doc')
       .expect(400);
@@ -112,7 +112,7 @@ describe('AI Ingestion (e2e)', () => {
     // Create an invalid "binary" buffer that doesn't match any supported magic bytes
     const invalidBuffer = Buffer.from([0x00, 0x01, 0x02, 0x03]);
     const response = await request(app.getHttpServer())
-      .post('/api/v1/documents/upload')
+      .post('/api/v1/documents')
       .set(auth.headers)
       .attach('file', invalidBuffer, {
         filename: 'unsupported.bin',

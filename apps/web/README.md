@@ -1,38 +1,53 @@
-# Recall - Web App
+# Recall Beta Web
 
-This is the frontend application for Recall, built with **Next.js 16 (App Router)**.
+`apps/web` is the Next.js 16 frontend for Recall Beta.
 
-## 🚀 Tech Stack
+## Scope
 
-- **Framework:** Next.js 16
-- **Language:** TypeScript 5
-- **Styling:** TailwindCSS v4
-- **UI Components:** Shadcn UI, Radix UI
-- **State Management:** React Query, React Hook Form
-- **Animations:** Framer Motion
+- Marketing pages
+- Auth entrypoint
+- Workspace chat flows
+- Library and document detail views
+- Graph explorer
+- Analytics and settings
+- Legal consent UI
 
-## 🛠 Setup & Development
+## Stack
 
-Ensure you have run `yarn install` from the root of the monorepo.
+- Next.js 16 App Router
+- React 19
+- Tailwind CSS v4
+- TanStack Query
+- Zod for env parsing
 
-To start the development server for this app specifically:
+## Development
 
-```bash
-yarn workspace web dev
-```
-
-Or run the dev script from the root using Turbo:
+From the repo root:
 
 ```bash
 yarn turbo run dev --filter web
 ```
 
-## 🏗 Key Features
+From this workspace:
 
-- **Modern Architecture:** Uses React 19 and Next.js 16 App Router for optimal performance and SEO.
-- **Responsive UI:** Fully responsive design built with TailwindCSS.
-- **Type-safe:** End-to-end type safety using shared interfaces from `@repo/types`.
+```bash
+yarn dev
+```
 
-## ⚙️ Environment Variables
+Default local port: `5273`
 
-Make sure to configure the `.env` file according to the properties required by this application (e.g., `WEB_APP_URL`, authentication callbacks, etc.). Review the root `turbo.globalEnv` list for required variables.
+## Environment
+
+Primary variables:
+
+- `NEXT_PUBLIC_API_BASE_URL`
+- `NEXT_PUBLIC_ENABLE_DEV_AUTH`
+- `NEXT_PUBLIC_DEV_USER_ID`
+
+Validated in [lib/env.ts](./lib/env.ts).
+
+## Notes
+
+- API requests are routed through the shared client helpers in `lib/api.ts`.
+- Authenticated document creation uses `POST /api/v1/documents`.
+- The root layout currently uses Google font loading for `Geist` and `Sora`; offline builds require local font replacement.

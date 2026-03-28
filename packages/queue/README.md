@@ -1,18 +1,16 @@
 # `@repo/queue`
 
-This package handles background job dispatching and routing for Recall.
+Shared queue abstraction for Recall Beta.
 
-## 🚀 Purpose
+## Provides
 
-Supports pluggable queue providers to:
+- Nest global queue module
+- queue service
+- HTTP queue provider
+- QStash queue provider
+- shared queue provider interface
 
-- Enqueue asynchronous tasks (e.g., document summarization, embedding generation).
-- Ensure reliable webhook deliveries to the `apps/worker` processor.
+## Used By
 
-## 📦 Usage
-
-To use this package, add it to your app's dependencies:
-
-```json
-"@repo/queue": "workspace:*"
-```
+- `apps/api` for dispatch
+- `apps/worker` for webhook-oriented processing flows

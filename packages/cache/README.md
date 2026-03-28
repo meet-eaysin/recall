@@ -1,19 +1,15 @@
 # `@repo/cache`
 
-This package handles caching strategies and integrations for Recall.
+Shared cache abstraction for Recall Beta.
 
-## 🚀 Purpose
+## Provides
 
-Provides utilities to interface with Redis via `@upstash/redis` or local `redis-server` instances. Used for:
+- Nest global cache module
+- Redis provider
+- Upstash Redis provider
+- Common cache provider interface
 
-- API response caching
-- Rate limiting
-- Temporary session storage
+## Used By
 
-## 📦 Usage
-
-To use this package, add it to your app's dependencies:
-
-```json
-"@repo/cache": "workspace:*"
-```
+- `apps/api`
+- `apps/worker`
