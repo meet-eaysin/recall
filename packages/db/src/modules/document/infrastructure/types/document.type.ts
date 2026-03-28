@@ -5,6 +5,7 @@ import {
   SourceType,
   IngestionStatus,
   IngestionStage,
+  TranscriptStatus,
 } from '@repo/types';
 
 export {
@@ -13,6 +14,7 @@ export {
   SourceType,
   IngestionStatus,
   IngestionStage,
+  TranscriptStatus,
 };
 
 export interface IDocument {
@@ -39,6 +41,9 @@ export interface IDocument {
   ingestionError?: string | undefined;
 
   notionPageId?: string | undefined;
+
+  transcriptStatus?: TranscriptStatus | undefined;
+  transcriptError?: string | undefined;
 
   lastOpenedAt?: Date | undefined;
   createdAt: Date;

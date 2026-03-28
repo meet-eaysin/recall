@@ -2,14 +2,17 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
-import { DocumentType, QUEUE_TRANSCRIPT } from '@repo/types';
+import { DocumentType, QUEUE_TRANSCRIPT, TranscriptStatus } from '@repo/types';
 import { QueueService } from '@repo/queue';
 import { IDocumentRepository } from '../../domain/repositories/document.repository';
 import { ITranscriptRepository } from '../../domain/repositories/transcript.repository';
 
 @Injectable()
 export class TranscriptUseCase {
+  private readonly logger = new Logger(TranscriptUseCase.name);
+
   constructor(
     private readonly documentRepository: IDocumentRepository,
     private readonly transcriptRepository: ITranscriptRepository,
@@ -29,14 +32,24 @@ export class TranscriptUseCase {
     const transcript =
       await this.transcriptRepository.findByDocumentId(documentId);
 
+    const transcriptStatus = doc.transcriptStatus || 'idle';
+    const transcriptError = doc.transcriptError;
+
     if (!transcript) {
-      return { available: false, segments: [], fullText: '' };
+      return {
+        available: false,
+        status: transcriptStatus,
+        reason: transcriptError,
+        segments: [],
+        content: '',
+      };
     }
 
     return {
       available: true,
+      status: 'completed',
       segments: transcript.segments,
-      fullText: transcript.content,
+      content: transcript.content,
     };
   }
 
@@ -58,10 +71,18 @@ export class TranscriptUseCase {
         alreadyExists: true,
         transcript: {
           segments: transcript.segments,
-          fullText: transcript.content,
+          content: transcript.content,
         },
       };
     }
+
+    this.logger.log(
+      `Generating transcript for document ${documentId}. Setting status to PENDING.`,
+    );
+    await this.documentRepository.update(documentId, userId, {
+      transcriptStatus: TranscriptStatus.PENDING,
+      transcriptError: undefined,
+    });
 
     await this.queueService.publishMessage(QUEUE_TRANSCRIPT, {
       documentId,

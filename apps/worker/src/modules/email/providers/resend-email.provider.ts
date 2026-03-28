@@ -41,8 +41,6 @@ export class ResendEmailProvider implements EmailProvider {
       );
       throw new InternalServerErrorException('Email provider request failed');
     }
-
-    this.logger.debug(`Email sent to ${data.to}`);
   }
 
   private getConfig(): ResendConfig {

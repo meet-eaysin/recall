@@ -4,6 +4,7 @@ import type {
   IngestionStatus,
   PaginatedResponse,
   SourceType,
+  TranscriptStatus,
 } from '@repo/types';
 
 export interface DocumentFilters {
@@ -27,6 +28,8 @@ export interface DocumentRow {
   tags: string[];
   title: string;
   type: DocumentType;
+  transcriptError?: string;
+  transcriptStatus?: TranscriptStatus;
   updatedAt: string;
   userId: string;
 }

@@ -21,6 +21,9 @@ import {
   embeddingAdapter,
   QdrantWrapper,
   LLMClientFactory,
+  ChunkResult,
+  ResolvedLLMConfig,
+  YouTubeExtractResult,
 } from '@repo/ai';
 import type { ResolvedClient } from '@repo/ai';
 import {
@@ -32,6 +35,7 @@ import {
   QUEUE_NOTION_SYNC,
   DocumentType,
   SourceType,
+  TranscriptStatus,
 } from '@repo/types';
 import type { IngestionJobData } from '@repo/types';
 import {
@@ -40,6 +44,7 @@ import {
   TagModel,
   DocumentModel,
   DocumentChunkModel,
+  DocumentTranscriptModel,
 } from '@repo/db';
 import { IStorageProvider } from '@repo/storage';
 import * as crypto from 'crypto';
@@ -147,15 +152,56 @@ export class IngestionController {
         }
         await this.documentRepository.update(documentId, userId, updateData);
       } else if (type === DocumentType.YOUTUBE) {
-        const result = await youtubeExtractor.extractYouTube(source);
-        text = result.transcript.map((t) => t.text).join(' ');
-        const updateData: Record<string, unknown> = {};
+        let result: YouTubeExtractResult;
+        let transcriptStatus = TranscriptStatus.COMPLETED;
+        let transcriptError: string | undefined = undefined;
+
+        try {
+          result = await youtubeExtractor.extractYouTube(source);
+          if (!result.transcript || result.transcript.length === 0) {
+            transcriptStatus = TranscriptStatus.UNAVAILABLE;
+            transcriptError = 'No transcript available for this video (disabled or not provided).';
+          }
+        } catch (err) {
+          const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+          this.logger.warn(`[IngestionWorker] Failed to extract transcript for ${documentId}: ${errorMsg}`);
+          transcriptStatus = TranscriptStatus.FAILED;
+          transcriptError = errorMsg;
+          result = {
+            videoId: '',
+            title: 'YouTube Video',
+            channelTitle: 'Unknown Channel',
+            description: '',
+            transcript: [],
+            fullText: '',
+          };
+        }
+        text = result.fullText || '';
+        
+        if (transcriptStatus === TranscriptStatus.COMPLETED && result.transcript.length > 0) {
+          // Save transcript segments
+          await DocumentTranscriptModel.findOneAndUpdate(
+            { documentId: new Types.ObjectId(documentId) },
+            {
+              content: text,
+              segments: result.transcript.map(s => ({
+                text: s.text,
+                start: s.start,
+                end: s.start + s.duration,
+              })),
+            },
+            { upsert: true }
+          );
+        }
+
+        const updateData: Record<string, unknown> = {
+          transcriptStatus,
+          transcriptError,
+        };
         if (result.title && result.title !== 'Unknown Title') {
           updateData.title = result.title;
         }
-        if (Object.keys(updateData).length > 0) {
-          await this.documentRepository.update(documentId, userId, updateData);
-        }
+        await this.documentRepository.update(documentId, userId, updateData);
       } else if (type === DocumentType.IMAGE) {
         const buffer = await this.storageProvider.download(source);
         const result = await imageExtractor.extractImage(buffer);
@@ -193,7 +239,7 @@ export class IngestionController {
         IngestionStatus.PROCESSING,
         userId,
       );
-      const config = await this.llmClientFactory.resolveConfigForUserId(userId);
+      const config: ResolvedLLMConfig = await this.llmClientFactory.resolveConfigForUserId(userId);
       const llmClient = await this.llmClientFactory.createForUserId(userId);
 
       // AI Enrichment for Smart Add
@@ -289,7 +335,7 @@ export class IngestionController {
         IngestionStatus.PROCESSING,
         userId,
       );
-      const chunks = chunkText(text);
+      const chunks: ChunkResult[] = chunkText(text);
 
       await DocumentChunkModel.deleteMany({
         documentId: new Types.ObjectId(documentId),
@@ -319,7 +365,7 @@ export class IngestionController {
       await this.qdrant.ensureCollection('mindstack', 768);
 
       const embeddings = await embeddingAdapter.embedBatch(
-        chunks.map((c) => c.content),
+        chunks.map((c) => String(c.content)),
         config,
       );
 

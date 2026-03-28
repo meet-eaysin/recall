@@ -29,7 +29,6 @@ export class DeleteAccountUseCase {
     try {
       // 1. Delete Documents
       await this.documentRepository.deleteAllByUserId(userId);
-      this.logger.debug(`Deleted documents for user: ${userId}`);
 
       // 2. Delete Knowledge Base (Notes, Folders, Tags)
       await Promise.all([
@@ -37,19 +36,15 @@ export class DeleteAccountUseCase {
         this.folderRepository.deleteAllByUserId(userId),
         this.tagRepository.deleteAllByUserId(userId),
       ]);
-      this.logger.debug(`Deleted knowledge base for user: ${userId}`);
 
       // 3. Delete Graph Data
       await this.graphRepository.deleteAllByUserId(userId);
-      this.logger.debug(`Deleted graph data for user: ${userId}`);
 
       // 4. Delete Notion Configuration
       await this.notionConfigRepository.deleteByUserId(userId);
-      this.logger.debug(`Deleted notion config for user: ${userId}`);
 
       // 5. Revoke all sessions
       await this.refreshSessionRepository.revokeAllForUser(userId);
-      this.logger.debug(`Revoked all sessions for user: ${userId}`);
 
       // 6. Finally, delete the User record
       // Note: LLM settings are stored on the User document, so they are deleted here.

@@ -58,35 +58,77 @@ export function TranscriptTab({ isCompact = false }: { isCompact?: boolean }) {
         </Button>
       </div>
 
-      {transcript?.content ? (
+      {transcript?.status === 'completed' && transcript.content ? (
         <div className="rounded-2xl border bg-card shadow-sm overflow-hidden group hover:border-primary/20 transition-all">
-          <div className="bg-muted/30 px-6 py-2 border-b flex items-center justify-between dark:bg-zinc-900/50">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              Transcript View
-            </span>
-            <div className="flex gap-1">
-              <div className="size-1.5 rounded-full bg-border" />
-              <div className="size-1.5 rounded-full bg-border" />
-              <div className="size-1.5 rounded-full bg-border" />
-            </div>
-          </div>
           <ScrollArea
             className={cn('h-[60vh] max-h-[700px]', isCompact && 'h-[50vh]')}
           >
-            <div className={cn('p-10', isCompact && 'p-6')}>
+            <div className={cn('p-5', isCompact && 'p-3')}>
               <p className="text-[15px] leading-relaxed text-foreground/80 whitespace-pre-wrap font-sans-subtle selection:bg-primary/20">
                 {transcript.content}
               </p>
             </div>
           </ScrollArea>
         </div>
+      ) : transcript?.status === 'pending' ||
+        actions.generateTranscript.isPending ? (
+        <Empty className={cn('py-24', isCompact && 'py-12')}>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <LoaderCircle className="size-5 text-primary animate-spin" />
+            </EmptyMedia>
+            <EmptyTitle>Extracting Transcript...</EmptyTitle>
+            <EmptyDescription>
+              We&apos;re currently fetching and processing the video transcript.
+              This usually takes a few seconds.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : transcript?.status === 'unavailable' ? (
+        <Empty className={cn('py-24', isCompact && 'py-12')}>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Brain className="size-5 text-muted-foreground" />
+            </EmptyMedia>
+            <EmptyTitle>Transcript Not Available</EmptyTitle>
+            <EmptyDescription>
+              {transcript.reason ||
+                'The transcript for this video is disabled or not provided by YouTube.'}
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : transcript?.status === 'failed' ? (
+        <Empty className={cn('py-24', isCompact && 'py-12')}>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Brain className="size-5 text-destructive" />
+            </EmptyMedia>
+            <EmptyTitle>Extraction Failed</EmptyTitle>
+            <EmptyDescription>
+              {transcript.reason ||
+                'An unexpected error occurred during extraction.'}
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button
+              onClick={() => actions.generateTranscript.mutate(id)}
+              disabled={actions.generateTranscript.isPending}
+              variant="outline"
+            >
+              {actions.generateTranscript.isPending ? (
+                <LoaderCircle className="size-3.5 animate-spin mr-2" />
+              ) : null}
+              Retry Extraction
+            </Button>
+          </EmptyContent>
+        </Empty>
       ) : (
         <Empty className={cn('py-24', isCompact && 'py-12')}>
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <Brain className="size-5 text-muted-foreground" />
             </EmptyMedia>
-            <EmptyTitle>No transcript available</EmptyTitle>
+            <EmptyTitle>No Transcript Yet</EmptyTitle>
             <EmptyDescription>
               Unlock full-text search and AI insights for this video by
               generating a transcript.
@@ -97,6 +139,9 @@ export function TranscriptTab({ isCompact = false }: { isCompact?: boolean }) {
               onClick={() => actions.generateTranscript.mutate(id)}
               disabled={actions.generateTranscript.isPending}
             >
+              {actions.generateTranscript.isPending ? (
+                <LoaderCircle className="size-3.5 animate-spin mr-2" />
+              ) : null}
               Generate Now
             </Button>
           </EmptyContent>

@@ -7,7 +7,6 @@ import {
   Headers,
   NotFoundException,
   BadRequestException,
-  UnprocessableEntityException,
   InternalServerErrorException,
   HttpException,
 } from '@nestjs/common';
@@ -18,8 +17,11 @@ import {
   embeddingAdapter,
   QdrantWrapper,
   LLMClientFactory,
+  YouTubeExtractResult,
+  ResolvedLLMConfig,
+  ChunkResult,
 } from '@repo/ai';
-import { QUEUE_TRANSCRIPT, DocumentType } from '@repo/types';
+import { QUEUE_TRANSCRIPT, DocumentType, TranscriptStatus } from '@repo/types';
 import type { TranscriptJobData } from '@repo/types';
 import {
   IDocumentRepository,
@@ -91,28 +93,55 @@ export class TranscriptController {
       );
     }
 
-    const result = await youtubeExtractor.extractYouTube(doc.sourceUrl);
-    if (!result.transcript || result.transcript.length === 0) {
-      throw new UnprocessableEntityException(
-        'Could not extract transcript from YouTube video',
+    let result: YouTubeExtractResult;
+    let transcriptStatus = TranscriptStatus.COMPLETED;
+    let transcriptError: string | undefined = undefined;
+
+    try {
+      result = await youtubeExtractor.extractYouTube(doc.sourceUrl);
+      if (!result.transcript || result.transcript.length === 0) {
+        transcriptStatus = TranscriptStatus.UNAVAILABLE;
+        transcriptError =
+          'No transcript available for this video (disabled or not provided).';
+      }
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+      this.logger.warn(
+        `[TranscriptWorker] Failed to extract transcript for ${documentId}: ${errorMsg}`,
       );
+      transcriptStatus = TranscriptStatus.FAILED;
+      transcriptError = errorMsg;
+      result = {
+        videoId: '',
+        title: '',
+        channelTitle: '',
+        description: '',
+        transcript: [],
+        fullText: '',
+      };
     }
 
-    const fullText = result.transcript.map((t) => t.text).join(' ');
+    const fullText = result.fullText || '';
 
-    const transcriptDoc = new DocumentTranscriptModel({
-      documentId,
-      content: fullText,
-      segments: result.transcript.map((t) => ({
-        start: t.start,
-        end: t.start + t.duration,
-        text: t.text,
-      })),
-    });
-    await transcriptDoc.save();
+    if (
+      transcriptStatus === TranscriptStatus.COMPLETED &&
+      result.transcript.length > 0
+    ) {
+      const transcriptDoc = new DocumentTranscriptModel({
+        documentId,
+        content: fullText,
+        segments: result.transcript.map((t) => ({
+          start: t.start,
+          end: t.start + t.duration,
+          text: t.text,
+        })),
+      });
+      await transcriptDoc.save();
+    }
 
-    const chunks = chunkText(fullText);
-    const resolvedConfig =
+    const textToChunk = fullText || '';
+    const chunks: ChunkResult[] = chunkText(textToChunk);
+    const resolvedConfig: ResolvedLLMConfig =
       await this.llmClientFactory.resolveConfigForUserId(userId);
 
     for (let i = 0; i < chunks.length; i++) {
@@ -120,7 +149,7 @@ export class TranscriptController {
       if (!chunkObj || !chunkObj.content) continue;
 
       const vector = await embeddingAdapter.embedText(
-        chunkObj.content,
+        String(chunkObj.content),
         resolvedConfig,
       );
 
@@ -150,8 +179,10 @@ export class TranscriptController {
     }
 
     await this.documentRepository.update(documentId, userId, {
-      embeddingsReady: true,
+      embeddingsReady: transcriptStatus === TranscriptStatus.COMPLETED,
       chunkCount: chunks.length,
+      transcriptStatus,
+      transcriptError,
     });
   }
 }

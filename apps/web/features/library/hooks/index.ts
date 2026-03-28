@@ -38,8 +38,17 @@ export function useDocumentTranscript(id: string, enabled = true) {
   return useQuery({
     enabled: Boolean(id) && enabled,
     queryKey: QUERY_KEYS.LIBRARY.documentTranscript(id),
-    queryFn: () => libraryApi.getTranscript(id),
+    queryFn: () =>
+      libraryApi.getTranscript(id) as Promise<{
+        content: string;
+        status: string;
+        reason?: string;
+      }>,
     retry: false,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      return data?.status === 'pending' ? 3000 : false;
+    },
   });
 }
 
@@ -158,12 +167,55 @@ export function useGenerateTranscript(documentId: string) {
 
   return useMutation({
     mutationFn: libraryApi.generateTranscript,
+    onMutate: async () => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({
+        queryKey: QUERY_KEYS.LIBRARY.documentTranscript(documentId),
+      });
+
+      // Snapshot the previous value
+      const previousTranscript = queryClient.getQueryData(
+        QUERY_KEYS.LIBRARY.documentTranscript(documentId),
+      );
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(
+        QUERY_KEYS.LIBRARY.documentTranscript(documentId),
+        {
+          available: false,
+          status: 'pending',
+          segments: [],
+          fullText: '',
+        },
+      );
+
+      // Return a context object with the snapshotted value
+      return { previousTranscript };
+    },
+    onError: (err, newTranscript, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousTranscript) {
+        queryClient.setQueryData(
+          QUERY_KEYS.LIBRARY.documentTranscript(documentId),
+          context.previousTranscript,
+        );
+      }
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.LIBRARY.documentTranscript(documentId),
       });
       void queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.LIBRARY.document(documentId),
+      });
+      void queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.LIBRARY.documentIngestion(documentId),
+      });
+    },
+    onSettled: () => {
+      // Always refetch after error or success to keep server and client in sync
+      void queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.LIBRARY.documentTranscript(documentId),
       });
     },
   });

@@ -15,6 +15,7 @@ import {
   DocumentType,
   SourceType,
   IngestionStatus,
+  TranscriptStatus,
   QUEUE_INGESTION,
 } from '@repo/types';
 import { IStorageProvider } from '@repo/storage';
@@ -165,6 +166,7 @@ export class SmartAddDocumentUseCase {
       createdAt: new Date(),
       updatedAt: new Date(),
       ingestionStatus: IngestionStatus.PENDING,
+      transcriptStatus: TranscriptStatus.IDLE,
     });
 
     const savedDoc = await this.documentRepository.create(doc);

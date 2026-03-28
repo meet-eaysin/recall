@@ -3,6 +3,7 @@ import type {
   DocumentStatus,
   SourceType,
   IngestionStatus,
+  TranscriptStatus,
 } from '@repo/types';
 import {} from '@repo/db';
 
@@ -19,6 +20,8 @@ export interface DocumentPublicView {
   lastOpenedAt?: Date | undefined;
   createdAt: Date;
   updatedAt: Date;
+  transcriptStatus?: TranscriptStatus;
+  transcriptError?: string;
 }
 
 export interface DocumentDetailView extends DocumentPublicView {
@@ -51,6 +54,8 @@ export interface DocumentEntityProps {
   ocrConfidence?: number | undefined;
   chunkCount?: number | undefined;
   ingestionError?: string | undefined;
+  transcriptStatus: TranscriptStatus;
+  transcriptError?: string | undefined;
 }
 
 export class DocumentEntity {
@@ -74,6 +79,8 @@ export class DocumentEntity {
       lastOpenedAt: this.props.lastOpenedAt,
       createdAt: this.props.createdAt,
       updatedAt: this.props.updatedAt,
+      transcriptStatus: this.props.transcriptStatus,
+      transcriptError: this.props.transcriptError,
     };
   }
 
@@ -112,5 +119,11 @@ export class DocumentEntity {
   }
   get content(): string | undefined {
     return this.props.content;
+  }
+  get transcriptStatus(): TranscriptStatus {
+    return this.props.transcriptStatus;
+  }
+  get transcriptError(): string | undefined {
+    return this.props.transcriptError;
   }
 }
