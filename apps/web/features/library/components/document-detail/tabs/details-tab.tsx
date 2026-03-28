@@ -140,9 +140,9 @@ export function DetailsTab({ isCompact = false }: { isCompact?: boolean }) {
             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">
               Raw Metadata
             </p>
-            <div className="rounded-2xl border bg-muted/20 p-6">
-              <ScrollArea className="h-[240px] w-full">
-                <pre className="text-[12px] leading-relaxed font-mono opacity-80">
+            <div className="rounded-2xl border bg-muted/20 dark:bg-muted/5 p-4 ring-1 ring-inset ring-border/50">
+              <ScrollArea className="h-[380px] w-full pr-4">
+                <pre className="text-[12px] leading-[1.8]! font-mono text-muted-foreground/90 whitespace-pre-wrap wrap-break-word selection:bg-primary/30">
                   {JSON.stringify(document.metadata, null, 2)}
                 </pre>
               </ScrollArea>
