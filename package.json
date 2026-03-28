@@ -19,7 +19,7 @@
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
     "prettier": "^3.2.5",
-    "turbo": "^2.8.20"
+    "turbo": "^2.8.21"
   },
   "engines": {
     "node": "24.x"

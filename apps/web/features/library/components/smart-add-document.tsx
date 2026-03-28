@@ -241,7 +241,7 @@ export function SmartAddDocument({
             </InputGroupAddon>
             <InputGroupInput
               id="name"
-              placeholder="e.g. Sales Report 2024"
+              placeholder="e.g. My Document"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               disabled={mutation.isPending}

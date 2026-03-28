@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Types, FilterQuery, SortOrder } from 'mongoose';
 import { DocumentModel, IDocumentDocument, IDocument } from '@repo/db';
-import { IngestionStatus, IngestionStage } from '@repo/types';
+import { IngestionStatus, IngestionStage, TranscriptStatus } from '@repo/types';
 import {
   IDocumentRepository,
   DocFilters,
@@ -25,8 +25,6 @@ export class MongooseDocumentRepository extends IDocumentRepository {
     })
       .lean<IDocument>()
       .exec();
-
-    this.logger.debug(`Found document: ${doc ? 'YES' : 'NO'}`);
 
     if (!doc) return null;
 
@@ -186,6 +184,8 @@ export class MongooseDocumentRepository extends IDocumentRepository {
       ocrConfidence: doc.ocrConfidence ?? undefined,
       chunkCount: doc.chunkCount ?? undefined,
       ingestionError: doc.ingestionError ?? undefined,
+      transcriptStatus: doc.transcriptStatus ?? TranscriptStatus.IDLE,
+      transcriptError: doc.transcriptError ?? undefined,
     });
   }
 
@@ -213,6 +213,8 @@ export class MongooseDocumentRepository extends IDocumentRepository {
       ocrConfidence: props.ocrConfidence ?? undefined,
       chunkCount: props.chunkCount ?? undefined,
       ingestionError: props.ingestionError ?? undefined,
+      transcriptStatus: props.transcriptStatus,
+      transcriptError: props.transcriptError,
       createdAt: props.createdAt,
       updatedAt: props.updatedAt,
       summary: props.summary ?? undefined,

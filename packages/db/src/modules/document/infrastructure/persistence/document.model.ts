@@ -6,6 +6,7 @@ import {
   DocumentStatus,
   SourceType,
   IngestionStatus,
+  TranscriptStatus,
 } from '../types/document.type';
 
 const documentSchema = new Schema<IDocumentDocument>(
@@ -50,6 +51,13 @@ const documentSchema = new Schema<IDocumentDocument>(
     ocrConfidence: { type: Number },
     chunkCount: { type: Number },
     ingestionError: { type: String },
+    
+    transcriptStatus: {
+      type: String,
+      enum: Object.values(TranscriptStatus),
+      default: TranscriptStatus.IDLE,
+    },
+    transcriptError: { type: String },
 
     notionPageId: { type: String, index: true },
 

@@ -13,6 +13,9 @@ import {
   UploadedFile,
   BadRequestException,
 } from '@nestjs/common';
+import { createReadStream } from 'node:fs';
+import { unlink } from 'node:fs/promises';
+import { diskStorage } from 'multer';
 import { env } from '../../../shared/utils/env';
 import {
   ApiTags,
@@ -97,6 +100,14 @@ export class DocumentsController {
   @ApiCreatedResponse({ type: DocumentResponseDto })
   @UseInterceptors(
     FileInterceptor('file', {
+      storage: diskStorage({
+        destination: env.FILE_UPLOAD_DIR || '/tmp/recall-uploads',
+        filename: (_req, file, cb) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, file.fieldname + '-' + uniqueSuffix);
+        },
+      }),
       limits: {
         fileSize: env.MAX_FILE_SIZE_MB * 1024 * 1024,
       },
@@ -113,19 +124,26 @@ export class DocumentsController {
       );
     }
 
-    const doc = await this.smartAddDocumentUseCase.execute({
-      userId,
-      buffer: file?.buffer,
-      originalName: file?.originalname,
-      mimeType: file?.mimetype,
-      source: body.source,
-      title: body.title,
-      folderIds: body.folderIds,
-      tagIds: body.tagIds,
-      notes: body.notes,
-    });
+    try {
+      const doc = await this.smartAddDocumentUseCase.execute({
+        userId,
+        stream: file ? createReadStream(file.path) : undefined,
+        originalName: file?.originalname,
+        mimeType: file?.mimetype,
+        source: body.source,
+        title: body.title,
+        folderIds: body.folderIds,
+        tagIds: body.tagIds,
+        notes: body.notes,
+      });
 
-    return { document: doc };
+      return { document: doc };
+    } finally {
+      // Cleanup temp file
+      if (file?.path) {
+        await unlink(file.path).catch(() => {});
+      }
+    }
   }
 
   @Get(':id')

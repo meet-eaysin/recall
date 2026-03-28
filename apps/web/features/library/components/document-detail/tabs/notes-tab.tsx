@@ -14,6 +14,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { useDocumentDetail } from '../context';
 
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { cn } from '@/lib/utils';
 
 export function NotesTab({ isCompact = false }: { isCompact?: boolean }) {
@@ -120,24 +127,17 @@ export function NotesTab({ isCompact = false }: { isCompact?: boolean }) {
 
       <div className="space-y-6">
         {notes.length === 0 ? (
-          <div
-            className={cn(
-              'flex flex-col items-center gap-4 py-24 text-center',
-              isCompact && 'py-12',
-            )}
-          >
-            <div className="rounded-3xl bg-muted/30 p-8 ring-1 ring-border shadow-inner">
-              <StickyNote className="size-10 text-muted-foreground/20" />
-            </div>
-            <div className="space-y-1">
-              <p className="text-base font-semibold text-foreground/80">
-                No insights captured yet
-              </p>
-              <p className="text-sm text-muted-foreground max-w-[240px] leading-relaxed">
+          <Empty className={cn('py-24', isCompact && 'py-12')}>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <StickyNote className="size-5 text-muted-foreground/40" />
+              </EmptyMedia>
+              <EmptyTitle>No insights captured yet</EmptyTitle>
+              <EmptyDescription>
                 As you read, capture important quotes or personal thoughts here.
-              </p>
-            </div>
-          </div>
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : (
           <div
             className={cn(

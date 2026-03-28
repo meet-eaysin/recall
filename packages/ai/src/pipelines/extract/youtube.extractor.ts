@@ -27,6 +27,7 @@ export interface YouTubeExtractResult {
   description: string;
   thumbnail?: string;
   transcript: TranscriptSegment[];
+  fullText: string;
 }
 
 interface VideoMetadata {
@@ -41,12 +42,36 @@ export class YouTubeExtractor {
     const videoId = this.extractVideoId(url);
     if (!videoId) throw new Error('Invalid YouTube URL');
 
-    let transcript: YTTranscriptResponse[] = [];
-    try {
-      transcript = await YoutubeTranscript.fetchTranscript(videoId);
-    } catch {}
-
     const metadata = await this.fetchMetadata(videoId);
+    let transcript: YTTranscriptResponse[] = [];
+
+    // Try multiple languages and methods to fetch transcript
+    const langs = ['en', 'bn', 'hi', 'en-US', 'en-GB']; // Expanded language list
+    
+    for (const lang of langs) {
+      try {
+        transcript = await YoutubeTranscript.fetchTranscript(videoId, { lang });
+        if (transcript && transcript.length > 0) {
+          console.log(`Successfully fetched ${lang} transcript for ${videoId}`);
+          break;
+        }
+      } catch (err) {
+        // Continue to next language
+      }
+    }
+
+    // Last ditch effort: try without lang parameter
+    if (transcript.length === 0) {
+      try {
+        transcript = await YoutubeTranscript.fetchTranscript(videoId);
+        if (transcript.length === 0) {
+          console.warn(`Transcript returned empty for ${videoId}`);
+        }
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+        console.warn(`All transcript fetch attempts failed for ${videoId}: ${errorMsg}`);
+      }
+    }
 
     return {
       videoId,
@@ -59,6 +84,7 @@ export class YouTubeExtractor {
         start: t.offset,
         duration: t.duration,
       })),
+      fullText: transcript.map((t) => t.text).join(' '),
     };
   }
 

@@ -6,14 +6,12 @@ import { ITranscriptRepository, MongooseTranscriptRepository } from '@repo/db';
 import {
   IIngestionJobRepository,
   MongooseIngestionJobRepository,
-} from '@repo/db';
-import { LocalStorage } from '@repo/db';
-import {
   IGraphRepository,
   MongooseGraphRepository,
   INotionConfigRepository,
   MongooseNotionConfigRepository,
 } from '@repo/db';
+import { StorageModule } from '@repo/storage';
 
 // Modules
 import { EmailModule } from './modules/email/email.module';
@@ -54,6 +52,16 @@ import { LlmModule } from './modules/llm/llm.module';
         devBypassHeader: true,
       },
     }),
+    StorageModule.forRoot({
+      provider: env.STORAGE_PROVIDER,
+      disk: {
+        baseDir: env.FILE_UPLOAD_DIR,
+      },
+      supabase: {
+        url: env.SUPABASE_URL,
+        key: env.SUPABASE_KEY,
+      },
+    }),
     LlmModule,
     EmailModule,
     DocumentsModule,
@@ -62,15 +70,6 @@ import { LlmModule } from './modules/llm/llm.module';
     NotionModule,
   ],
   providers: [
-    // Infrastructure
-    {
-      provide: LocalStorage,
-      useFactory: () => {
-        const storage = new LocalStorage();
-        storage.setBaseDir(env.FILE_UPLOAD_DIR);
-        return storage;
-      },
-    },
     // Repositories
     {
       provide: IDocumentRepository,
@@ -99,7 +98,6 @@ import { LlmModule } from './modules/llm/llm.module';
     IIngestionJobRepository,
     IGraphRepository,
     INotionConfigRepository,
-    LocalStorage,
   ],
 })
 export class WorkerModule {}

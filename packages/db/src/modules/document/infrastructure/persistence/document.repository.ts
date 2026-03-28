@@ -6,6 +6,7 @@ import {
   IDocumentDocument,
   IDocument,
   IngestionStatus,
+  TranscriptStatus,
 } from '../types/document.type';
 import { IDocumentRepository } from '../../domain/repository.interface';
 import { DocumentEntity } from '../../domain/entity';
@@ -178,6 +179,8 @@ export class MongooseDocumentRepository extends IDocumentRepository {
       ocrConfidence: doc.ocrConfidence ?? undefined,
       chunkCount: doc.chunkCount ?? undefined,
       ingestionError: doc.ingestionError ?? undefined,
+      transcriptStatus: doc.transcriptStatus ?? TranscriptStatus.IDLE,
+      transcriptError: doc.transcriptError ?? undefined,
     });
   }
 
@@ -211,6 +214,8 @@ export class MongooseDocumentRepository extends IDocumentRepository {
       updatedAt: props.updatedAt,
       summary: props.summary ?? undefined,
       lastOpenedAt: props.lastOpenedAt ?? undefined,
+      transcriptStatus: props.transcriptStatus,
+      transcriptError: props.transcriptError,
     };
   }
 }

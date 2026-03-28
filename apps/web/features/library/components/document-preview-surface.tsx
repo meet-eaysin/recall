@@ -1,9 +1,10 @@
 'use client';
 
 import * as React from 'react';
-import { ExternalLink, FileText, Globe, PlayCircle } from 'lucide-react';
+import { Download, ExternalLink, Globe, PlayCircle } from 'lucide-react';
 import type { DocumentDetail, DocumentRow } from '../types';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 type PreviewDocument = Pick<DocumentRow, 'sourceUrl' | 'title' | 'type'> &
   Partial<Pick<DocumentDetail, 'content'>>;
@@ -11,9 +12,11 @@ type PreviewDocument = Pick<DocumentRow, 'sourceUrl' | 'title' | 'type'> &
 export function DocumentPreviewSurface({
   compact = false,
   document,
+  className,
 }: {
   compact?: boolean;
   document: PreviewDocument;
+  className?: string;
 }) {
   const sourceUrl = document.sourceUrl;
   const youtubeId = getYouTubeId(sourceUrl);
@@ -99,13 +102,33 @@ export function DocumentPreviewSurface({
     return compact ? (
       <UrlPreviewCard sourceUrl={sourceUrl} title={document.title} />
     ) : (
-      <div className="relative h-full w-full">
+      <div className={`relative h-full w-full group ${className}`}>
         <iframe
           className="h-full w-full bg-background"
           src={sourceUrl}
           title={document.title}
         />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-background to-transparent p-4" />
+        {/* Progressively reveal actions on hover */}
+        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <a
+            href={sourceUrl}
+            download={document.title}
+            className="p-2 bg-background/80 backdrop-blur-sm rounded-full shadow-lg border border-border hover:bg-background transition-colors"
+            title="Download"
+          >
+            <Download className="size-4" />
+          </a>
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="p-2 bg-background/80 backdrop-blur-sm rounded-full shadow-lg border border-border hover:bg-background transition-colors"
+            title="Open original"
+          >
+            <ExternalLink className="size-4" />
+          </a>
+        </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-background/40 to-transparent p-4" />
       </div>
     );
   }
@@ -123,28 +146,29 @@ function TextPreview({
   title: string;
 }) {
   return (
-    <div className="flex h-full flex-col justify-between p-4">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <FileText className="size-4" />
-        <span className="text-xs font-medium tracking-wide">Note</span>
-      </div>
-      <div className="space-y-2">
-        <p
-          className={
-            compact ? 'line-clamp-3 text-sm font-medium' : 'text-lg font-medium'
-          }
+    <div
+      className={cn(
+        'flex h-full flex-col justify-start group',
+        compact ? 'p-4' : 'p-6 md:p-8 overflow-y-auto custom-scrollbar',
+      )}
+    >
+      <div className="flex flex-col gap-4">
+        <h1
+          className={cn(
+            'font-bold tracking-tight text-foreground/90',
+            compact ? 'text-sm line-clamp-2' : 'text-xl md:text-2xl',
+          )}
         >
           {title}
-        </p>
-        <p
-          className={
-            compact
-              ? 'line-clamp-4 text-xs text-muted-foreground'
-              : 'line-clamp-8 text-sm text-muted-foreground'
-          }
+        </h1>
+        <div
+          className={cn(
+            'whitespace-pre-wrap leading-relaxed text-foreground/80 selection:bg-primary/20',
+            compact ? 'text-[11px] line-clamp-4' : 'text-sm md:text-base',
+          )}
         >
           {content?.trim() || 'No content preview is available yet.'}
-        </p>
+        </div>
       </div>
     </div>
   );

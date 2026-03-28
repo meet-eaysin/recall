@@ -24,6 +24,7 @@ import { HealthController } from './modules/health/health.controller';
 import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
 
 import { CacheModule } from '@repo/cache';
+import { StorageModule } from '@repo/storage';
 
 @Module({
   imports: [
@@ -35,6 +36,16 @@ import { CacheModule } from '@repo/cache';
       },
       redis: {
         url: env.REDIS_URL,
+      },
+    }),
+    StorageModule.forRoot({
+      provider: env.STORAGE_PROVIDER,
+      disk: {
+        baseDir: env.FILE_UPLOAD_DIR,
+      },
+      supabase: {
+        url: env.SUPABASE_URL,
+        key: env.SUPABASE_KEY,
       },
     }),
     AnalyticsModule,

@@ -26,7 +26,13 @@ interface DocumentDetailContextType {
   id: string;
   document: DocumentDetail | undefined;
   ingestion: IngestionStatusView | undefined;
-  transcript: { content: string } | undefined;
+  transcript:
+    | {
+        content: string;
+        status: string;
+        reason?: string;
+      }
+    | undefined;
   notes: NoteRow[];
   isLoading: boolean;
   error: Error | null;

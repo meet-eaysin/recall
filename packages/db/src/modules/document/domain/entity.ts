@@ -28,6 +28,8 @@ export class DocumentEntity {
       lastOpenedAt: this.props.lastOpenedAt,
       createdAt: this.props.createdAt,
       updatedAt: this.props.updatedAt,
+      transcriptStatus: this.props.transcriptStatus,
+      transcriptError: this.props.transcriptError,
     };
   }
 
@@ -69,5 +71,11 @@ export class DocumentEntity {
   }
   get content(): string | undefined {
     return this.props.content;
+  }
+  get transcriptStatus(): string {
+    return this.props.transcriptStatus;
+  }
+  get transcriptError(): string | undefined {
+    return this.props.transcriptError;
   }
 }

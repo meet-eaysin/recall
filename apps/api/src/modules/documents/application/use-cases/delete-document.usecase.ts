@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { IDocumentRepository } from '../../domain/repositories/document.repository';
-import { LocalStorage } from '../../../../shared/infrastructure/storage/local-storage';
+import { IStorageProvider } from '@repo/storage';
 
 @Injectable()
 export class DeleteDocumentUseCase {
@@ -8,7 +8,7 @@ export class DeleteDocumentUseCase {
 
   constructor(
     private readonly documentRepository: IDocumentRepository,
-    private readonly localStorage: LocalStorage,
+    private readonly storageProvider: IStorageProvider,
   ) {}
 
   async execute(id: string, userId: string): Promise<void> {
@@ -24,7 +24,7 @@ export class DeleteDocumentUseCase {
 
     if (isUploadBackedFile && doc.sourceUrl) {
       try {
-        await this.localStorage.deleteFile(doc.sourceUrl);
+        await this.storageProvider.delete(doc.sourceUrl);
       } catch (err) {
         this.logger.error(`Failed to delete file: ${doc.sourceUrl}`, err);
       }

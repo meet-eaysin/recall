@@ -14,6 +14,7 @@ const DOCUMENT_ICON_MAP: Record<DocumentType, LucideIcon> = {
   [DocumentType.PDF]: FileText,
   [DocumentType.IMAGE]: ImageIcon,
   [DocumentType.TEXT]: BookOpen,
+  [DocumentType.DOCX]: FileText,
 };
 
 export function getDocumentIcon(type: DocumentType): LucideIcon {
@@ -58,6 +59,7 @@ const TYPE_LABEL_MAP: Record<DocumentType, string> = {
   [DocumentType.PDF]: 'PDF',
   [DocumentType.IMAGE]: 'Image',
   [DocumentType.TEXT]: 'Note',
+  [DocumentType.DOCX]: 'Document',
 };
 
 export function getTypeLabel(type: DocumentType): string {

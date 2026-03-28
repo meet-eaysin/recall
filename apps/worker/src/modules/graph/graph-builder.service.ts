@@ -115,7 +115,7 @@ export class GraphBuilderService {
                 );
               if (targetNode) {
                 this.logger.log(
-                  `[GraphBuilder] Creating similarity edge to document: ${targetDocId} (Score: ${result.score})`,
+                  `[GraphBuilder] Creating similarity edge: ${documentId} -> ${targetDocId} (Score: ${result.score})`,
                 );
                 await this.graphRepository.upsertEdge({
                   userId: internalUserId,
@@ -134,54 +134,56 @@ export class GraphBuilderService {
             embedError,
           );
         }
+      }
 
-        // 5. Topical and Tag-based connections
-        const { docs: otherDocs } = await this.documentRepository.findAll(
-          internalUserId,
-          { page: 1, limit: 100 },
+      // 5. Topical and Tag-based connections (Independent of embeddings)
+      const { docs: otherDocs } = await this.documentRepository.findAll(
+        internalUserId,
+        { page: 1, limit: 100 },
+      );
+
+      for (const otherDoc of otherDocs) {
+        if (otherDoc.id === documentId) continue;
+
+        const publicDoc = doc.toPublicView();
+        const publicOther = otherDoc.toPublicView();
+        
+        const sharedTags = publicDoc.tags.filter((t) => 
+          publicOther.tags.includes(t)
         );
 
-        for (const otherDoc of otherDocs) {
-          if (otherDoc.id === documentId) continue;
-
-          const sharedTags = doc
-            .toPublicView()
-            .tags.filter((t) => otherDoc.toPublicView().tags.includes(t));
-
-          if (sharedTags.length >= 2) {
-            const targetNode = await this.graphRepository.findNodeByDocumentId(
-              internalUserId,
-              otherDoc.id,
-            );
-            if (targetNode) {
-              const totalTags = new Set([
-                ...doc.toPublicView().tags,
-                ...otherDoc.toPublicView().tags,
-              ]).size;
-              await this.graphRepository.upsertEdge({
-                userId: internalUserId,
-                fromNodeId: docNode.id,
-                toNodeId: targetNode.id,
-                relationType: GraphRelationType.TOPICAL,
-                weight: sharedTags.length / (totalTags || 1),
-                generationMethod: GraphGenerationMethod.TOPICAL,
-              });
-            }
-          } else if (sharedTags.length >= 1) {
-            const targetNode = await this.graphRepository.findNodeByDocumentId(
-              internalUserId,
-              otherDoc.id,
-            );
-            if (targetNode) {
-              await this.graphRepository.upsertEdge({
-                userId: internalUserId,
-                fromNodeId: docNode.id,
-                toNodeId: targetNode.id,
-                relationType: GraphRelationType.SHARED_TAGS,
-                weight: 0.5,
-                generationMethod: GraphGenerationMethod.SHARED_TAGS,
-              });
-            }
+        if (sharedTags.length >= 2) {
+          const targetNode = await this.graphRepository.findNodeByDocumentId(
+            internalUserId,
+            otherDoc.id,
+          );
+          if (targetNode) {
+            const totalTags = new Set([...publicDoc.tags, ...publicOther.tags]).size;
+            this.logger.log(`[GraphBuilder] Creating topical edge: ${documentId} -> ${otherDoc.id} (${sharedTags.length} shared tags)`);
+            await this.graphRepository.upsertEdge({
+              userId: internalUserId,
+              fromNodeId: docNode.id,
+              toNodeId: targetNode.id,
+              relationType: GraphRelationType.TOPICAL,
+              weight: sharedTags.length / (totalTags || 1),
+              generationMethod: GraphGenerationMethod.TOPICAL,
+            });
+          }
+        } else if (sharedTags.length >= 1) {
+          const targetNode = await this.graphRepository.findNodeByDocumentId(
+            internalUserId,
+            otherDoc.id,
+          );
+          if (targetNode) {
+            this.logger.log(`[GraphBuilder] Creating shared tags edge: ${documentId} -> ${otherDoc.id}`);
+            await this.graphRepository.upsertEdge({
+              userId: internalUserId,
+              fromNodeId: docNode.id,
+              toNodeId: targetNode.id,
+              relationType: GraphRelationType.SHARED_TAGS,
+              weight: 0.5,
+              generationMethod: GraphGenerationMethod.SHARED_TAGS,
+            });
           }
         }
       }

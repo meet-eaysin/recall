@@ -6,6 +6,7 @@ export enum DocumentType {
   PDF = 'pdf',
   IMAGE = 'image',
   TEXT = 'text',
+  DOCX = 'docx',
 }
 
 export enum DocumentStatus {
@@ -17,6 +18,14 @@ export enum DocumentStatus {
   COMPLETED = 'completed',
   PENDING_COMPLETION = 'pending_completion',
   ARCHIVED = 'archived',
+}
+
+export enum TranscriptStatus {
+  IDLE = 'idle',
+  PENDING = 'pending',
+  COMPLETED = 'completed',
+  FAILED = 'failed',
+  UNAVAILABLE = 'unavailable',
 }
 
 export enum SourceType {
@@ -57,6 +66,8 @@ export interface DocumentPublicView {
   lastOpenedAt?: Date | undefined;
   createdAt: Date;
   updatedAt: Date;
+  transcriptStatus?: TranscriptStatus;
+  transcriptError?: string;
 }
 
 export interface DocumentDetailView extends DocumentPublicView {
@@ -89,6 +100,8 @@ export interface DocumentEntityProps {
   ocrConfidence?: number | undefined;
   chunkCount?: number | undefined;
   ingestionError?: string | undefined;
+  transcriptStatus: TranscriptStatus;
+  transcriptError?: string | undefined;
 }
 
 export interface TranscriptSegment {

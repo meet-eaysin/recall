@@ -8,11 +8,16 @@ import {
   DocumentEntity,
 } from '../../domain/entities/document.entity';
 import type { PaginatedResponse } from '@repo/types';
+import { SourceType } from '@repo/types';
+import { IStorageProvider } from '@repo/storage';
 import { ListDocumentsDto } from '../../interface/dtos/documents.schema';
 
 @Injectable()
 export class ListDocumentsUseCase {
-  constructor(private readonly documentRepository: IDocumentRepository) {}
+  constructor(
+    private readonly documentRepository: IDocumentRepository,
+    private readonly storageProvider: IStorageProvider,
+  ) {}
 
   async execute(
     userId: string,
@@ -29,8 +34,25 @@ export class ListDocumentsUseCase {
       docFilters,
     );
 
+    const items = await Promise.all(
+      docs.map(async (doc: DocumentEntity) => {
+        const view = doc.toPublicView();
+        if (view.sourceType === SourceType.FILE && view.sourceUrl) {
+          try {
+            view.sourceUrl = await this.storageProvider.getSignedUrl(
+              view.sourceUrl,
+            );
+          } catch (err) {
+            // Log but don't fail the whole list
+            console.error(`Failed to sign URL for ${doc.id}:`, err);
+          }
+        }
+        return view;
+      }),
+    );
+
     return {
-      items: docs.map((doc: DocumentEntity) => doc.toPublicView()),
+      items,
       total,
       page: docFilters.page,
       limit: docFilters.limit,

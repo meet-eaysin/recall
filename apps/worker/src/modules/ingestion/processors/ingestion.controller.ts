@@ -16,10 +16,14 @@ import {
   urlExtractor,
   youtubeExtractor,
   imageExtractor,
+  docxExtractor,
   chunkText,
   embeddingAdapter,
   QdrantWrapper,
   LLMClientFactory,
+  ChunkResult,
+  ResolvedLLMConfig,
+  YouTubeExtractResult,
 } from '@repo/ai';
 import type { ResolvedClient } from '@repo/ai';
 import {
@@ -29,16 +33,20 @@ import {
   QUEUE_INGESTION,
   QUEUE_GRAPH,
   QUEUE_NOTION_SYNC,
+  DocumentType,
+  SourceType,
+  TranscriptStatus,
 } from '@repo/types';
 import type { IngestionJobData } from '@repo/types';
 import {
   IDocumentRepository,
   IIngestionJobRepository,
-  LocalStorage,
   TagModel,
   DocumentModel,
   DocumentChunkModel,
+  DocumentTranscriptModel,
 } from '@repo/db';
+import { IStorageProvider } from '@repo/storage';
 import * as crypto from 'crypto';
 import { Types } from 'mongoose';
 import { env } from '../../../shared/utils/env';
@@ -52,7 +60,7 @@ export class IngestionController {
   constructor(
     private readonly documentRepository: IDocumentRepository,
     private readonly ingestionJobRepository: IIngestionJobRepository,
-    private readonly localStorage: LocalStorage,
+    private readonly storageProvider: IStorageProvider,
     private readonly queueService: QueueService,
     private readonly llmClientFactory: LLMClientFactory,
   ) {
@@ -123,15 +131,19 @@ export class IngestionController {
       let text = '';
       let ocrConfidence = 100;
 
-      if (type === 'pdf') {
-        const buffer = await this.localStorage.getFile(source);
+      if (type === DocumentType.PDF) {
+        const buffer = await this.storageProvider.download(source);
         const result = await pdfExtractor.extractPdf(buffer);
         text = result.text;
         ocrConfidence = result.ocrConfidence;
         await this.documentRepository.update(documentId, userId, {
           ocrConfidence,
         });
-      } else if (type === 'url') {
+      } else if (type === DocumentType.DOCX) {
+        const buffer = await this.storageProvider.download(source);
+        const result = await docxExtractor.extractDocx(buffer);
+        text = result.text;
+      } else if (type === DocumentType.URL) {
         const result = await urlExtractor.extractFromUrl(source);
         text = result.markdown;
         const updateData: Record<string, unknown> = { renderedMarkdown: text };
@@ -139,28 +151,68 @@ export class IngestionController {
           updateData.title = result.title;
         }
         await this.documentRepository.update(documentId, userId, updateData);
-      } else if (type === 'youtube') {
-        const result = await youtubeExtractor.extractYouTube(source);
-        text = result.transcript.map((t) => t.text).join(' ');
-        const updateData: Record<string, unknown> = {};
+      } else if (type === DocumentType.YOUTUBE) {
+        let result: YouTubeExtractResult;
+        let transcriptStatus = TranscriptStatus.COMPLETED;
+        let transcriptError: string | undefined = undefined;
+
+        try {
+          result = await youtubeExtractor.extractYouTube(source);
+          if (!result.transcript || result.transcript.length === 0) {
+            transcriptStatus = TranscriptStatus.UNAVAILABLE;
+            transcriptError = 'No transcript available for this video (disabled or not provided).';
+          }
+        } catch (err) {
+          const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+          this.logger.warn(`[IngestionWorker] Failed to extract transcript for ${documentId}: ${errorMsg}`);
+          transcriptStatus = TranscriptStatus.FAILED;
+          transcriptError = errorMsg;
+          result = {
+            videoId: '',
+            title: 'YouTube Video',
+            channelTitle: 'Unknown Channel',
+            description: '',
+            transcript: [],
+            fullText: '',
+          };
+        }
+        text = result.fullText || '';
+        
+        if (transcriptStatus === TranscriptStatus.COMPLETED && result.transcript.length > 0) {
+          // Save transcript segments
+          await DocumentTranscriptModel.findOneAndUpdate(
+            { documentId: new Types.ObjectId(documentId) },
+            {
+              content: text,
+              segments: result.transcript.map(s => ({
+                text: s.text,
+                start: s.start,
+                end: s.start + s.duration,
+              })),
+            },
+            { upsert: true }
+          );
+        }
+
+        const updateData: Record<string, unknown> = {
+          transcriptStatus,
+          transcriptError,
+        };
         if (result.title && result.title !== 'Unknown Title') {
           updateData.title = result.title;
         }
-
-        if (Object.keys(updateData).length > 0) {
-          await this.documentRepository.update(documentId, userId, updateData);
-        }
-      } else if (type === 'image') {
-        const buffer = await this.localStorage.getFile(source);
+        await this.documentRepository.update(documentId, userId, updateData);
+      } else if (type === DocumentType.IMAGE) {
+        const buffer = await this.storageProvider.download(source);
         const result = await imageExtractor.extractImage(buffer);
         text = result.text;
         ocrConfidence = result.ocrConfidence;
         await this.documentRepository.update(documentId, userId, {
           ocrConfidence,
         });
-      } else if (type === 'text') {
-        if (doc.sourceType === 'file') {
-          const buffer = await this.localStorage.getFile(source);
+      } else if (type === DocumentType.TEXT) {
+        if (doc.sourceType === SourceType.FILE) {
+          const buffer = await this.storageProvider.download(source);
           text = buffer.toString('utf-8');
         } else {
           text = source;
@@ -187,7 +239,7 @@ export class IngestionController {
         IngestionStatus.PROCESSING,
         userId,
       );
-      const config = await this.llmClientFactory.resolveConfigForUserId(userId);
+      const config: ResolvedLLMConfig = await this.llmClientFactory.resolveConfigForUserId(userId);
       const llmClient = await this.llmClientFactory.createForUserId(userId);
 
       // AI Enrichment for Smart Add
@@ -283,7 +335,7 @@ export class IngestionController {
         IngestionStatus.PROCESSING,
         userId,
       );
-      const chunks = chunkText(text);
+      const chunks: ChunkResult[] = chunkText(text);
 
       await DocumentChunkModel.deleteMany({
         documentId: new Types.ObjectId(documentId),
@@ -313,7 +365,7 @@ export class IngestionController {
       await this.qdrant.ensureCollection('mindstack', 768);
 
       const embeddings = await embeddingAdapter.embedBatch(
-        chunks.map((c) => c.content),
+        chunks.map((c) => String(c.content)),
         config,
       );
 

@@ -1,4 +1,9 @@
-import { Injectable, Logger, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { QueueService } from '@repo/queue';
 import { IDocumentRepository } from '../../domain/repositories/document.repository';
 import {
@@ -10,9 +15,10 @@ import {
   DocumentType,
   SourceType,
   IngestionStatus,
+  TranscriptStatus,
   QUEUE_INGESTION,
 } from '@repo/types';
-import { LocalStorage } from '../../../../shared/infrastructure/storage/local-storage';
+import { IStorageProvider } from '@repo/storage';
 import { validateFileType } from '../../../../shared/infrastructure/file-validation';
 import { SmartAddDocumentCommand } from '../command/smart-add-document';
 
@@ -23,7 +29,7 @@ export class SmartAddDocumentUseCase {
   constructor(
     private readonly documentRepository: IDocumentRepository,
     private readonly queueService: QueueService,
-    private readonly localStorage: LocalStorage,
+    private readonly storageProvider: IStorageProvider,
   ) {}
 
   async execute(command: SmartAddDocumentCommand): Promise<DocumentPublicView> {
@@ -32,19 +38,55 @@ export class SmartAddDocumentUseCase {
     let finalDocumentType = DocumentType.URL;
     let initialTitle = command.title;
 
-    if (command.buffer && command.originalName) {
-      const fileType = validateFileType(command.buffer, command.mimeType || '');
-      finalDocumentType =
-        fileType === 'pdf'
-          ? DocumentType.PDF
-          : fileType === 'image'
-            ? DocumentType.IMAGE
-            : DocumentType.TEXT;
+    if ((command.buffer || command.stream) && command.originalName) {
+      if (command.buffer) {
+        const fileType = validateFileType(
+          command.buffer,
+          command.mimeType || '',
+        );
+        if (fileType === 'pdf') {
+          finalDocumentType = DocumentType.PDF;
+        } else if (fileType === 'image') {
+          finalDocumentType = DocumentType.IMAGE;
+        } else if (fileType === 'docx') {
+          finalDocumentType = DocumentType.DOCX;
+        } else {
+          finalDocumentType = DocumentType.TEXT;
+        }
+      } else {
+        // Fallback to mimeType for streams if we can't easily peek
+        const isPdf = command.mimeType?.includes('pdf');
+        const isImage = command.mimeType?.includes('image');
+        const isDocx = command.mimeType?.includes(
+          'officedocument.wordprocessingml',
+        );
+
+        if (isPdf) {
+          finalDocumentType = DocumentType.PDF;
+        } else if (isImage) {
+          finalDocumentType = DocumentType.IMAGE;
+        } else if (isDocx) {
+          finalDocumentType = DocumentType.DOCX;
+        } else {
+          finalDocumentType = DocumentType.TEXT;
+        }
+      }
+
       finalSourceType = SourceType.FILE;
-      finalSourceUrl = await this.localStorage.saveFile(
-        command.buffer,
-        command.originalName,
-        command.userId,
+      const fileName = `${Date.now()}-${command.originalName}`;
+      const filePath = `${command.userId}/${fileName}`;
+
+      const uploadSource = command.buffer || command.stream;
+      if (!uploadSource) {
+        throw new BadRequestException('File buffer or stream is missing');
+      }
+
+      finalSourceUrl = await this.storageProvider.upload(
+        uploadSource,
+        filePath,
+        {
+          contentType: command.mimeType || undefined,
+        },
       );
       if (!initialTitle) {
         initialTitle = command.originalName;
@@ -81,12 +123,13 @@ export class SmartAddDocumentUseCase {
         );
       }
     } else {
-      throw new Error('Must provide either a file or a source URL');
+      throw new BadRequestException(
+        'Must provide either a file or a source URL',
+      );
     }
 
     const docType = DomainDocumentType.validate(finalDocumentType);
 
-    // Default title fallback
     if (!initialTitle || initialTitle.trim() === '') {
       initialTitle = 'Untitled Document';
     }
@@ -99,7 +142,6 @@ export class SmartAddDocumentUseCase {
       metadata.description = command.description;
     }
 
-    // Set flags for AI enrichment fallback
     const requiresTitle = !command.title || command.title.trim() === '';
     const requiresDescription =
       !command.description || command.description.trim() === '';
@@ -124,6 +166,7 @@ export class SmartAddDocumentUseCase {
       createdAt: new Date(),
       updatedAt: new Date(),
       ingestionStatus: IngestionStatus.PENDING,
+      transcriptStatus: TranscriptStatus.IDLE,
     });
 
     const savedDoc = await this.documentRepository.create(doc);
@@ -132,13 +175,11 @@ export class SmartAddDocumentUseCase {
       `Smart Document added: ${savedDoc.title} (ID: ${savedDoc.id}) by User: ${command.userId}`,
     );
 
-    // Push to ingestion webhook
-    // It will process embeddings, AND if metadata.requiresEnrichment is true, it will auto-generate title & summary
     this.queueService
       .publishMessage(QUEUE_INGESTION, {
         documentId: savedDoc.id,
         userId: command.userId,
-        type: docType.getValue(), // Use actual doc type
+        type: docType.getValue(),
         source: finalSourceUrl,
       })
       .catch((err: Error) => {
@@ -147,6 +188,21 @@ export class SmartAddDocumentUseCase {
         );
       });
 
-    return savedDoc.toPublicView();
+    const view = savedDoc.toPublicView();
+
+    // If it's a file, provide a signed URL for immediate viewing
+    if (view.sourceType === SourceType.FILE && view.sourceUrl) {
+      try {
+        view.sourceUrl = await this.storageProvider.getSignedUrl(
+          view.sourceUrl,
+        );
+      } catch (err) {
+        this.logger.warn(
+          `Failed to sign URL for new doc ${savedDoc.id}: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
+    }
+
+    return view;
   }
 }
