@@ -1,15 +1,10 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Download,
-  ExternalLink,
-  FileText,
-  Globe,
-  PlayCircle,
-} from 'lucide-react';
+import { Download, ExternalLink, Globe, PlayCircle } from 'lucide-react';
 import type { DocumentDetail, DocumentRow } from '../types';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 type PreviewDocument = Pick<DocumentRow, 'sourceUrl' | 'title' | 'type'> &
   Partial<Pick<DocumentDetail, 'content'>>;
@@ -151,28 +146,29 @@ function TextPreview({
   title: string;
 }) {
   return (
-    <div className="flex h-full flex-col justify-between p-4">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <FileText className="size-4" />
-        <span className="text-xs font-medium tracking-wide">Note</span>
-      </div>
-      <div className="space-y-2">
-        <p
-          className={
-            compact ? 'line-clamp-3 text-sm font-medium' : 'text-lg font-medium'
-          }
+    <div
+      className={cn(
+        'flex h-full flex-col justify-start group',
+        compact ? 'p-4' : 'p-6 md:p-8 overflow-y-auto custom-scrollbar',
+      )}
+    >
+      <div className="flex flex-col gap-4">
+        <h1
+          className={cn(
+            'font-bold tracking-tight text-foreground/90',
+            compact ? 'text-sm line-clamp-2' : 'text-xl md:text-2xl',
+          )}
         >
           {title}
-        </p>
-        <p
-          className={
-            compact
-              ? 'line-clamp-4 text-xs text-muted-foreground'
-              : 'line-clamp-8 text-sm text-muted-foreground'
-          }
+        </h1>
+        <div
+          className={cn(
+            'whitespace-pre-wrap leading-relaxed text-foreground/80 selection:bg-primary/20',
+            compact ? 'text-[11px] line-clamp-4' : 'text-sm md:text-base',
+          )}
         >
           {content?.trim() || 'No content preview is available yet.'}
-        </p>
+        </div>
       </div>
     </div>
   );
