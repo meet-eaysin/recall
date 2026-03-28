@@ -134,7 +134,7 @@ export function SummaryTab({ isCompact = false }: { isCompact?: boolean }) {
               <Button
                 onClick={() => actions.generateSummary.mutate(id)}
                 variant="outline"
-                className="h-10 px-6 rounded-md font-medium"
+                size={'sm'}
               >
                 Begin Analysis
               </Button>

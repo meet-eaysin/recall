@@ -92,11 +92,10 @@ export class PdfExtractor {
 
     for (let i = 1; i <= pageCount; i++) {
       const page = await pdfDocument.getPage(i);
-      const viewport = page.getViewport({ scale: 2.0 }); // High resolution for OCR
+      const viewport = page.getViewport({ scale: 2.0 });
       const canvas = createCanvas(viewport.width, viewport.height);
       const context: SKRSContext2D = canvas.getContext('2d');
 
-      // Verify context via type guard to satisfy pdfjs-dist requirements without 'any' or 'as'
       const unknownContext: unknown = context;
       if (isCanvasContext(unknownContext)) {
         await page.render({
@@ -115,7 +114,6 @@ export class PdfExtractor {
       pageImages.map((imgBuffer, index) =>
         limit(async () => {
           const worker = await createWorker('eng');
-          // recognize supports Buffer
           const { data } = await worker.recognize(imgBuffer);
           await worker.terminate();
           return {

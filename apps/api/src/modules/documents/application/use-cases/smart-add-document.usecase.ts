@@ -147,6 +147,17 @@ export class SmartAddDocumentUseCase {
         );
       });
 
-    return savedDoc.toPublicView();
+    const view = savedDoc.toPublicView();
+
+    // If it's a file, provide a signed URL for immediate viewing
+    if (view.sourceType === SourceType.FILE && view.sourceUrl) {
+      try {
+        view.sourceUrl = await this.storageProvider.getSignedUrl(view.sourceUrl);
+      } catch (err) {
+        this.logger.warn(`Failed to sign URL for new doc ${savedDoc.id}: ${err instanceof Error ? err.message : String(err)}`);
+      }
+    }
+
+    return view;
   }
 }
