@@ -9,6 +9,29 @@ import {
   MessageCircle,
 } from 'lucide-react';
 
+const communityLinks = [
+  {
+    name: 'GitHub',
+    href: 'https://github.com/meet-eaysin/',
+    icon: Github,
+  },
+  {
+    name: 'Discord',
+    href: 'https://discord.gg/Ub5MQyqn',
+    icon: MessageCircle,
+  },
+  {
+    name: 'Twitter (X)',
+    href: 'https://x.com/meet_eaysin',
+    icon: Twitter,
+  },
+  {
+    name: 'LinkedIn',
+    href: 'https://linkedin.com/in/meet-eaysin',
+    icon: Linkedin,
+  },
+];
+
 const Footer = () => {
   return (
     <div className="block border-t border-white/10 px-3 py-12 sm:px-8">
@@ -31,34 +54,16 @@ const Footer = () => {
         <div className="mt-10 grid grid-cols-2 gap-10 md:mt-0 md:grid-cols-2">
           <div className="flex flex-col space-y-4">
             <h4 className="text-sm font-semibold text-white">Community</h4>
-            <Link
-              href="https://github.com/amanshakya0018/"
-              target="_blank"
-              className="flex items-center gap-2 text-neutral-500 transition-colors hover:text-neutral-300"
-            >
-              <Github size={14} /> GitHub
-            </Link>
-            <Link
-              href="https://discord.gg/recall"
-              target="_blank"
-              className="flex items-center gap-2 text-neutral-500 transition-colors hover:text-neutral-300"
-            >
-              <MessageCircle size={14} /> Discord
-            </Link>
-            <Link
-              href="https://x.com/AmanShakya0018"
-              target="_blank"
-              className="flex items-center gap-2 text-neutral-500 transition-colors hover:text-neutral-300"
-            >
-              <Twitter size={14} /> Twitter (X)
-            </Link>
-            <Link
-              href="https://linkedin.com/in/amanshakya"
-              target="_blank"
-              className="flex items-center gap-2 text-neutral-500 transition-colors hover:text-neutral-300"
-            >
-              <Linkedin size={14} /> LinkedIn
-            </Link>
+            {communityLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                target="_blank"
+                className="flex items-center gap-2 text-neutral-500 transition-colors hover:text-neutral-300"
+              >
+                <link.icon size={14} /> {link.name}
+              </Link>
+            ))}
           </div>
           <div className="flex flex-col space-y-4">
             <h4 className="text-sm font-semibold text-white">Legal</h4>
