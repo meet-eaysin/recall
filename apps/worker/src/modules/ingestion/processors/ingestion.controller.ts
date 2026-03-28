@@ -34,11 +34,11 @@ import type { IngestionJobData } from '@repo/types';
 import {
   IDocumentRepository,
   IIngestionJobRepository,
-  LocalStorage,
   TagModel,
   DocumentModel,
   DocumentChunkModel,
 } from '@repo/db';
+import { IStorageProvider } from '@repo/storage';
 import * as crypto from 'crypto';
 import { Types } from 'mongoose';
 import { env } from '../../../shared/utils/env';
@@ -52,7 +52,7 @@ export class IngestionController {
   constructor(
     private readonly documentRepository: IDocumentRepository,
     private readonly ingestionJobRepository: IIngestionJobRepository,
-    private readonly localStorage: LocalStorage,
+    private readonly storageProvider: IStorageProvider,
     private readonly queueService: QueueService,
     private readonly llmClientFactory: LLMClientFactory,
   ) {
@@ -124,7 +124,7 @@ export class IngestionController {
       let ocrConfidence = 100;
 
       if (type === 'pdf') {
-        const buffer = await this.localStorage.getFile(source);
+        const buffer = await this.storageProvider.download(source);
         const result = await pdfExtractor.extractPdf(buffer);
         text = result.text;
         ocrConfidence = result.ocrConfidence;
@@ -151,7 +151,7 @@ export class IngestionController {
           await this.documentRepository.update(documentId, userId, updateData);
         }
       } else if (type === 'image') {
-        const buffer = await this.localStorage.getFile(source);
+        const buffer = await this.storageProvider.download(source);
         const result = await imageExtractor.extractImage(buffer);
         text = result.text;
         ocrConfidence = result.ocrConfidence;
@@ -160,7 +160,7 @@ export class IngestionController {
         });
       } else if (type === 'text') {
         if (doc.sourceType === 'file') {
-          const buffer = await this.localStorage.getFile(source);
+          const buffer = await this.storageProvider.download(source);
           text = buffer.toString('utf-8');
         } else {
           text = source;

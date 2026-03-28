@@ -40,6 +40,7 @@ function getEnv(options: EnvOptions): string {
 type CacheProvider = 'redis' | 'upstash';
 type QueueProvider = 'qstash' | 'http';
 type EmailProvider = 'resend';
+type StorageProvider = 'disk' | 'supabase';
 
 function parseCacheProvider(
   value: string,
@@ -66,6 +67,16 @@ function parseEmailProvider(
   fallback: EmailProvider,
 ): EmailProvider {
   if (value === 'resend') {
+    return value;
+  }
+  return fallback;
+}
+
+function parseStorageProvider(
+  value: string,
+  fallback: StorageProvider,
+): StorageProvider {
+  if (value === 'disk' || value === 'supabase') {
     return value;
   }
   return fallback;
@@ -156,5 +167,14 @@ export const env = {
     required: false,
   }),
   FILE_UPLOAD_DIR: getEnv({ key: 'FILE_UPLOAD_DIR' }),
+  STORAGE_PROVIDER: parseStorageProvider(
+    getEnv({ key: 'STORAGE_PROVIDER', required: false, defaultValue: 'disk' }),
+    'disk',
+  ),
+  SUPABASE_URL: getEnv({ key: 'SUPABASE_URL', required: false }),
+  SUPABASE_KEY: getEnv({ key: 'SUPABASE_KEY', required: false }),
+  MAX_FILE_SIZE_MB: Number(
+    getEnv({ key: 'MAX_FILE_SIZE_MB', required: false, defaultValue: '50' }),
+  ),
   ENCRYPTION_KEY: getEnv({ key: 'ENCRYPTION_KEY' }),
 };

@@ -13,7 +13,6 @@ import { SummaryUseCase } from './application/use-cases/summary.usecase';
 import { TranscriptUseCase } from './application/use-cases/transcript.usecase';
 import { UpdateDocumentUseCase } from './application/use-cases/update-document.usecase';
 import { DocumentsController } from './interface/documents.controller';
-import { LocalStorage } from '../../shared/infrastructure/storage/local-storage';
 
 import { ITranscriptRepository } from './domain/repositories/transcript.repository';
 import { MongooseTranscriptRepository } from './infrastructure/persistence/mongoose-transcript.repository';
@@ -35,7 +34,6 @@ const useCases = [
   controllers: [DocumentsController],
   providers: [
     ...useCases,
-    LocalStorage,
     {
       provide: IDocumentRepository,
       useClass: MongooseDocumentRepository,
@@ -53,7 +51,6 @@ const useCases = [
     IDocumentRepository,
     IDocumentUnlinkRepository,
     ITranscriptRepository,
-    LocalStorage,
     ...useCases,
   ],
 })

@@ -55,6 +55,7 @@ function getWorkerUrl(): string {
 
 type CacheProvider = 'redis' | 'upstash';
 type QueueProvider = 'qstash' | 'http';
+type StorageProvider = 'disk' | 'supabase';
 
 function parseCacheProvider(
   value: string,
@@ -71,6 +72,16 @@ function parseQueueProvider(
   fallback: QueueProvider,
 ): QueueProvider {
   if (value === 'qstash' || value === 'http') {
+    return value;
+  }
+  return fallback;
+}
+
+function parseStorageProvider(
+  value: string,
+  fallback: StorageProvider,
+): StorageProvider {
+  if (value === 'disk' || value === 'supabase') {
     return value;
   }
   return fallback;
@@ -168,6 +179,12 @@ export const env = {
   GITHUB_CALLBACK_URL: getEnv({ key: 'GITHUB_CALLBACK_URL', required: false }),
   WEB_APP_URL: getEnv({ key: 'WEB_APP_URL', required: false }),
   FILE_UPLOAD_DIR: getEnv({ key: 'FILE_UPLOAD_DIR' }),
+  STORAGE_PROVIDER: parseStorageProvider(
+    getEnv({ key: 'STORAGE_PROVIDER', required: false, defaultValue: 'disk' }),
+    'disk',
+  ),
+  SUPABASE_URL: getEnv({ key: 'SUPABASE_URL', required: false }),
+  SUPABASE_KEY: getEnv({ key: 'SUPABASE_KEY', required: false }),
   MAX_FILE_SIZE_MB: Number(
     getEnv({ key: 'MAX_FILE_SIZE_MB', required: false, defaultValue: '50' }),
   ),

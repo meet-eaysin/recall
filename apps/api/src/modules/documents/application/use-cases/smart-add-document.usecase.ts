@@ -12,7 +12,7 @@ import {
   IngestionStatus,
   QUEUE_INGESTION,
 } from '@repo/types';
-import { LocalStorage } from '../../../../shared/infrastructure/storage/local-storage';
+import { IStorageProvider } from '@repo/storage';
 import { validateFileType } from '../../../../shared/infrastructure/file-validation';
 import { SmartAddDocumentCommand } from '../command/smart-add-document';
 
@@ -23,7 +23,7 @@ export class SmartAddDocumentUseCase {
   constructor(
     private readonly documentRepository: IDocumentRepository,
     private readonly queueService: QueueService,
-    private readonly localStorage: LocalStorage,
+    private readonly storageProvider: IStorageProvider,
   ) {}
 
   async execute(command: SmartAddDocumentCommand): Promise<DocumentPublicView> {
@@ -41,10 +41,14 @@ export class SmartAddDocumentUseCase {
             ? DocumentType.IMAGE
             : DocumentType.TEXT;
       finalSourceType = SourceType.FILE;
-      finalSourceUrl = await this.localStorage.saveFile(
+      const fileName = `${Date.now()}-${command.originalName}`;
+      const filePath = `${command.userId}/${fileName}`;
+      finalSourceUrl = await this.storageProvider.upload(
         command.buffer,
-        command.originalName,
-        command.userId,
+        filePath,
+        {
+          contentType: command.mimeType || undefined,
+        },
       );
       if (!initialTitle) {
         initialTitle = command.originalName;
@@ -86,7 +90,6 @@ export class SmartAddDocumentUseCase {
 
     const docType = DomainDocumentType.validate(finalDocumentType);
 
-    // Default title fallback
     if (!initialTitle || initialTitle.trim() === '') {
       initialTitle = 'Untitled Document';
     }
@@ -99,7 +102,6 @@ export class SmartAddDocumentUseCase {
       metadata.description = command.description;
     }
 
-    // Set flags for AI enrichment fallback
     const requiresTitle = !command.title || command.title.trim() === '';
     const requiresDescription =
       !command.description || command.description.trim() === '';
@@ -132,13 +134,11 @@ export class SmartAddDocumentUseCase {
       `Smart Document added: ${savedDoc.title} (ID: ${savedDoc.id}) by User: ${command.userId}`,
     );
 
-    // Push to ingestion webhook
-    // It will process embeddings, AND if metadata.requiresEnrichment is true, it will auto-generate title & summary
     this.queueService
       .publishMessage(QUEUE_INGESTION, {
         documentId: savedDoc.id,
         userId: command.userId,
-        type: docType.getValue(), // Use actual doc type
+        type: docType.getValue(),
         source: finalSourceUrl,
       })
       .catch((err: Error) => {

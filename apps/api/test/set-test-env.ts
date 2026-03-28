@@ -1,4 +1,5 @@
 process.env.NODE_ENV = 'development';
+process.env.STORAGE_PROVIDER = 'disk';
 process.env.DEV_AUTH_ENABLED = 'true';
 
 process.env.WORKER_URL = 'http://localhost:3002';
