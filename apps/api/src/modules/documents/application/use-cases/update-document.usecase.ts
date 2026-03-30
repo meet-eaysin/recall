@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IDocumentRepository } from '../../domain/repositories/document.repository';
 import { DocumentPublicView } from '../../domain/entities/document.entity';
+import { NotFoundDomainException } from '../../../../shared/errors/not-found.exception';
 import { DocumentStatus } from '../../domain/value-objects/document-status.vo';
 import { UpdateDocumentCommand } from '../command/update-document';
 
@@ -31,7 +32,7 @@ export class UpdateDocumentUseCase {
     );
 
     if (!doc) {
-      throw new NotFoundException('Document not found');
+      throw new NotFoundDomainException('Document not found');
     }
 
     return doc.toPublicView();

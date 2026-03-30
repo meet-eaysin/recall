@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import type { Response, Request } from 'express';
+import { DomainException } from '../errors/domain.exception';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -18,6 +19,17 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const timestamp = new Date().toISOString();
     const path = request.url;
+
+    if (exception instanceof DomainException) {
+      return response.status(exception.statusCode).json({
+        success: false,
+        statusCode: exception.statusCode,
+        error: exception.code,
+        message: exception.message,
+        timestamp,
+        path,
+      });
+    }
 
     // Handle NestJS native HttpExceptions (like from ValidationPipe)
     if (exception instanceof HttpException) {
@@ -42,12 +54,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
             ? body.message.join(', ')
             : body.message;
         }
-        if (body.error && /^[A-Z][A-Z_]+$/.test(body.error)) {
-          error = body.error;
-        }
-        if (body.details) {
-          details = body.details;
-        }
+        if (body.error && /^[A-Z][A-Z_]+$/.test(body.error)) error = body.error;
+        if (body.details) details = body.details;
       }
 
       return response.status(statusCode).json({

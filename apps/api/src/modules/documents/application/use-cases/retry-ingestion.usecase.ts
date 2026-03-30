@@ -1,12 +1,9 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { QueueService } from '@repo/queue';
 import { IDocumentRepository } from '../../domain/repositories/document.repository';
 import { IngestionStatus, QUEUE_INGESTION } from '@repo/types';
+import { NotFoundDomainException } from '../../../../shared/errors/not-found.exception';
+import { UnprocessableDomainException } from '../../../../shared/errors/unprocessable.exception';
 
 @Injectable()
 export class RetryIngestionUseCase {
@@ -21,14 +18,14 @@ export class RetryIngestionUseCase {
     const doc = await this.documentRepository.findById(id, userId);
 
     if (!doc) {
-      throw new NotFoundException('Document not found');
+      throw new NotFoundDomainException('Document not found');
     }
 
     const canRetry =
       doc.ingestionStatus === IngestionStatus.FAILED && !doc.embeddingsReady;
 
     if (!canRetry) {
-      throw new UnprocessableEntityException(
+      throw new UnprocessableDomainException(
         'Retry is only available for failed document ingestions',
       );
     }

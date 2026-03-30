@@ -7,15 +7,14 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-  NotFoundException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ConnectNotionUseCase } from '../application/use-cases/connect-notion.usecase';
+import { GetNotionConfigUseCase } from '../application/use-cases/get-notion-config.usecase';
 import { ListNotionDatabasesUseCase } from '../application/use-cases/list-notion-databases.usecase';
 import { UpdateNotionConfigUseCase } from '../application/use-cases/update-notion-config.usecase';
 import { SyncAllToNotionUseCase } from '../application/use-cases/sync-all-to-notion.usecase';
 import { DisconnectNotionUseCase } from '../application/use-cases/disconnect-notion.usecase';
-import { NotionConfigModel } from '@repo/db';
 import { User } from '../../../shared/decorators/user.decorator';
 import { ConnectNotionDto, UpdateNotionConfigDto } from './dtos/notion.dto';
 import {
@@ -30,6 +29,7 @@ import { ApiSuccessResponse } from '../../../shared/decorators/api-success-respo
 @Controller('notion')
 export class NotionController {
   constructor(
+    private readonly getConfigUseCase: GetNotionConfigUseCase,
     private readonly connectUseCase: ConnectNotionUseCase,
     private readonly listDatabasesUseCase: ListNotionDatabasesUseCase,
     private readonly updateConfigUseCase: UpdateNotionConfigUseCase,
@@ -41,20 +41,7 @@ export class NotionController {
   @ApiOperation({ summary: 'Get current Notion configuration for the user' })
   @ApiSuccessResponse(NotionConfigPublicViewDto)
   async getConfig(@User('userId') userId: string) {
-    const config = await NotionConfigModel.findOne({
-      userId,
-    });
-    if (!config) throw new NotFoundException('Not connected');
-
-    return {
-      userId: config.userId.toString(),
-      workspaceId: config.workspaceId,
-      workspaceName: config.workspaceName,
-      targetDatabaseId: config.targetDatabaseId,
-      syncEnabled: config.syncEnabled,
-      syncDirection: config.syncDirection,
-      lastSyncedAt: config.lastSyncedAt?.toISOString(),
-    };
+    return this.getConfigUseCase.execute(userId);
   }
 
   @Post('connect')

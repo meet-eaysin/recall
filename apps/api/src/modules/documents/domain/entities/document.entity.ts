@@ -5,7 +5,6 @@ import type {
   IngestionStatus,
   TranscriptStatus,
 } from '@repo/types';
-import {} from '@repo/db';
 
 export interface DocumentPublicView {
   id: string;

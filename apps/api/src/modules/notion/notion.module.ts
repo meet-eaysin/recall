@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { NotionClient } from './infrastructure/notion-client';
 import { ConnectNotionUseCase } from './application/use-cases/connect-notion.usecase';
+import { GetNotionConfigUseCase } from './application/use-cases/get-notion-config.usecase';
 import { ListNotionDatabasesUseCase } from './application/use-cases/list-notion-databases.usecase';
 import { UpdateNotionConfigUseCase } from './application/use-cases/update-notion-config.usecase';
 import { SyncAllToNotionUseCase } from './application/use-cases/sync-all-to-notion.usecase';
@@ -17,6 +18,7 @@ import { DocumentsModule } from '../documents/documents.module';
     NotionClient,
     ConnectNotionUseCase,
     DisconnectNotionUseCase,
+    GetNotionConfigUseCase,
     ListNotionDatabasesUseCase,
     SyncAllToNotionUseCase,
     UpdateNotionConfigUseCase,
@@ -25,6 +27,6 @@ import { DocumentsModule } from '../documents/documents.module';
       useClass: MongooseNotionConfigRepository,
     },
   ],
-  exports: [INotionConfigRepository],
+  exports: [INotionConfigRepository, NotionClient],
 })
 export class NotionModule {}

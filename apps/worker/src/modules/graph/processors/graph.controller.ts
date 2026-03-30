@@ -4,7 +4,6 @@ import {
   Post,
   UseGuards,
   Body,
-  Headers,
   BadRequestException,
   InternalServerErrorException,
   HttpException,
@@ -12,30 +11,21 @@ import {
 import { QueueWebhookGuard } from '../../../shared/guards/queue-webhook.guard';
 import { QUEUE_GRAPH } from '@repo/types';
 import type { GraphJobData } from '@repo/types';
-import { GraphBuilderService } from '../graph-builder.service';
+import { InternalApiClientService } from '../../../shared/services/internal-api-client.service';
 
 @Controller('api/webhooks')
 export class GraphController {
   private readonly logger = new Logger(GraphController.name);
 
-  constructor(private readonly graphBuilder: GraphBuilderService) {}
+  constructor(private readonly internalApiClient: InternalApiClientService) {}
 
   @Post(QUEUE_GRAPH)
   @UseGuards(QueueWebhookGuard)
-  async process(
-    @Body() data: GraphJobData,
-    @Headers('Upstash-Message-Id') messageId: string,
-  ): Promise<void> {
+  async process(@Body() data: GraphJobData): Promise<void> {
     try {
       await this.processJob(data);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      this.logger.error(
-        `[GraphController] Job ${messageId} failed: ${errorMessage}`,
-      );
-      if (err instanceof HttpException) {
-        throw err;
-      }
+      if (err instanceof HttpException) throw err;
       throw new InternalServerErrorException('Graph job failed');
     }
   }
@@ -52,6 +42,6 @@ export class GraphController {
       `[GraphWorker] Processing relationships for document: ${documentId}`,
     );
 
-    await this.graphBuilder.buildRelationships(documentId, userId);
+    await this.internalApiClient.post('/jobs/graph', data);
   }
 }

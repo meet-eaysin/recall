@@ -1,22 +1,28 @@
-import { BadRequestException } from '@nestjs/common';
 import {
-  DocumentType as RepoDocumentType,
   DocumentStatus as RepoDocumentStatus,
+  DocumentType as RepoDocumentType,
 } from '@repo/types';
+import { InvalidOperationDomainException } from '../../../../shared/errors/invalid-operation.exception';
 
 export {
-  RepoDocumentType as DocumentTypeString,
   RepoDocumentStatus as DocumentStatusString,
+  RepoDocumentType as DocumentTypeString,
 };
 
 export class DocumentType {
   private constructor(private readonly value: RepoDocumentType) {}
 
-  static validate(v: string): DocumentType {
-    const enumValue = Object.values(RepoDocumentType).find((val) => val === v);
+  static validate(value: string): DocumentType {
+    const enumValue = Object.values(RepoDocumentType).find(
+      (candidate) => candidate === value,
+    );
+
     if (!enumValue) {
-      throw new BadRequestException(`Invalid document type: ${v}`);
+      throw new InvalidOperationDomainException(
+        `Invalid document type: ${value}`,
+      );
     }
+
     return new DocumentType(enumValue);
   }
 
@@ -24,6 +30,7 @@ export class DocumentType {
     if (type.getValue() === RepoDocumentType.YOUTUBE) {
       return RepoDocumentStatus.TO_WATCH;
     }
+
     return RepoDocumentStatus.TO_READ;
   }
 

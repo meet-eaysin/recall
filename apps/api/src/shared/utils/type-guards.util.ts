@@ -44,6 +44,16 @@ export function hasStringProperty<T extends string>(
 }
 
 /**
+ * Checks if an object has a boolean property.
+ */
+export function hasBooleanProperty<T extends string>(
+  obj: unknown,
+  prop: T,
+): obj is Record<T, boolean> {
+  return hasProperty(obj, prop) && typeof obj[prop] === 'boolean';
+}
+
+/**
  * Checks if a value is a Map.
  */
 export function isMap(val: unknown): val is Map<unknown, unknown> {

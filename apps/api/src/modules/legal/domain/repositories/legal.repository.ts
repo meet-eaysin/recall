@@ -1,15 +1,18 @@
 import type { LegalDocumentType } from '@repo/types';
-import type { ILegalDocumentDocument } from '@repo/db';
+import type {
+  LegalDocumentEntity,
+  LegalDocumentEntityProps,
+} from '../entities/legal-document.entity';
 
 export abstract class ILegalRepository {
   abstract findActivePolicy(
     type: LegalDocumentType,
-  ): Promise<ILegalDocumentDocument | null>;
+  ): Promise<LegalDocumentEntity | null>;
   abstract findByVersion(
     type: LegalDocumentType,
     version: string,
-  ): Promise<ILegalDocumentDocument | null>;
+  ): Promise<LegalDocumentEntity | null>;
   abstract create(
-    data: Partial<ILegalDocumentDocument>,
-  ): Promise<ILegalDocumentDocument>;
+    data: Omit<LegalDocumentEntityProps, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<LegalDocumentEntity>;
 }

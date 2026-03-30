@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IGraphRepository } from '../../domain/repositories/graph.repository';
 import { GraphNodeView } from '../../domain/entities/graph-node.entity';
+import { NotFoundDomainException } from '../../../../shared/errors/not-found.exception';
 import { GraphEdgeView } from '../../domain/entities/graph-edge.entity';
 
 export interface DocumentSubgraphResponse {
@@ -22,7 +23,7 @@ export class GetDocumentSubgraphUseCase {
       documentId,
     );
     if (!node) {
-      throw new NotFoundException('Graph node for document not found');
+      throw new NotFoundDomainException('Graph node for document not found');
     }
 
     const directEdges = await this.graphRepository.findDirectEdges(

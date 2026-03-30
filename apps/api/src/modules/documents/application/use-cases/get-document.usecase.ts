@@ -1,6 +1,7 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { IDocumentRepository } from '../../domain/repositories/document.repository';
 import { DocumentDetailView } from '../../domain/entities/document.entity';
+import { NotFoundDomainException } from '../../../../shared/errors/not-found.exception';
 import { IStorageProvider } from '@repo/storage';
 import { SourceType } from '@repo/types';
 
@@ -19,7 +20,7 @@ export class GetDocumentUseCase {
     });
 
     if (!updatedDoc) {
-      throw new NotFoundException('Document not found');
+      throw new NotFoundDomainException('Document not found');
     }
 
     // Log activity

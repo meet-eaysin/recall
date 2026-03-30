@@ -1,17 +1,7 @@
 import { Module, Global } from '@nestjs/common';
 import { env } from './shared/utils/env';
-// Repositories
-import { IDocumentRepository, MongooseDocumentRepository } from '@repo/db';
-import { ITranscriptRepository, MongooseTranscriptRepository } from '@repo/db';
-import {
-  IIngestionJobRepository,
-  MongooseIngestionJobRepository,
-  IGraphRepository,
-  MongooseGraphRepository,
-  INotionConfigRepository,
-  MongooseNotionConfigRepository,
-} from '@repo/db';
 import { StorageModule } from '@repo/storage';
+import { InternalApiClientService } from './shared/services/internal-api-client.service';
 
 // Modules
 import { EmailModule } from './modules/email/email.module';
@@ -69,35 +59,7 @@ import { LlmModule } from './modules/llm/llm.module';
     GraphModule,
     NotionModule,
   ],
-  providers: [
-    // Repositories
-    {
-      provide: IDocumentRepository,
-      useClass: MongooseDocumentRepository,
-    },
-    {
-      provide: ITranscriptRepository,
-      useClass: MongooseTranscriptRepository,
-    },
-    {
-      provide: IIngestionJobRepository,
-      useClass: MongooseIngestionJobRepository,
-    },
-    {
-      provide: IGraphRepository,
-      useClass: MongooseGraphRepository,
-    },
-    {
-      provide: INotionConfigRepository,
-      useClass: MongooseNotionConfigRepository,
-    },
-  ],
-  exports: [
-    IDocumentRepository,
-    ITranscriptRepository,
-    IIngestionJobRepository,
-    IGraphRepository,
-    INotionConfigRepository,
-  ],
+  providers: [InternalApiClientService],
+  exports: [InternalApiClientService],
 })
 export class WorkerModule {}

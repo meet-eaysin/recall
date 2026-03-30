@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   IDocumentRepository,
   IngestionStatusView,
 } from '../../domain/repositories/document.repository';
+import { NotFoundDomainException } from '../../../../shared/errors/not-found.exception';
 
 @Injectable()
 export class GetIngestionStatusUseCase {
@@ -12,7 +13,9 @@ export class GetIngestionStatusUseCase {
     const status = await this.documentRepository.getIngestionStatus(id, userId);
 
     if (!status) {
-      throw new NotFoundException('Document or ingestion status not found');
+      throw new NotFoundDomainException(
+        'Document or ingestion status not found',
+      );
     }
 
     return status;
