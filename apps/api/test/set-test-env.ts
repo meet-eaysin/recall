@@ -1,6 +1,7 @@
 process.env.NODE_ENV = 'development';
 process.env.STORAGE_PROVIDER = 'disk';
 process.env.DEV_AUTH_ENABLED = 'true';
+process.env.INTERNAL_API_SECRET = 'test-internal-api-secret';
 
 process.env.WORKER_URL = 'http://localhost:3002';
 process.env.CACHE_PROVIDER = 'upstash';

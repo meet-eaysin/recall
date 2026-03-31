@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { WorkerModule } from './worker.module';
 import { Logger } from '@nestjs/common';
 import type { INestApplication } from '@nestjs/common';
-import { connectMongoDB } from '@repo/db';
 import { env } from './shared/utils/env';
 
 const logger = new Logger('WorkerBootstrap');
@@ -12,9 +11,6 @@ export async function bootstrap(): Promise<INestApplication> {
   if (cachedApp) return cachedApp;
 
   try {
-    await connectMongoDB(env.MONGODB_URI);
-    logger.log('Connected to MongoDB');
-
     const app = await NestFactory.create(WorkerModule, { rawBody: true });
 
     await app.init();

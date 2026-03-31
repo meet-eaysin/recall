@@ -8,6 +8,5 @@ export * from './ingestion';
 export * from './note';
 export * from './notion';
 export * from './tag';
-export * from './transcript';
 export * from './user';
 export * from './legal';

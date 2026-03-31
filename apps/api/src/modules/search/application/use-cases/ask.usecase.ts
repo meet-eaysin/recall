@@ -1,12 +1,13 @@
-import { Injectable, BadRequestException, Logger } from '@nestjs/common';
-import { RagService } from '../../domain/services/rag.service';
+import { Injectable, Logger } from '@nestjs/common';
+import { SearchChatService } from '../services/search-chat.service';
+import { RagService } from '../../infrastructure/services/rag.service';
 import { LLMClientFactory } from '@repo/ai';
 import {
   AskQueryDto,
   AskResultDto,
 } from '../../interface/schemas/search.schema';
 import { IUserActivityRepository } from '../../../analytics/domain/repositories/user-activity.repository';
-import { SearchChatService } from '../../domain/services/search-chat.service';
+import { InvalidOperationDomainException } from '../../../../shared/errors/invalid-operation.exception';
 
 @Injectable()
 export class AskUseCase {
@@ -21,7 +22,7 @@ export class AskUseCase {
 
   async execute(userId: string, query: AskQueryDto): Promise<AskResultDto> {
     if (!query.question || query.question.trim().length === 0) {
-      throw new BadRequestException('Question cannot be empty');
+      throw new InvalidOperationDomainException('Question cannot be empty');
     }
 
     const conversation =
@@ -102,7 +103,7 @@ export class AskUseCase {
     },
   ): Promise<void> {
     if (!query.question || query.question.trim().length === 0) {
-      throw new BadRequestException('Question cannot be empty');
+      throw new InvalidOperationDomainException('Question cannot be empty');
     }
 
     const conversation =

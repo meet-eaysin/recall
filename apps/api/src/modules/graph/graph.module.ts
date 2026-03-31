@@ -21,6 +21,6 @@ import { DocumentsModule } from '../documents/documents.module';
     GetDocumentSubgraphUseCase,
     RebuildDocumentGraphUseCase,
   ],
-  exports: [IGraphRepository],
+  exports: [IGraphRepository, GraphBuilderService],
 })
 export class GraphModule {}

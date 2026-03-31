@@ -1,5 +1,5 @@
-import { BadRequestException } from '@nestjs/common';
 import { DocumentStatus as RepoDocumentStatus } from '@repo/types';
+import { InvalidOperationDomainException } from '../../../../shared/errors/invalid-operation.exception';
 
 export class DocumentStatus {
   private constructor(private readonly value: RepoDocumentStatus) {}
@@ -9,7 +9,9 @@ export class DocumentStatus {
       (val) => val === v,
     );
     if (!enumValue) {
-      throw new BadRequestException(`Invalid document status: ${v}`);
+      throw new InvalidOperationDomainException(
+        `Invalid document status: ${v}`,
+      );
     }
     return new DocumentStatus(enumValue);
   }

@@ -1,23 +1,14 @@
-import {
-  Injectable,
-  OnApplicationBootstrap,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap, Logger } from '@nestjs/common';
 import type {
   AcceptConsentDto,
   ConsentStatus,
   LegalDocumentType,
-  LegalDocument,
 } from '@repo/types';
 import { ILegalRepository } from '../domain/repositories/legal.repository';
-import type {
-  ILegalDocument,
-  ILegalDocumentDocument,
-  IConsentRecordDocument,
-} from '@repo/db';
 import { IConsentRepository } from '../domain/repositories/consent.repository';
 import { isString, isMap } from '../../../shared/utils/type-guards.util';
+import type { LegalDocument } from '@repo/types';
+import { NotFoundDomainException } from '../../../shared/errors/not-found.exception';
 
 @Injectable()
 export class LegalService implements OnApplicationBootstrap {
@@ -38,7 +29,14 @@ export class LegalService implements OnApplicationBootstrap {
   }
 
   private async seedPolicies(): Promise<void> {
-    const policies: Partial<ILegalDocument>[] = [
+    const policies: Array<{
+      type: LegalDocumentType;
+      version: string;
+      title: string;
+      content: string;
+      effectiveDate: Date;
+      active: boolean;
+    }> = [
       {
         type: 'privacy',
         version: this.VERSIONS.privacy,
@@ -145,8 +143,14 @@ We reserve the right to terminate or suspend access to our service for any reaso
         });
         this.logger.log(`Seeded ${type} policy version ${version}`);
       } else if (!existing.active) {
-        existing.active = true;
-        await existing.save();
+        await this.legalRepository.create({
+          type,
+          version,
+          title: existing.props.title,
+          content: existing.props.content,
+          effectiveDate: existing.props.effectiveDate,
+          active: true,
+        });
       }
     }
   }
@@ -154,30 +158,16 @@ We reserve the right to terminate or suspend access to our service for any reaso
   async getActivePolicy(type: LegalDocumentType): Promise<LegalDocument> {
     const policy = await this.legalRepository.findActivePolicy(type);
     if (!policy) {
-      throw new NotFoundException(`${type} policy not found`);
+      throw new NotFoundDomainException(`${type} policy not found`);
     }
-    return this.mapToDto(policy);
-  }
-
-  private mapToDto(doc: ILegalDocumentDocument): LegalDocument {
-    return {
-      id: doc.id,
-      type: doc.type,
-      version: doc.version,
-      title: doc.title,
-      content: doc.content,
-      effectiveDate: doc.effectiveDate,
-      active: doc.active,
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
-    };
+    return policy.toView();
   }
 
   async getConsentStatus(
     userId?: string,
     anonymousId?: string,
   ): Promise<ConsentStatus> {
-    let latestConsent: IConsentRecordDocument | null = null;
+    let latestConsent = null;
 
     if (userId) {
       latestConsent = await this.consentRepository.findLatestByUserId(userId);
@@ -187,15 +177,15 @@ We reserve the right to terminate or suspend access to our service for any reaso
     }
 
     const checkAccepted = (type: LegalDocumentType): boolean => {
-      const versions = latestConsent?.policyVersions;
-      if (!versions) return false;
+      const versionRecord = latestConsent?.props.policyVersions;
+      if (!versionRecord) return false;
 
       let v: unknown;
 
-      if (isMap(versions)) {
-        v = versions.get(type);
+      if (isMap(versionRecord)) {
+        v = versionRecord.get(type);
       } else {
-        v = (versions as Record<string, unknown>)[type];
+        v = versionRecord[type];
       }
 
       return isString(v) && v === this.VERSIONS[type];
@@ -205,7 +195,7 @@ We reserve the right to terminate or suspend access to our service for any reaso
       privacyAccepted: checkAccepted('privacy'),
       cookieAccepted: checkAccepted('cookie'),
       termsAccepted: checkAccepted('terms'),
-      acceptedCategories: latestConsent?.categories || [],
+      acceptedCategories: latestConsent?.props.categories || [],
       requiredVersions: this.VERSIONS,
     };
   }

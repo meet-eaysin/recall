@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import type {
   NotionConfigPublicView,
   UpdateNotionConfigRequest,
 } from '@repo/types';
 import { INotionConfigRepository } from '../../domain/repositories/notion-config.repository';
 import { NotionConfigEntity } from '../../domain/entities/notion-config.entity';
+import { NotFoundDomainException } from '../../../../shared/errors/not-found.exception';
 
 @Injectable()
 export class UpdateNotionConfigUseCase {
@@ -19,7 +20,7 @@ export class UpdateNotionConfigUseCase {
     const entity = await this.notionConfigRepository.findByUserId(userId);
 
     if (!entity) {
-      throw new NotFoundException('Notion not connected');
+      throw new NotFoundDomainException('Notion not connected');
     }
 
     const updatedEntity = new NotionConfigEntity({

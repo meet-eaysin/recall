@@ -13,8 +13,7 @@ import {
   UploadedFile,
   BadRequestException,
 } from '@nestjs/common';
-import { createReadStream } from 'node:fs';
-import { unlink } from 'node:fs/promises';
+import { readFile, unlink } from 'node:fs/promises';
 import { diskStorage } from 'multer';
 import { env } from '../../../shared/utils/env';
 import {
@@ -125,9 +124,10 @@ export class DocumentsController {
     }
 
     try {
+      const fileBuffer = file?.path ? await readFile(file.path) : undefined;
       const doc = await this.smartAddDocumentUseCase.execute({
         userId,
-        stream: file ? createReadStream(file.path) : undefined,
+        buffer: fileBuffer,
         originalName: file?.originalname,
         mimeType: file?.mimetype,
         source: body.source,
@@ -139,10 +139,7 @@ export class DocumentsController {
 
       return { document: doc };
     } finally {
-      // Cleanup temp file
-      if (file?.path) {
-        await unlink(file.path).catch(() => {});
-      }
+      if (file?.path) await unlink(file.path).catch(() => {});
     }
   }
 

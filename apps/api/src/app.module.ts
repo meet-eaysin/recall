@@ -12,6 +12,7 @@ import { DevUserGuard } from './shared/guards/dev-user.guard';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { GraphModule } from './modules/graph/graph.module';
 import { IngestionModule } from './modules/ingestion/ingestion.module';
+import { JobsModule } from './modules/jobs/jobs.module';
 import { KnowledgeModule } from './modules/knowledge/knowledge.module';
 import { LlmModule } from './modules/llm/llm.module';
 import { NotionModule } from './modules/notion/notion.module';
@@ -53,6 +54,7 @@ import { StorageModule } from '@repo/storage';
     DocumentsModule,
     GraphModule,
     IngestionModule,
+    JobsModule,
     KnowledgeModule,
     LlmModule,
     NotionModule,

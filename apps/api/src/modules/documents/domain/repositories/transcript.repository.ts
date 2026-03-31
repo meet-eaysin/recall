@@ -14,4 +14,8 @@ export abstract class ITranscriptRepository {
   abstract findByDocumentId(
     documentId: string,
   ): Promise<DocumentTranscript | null>;
+  abstract save(
+    documentId: string,
+    transcript: Omit<DocumentTranscript, 'documentId'>,
+  ): Promise<void>;
 }

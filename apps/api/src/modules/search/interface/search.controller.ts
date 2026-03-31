@@ -24,7 +24,7 @@ import {
 import { User } from '../../../shared/decorators/user.decorator';
 import { ApiPaginatedResponse } from '../../../shared/decorators/api-paginated-response.decorator';
 import { ApiSuccessResponse } from '../../../shared/decorators/api-success-response.decorator';
-import { SearchChatService } from '../domain/services/search-chat.service';
+import { SearchChatService } from '../application/services/search-chat.service';
 import type { Response } from 'express';
 
 @ApiTags('Search & AI')

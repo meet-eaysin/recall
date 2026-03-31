@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { NormalSearchService } from '../../domain/services/normal-search.service';
-import { SemanticSearchService } from '../../domain/services/semantic-search.service';
+import { NormalSearchService } from '../services/normal-search.service';
+import { SemanticSearchService } from '../services/semantic-search.service';
 import { LLMClientFactory } from '@repo/ai';
 import {
   SearchQueryDto,

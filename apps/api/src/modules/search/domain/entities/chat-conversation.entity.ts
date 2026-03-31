@@ -1,11 +1,11 @@
-import type { IChatSourceRef } from '@repo/db';
+import type { ChatSourceRef } from '../types/chat-source-ref.type';
 
 export interface ChatMessageProps {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   status: 'completed' | 'error';
-  sources: IChatSourceRef[];
+  sources: ChatSourceRef[];
   tokensUsed: number;
   createdAt: Date;
 }

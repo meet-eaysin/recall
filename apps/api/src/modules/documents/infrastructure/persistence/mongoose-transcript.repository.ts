@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Types } from 'mongoose';
 import { DocumentTranscriptModel } from '@repo/db';
 import {
   ITranscriptRepository,
@@ -24,5 +25,23 @@ export class MongooseTranscriptRepository extends ITranscriptRepository {
         duration: s.end - s.start,
       })),
     };
+  }
+
+  async save(
+    documentId: string,
+    transcript: Omit<DocumentTranscript, 'documentId'>,
+  ): Promise<void> {
+    await DocumentTranscriptModel.findOneAndUpdate(
+      { documentId: new Types.ObjectId(documentId) },
+      {
+        content: transcript.content,
+        segments: transcript.segments.map((segment) => ({
+          text: segment.text,
+          start: segment.start,
+          end: segment.start + segment.duration,
+        })),
+      },
+      { upsert: true, new: true },
+    ).exec();
   }
 }

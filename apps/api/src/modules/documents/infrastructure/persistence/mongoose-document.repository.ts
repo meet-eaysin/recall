@@ -1,6 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Types, FilterQuery, SortOrder } from 'mongoose';
-import { DocumentModel, IDocumentDocument, IDocument } from '@repo/db';
+import {
+  DocumentChunkModel,
+  DocumentModel,
+  IDocumentDocument,
+  IDocument,
+} from '@repo/db';
 import { IngestionStatus, IngestionStage, TranscriptStatus } from '@repo/types';
 import {
   IDocumentRepository,
@@ -29,6 +34,14 @@ export class MongooseDocumentRepository extends IDocumentRepository {
     if (!doc) return null;
 
     return this.toEntity(doc);
+  }
+
+  async findAllByUserId(userId: string): Promise<DocumentEntity[]> {
+    const docs = await DocumentModel.find({ userId })
+      .lean<IDocument[]>()
+      .exec();
+
+    return docs.map((doc) => this.toEntity(doc));
   }
 
   async findAll(
@@ -140,6 +153,66 @@ export class MongooseDocumentRepository extends IDocumentRepository {
       embeddingsReady: !!doc.embeddingsReady,
       ingestionError: doc.ingestionError,
     };
+  }
+
+  async listChunks(documentId: string) {
+    if (!Types.ObjectId.isValid(documentId)) return [];
+
+    const chunks = await DocumentChunkModel.find({
+      documentId: new Types.ObjectId(documentId),
+    })
+      .sort({ index: 1 })
+      .lean<
+        Array<{
+          content: string;
+          index: number;
+          tokenCount: number;
+          metadata?: Record<string, unknown>;
+          createdAt: Date;
+        }>
+      >()
+      .exec();
+
+    return chunks.map((chunk) => ({
+      content: chunk.content,
+      index: chunk.index,
+      tokenCount: chunk.tokenCount,
+      metadata: chunk.metadata,
+      createdAt: chunk.createdAt,
+    }));
+  }
+
+  async replaceChunks(
+    documentId: string,
+    userId: string,
+    chunks: Array<{
+      content: string;
+      index: number;
+      tokenCount: number;
+      metadata?: Record<string, unknown>;
+      createdAt?: Date;
+    }>,
+  ): Promise<void> {
+    if (!Types.ObjectId.isValid(documentId)) return;
+
+    const documentObjectId = new Types.ObjectId(documentId);
+    await DocumentChunkModel.deleteMany({
+      documentId: documentObjectId,
+    }).exec();
+
+    if (chunks.length === 0) return;
+
+    await DocumentChunkModel.insertMany(
+      chunks.map((chunk) => ({
+        documentId: documentObjectId,
+        userId: new Types.ObjectId(userId),
+        content: chunk.content,
+        index: chunk.index,
+        tokenCount: chunk.tokenCount,
+        metadata: chunk.metadata ?? {},
+        createdAt: chunk.createdAt ?? new Date(),
+      })),
+    );
   }
 
   async removeFolderFromAll(folderId: string, userId: string): Promise<void> {

@@ -1,11 +1,8 @@
-import {
-  Injectable,
-  Logger,
-  ConflictException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { QueueService } from '@repo/queue';
 import { IDocumentRepository } from '../../domain/repositories/document.repository';
+import { ConflictDomainException } from '../../../../shared/errors/conflict.exception';
+import { InvalidOperationDomainException } from '../../../../shared/errors/invalid-operation.exception';
 import {
   DocumentEntity,
   DocumentPublicView,
@@ -78,7 +75,9 @@ export class SmartAddDocumentUseCase {
 
       const uploadSource = command.buffer || command.stream;
       if (!uploadSource) {
-        throw new BadRequestException('File buffer or stream is missing');
+        throw new InvalidOperationDomainException(
+          'File buffer or stream is missing',
+        );
       }
 
       finalSourceUrl = await this.storageProvider.upload(
@@ -118,12 +117,12 @@ export class SmartAddDocumentUseCase {
         finalSourceUrl,
       );
       if (existingDocId) {
-        throw new ConflictException(
+        throw new ConflictDomainException(
           'A document with this URL already exists in your library',
         );
       }
     } else {
-      throw new BadRequestException(
+      throw new InvalidOperationDomainException(
         'Must provide either a file or a source URL',
       );
     }

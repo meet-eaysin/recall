@@ -1,6 +1,7 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { IDocumentRepository } from '../../domain/repositories/document.repository';
 import { IStorageProvider } from '@repo/storage';
+import { NotFoundDomainException } from '../../../../shared/errors/not-found.exception';
 
 @Injectable()
 export class DeleteDocumentUseCase {
@@ -15,7 +16,7 @@ export class DeleteDocumentUseCase {
     const doc = await this.documentRepository.findById(id, userId);
 
     if (!doc) {
-      throw new NotFoundException('Document not found');
+      throw new NotFoundDomainException('Document not found');
     }
 
     const isUploadBackedFile =

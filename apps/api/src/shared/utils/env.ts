@@ -178,6 +178,7 @@ export const env = {
   }),
   GITHUB_CALLBACK_URL: getEnv({ key: 'GITHUB_CALLBACK_URL', required: false }),
   WEB_APP_URL: getEnv({ key: 'WEB_APP_URL', required: false }),
+  INTERNAL_API_SECRET: getEnv({ key: 'INTERNAL_API_SECRET' }),
   FILE_UPLOAD_DIR: getEnv({ key: 'FILE_UPLOAD_DIR' }),
   STORAGE_PROVIDER: parseStorageProvider(
     getEnv({ key: 'STORAGE_PROVIDER', required: false, defaultValue: 'disk' }),

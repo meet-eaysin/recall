@@ -1,13 +1,10 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DocumentType, QUEUE_TRANSCRIPT, TranscriptStatus } from '@repo/types';
 import { QueueService } from '@repo/queue';
 import { IDocumentRepository } from '../../domain/repositories/document.repository';
 import { ITranscriptRepository } from '../../domain/repositories/transcript.repository';
+import { InvalidOperationDomainException } from '../../../../shared/errors/invalid-operation.exception';
+import { NotFoundDomainException } from '../../../../shared/errors/not-found.exception';
 
 @Injectable()
 export class TranscriptUseCase {
@@ -21,10 +18,10 @@ export class TranscriptUseCase {
 
   async getTranscript(documentId: string, userId: string) {
     const doc = await this.documentRepository.findById(documentId, userId);
-    if (!doc) throw new NotFoundException('Document not found');
+    if (!doc) throw new NotFoundDomainException('Document not found');
 
     if (doc.type !== DocumentType.YOUTUBE) {
-      throw new BadRequestException(
+      throw new InvalidOperationDomainException(
         'Transcripts are only available for YouTube documents',
       );
     }
@@ -55,10 +52,10 @@ export class TranscriptUseCase {
 
   async generateTranscript(documentId: string, userId: string) {
     const doc = await this.documentRepository.findById(documentId, userId);
-    if (!doc) throw new NotFoundException('Document not found');
+    if (!doc) throw new NotFoundDomainException('Document not found');
 
     if (doc.type !== DocumentType.YOUTUBE) {
-      throw new BadRequestException(
+      throw new InvalidOperationDomainException(
         'Transcripts are only available for YouTube documents',
       );
     }

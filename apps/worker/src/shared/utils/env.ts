@@ -95,6 +95,12 @@ export const env = {
     required: false,
     defaultValue: 'http://localhost:3002',
   }),
+  API_INTERNAL_URL: getEnv({
+    key: 'API_INTERNAL_URL',
+    required: false,
+    defaultValue: 'http://localhost:3000/api/v1/internal/worker',
+  }),
+  INTERNAL_API_SECRET: getEnv({ key: 'INTERNAL_API_SECRET' }),
   QUEUE_PROVIDER: parseQueueProvider(
     getEnv({ key: 'QUEUE_PROVIDER', required: false, defaultValue: 'qstash' }),
     'qstash',
